@@ -3,6 +3,7 @@ import type { AppProps } from 'next/app'
 import { MuiThemeProvider } from '@material-ui/core';
 import { CssBaseline } from '@mui/material';
 import React from 'react';
+import theme from '../src/styles/theme';
 
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -19,7 +20,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 
   }, []);
-  return (<> <Component {...pageProps} /></>)
+  return (<> <MuiThemeProvider theme={theme}> <Component {...pageProps} /></MuiThemeProvider></>)
 }
 
 export default MyApp

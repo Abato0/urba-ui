@@ -17,6 +17,7 @@ import {
 import { purple, grey, blueGrey, blue } from "@material-ui/core/colors";
 import imgLogin from "../public/img/login-img.jpg";
 import imgFamily from "../public/img/img-family.jpg";
+import imgLogoLogin from '../public/img/password.png';
 import TextBox from '../src/components/core/input/text-field'
 import Image from "next/image";
 import Icon from "@material-ui/core/Icon";
@@ -89,17 +90,28 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "100%",
     },
     ContenedorTituloLogin: {
+      display: "flex",
+      flexDirection: 'column',
+      alignItems: "center",
       paddingTop: "10%",
       width: "100%",
       textAlign: "center",
-      color: blueGrey[700],
+      color: "#212121"
+      // color: blueGrey[700],
       
     },
     iconoLogin: {
-      fontSize: "80px",
+      // fontSize: "20px",
+      // size: "10px",
+      width:"90px",
+      height: "90px",
+      display: "flex",
+      alignItems: "center",
+      // height: "10px",
+      // width: "10px",
       backgroundColor: "white",
-      padding: "12px",
-      borderRadius: "100%",
+      // padding: "12px",
+      // borderRadius: "100%",
       // padding: "1px"
       // color: grey[700],
     },
@@ -138,6 +150,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: "10px 0px",
       borderRadius: 40,
       width: "40%",
+      // backgroundColor:"#AC5BCD"
     //  background: "linear-gradient(#4e54c8,#8f94fb)"
       // marginBottom: "14%"
     },
@@ -236,12 +249,18 @@ const LoginScreen = () => {
               <Grid item sm={12}  md={6} lg={6} className={classes.gridItem}>
                 <Box className={classes.formRoot}>
                   <div className={classes.ContenedorTituloLogin}>
-                    <div>
-                    <FontAwesomeIcon
+                    {/* <div> */}
+                      <CardMedia className={classes.iconoLogin} >
+                      <Image   src={imgLogoLogin} alt="login-logo">
+
+                      </Image>
+                      </CardMedia>
+                      
+                    {/* <FontAwesomeIcon
                       icon={faUserTie}
                       className={classes.iconoLogin}
-                    />
-                    </div>
+                    /> */}
+                    {/* </div> */}
                     
                     <Typography className={classes.tituloLogin}>
                      Iniciar Sesion
