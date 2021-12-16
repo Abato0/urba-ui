@@ -14,19 +14,12 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { purple, grey, blueGrey, blue } from "@material-ui/core/colors";
-import imgLogin from "../public/img/login-img.jpg";
-import imgFamily from "../public/img/img-family.jpg";
-import imgLogoLogin from '../public/img/password.png';
-import TextBox from '../src/components/core/input/text-field'
-import Image from "next/image";
-import Icon from "@material-ui/core/Icon";
-import { faUserTie, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from "next/image";;
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { isNotNilOrEmpty } from "../src/utils/is-nil-empty";
+import { isNotNilOrEmpty } from "../utils/is-nil-empty";
 import { useRouter } from "next/router";
+
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -36,11 +29,11 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: "center",
       justifyItems: "center",
       minHeight: "100vh",
-       background: "linear-gradient(#4e54c8,#8f94fb)",
+       background: "linear-gradient( #232526, #414345)",
     },
     cardContent: {
       width: "100%",
-      borderRadius: "2%",
+      borderRadius: "8px",
     },
     cardRoot: {
       display: "flex",
@@ -234,14 +227,18 @@ const LoginScreen = () => {
             <Grid container   className={classes.gridRoot}>
               <Hidden smDown>
                 <Grid item  md={6} lg={6} className={classes.gridItem}>
-                  <CardMedia className={classes.loginImg}>
+                  <div className={classes.loginImg}>
                     <Image
                      className={classes.loginImg}
+                     quality={50}
+                      src="/img/urbanizacion.jpg"
                       layout="responsive"
-                      src={imgFamily}
-                      alt="login"
+                      height={59}
+                      width={59}
+                      // src={imgFamily}
+                      // alt="login"
                     />
-                  </CardMedia>
+                  </div>
 
                   {/* <Image layout="responsive" src={imgLogin} alt="login" /> */}
                 </Grid>
@@ -250,11 +247,18 @@ const LoginScreen = () => {
                 <Box className={classes.formRoot}>
                   <div className={classes.ContenedorTituloLogin}>
                     {/* <div> */}
-                      <CardMedia className={classes.iconoLogin} >
-                      <Image   src={imgLogoLogin} alt="login-logo">
+                      <div className={classes.iconoLogin} >
+                      {/* <Image  
+                      //  src={imgLogoLogin} alt="login-logo"
+                      src="/img/login-img.jpg"
+                      height={50}
+                      width={50}
+                      layout="responsive"
 
-                      </Image>
-                      </CardMedia>
+                      /> */}
+
+                      
+                      </div>
                       
                     {/* <FontAwesomeIcon
                       icon={faUserTie}

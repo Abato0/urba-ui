@@ -1,9 +1,9 @@
-import '../styles/globals.css'
+import '../../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { MuiThemeProvider } from '@material-ui/core';
 import { CssBaseline } from '@mui/material';
 import React from 'react';
-import theme from '../src/styles/theme';
+import theme from '../styles/theme';
 
 
 function MyApp({ Component, pageProps }: AppProps) {

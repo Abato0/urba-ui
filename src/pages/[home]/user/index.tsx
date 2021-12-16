@@ -1,5 +1,5 @@
 import React from 'react'
-import AppLayout from '../../../src/components/layout/app-layout';
+import AppLayout from '../../../components/layout/app-layout';
 
 
 
