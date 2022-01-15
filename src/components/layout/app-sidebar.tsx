@@ -1,203 +1,197 @@
-import { AppBar, Box, Container, createStyles, Grid, makeStyles, Theme } from '@material-ui/core';
-import React from 'react';
-import { grey } from '@material-ui/core/colors';
-import TreeView from '@material-ui/lab/TreeView';
-import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
-import Typography from '@material-ui/core/Typography';
-import MailIcon from '@material-ui/icons/Mail';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Label from '@material-ui/icons/Label';
-import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
-import InfoIcon from '@material-ui/icons/Info';
-import ForumIcon from '@material-ui/icons/Forum';
-import LocalOfferIcon from '@material-ui/icons/LocalOffer';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import { SvgIconProps } from '@material-ui/core/SvgIcon';
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import TreeView from "@material-ui/lab/TreeView";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import TreeItem from "@material-ui/lab/TreeItem";
+import { FC } from "react";
+import { Box, createStyles, colors, Fade, Slide } from "@material-ui/core";
+import { minHeight, borderRadius } from "@mui/system";
+import { useRouter } from "next/router";
+import { isEmpty } from "ramda";
+import Link from "next/link";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { showSidebar } from "../../utils/states";
 
-declare module 'csstype' {
-  interface Properties {
-    '--tree-view-color'?: string;
-    '--tree-view-bg-color'?: string;
-  }
-}
-
-type StyledTreeItemProps = TreeItemProps & {
-  bgColor?: string;
-  color?: string;
-  labelIcon: React.ElementType<SvgIconProps>;
-  labelInfo?: string;
-  labelText: string;
-};
-
-const useTreeItemStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      color: theme.palette.text.secondary,
-      '&:hover > $content': {
-        backgroundColor: theme.palette.action.hover,
-      },
-      '&:focus > $content, &$selected > $content': {
-        backgroundColor: `var(--tree-view-bg-color, ${theme.palette.grey[400]})`,
-        color: 'var(--tree-view-color)',
-      },
-      '&:focus > $content $label, &:hover > $content $label, &$selected > $content $label': {
-        backgroundColor: 'transparent',
-      },
+      display: "flex",
+      minHeight: "100vh",
+      // marginTop: theme.spacing(2)
     },
-    content: {
-      color: theme.palette.text.secondary,
-      borderTopRightRadius: theme.spacing(2),
-      borderBottomRightRadius: theme.spacing(2),
-      paddingRight: theme.spacing(1),
-      fontWeight: theme.typography.fontWeightMedium!,
-      '$expanded > &': {
-        fontWeight: theme.typography.fontWeightRegular,
-      },
+    sidebar: {
+      flexDirection: "column",
+      backgroundColor: colors.blueGrey[900],
+      // backgroundColor: "black",
+      paddingTop: theme.spacing(2),
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(6),
+      color: "white",
+      // minWidth: "200px"
     },
-    group: {
-      marginLeft: 0,
-      '& $content': {
-        paddingLeft: theme.spacing(2),
-      },
-    },
-    expanded: {},
-    selected: {},
-    label: {
-      fontWeight: 'inherit',
-      color: 'inherit',
-    },
-    labelRoot: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: theme.spacing(0.5, 0),
-    },
-    labelIcon: {
-      marginRight: theme.spacing(1),
-    },
-    labelText: {
-      fontWeight: 'inherit',
-      flexGrow: 1,
-    },
-  }),
-);
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-      root:{
-        minHeight: "100vh",
-        // background: grey[400],
-        display: "flex",
-        flexDirection: "row"
+    nodePadre: {
+      padding: "10px",
+      "&:hover": {
+        backgroundColor: colors.blueGrey[700],
+        borderRadius: "7px",
       },
-    sideBarContainer:{
-        // backgroundColor: "#C184DA",
-        padding: "2px 20px",
-        width: "350px"
     },
-    children:{
-        width: "100%",
-        background: grey[100]
+    nodeHijo: {
+      padding: "5px",
+      "&:hover": {
+        backgroundColor: colors.blueGrey[400],
+        borderRadius: "7px",
+      },
     },
-    TreeRoot: {
-      height: 264,
-      flexGrow: 1,
-      maxWidth: 400,
+    box: {
+      flexDirection: "column",
+      width: "100%",
+      borderRadius: "30px",
+      margin: "10px",
+      background: colors.blueGrey[50],
+    },
+    children: {
+      display: "flex",
+      flexDirection: "column",
+      margin: "10px",
+      alignItems: "center",
+      justifyContent: "center",
     },
   })
 );
 
-function StyledTreeItem(props: StyledTreeItemProps) {
-  const classes = useTreeItemStyles();
-  const { labelText, labelIcon: LabelIcon, labelInfo, color, bgColor, ...other } = props;
+export const EnlacesSidebar = {
+  home: {
+    route: "/grupo-familiar",
+  },
+  grupoFamiliar: {
+    registrar: {
+      route: "/grupo-familiar/registrar",
+    },
+    listado: {
+      route: "/grupo-familiar/listado",
+    },
+  },
+  usuario: {
+    listado: {
+      route: "/user/listado",
+    },
+  },
+  pago: {
+    registrar: {
+      route: "/pago/ingresar",
+    },
+    listado: {
+      route: "/pago/listado",
+    },
+  },
+  aporte: {
+    registrar: {
+      route: "/aporte/ingresar",
+    },
+    listado: {
+      route: "/aporte/listado",
+    },
+  },
+};
+const Sidebar: FC = ({ children }) => {
+  const classes = useStyles();
+  const router = useRouter();
+  const ShowSidebar = useRecoilValue(showSidebar);
+
+  console.log("showSidebar: ", ShowSidebar);
 
   return (
-    <TreeItem
-      label={
-        <div className={classes.labelRoot}>
-          <LabelIcon color="inherit" className={classes.labelIcon} />
-          <Typography variant="body2" className={classes.labelText}>
-            {labelText}
-          </Typography>
-          <Typography variant="caption" color="inherit">
-            {labelInfo}
-          </Typography>
-        </div>
-      }
-      style={{
-        '--tree-view-color': color,
-        '--tree-view-bg-color': bgColor,
-      }}
-      classes={{
-        root: classes.root,
-        content: classes.content,
-        expanded: classes.expanded,
-        selected: classes.selected,
-        group: classes.group,
-        label: classes.label,
-      }}
-      {...other}
-    />
+    <div className={classes.root}>
+      <Slide direction="right" in={ShowSidebar}>
+        <TreeView
+          className={classes.sidebar}
+          defaultCollapseIcon={<ExpandMoreIcon />}
+          defaultExpandIcon={<ChevronRightIcon />}
+        >
+          <TreeItem nodeId="1" label="Familias" className={classes.nodePadre}>
+            <TreeItem nodeId="7" label="Grupo Familiar">
+              {/* <Link href={EnlacesSidebar.home.route}>
+                <TreeItem
+                  nodeId="2"
+                  label="Home"
+                  className={classes.nodeHijo}
+                  // onClick={() => redirect(EnlacesSidebar.home.route)}
+                />
+              </Link> */}
+              <Link href={EnlacesSidebar.grupoFamiliar.registrar.route}>
+                <TreeItem
+                  nodeId="3"
+                  label="Registrar Grupo Familiar"
+                  className={classes.nodeHijo}
+                />
+              </Link>
+              <Link href={EnlacesSidebar.grupoFamiliar.listado.route}>
+                <TreeItem
+                  nodeId="4"
+                  label="Listado"
+                  className={classes.nodeHijo}
+                />
+              </Link>
+              {/* <TreeItem nodeId="8" label="index.js" />
+            <TreeItem nodeId="9" label="tree-view.js" /> */}
+            </TreeItem>
+          </TreeItem>
+          <TreeItem nodeId="5" label="Pago" className={classes.nodePadre}>
+            <Link href={EnlacesSidebar.pago.registrar.route}>
+              <TreeItem
+                nodeId="6"
+                label="Ingresar"
+                className={classes.nodeHijo}
+              />
+            </Link>
+            <Link href={EnlacesSidebar.pago.listado.route}>
+              <TreeItem
+                nodeId="7"
+                label="Listado"
+                className={classes.nodeHijo}
+              />
+            </Link>
+
+            {/* <TreeItem nodeId="6" label="Material-UI">
+          <TreeItem nodeId="7" label="src">
+            <TreeItem nodeId="8" label="index.js" />
+            <TreeItem nodeId="9" label="tree-view.js" />
+          </TreeItem>
+        </TreeItem> */}
+          </TreeItem>
+          <TreeItem nodeId="8" label="Aporte" className={classes.nodePadre}>
+            <Link href={EnlacesSidebar.aporte.registrar.route}>
+              <TreeItem
+                nodeId="10"
+                label="Ingresar"
+                className={classes.nodeHijo}
+              />
+            </Link>
+            <Link href={EnlacesSidebar.aporte.listado.route}>
+              <TreeItem
+                nodeId="10"
+                label="Listado"
+                className={classes.nodeHijo}
+              />
+            </Link>
+
+            {/* <TreeItem nodeId="6" label="Material-UI">
+          <TreeItem nodeId="7" label="src">
+            <TreeItem nodeId="8" label="index.js" />
+            <TreeItem nodeId="9" label="tree-view.js" />
+          </TreeItem>
+        </TreeItem> */}
+          </TreeItem>
+        </TreeView>
+      </Slide>
+      <Box className={classes.box}>
+        <div className={classes.children}>{children}</div>
+      </Box>
+    </div>
   );
-}
+};
 
-const SideBar: React.FC=({children})=>{
-    const classes = useStyles();
-    return (
-
-      <Box className={classes.root}>
-      <Box  className={classes.sideBarContainer}>
-      <TreeView
-      className={classes.TreeRoot}
-      defaultExpanded={['3']}
-      defaultCollapseIcon={<ArrowDropDownIcon />}
-      defaultExpandIcon={<ArrowRightIcon />}
-      defaultEndIcon={<div style={{ width: 24 }} />}
-    >
-      <StyledTreeItem nodeId="1" labelText="All Mail" labelIcon={MailIcon} />
-      <StyledTreeItem nodeId="2" labelText="Trash" labelIcon={DeleteIcon} />
-      <StyledTreeItem nodeId="3" labelText="Categories" labelIcon={Label}>
-        <StyledTreeItem
-          nodeId="5"
-          labelText="Social"
-          labelIcon={SupervisorAccountIcon}
-          labelInfo="90"
-          color="#1a73e8"
-          bgColor="#e8f0fe"
-        />
-        <StyledTreeItem
-          nodeId="6"
-          labelText="Updates"
-          labelIcon={InfoIcon}
-          labelInfo="2,294"
-          color="#e3742f"
-          bgColor="#fcefe3"
-        />
-        <StyledTreeItem
-          nodeId="7"
-          labelText="Forums"
-          labelIcon={ForumIcon}
-          labelInfo="3,566"
-          color="#a250f5"
-          bgColor="#f3e8fd"
-        />
-        <StyledTreeItem
-          nodeId="8"
-          labelText="Promotions"
-          labelIcon={LocalOfferIcon}
-          labelInfo="733"
-          color="#3c8039"
-          bgColor="#e6f4ea"
-        />
-      </StyledTreeItem>
-      <StyledTreeItem nodeId="4" labelText="History" labelIcon={Label} />
-    </TreeView>
-      </Box>
-      <Box  className={classes.children}>
-          {children}
-      </Box>
-      </Box>
-    );
-}
-
-export default SideBar
+export default Sidebar;
