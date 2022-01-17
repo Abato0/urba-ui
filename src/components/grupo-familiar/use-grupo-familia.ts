@@ -56,7 +56,7 @@ export const useDeleteGrupoFamiliarMutatio = (id: number) => {
   return [mutate, data, loading, error];
 };
 
-interface IListadoGrupoFamiliarVariables {
+export interface IListadoGrupoFamiliarVariables {
   id: number;
   nombre_familiar: string;
   celular: string;

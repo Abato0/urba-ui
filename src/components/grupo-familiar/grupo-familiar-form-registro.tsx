@@ -33,10 +33,7 @@ const useStyles = makeStyles((theme) =>
       minWidth: "320px",
       borderRadius: "10px",
       textAlign: "center",
-      // width: "100%",
-      // height: "100%",
       backgroundColor: "white",
-      // marginTop: theme.spacing(2)
     },
 
     form: {

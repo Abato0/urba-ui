@@ -10,6 +10,7 @@ import {
 } from "../../../components/grupo-familiar/grupo-familiar-typeDefs";
 import AppLayout from "../../../components/layout/app-layout";
 import { codeBase64 } from "../../../utils/file-base64";
+import { isNilOrEmpty } from "../../../utils/is-nil-empty";
 
 const UpdateGrupoFamiliar = () => {
   const router = useRouter();
@@ -19,10 +20,13 @@ const UpdateGrupoFamiliar = () => {
     return router.query.id;
   }, [router.query.id]);
 
+
   const { data, loading, error } = useQuery(GetGrupoFamiliar, {
     variables: { id: Number(id) },
+    skip: !isNilOrEmpty(Number(id)),
   });
 
+ 
   useEffect(() => {
     if (!loading) {
       setGrupoFamiliarData(extractData(data));

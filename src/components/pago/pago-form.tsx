@@ -24,14 +24,9 @@ import {
   isNilOrEmpty,
   isNotNil,
 } from "../../utils/is-nil-empty";
-import {
-  IAporteVariables,
-  useArrIntervaloFechaAporte,
-  useListarAporteQuery,
-} from "../aporte/use-aporte";
+import { IAporteVariables, useListarAporteQuery } from "../aporte/use-aporte";
 import ModalAuth from "../core/input/dialog/modal-dialog";
 import { listadoGrupoFamiliar } from "../grupo-familiar/grupo-familiar-typeDefs";
-import { anos, meses } from "./pago-utils";
 import { usePostPago } from "./use-pago";
 import DateFnsUtils from "@date-io/date-fns";
 import {
@@ -39,6 +34,7 @@ import {
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 import { grey } from "@material-ui/core/colors";
+import { parseStringDate } from "../utils/parseDate";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -169,21 +165,6 @@ export const PagoFormIngresar = () => {
             setOpenModalMsj(true);
             setTitleModalMsj("Usuario no autorizado");
           }
-        } else {
-          // console.log(
-          //   "idGrupoFamiliar",
-          //   idGrupoFamiliar,
-          //   "mes_pago",
-          //   mes_pago,
-          //   "ano_pago",
-          //   ano_pago,
-          //   "monto",
-          //   monto,
-          //   "tipo_aporte",
-          //   tipo_aporte,
-          //   "file",
-          //   file
-          // );
         }
       } catch (err) {
         console.log("error : ", err);
@@ -221,18 +202,6 @@ export const PagoFormIngresar = () => {
     error: errorListarAporte,
   } = useListarAporteQuery();
 
-  // const {
-  //   data: dataArrFecha,
-  //   loading: loadingArrFecha,
-  //   error: errorArrFecha,
-  // } = useArrIntervaloFechaAporte(values.idGrupoFamiliar);
-
-  // React.useEffect(() => {
-  //   if (!loadingArrFecha) {
-  //     console.log("dataArr: ", dataArrFecha);
-  //   }
-  // }, [values.idGrupoFamiliar]);
-
   const [dataGrupoFamiliar, setDataGrupoFamiliar] = React.useState([]);
   const [dataListaAporte, setListaAporte] = React.useState<IAporteVariables[]>(
     []
@@ -244,12 +213,8 @@ export const PagoFormIngresar = () => {
   const [mensajeModalMsj, setMensajeModalMsj] = React.useState<string>("");
   const [aporteSeleccionado, setAporteSeleccionado] =
     React.useState<IAporteVariables>();
-  // const [idAporteSeleccionado,setIdAporte]
 
   const onDrop = React.useCallback(([file]: [File]) => {
-    // Do something with the files
-    // console.log("accept: ", head(acceptedFiles));
-    // console.log("");
     setFile(file);
   }, []);
 
@@ -259,22 +224,6 @@ export const PagoFormIngresar = () => {
     multiple: false,
     onDrop,
   });
-
-  const MesInput = () => {
-    const acum: any[] = [];
-    for (let index = 0; index < meses.length; index++) {
-      acum.push(<MenuItem value={index}>{meses[index]}</MenuItem>);
-    }
-    return acum;
-  };
-
-  const AnosInput = () => {
-    const acum: any[] = [];
-    for (let index = 0; index < anos.length; index++) {
-      acum.push(<MenuItem value={anos[index]}>{anos[index]}</MenuItem>);
-    }
-    return acum;
-  };
 
   React.useEffect(() => {
     if (!loading && !isNil(data)) {
@@ -311,17 +260,6 @@ export const PagoFormIngresar = () => {
       );
     }
     return acum;
-  };
-
-  const parseStringDate = (date: string) => {
-    if (!isEmpty(date)) {
-      const arrString = date.split("-");
-      return new Date(
-        Number(arrString[0]),
-        Number(arrString[1]) - 1,
-        Number(arrString[2])
-      );
-    }
   };
 
   const rangoFechaAportePagoService = (aporte: IAporteVariables) => {
@@ -363,7 +301,7 @@ export const PagoFormIngresar = () => {
         className={classes.form}
       >
         <div>
-          <FormControl  className={classes.formControl}>
+          <FormControl className={classes.formControl}>
             <InputLabel id="idGrupoFamiliar_label">
               Grupo Familiar del Deposito
             </InputLabel>
@@ -408,22 +346,6 @@ export const PagoFormIngresar = () => {
                 })}
             </Select>
           </FormControl>
-
-          {/* <FormControl className={classes.formControl}>
-            <InputLabel id="tipo_aporte_label">Tipo de Aporte</InputLabel>
-            <Select
-              labelId="tipo_aporte_label"
-              id="tipo_aporte"
-              name="tipo_aporte"
-              value={values.tipo_aporte}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-            >
-              <MenuItem value={"implementacion"}>Implementacion</MenuItem>
-              <MenuItem value={"mantenimiento"}>Mantenimiento</MenuItem>
-            </Select>
-          </FormControl> */}
         </div>
         <div>
           <FormControl className={classes.formControl}>
@@ -437,21 +359,7 @@ export const PagoFormIngresar = () => {
               onBlur={handleBlur}
               required
             >
-              {
-                isNotNilOrEmpty(arrFecha) && MenuItemArrFecha(arrFecha!)
-                // arrFecha?.map((date) => {
-                //   return <MenuItem value={date}>{date}</MenuItem>;
-                // })
-              }
-
-              {/* {dataListaAporte &&
-                dataListaAporte.map(({ id, nombre_aporte, tipo_aporte }) => {
-                  return (
-                    <MenuItem
-                      value={id}
-                    >{`${nombre_aporte} - ${tipo_aporte}`}</MenuItem>
-                  );
-                })} */}
+              {isNotNilOrEmpty(arrFecha) && MenuItemArrFecha(arrFecha!)}
             </Select>
           </FormControl>
           <TextField
@@ -465,6 +373,7 @@ export const PagoFormIngresar = () => {
             value={values.monto}
             error={touched.monto && isNotNilOrEmpty(errors.monto)}
             helperText={touched.monto ? errors.monto : undefined}
+            disabled={isNotNilOrEmpty(aporteSeleccionado?.valor_mensual)}
             required
           />
         </div>
@@ -521,34 +430,6 @@ export const PagoFormIngresar = () => {
             helperText={touched.descripcion ? errors.descripcion : undefined}
           />
         </div>
-        {/* <div>
-          <FormControl className={classes.formControl}>
-            <InputLabel id="mes_pago_label">Mes de Pago</InputLabel>
-            <Select
-              labelId="mes_pago_label"
-              id="mes_pago"
-              name="mes_pago"
-              value={values.mes_pago}
-              onChange={handleChange}
-              required
-            >
-              {MesInput()}
-            </Select>
-          </FormControl>
-          <FormControl className={classes.formControl}>
-            <InputLabel id="ano_pago_label">Año de Pago</InputLabel>
-            <Select
-              labelId="ano_pago_label"
-              id="ano_pago"
-              name="ano_pago"
-              value={values.ano_pago}
-              onChange={handleChange}
-              required
-            >
-              {AnosInput()}
-            </Select>
-          </FormControl>
-        </div> */}
 
         <Paper {...getRootProps()} className={classes.dropzone}>
           <input {...getInputProps()} />

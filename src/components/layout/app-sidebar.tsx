@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme) =>
     box: {
       flexDirection: "column",
       width: "100%",
+      minWidth: "700px",
       borderRadius: "30px",
       margin: "10px",
       background: colors.blueGrey[50],
@@ -74,6 +75,15 @@ export const EnlacesSidebar = {
       route: "/grupo-familiar/listado",
     },
   },
+  integrante: {
+    registrar: {
+      route: "/integrante/ingresar",
+    },
+    listado: {
+      route: "/integrante/listado",
+    },
+  },
+
   usuario: {
     listado: {
       route: "/user/listado",
@@ -112,45 +122,51 @@ const Sidebar: FC = ({ children }) => {
           defaultExpandIcon={<ChevronRightIcon />}
         >
           <TreeItem nodeId="1" label="Familias" className={classes.nodePadre}>
-            <TreeItem nodeId="7" label="Grupo Familiar">
-              {/* <Link href={EnlacesSidebar.home.route}>
-                <TreeItem
-                  nodeId="2"
-                  label="Home"
-                  className={classes.nodeHijo}
-                  // onClick={() => redirect(EnlacesSidebar.home.route)}
-                />
-              </Link> */}
+            <TreeItem nodeId="4" label="Grupo Familiar">
               <Link href={EnlacesSidebar.grupoFamiliar.registrar.route}>
                 <TreeItem
-                  nodeId="3"
+                  nodeId="8"
                   label="Registrar Grupo Familiar"
                   className={classes.nodeHijo}
                 />
               </Link>
               <Link href={EnlacesSidebar.grupoFamiliar.listado.route}>
                 <TreeItem
-                  nodeId="4"
+                  nodeId="9"
                   label="Listado"
                   className={classes.nodeHijo}
                 />
               </Link>
-              {/* <TreeItem nodeId="8" label="index.js" />
-            <TreeItem nodeId="9" label="tree-view.js" /> */}
+            </TreeItem>
+            <TreeItem nodeId="5" label="Integrante">
+              <Link href={EnlacesSidebar.integrante.registrar.route}>
+                <TreeItem
+                  nodeId="10"
+                  label="Registrar Integrante"
+                  className={classes.nodeHijo}
+                />
+              </Link>
+              <Link href={EnlacesSidebar.integrante.listado.route}>
+                <TreeItem
+                  nodeId="11"
+                  label="Listado Integrante"
+                  className={classes.nodeHijo}
+                />
+              </Link>
             </TreeItem>
           </TreeItem>
-          <TreeItem nodeId="5" label="Pago" className={classes.nodePadre}>
+          <TreeItem nodeId="2" label="Pago" className={classes.nodePadre}>
             <Link href={EnlacesSidebar.pago.registrar.route}>
               <TreeItem
                 nodeId="6"
-                label="Ingresar"
+                label="Ingresar Pago"
                 className={classes.nodeHijo}
               />
             </Link>
             <Link href={EnlacesSidebar.pago.listado.route}>
               <TreeItem
                 nodeId="7"
-                label="Listado"
+                label="Listado de Pagos"
                 className={classes.nodeHijo}
               />
             </Link>
@@ -162,18 +178,18 @@ const Sidebar: FC = ({ children }) => {
           </TreeItem>
         </TreeItem> */}
           </TreeItem>
-          <TreeItem nodeId="8" label="Aporte" className={classes.nodePadre}>
+          <TreeItem nodeId="3" label="Aporte" className={classes.nodePadre}>
             <Link href={EnlacesSidebar.aporte.registrar.route}>
               <TreeItem
-                nodeId="10"
-                label="Ingresar"
+                nodeId="12"
+                label="Ingresar Aportacion"
                 className={classes.nodeHijo}
               />
             </Link>
             <Link href={EnlacesSidebar.aporte.listado.route}>
               <TreeItem
-                nodeId="10"
-                label="Listado"
+                nodeId="13"
+                label="Listado de Aportaciones"
                 className={classes.nodeHijo}
               />
             </Link>

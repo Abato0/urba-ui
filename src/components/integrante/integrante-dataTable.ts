@@ -2,14 +2,30 @@ import { Column } from "react-table";
 import { Data } from "../core/input/data";
 import ActionsCell from "../table/actions-cell";
 
-export const head = Object.freeze([
+export const headIntegranteTable = Object.freeze([
   {
-    Header: "Nombre Familiar",
+    Header: "Cedula",
+    accessor: "cedula",
+  },
+  {
+    Header: "Nombre",
+    accessor: "nombre",
+  },
+  {
+    Header: "Apellido",
+    accessor: "apellido",
+  },
+  {
+    Header: "Fecha de Nacimiento",
+    accessor: "fecha_nacimiento",
+  },
+  {
+    Header: "Familia",
     accessor: "nombre_familiar",
   },
   {
-    Header: "Celular",
-    accessor: "celular",
+    Header: "Parentesco",
+    accessor: "parentesco",
   },
   {
     Header: "Manzana",
