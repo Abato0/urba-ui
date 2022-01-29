@@ -1,14 +1,15 @@
-import {
-  useMutation,
-  useQuery,
-} from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { DocumentNode } from "graphql";
 import {
   deleteGrupoFamiliarMutation,
   listadoGrupoFamiliar,
+  listarGruposFamiliares,
   updateGrupoFamiliarMutation,
 } from "./grupo-familiar-typeDefs";
 import { useCallback } from "react";
+import { IIntegranteFilterInput } from "../integrante/use-intergrante";
+import { equals } from "ramda";
+import { IGrupoFamiliar } from "../../interface/grupo-familiar.interface";
 
 export interface IGrupoFamiliarInput {
   nombre_familiar: string;
@@ -59,10 +60,12 @@ export const useDeleteGrupoFamiliarMutatio = (id: number) => {
 export interface IListadoGrupoFamiliarVariables {
   id: number;
   nombre_familiar: string;
-  celular: string;
+  color_fachada: string;
   manzana: string;
   villa: string;
-  calle: string;
+  calle_principal: string;
+  calle_interseccion: string;
+  tipo_edificacion: string;
 }
 
 interface IListadoGrupoFamiliar {
@@ -74,4 +77,28 @@ export const useListarGrupoFamiliar = () => {
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
   });
+};
+
+
+export interface IListaGruposFamiliaresFilter {
+  ListaGruposFamiliaresFilter: IGrupoFamiliar[];
+}
+
+export const useListarGrupoFamiliarFilterQuery = (
+  input: IIntegranteFilterInput
+) => {
+  return useQuery<IListaGruposFamiliaresFilter, IIntegranteFilterInput>(
+    listarGruposFamiliares,
+    {
+      variables: {
+        ...input,
+      },
+      skip: equals(input, {
+        calle_interseccion: "",
+        idGrupoFamiliar: 0,
+        calle_principal: "",
+        manzana: "",
+      }),
+    }
+  );
 };

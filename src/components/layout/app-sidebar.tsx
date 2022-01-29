@@ -1,71 +1,49 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import TreeView from "@material-ui/lab/TreeView";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import TreeItem from "@material-ui/lab/TreeItem";
-import { FC } from "react";
-import { Box, createStyles, colors, Fade, Slide } from "@material-ui/core";
-import { minHeight, borderRadius } from "@mui/system";
-import { useRouter } from "next/router";
-import { isEmpty } from "ramda";
-import Link from "next/link";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import React, { FC, useCallback } from "react";
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { Box, colors, Slide } from "@material-ui/core";
+import { useRecoilState } from "recoil";
 import { showSidebar } from "../../utils/states";
+import AcordionHeader from "./sidebar/acordionHeader";
+import ItemSidebar from "./sidebar/acordionItemClick";
+import {
+  faDonate,
+  faEdit,
+  faIndustry,
+  faListAlt,
+  faUser,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
+import { useRouter } from "next/router";
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: "flex",
-      minHeight: "100vh",
-      // marginTop: theme.spacing(2)
-    },
-    sidebar: {
       flexDirection: "column",
-      backgroundColor: colors.blueGrey[900],
-      // backgroundColor: "black",
-      paddingTop: theme.spacing(2),
-      paddingLeft: theme.spacing(4),
-      paddingRight: theme.spacing(6),
-      color: "white",
-      // minWidth: "200px"
+      height: "100vh",
+      flexGrow: 1,
+      padding: "6px",
+      backgroundColor: "white",
+      minWidth: "300px",
+      maxWidth: "350px",
+      marginTop: 30,
+      overflow: "auto",
     },
-
-    nodePadre: {
-      padding: "10px",
-      "&:hover": {
-        backgroundColor: colors.blueGrey[700],
-        borderRadius: "7px",
-      },
+    nodoPadre: {
+      margin: "5px",
     },
-    nodeHijo: {
-      padding: "5px",
-      "&:hover": {
-        backgroundColor: colors.blueGrey[400],
-        borderRadius: "7px",
-      },
+    nodoHijo: {
+      margin: "4px 0px",
     },
-    box: {
-      flexDirection: "column",
-      width: "100%",
-      minWidth: "700px",
-      borderRadius: "30px",
-      margin: "10px",
-      background: colors.blueGrey[50],
-    },
-    children: {
-      display: "flex",
-      flexDirection: "column",
-      margin: "10px",
-      alignItems: "center",
-      justifyContent: "center",
+    slider: {
+      maxWidth: 200,
     },
   })
 );
 
 export const EnlacesSidebar = {
   home: {
-    route: "/grupo-familiar",
+    route: "/home",
   },
   grupoFamiliar: {
     registrar: {
@@ -106,107 +84,191 @@ export const EnlacesSidebar = {
     },
   },
 };
-const Sidebar: FC = ({ children }) => {
+const Sidebar: FC = () => {
+  // const classes = useStyles();
+  // const router = useRouter();
+  // const ShowSidebar = useRecoilValue(showSidebar);
+
+  // console.log("showSidebar: ", ShowSidebar);
+
+  // return (
+  //   <div className={classes.root}>
+  //     <Slide direction="right" in={ShowSidebar}>
+  //       <TreeView
+  //         className={classes.sidebar}
+  //         defaultCollapseIcon={<ExpandMoreIcon />}
+  //         defaultExpandIcon={<ChevronRightIcon />}
+  //       >
+  //         <TreeItem nodeId="1" label="Familias" className={classes.nodePadre}>
+  //           <TreeItem nodeId="4" label="Grupo Familiar">
+  //             <Link href={EnlacesSidebar.grupoFamiliar.registrar.route}>
+  //               <TreeItem
+  //                 nodeId="8"
+  //                 label="Registrar Grupo Familiar"
+  //                 className={classes.nodeHijo}
+  //               />
+  //             </Link>
+  //             <Link href={EnlacesSidebar.grupoFamiliar.listado.route}>
+  //               <TreeItem
+  //                 nodeId="9"
+  //                 label="Listado"
+  //                 className={classes.nodeHijo}
+  //               />
+  //             </Link>
+  //           </TreeItem>
+  //           <TreeItem nodeId="5" label="Integrante">
+  //             <Link href={EnlacesSidebar.integrante.registrar.route}>
+  //               <TreeItem
+  //                 nodeId="10"
+  //                 label="Registrar Integrante"
+  //                 className={classes.nodeHijo}
+  //               />
+  //             </Link>
+  //             <Link href={EnlacesSidebar.integrante.listado.route}>
+  //               <TreeItem
+  //                 nodeId="11"
+  //                 label="Listado Integrante"
+  //                 className={classes.nodeHijo}
+  //               />
+  //             </Link>
+  //           </TreeItem>
+  //         </TreeItem>
+  //         <TreeItem nodeId="2" label="Pago" className={classes.nodePadre}>
+  //           <Link href={EnlacesSidebar.pago.registrar.route}>
+  //             <TreeItem
+  //               nodeId="6"
+  //               label="Ingresar Pago"
+  //               className={classes.nodeHijo}
+  //             />
+  //           </Link>
+  //           <Link href={EnlacesSidebar.pago.listado.route}>
+  //             <TreeItem
+  //               nodeId="7"
+  //               label="Listado de Pagos"
+  //               className={classes.nodeHijo}
+  //             />
+  //           </Link>
+
+  //         </TreeItem>
+  //         <TreeItem nodeId="3" label="Aporte" className={classes.nodePadre}>
+  //           <Link href={EnlacesSidebar.aporte.registrar.route}>
+  //             <TreeItem
+  //               nodeId="12"
+  //               label="Ingresar Aportacion"
+  //               className={classes.nodeHijo}
+  //             />
+  //           </Link>
+  //           <Link href={EnlacesSidebar.aporte.listado.route}>
+  //             <TreeItem
+  //               nodeId="13"
+  //               label="Listado de Aportaciones"
+  //               className={classes.nodeHijo}
+  //             />
+  //           </Link>
+
+  //         </TreeItem>
+  //       </TreeView>
+  //     </Slide>
+  //     <Box className={classes.box}>
+  //       <div className={classes.children}>{children}</div>
+  //     </Box>
+  //   </div>
+  // );
   const classes = useStyles();
   const router = useRouter();
-  const ShowSidebar = useRecoilValue(showSidebar);
 
-  console.log("showSidebar: ", ShowSidebar);
+  const [openShowSideBar, setOpenShowSideBar] = useRecoilState(showSidebar);
 
+  const onClick = useCallback(() => {}, []);
   return (
-    <div className={classes.root}>
-      <Slide direction="right" in={ShowSidebar}>
-        <TreeView
-          className={classes.sidebar}
-          defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpandIcon={<ChevronRightIcon />}
-        >
-          <TreeItem nodeId="1" label="Familias" className={classes.nodePadre}>
-            <TreeItem nodeId="4" label="Grupo Familiar">
-              <Link href={EnlacesSidebar.grupoFamiliar.registrar.route}>
-                <TreeItem
-                  nodeId="8"
-                  label="Registrar Grupo Familiar"
-                  className={classes.nodeHijo}
-                />
-              </Link>
-              <Link href={EnlacesSidebar.grupoFamiliar.listado.route}>
-                <TreeItem
-                  nodeId="9"
-                  label="Listado"
-                  className={classes.nodeHijo}
-                />
-              </Link>
-            </TreeItem>
-            <TreeItem nodeId="5" label="Integrante">
-              <Link href={EnlacesSidebar.integrante.registrar.route}>
-                <TreeItem
-                  nodeId="10"
-                  label="Registrar Integrante"
-                  className={classes.nodeHijo}
-                />
-              </Link>
-              <Link href={EnlacesSidebar.integrante.listado.route}>
-                <TreeItem
-                  nodeId="11"
-                  label="Listado Integrante"
-                  className={classes.nodeHijo}
-                />
-              </Link>
-            </TreeItem>
-          </TreeItem>
-          <TreeItem nodeId="2" label="Pago" className={classes.nodePadre}>
-            <Link href={EnlacesSidebar.pago.registrar.route}>
-              <TreeItem
-                nodeId="6"
-                label="Ingresar Pago"
-                className={classes.nodeHijo}
-              />
-            </Link>
-            <Link href={EnlacesSidebar.pago.listado.route}>
-              <TreeItem
-                nodeId="7"
-                label="Listado de Pagos"
-                className={classes.nodeHijo}
-              />
-            </Link>
-
-            {/* <TreeItem nodeId="6" label="Material-UI">
-          <TreeItem nodeId="7" label="src">
-            <TreeItem nodeId="8" label="index.js" />
-            <TreeItem nodeId="9" label="tree-view.js" />
-          </TreeItem>
-        </TreeItem> */}
-          </TreeItem>
-          <TreeItem nodeId="3" label="Aporte" className={classes.nodePadre}>
-            <Link href={EnlacesSidebar.aporte.registrar.route}>
-              <TreeItem
-                nodeId="12"
-                label="Ingresar Aportacion"
-                className={classes.nodeHijo}
-              />
-            </Link>
-            <Link href={EnlacesSidebar.aporte.listado.route}>
-              <TreeItem
-                nodeId="13"
-                label="Listado de Aportaciones"
-                className={classes.nodeHijo}
-              />
-            </Link>
-
-            {/* <TreeItem nodeId="6" label="Material-UI">
-          <TreeItem nodeId="7" label="src">
-            <TreeItem nodeId="8" label="index.js" />
-            <TreeItem nodeId="9" label="tree-view.js" />
-          </TreeItem>
-        </TreeItem> */}
-          </TreeItem>
-        </TreeView>
+    <>
+      <Slide direction="right" in={openShowSideBar} mountOnEnter unmountOnExit>
+        <Box className={classes.root}>
+          <AcordionHeader icon={faUsers} label={"Grupo Familiar"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.grupoFamiliar.listado.route),
+                })
+              }
+              label={"Listado"}
+            />
+            <ItemSidebar
+              icon={faEdit}
+              eventClick={() =>
+                router.push({
+                  pathname: String(
+                    EnlacesSidebar.grupoFamiliar.registrar.route
+                  ),
+                })
+              }
+              label={"Ingresar"}
+            />
+          </AcordionHeader>
+          <AcordionHeader icon={faUser} label={"Integrantes"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.integrante.listado.route),
+                })
+              }
+              label={"Listado"}
+            />
+            <ItemSidebar
+              icon={faEdit}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.integrante.registrar.route),
+                })
+              }
+              label={"Registrar"}
+            />
+          </AcordionHeader>
+          <AcordionHeader icon={faIndustry} label={"Aporte"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.aporte.listado.route),
+                })
+              }
+              label={"Listado"}
+            />
+            <ItemSidebar
+              icon={faEdit}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.aporte.registrar.route),
+                })
+              }
+              label={"Registrar"}
+            />
+          </AcordionHeader>
+          <AcordionHeader icon={faDonate} label={"Pago"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.pago.listado.route),
+                })
+              }
+              label={"Listado"}
+            />
+            <ItemSidebar
+              icon={faEdit}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.pago.registrar.route),
+                })
+              }
+              label={"Registrar"}
+            />
+          </AcordionHeader>
+        </Box>
       </Slide>
-      <Box className={classes.box}>
-        <div className={classes.children}>{children}</div>
-      </Box>
-    </div>
+    </>
   );
 };
 

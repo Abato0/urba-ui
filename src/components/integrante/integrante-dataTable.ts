@@ -4,8 +4,12 @@ import ActionsCell from "../table/actions-cell";
 
 export const headIntegranteTable = Object.freeze([
   {
-    Header: "Cedula",
-    accessor: "cedula",
+    Header: "Tipo de identificacion",
+    accessor: "tipo_doc_identidad",
+  },
+  {
+    Header: "Numero de Identificacion",
+    accessor: "num_doc_identidad",
   },
   {
     Header: "Nombre",
@@ -16,16 +20,36 @@ export const headIntegranteTable = Object.freeze([
     accessor: "apellido",
   },
   {
+    Header: "Genero",
+    accessor: "genero",
+  },
+  {
     Header: "Fecha de Nacimiento",
     accessor: "fecha_nacimiento",
+  },
+  {
+    Header: "Telefono",
+    accessor: "telefono",
+  },
+  {
+    Header: "Email",
+    accessor: "emnail",
   },
   {
     Header: "Familia",
     accessor: "nombre_familiar",
   },
   {
-    Header: "Parentesco",
-    accessor: "parentesco",
+    Header: "Status",
+    accessor: "status",
+  },
+  {
+    Header: "Calle Principal",
+    accessor: "calle_principal",
+  },
+  {
+    Header: "Calle Interseccion",
+    accessor: "calle_interseccion",
   },
   {
     Header: "Manzana",
@@ -35,10 +59,7 @@ export const headIntegranteTable = Object.freeze([
     Header: "Villa",
     accessor: "villa",
   },
-  {
-    Header: "Calle",
-    accessor: "calle",
-  },
+
   {
     id: "actions",
     Cell: ActionsCell,

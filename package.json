@@ -32,6 +32,7 @@
     "js-cookie": "^3.0.1",
     "jspdf": "^2.5.0",
     "jspdf-autotable": "^3.5.23",
+    "material-ui-popup-state": "^2.0.0",
     "next": "12.0.7",
     "next-compose-plugins": "^2.2.1",
     "next-fonts": "^1.5.1",

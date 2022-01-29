@@ -43,7 +43,7 @@ export const usePagoFamiliar = (id: number) => {
 
 export interface IPagoGrupoFamiliarInput {
   idGrupoFamiliar?: number;
-  tipo_aporte?: string;
+  id_aporte?: number;
   fecha_pago?: string;
 }
 
@@ -70,16 +70,18 @@ export interface IDataListaPagoFilter {
 
 export const usePagoFamiliarFilters = (input: IPagoGrupoFamiliarInput) => {
   console.log("Input: ", input);
-  return useQuery<IPagoGrupoFamiliarFiltersFunc, IPagoGrupoFamiliarInput>(getPagoFamiliarFilter, {
-    variables: {
-      ...input,
-    },
-    skip: equals(input, {
-      fecha_pago: "",
-      idGrupoFamiliar: 0,
-      tipo_aporte: "",
-    }),
-    // skip: isEmpty(input),
-  });
+  return useQuery<IPagoGrupoFamiliarFiltersFunc, IPagoGrupoFamiliarInput>(
+    getPagoFamiliarFilter,
+    {
+      variables: {
+        ...input,
+      },
+      skip: equals(input, {
+        fecha_pago: "",
+        idGrupoFamiliar: 0,
+        id_aporte: 0,
+      }),
+      // skip: isEmpty(input),
+    }
+  );
 };
-

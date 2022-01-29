@@ -23,9 +23,15 @@ import { isNil, omit } from "ramda";
 import { FC, useCallback, useEffect, useState, useMemo } from "react";
 import * as yup from "yup";
 import { isNotNilOrEmpty, isNilOrEmpty } from "../../utils/is-nil-empty";
+import {
+  plantaEdificacion,
+  status_integrante,
+  tipoDocumentosIdentidad,
+} from "../core/input/dateSelect";
 import ModalAuth from "../core/input/dialog/modal-dialog";
+import FormControlDate from "../core/input/form-control-date";
+import FormControlHeader from "../core/input/form-control-select";
 import { listadoGrupoFamiliar } from "../grupo-familiar/grupo-familiar-typeDefs";
-import { parseStringDate } from "../utils/parseDate";
 import {
   IIntegranteVariables,
   usePostIntegranteMutation,
@@ -35,19 +41,16 @@ import {
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      // backgroundColor:"red",
       marginTop: theme.spacing(10),
       marginBottom: theme.spacing(10),
-      marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2),
+      marginLeft: theme.spacing(20),
+      marginRight: theme.spacing(20),
       padding: "60px",
-      minWidth: "320px",
+      // minWidth: "820px",
       borderRadius: "10px",
       textAlign: "center",
-      // width: "100%",
-      // height: "100%",
       backgroundColor: "white",
-      // marginTop: theme.spacing(2)
+      // width:"100px"
     },
     formControl: {
       // margin: theme.spacing(1),
@@ -56,6 +59,9 @@ const useStyles = makeStyles((theme) =>
     form: {
       display: "flex",
       flexDirection: "column",
+      justifyContent: "center",
+      alignContent: "center",
+      alignItems: "center",
       marginTop: theme.spacing(6),
     },
     textbox: {
@@ -92,35 +98,41 @@ const useStyles = makeStyles((theme) =>
 
 const initialValues = Object.freeze({
   idGrupoFamiliar: undefined,
-  cedula: "",
   nombre: "",
   apellido: "",
+  email: "",
   telefono: "",
-  parentesco: "",
+  status: "",
   fecha_nacimiento: new Date(),
+  tipo_doc_identidad: "",
+  num_doc_identidad: "",
+  piso_ocupa: "",
+  genero: "",
 });
 
 const validationSchema = yup.object().shape({
   //   id_aporte: yup.number().required(),
-  idGrupoFamiliar: yup.number().required(),
-  cedula: yup
+  idGrupoFamiliar: yup.number().required("Campo requerido"),
+  tipo_doc_identidad: yup.string().required("Campo requerido"),
+  num_doc_identidad: yup
     .string()
-    .required()
     .matches(/^[0-9]+$/, "Solo numeros")
-    .min(10, "El numero debe teenr 10 digitos exactamente")
-    .max(10, "El numero debe teenr 10 digitos exactamente")
-    .required("Requerido"),
-  nombre: yup.string().required(),
-  apellido: yup.string().required(),
+    .min(10, "La cantidad de digitos debe ser mayor o igual 10 ")
+    .max(15, "La cantidad de digitos debe ser menor o igual 15 ")
+    .required("Campo requerido"),
+  nombre: yup.string().required("Campo requerido"),
+  apellido: yup.string().required("Campo requerido"),
   telefono: yup
     .string()
-    .required()
-    .matches(/^[0-9]+$/, "Solo numeros")
-    .min(10, "El numero debe teenr 10 digitos exactamente")
-    .max(10, "El numero debe teenr 10 digitos exactamente")
-    .required("Requerido"),
-  parentesco: yup.string().required(),
-  fecha_nacimiento: yup.date().required(),
+    .matches(/^[0][0-9]+$/, "Solo numeros")
+    .min(10, "La cantidad de digitos debe ser igual 10 ")
+    .max(10, "La cantidad de digitos debe ser igual 10 ")
+    .required("Campo requerido"),
+  email: yup.string().email("Campo debe ser un correo electronico").nullable(),
+  status: yup.string().required("Campo requerido"),
+  piso_ocupa: yup.string().required("Campo requerido"),
+  genero: yup.string().required("Campo requerido"),
+  fecha_nacimiento: yup.date().required("Campo requerido"),
 });
 
 interface IProps {
@@ -132,11 +144,15 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
     return isNotNilOrEmpty(integrante)
       ? {
           idGrupoFamiliar: integrante?.grupoFamiliar.id,
-          cedula: integrante?.cedula,
+          tipo_doc_identidad: integrante?.tipo_doc_identidad,
+          num_doc_identidad: integrante?.num_doc_identidad,
           nombre: integrante?.nombre,
           apellido: integrante?.apellido,
           telefono: integrante?.telefono,
-          parentesco: integrante?.parentesco,
+          email: integrante?.email,
+          genero: integrante?.genero,
+          piso_ocupa: integrante?.piso_ocupa,
+          status: integrante?.status,
           fecha_nacimiento: isNotNilOrEmpty(integrante?.fecha_nacimiento)
             ? parseStringDate(integrante?.fecha_nacimiento!)
             : new Date(),
@@ -147,6 +163,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
   const [openModalMsj, setOpenModalMsj] = useState<boolean>(false);
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
+  const [errorModal, setErrorModal] = useState<boolean>(false);
 
   const {
     data: dataListaGrupoFamiliar,
@@ -174,12 +191,16 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
     async (
       {
         idGrupoFamiliar,
-        apellido,
-        cedula,
-        fecha_nacimiento,
         nombre,
-        parentesco,
+        apellido,
         telefono,
+        status,
+        fecha_nacimiento,
+        tipo_doc_identidad,
+        num_doc_identidad,
+        piso_ocupa,
+        genero,
+        email,
       },
       { setSubmitting }
     ) => {
@@ -187,72 +208,72 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
         if (
           isNotNilOrEmpty(idGrupoFamiliar) &&
           isNotNilOrEmpty(apellido) &&
-          isNotNilOrEmpty(cedula) &&
+          isNotNilOrEmpty(num_doc_identidad) &&
           isNotNilOrEmpty(fecha_nacimiento) &&
           isNotNilOrEmpty(nombre) &&
-          isNotNilOrEmpty(parentesco) &&
-          isNotNilOrEmpty(telefono)
+          isNotNilOrEmpty(status) &&
+          isNotNilOrEmpty(telefono) &&
+          isNotNilOrEmpty(tipo_doc_identidad) &&
+          isNotNilOrEmpty(piso_ocupa) &&
+          isNotNilOrEmpty(genero)
         ) {
-          // const { data, loding, error } = await mutate({
-          //   variable: isNotNilOrEmpty(integrante)
-          //     ? {
-          //         id: integrante?.id,
-          //         apellido,
-          //         cedula: String(cedula),
-          //         fecha_nacimiento,
-          //         nombre,
-          //         parentesco,
-          //         telefono,
-          //       }
-          //     : {
-          //         idGrupoFamiliar,
-          //         apellido,
-          //         cedula: String(cedula),
-          //         fecha_nacimiento,
-          //         nombre,
-          //         parentesco,
-          //         telefono,
-          //       },
-          // });
-          const { data, loading, error } = isNotNilOrEmpty(integrante)
+          const {
+            data: dataMutate,
+            loading: loadingMutate,
+            error,
+          } = isNotNilOrEmpty(integrante)
             ? await mutateUpdate({
                 variables: {
                   id: integrante?.id,
-                  apellido,
-                  cedula: String(cedula),
-                  fecha_nacimiento,
+                  idGrupoFamiliar,
                   nombre,
-                  parentesco,
+                  apellido,
                   telefono,
+                  status,
+                  fecha_nacimiento,
+                  tipo_doc_identidad,
+                  num_doc_identidad,
+                  piso_ocupa,
+                  genero,
+                  email,
                 },
               })
             : await mutate({
                 variables: {
                   idGrupoFamiliar,
-                  apellido,
-                  cedula: String(cedula),
-                  fecha_nacimiento,
                   nombre,
-                  parentesco,
+                  apellido,
                   telefono,
+                  status,
+                  fecha_nacimiento,
+                  tipo_doc_identidad,
+                  num_doc_identidad,
+                  piso_ocupa,
+                  genero,
+                  email,
                 },
               });
           if (
-            !loading &&
-            isNotNilOrEmpty(data) &&
-            isNotNilOrEmpty(data.PostIntegrante)
+            !loadingMutate &&
+            isNotNilOrEmpty(dataMutate) &&
+            isNotNilOrEmpty(dataMutate.PostIntegrante)
           ) {
-            const { message } = data.PostIntegrante;
-            setOpenModalMsj(true);
+            const { message } = dataMutate.PostIntegrante;
             setTitleModalMsj(message);
-          } else if (!loading && data === null) {
+            setErrorModal(false);
             setOpenModalMsj(true);
+
+            resetForm();
+          } else if (!loadingMutate && dataMutate === null) {
             setTitleModalMsj("Usuario no autorizado");
+            setErrorModal(true);
+            setOpenModalMsj(true);
           }
         }
       } catch (err: any) {
         console.log("error : ", err);
         setTitleModalMsj("Envio Fallido");
+        setErrorModal(true);
         setMensajeModalMsj("Integrante no ha sido guardado: " + err.message);
         setOpenModalMsj(true);
       }
@@ -260,39 +281,8 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
     },
     [integrante]
   );
-  // console.log("integrante:", integrante);
 
-  // const init = useMemo(() => {
-  //   console.log("integrante: ",integrante)
-  //   return isNotNilOrEmpty(integrante)
-  //     ? {
-  //         idGrupoFamiliar: integrante?.grupoFamiliar.id,
-  //         cedula: integrante?.cedula,
-  //         nombre: integrante?.nombre,
-  //         apellido: integrante?.apellido,
-  //         telefono: integrante?.telefono,
-  //         parentesco: integrante?.parentesco,
-  //         fecha_nacimiento: new Date(),
-  //       }
-  //     : initialValues;
-  // }, [integrante]);
-
-  // useEffect(() => {
-  //   if (isNotNilOrEmpty(integrante)) {
-  //     setFieldValue("idGrupoFamiliar", integrante?.grupoFamiliar.id);
-  //     setFieldValue("cedula", integrante?.cedula);
-  //     setFieldValue("nombre", integrante?.nombre);
-  //     setFieldValue("apellido", integrante?.apellido);
-  //     setFieldValue("telefono", integrante?.telefono);
-  //     setFieldValue("parentesco", integrante?.parentesco);
-  //     setFieldValue(
-  //       "fecha_nacimiento",
-  //       isNotNilOrEmpty(integrante?.fecha_nacimiento)
-  //         ? parseStringDate(integrante?.fecha_nacimiento!)
-  //         : new Date()
-  //     );
-  //   }
-  // }, [integrante]);
+  const resetValues = () => {};
 
   const {
     errors,
@@ -303,6 +293,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
     isSubmitting,
     touched,
     setFieldValue,
+    resetForm,
     values,
   } = useFormik({
     initialValues: init,
@@ -317,6 +308,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
           setOpenModal={setOpenModalMsj}
           title={titleModalMsj}
           message={mensajeModalMsj}
+          error={errorModal}
         />
       )}
       <Typography variant="h5">
@@ -330,7 +322,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
         className={classes.form}
       >
         <div className={classes.contentLastTextBox}>
-          <FormControl variant="outlined" className={classes.formControl}>
+          {/* <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel id="idGrupoFamiliar_label">
               Grupo Familiar del Deposito
             </InputLabel>
@@ -354,18 +346,73 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                   return <MenuItem value={id}>{nombre_familiar}</MenuItem>;
                 })}
             </Select>
-          </FormControl>
+          </FormControl> */}
+
+          <FormControlHeader
+            classes={classes}
+            handleBlur={handleBlur}
+            id="idGrupoFamiliar"
+            handleChange={handleChange}
+            labetTitulo=" Grupo Familiar del Deposito"
+            value={values.idGrupoFamiliar}
+          >
+            {!loadingListaGrupoFamiliar &&
+              dataGrupoFamiliar &&
+              dataGrupoFamiliar.map(({ id, nombre_familiar }) => {
+                return <MenuItem value={id}>{nombre_familiar}</MenuItem>;
+              })}
+          </FormControlHeader>
+          <FormControlHeader
+            classes={classes}
+            handleBlur={handleBlur}
+            id="status"
+            handleChange={handleChange}
+            labetTitulo="Condición de habitación"
+            value={values.status}
+          >
+            {status_integrante.map((status) => {
+              return (
+                <MenuItem key={"integrante-" + status} value={status}>
+                  {status}
+                </MenuItem>
+              );
+            })}
+          </FormControlHeader>
+        </div>
+
+        <div className={classes.contentLastTextBox}>
+          <FormControlHeader
+            classes={classes}
+            handleBlur={handleBlur}
+            id="tipo_doc_identidad"
+            handleChange={handleChange}
+            labetTitulo="Tipo de identificacion"
+            value={values.tipo_doc_identidad}
+          >
+            {tipoDocumentosIdentidad.map((tipo) => {
+              return (
+                <MenuItem key={"integrante-" + tipo} value={tipo}>
+                  {tipo}
+                </MenuItem>
+              );
+            })}
+          </FormControlHeader>
+
           <TextField
             className={classes.textbox}
-            id="cedula"
-            name="cedula"
-            label="Cedula del Integrante"
+            id="num_doc_identidad"
+            name="num_doc_identidad"
+            label="Numero de identidad"
             onChange={handleChange}
             onBlur={handleBlur}
-            // type={"number"}
-            value={values.cedula}
-            error={touched.cedula && isNotNilOrEmpty(errors.cedula)}
-            helperText={touched.cedula ? errors.cedula : undefined}
+            value={values.num_doc_identidad}
+            error={
+              touched.num_doc_identidad &&
+              isNotNilOrEmpty(errors.num_doc_identidad)
+            }
+            helperText={
+              touched.num_doc_identidad ? errors.num_doc_identidad : undefined
+            }
             required
           />
         </div>
@@ -395,12 +442,38 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
             required
           />
         </div>
+
+        <div className={classes.contentLastTextBox}>
+          <FormControlDate
+            classes={classes}
+            id="fecha_nacimiento"
+            disableFuture={true}
+            setFieldValue={setFieldValue}
+            error={errors.fecha_nacimiento}
+            touched={touched.fecha_nacimiento}
+            labelTitulo={"Ingrese Fecha de Nacimiento"}
+            value={values.fecha_nacimiento}
+          />
+
+          <FormControlHeader
+            classes={classes}
+            handleBlur={handleBlur}
+            id="genero"
+            handleChange={handleChange}
+            labetTitulo="Genero"
+            value={values.genero}
+          >
+            <MenuItem value={"masculino"}> Masculino</MenuItem>
+            <MenuItem value={"femenino"}> Femenino </MenuItem>
+            <MenuItem value={"otro"}> Otro</MenuItem>
+          </FormControlHeader>
+        </div>
         <div className={classes.contentLastTextBox}>
           <TextField
             className={classes.textbox}
             id="telefono"
             name="telefono"
-            label="Telefono "
+            label="Numero celular"
             onChange={handleChange}
             onBlur={handleBlur}
             value={values.telefono}
@@ -410,43 +483,37 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
           />
           <TextField
             className={classes.textbox}
-            id="parentesco"
-            name="parentesco"
-            label="Parentesco"
+            id="email"
+            name="email"
+            label="Email"
             onChange={handleChange}
             onBlur={handleBlur}
-            value={values.parentesco}
-            error={touched.parentesco && isNotNilOrEmpty(errors.parentesco)}
-            helperText={touched.parentesco ? errors.parentesco : undefined}
-            required
+            value={values.email}
+            type="email"
+            error={touched.email && isNotNilOrEmpty(errors.email)}
+            helperText={touched.email ? errors.email : undefined}
           />
         </div>
-        <div className={classes.contentLastTextBox}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              className={classes.textbox}
-              id="fecha_nacimiento"
-              name="fecha_nacimiento"
-              label="Ingrese Fecha de Nacimiento"
-              inputVariant="outlined"
-              format="MM/dd/yyyy"
-              value={values.fecha_nacimiento}
-              // onChange={handleChange}
-              onChange={(value) => setFieldValue("fecha_nacimiento", value)}
-              error={
-                touched.fecha_nacimiento &&
-                isNotNilOrEmpty(errors.fecha_nacimiento)
-              }
-              helperText={
-                touched.fecha_nacimiento ? errors.fecha_nacimiento : undefined
-              }
-              disableFuture={true}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-              }}
-              required
-            />
-          </MuiPickersUtilsProvider>
+        <div
+          style={{ marginRight: 245 }}
+          className={classes.contentLastTextBox}
+        >
+          <FormControlHeader
+            classes={classes}
+            handleBlur={handleBlur}
+            id="piso_ocupa"
+            handleChange={handleChange}
+            labetTitulo="Piso que ocupa"
+            value={values.piso_ocupa}
+          >
+            {plantaEdificacion.map((planta) => {
+              return (
+                <MenuItem key={"integrante-" + planta} value={planta}>
+                  {planta}
+                </MenuItem>
+              );
+            })}
+          </FormControlHeader>
         </div>
         <div className={classes.contentButtons}>
           <div></div>

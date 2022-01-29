@@ -26,17 +26,21 @@ import TablePaginations from "./table-paginations";
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
+      // marginTop: theme.spacing(2),
+      // marginBottom: theme.spacing(2),
       borderRadius: "12px",
-      maxWidth:"600px"
+      margin: "30px",
+      maxWidth:"800px"
     },
     contentButtons: {
       display: "flex",
       flexDirection: "row",
       justifyContent: "space-between",
+      // alignContent: "center",
+      alignItems: "center",
       width: "100%",
       padding: theme.spacing(2),
+      marginTop: theme.spacing(2),
     },
     button: {
       marginTop: theme.spacing(1),
@@ -47,6 +51,8 @@ const useStyles = makeStyles((theme) =>
       "&:hover": {
         backgroundColor: colors.blueGrey[800],
       },
+      minWidth: 100,
+      maxHeight: 40,
     },
     textBox: {
       backgroundColor: "",

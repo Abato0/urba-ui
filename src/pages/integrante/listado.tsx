@@ -2,9 +2,12 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 
 import ModalAuth from "../../components/core/input/dialog/modal-dialog";
 import {
+  IIntegranteFilterInput,
   IIntegranteVariables,
+  IListaIntegranteFilterQuery,
   IListaListadoIntegranteQuery,
   useListadoIntegranteQuery,
+  useListaIntergranteFilterQuery,
 } from "../../components/integrante/use-intergrante";
 import AppLayout from "../../components/layout/app-layout";
 import CardTable from "../../components/table/card-table";
@@ -13,7 +16,7 @@ import { isNilOrEmpty, isNotNilOrEmpty } from "../../utils/is-nil-empty";
 import useDebounce from "../../utils/useDebounce";
 import Fuse from "fuse.js";
 import XLSX from "xlsx";
-import { is, isNil, omit, pluck, prop } from "ramda";
+import { equals, is, isEmpty, isNil, omit, pluck, prop } from "ramda";
 import { headIntegranteTable } from "../../components/integrante/integrante-dataTable";
 import {
   colors,
@@ -28,6 +31,12 @@ import {
 } from "@material-ui/core";
 import { useListarGrupoFamiliar } from "../../components/grupo-familiar/use-grupo-familia";
 import { useRouter } from "next/router";
+import {
+  calleInterseccion,
+  CallesPrincipales,
+  manzanas,
+} from "../../components/core/input/dateSelect";
+import FormControlHeader from "../../components/core/input/form-control-select";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -53,6 +62,7 @@ const useStyles = makeStyles((theme) =>
       "&:hover": {
         backgroundColor: colors.blueGrey[800],
       },
+      width: theme.spacing(2),
     },
     textBox: {
       backgroundColor: "",
@@ -85,6 +95,14 @@ const useStyles = makeStyles((theme) =>
     },
     contenFilter: {
       backgroundColor: colors.grey[50],
+      marginBottom: theme.spacing(5),
+      marginTop: theme.spacing(2),
+      // display: "flex",
+      // alignItems: "center",
+      // justifyContent: "center",
+    },
+    contentForm: {
+      marginTop: theme.spacing(3),
     },
     // table: {
     //   backgroundColor: colors.grey[700],
@@ -93,10 +111,10 @@ const useStyles = makeStyles((theme) =>
 );
 
 const extractData = (
-  data: IListaListadoIntegranteQuery
+  data: IListaIntegranteFilterQuery
 ): IIntegranteVariablesNormalize[] => {
   return isNotNilOrEmpty(data)
-    ? VariablesNormalizeIntegrantes(data.ListaIntegrantes)
+    ? VariablesNormalizeIntegrantes(data.ListaIntegranteFilter)
     : [];
 };
 
@@ -107,7 +125,8 @@ const VariablesNormalizeIntegrantes = (data: IIntegranteVariables[]) => {
           ...input,
           nombre_familiar: grupoFamiliar.nombre_familiar,
           manzana: grupoFamiliar.manzana,
-          calle: grupoFamiliar.calle,
+          calle_principal: grupoFamiliar.calle_principal,
+          calle_interseccion: grupoFamiliar.calle_interseccion,
           villa: grupoFamiliar.villa,
         });
       })
@@ -116,16 +135,22 @@ const VariablesNormalizeIntegrantes = (data: IIntegranteVariables[]) => {
 
 export interface IIntegranteVariablesNormalize {
   id: number;
-  apellido: string;
-  cedula: string;
-  fecha_nacimiento: string;
+  tipo_doc_identidad: string;
+  num_doc_identidad: string;
   nombre: string;
-  parentesco: string;
+  apellido: string;
   telefono: string;
+  email: string;
+  genero: string;
+  fecha_nacimiento: string;
+  piso_ocupa: string;
+  status: string;
+
   nombre_familiar: string;
+  calle_principal: string;
+  calle_interseccion: string;
   manzana: string;
   villa: string;
-  calle: string;
 }
 
 const optionsFuse: Fuse.IFuseOptions<any> = {
@@ -136,13 +161,6 @@ const getRowId = prop("id");
 const ListadoIntegrante = () => {
   const classes = useStyles();
   const router = useRouter();
-  const { data, loading, error } = useListadoIntegranteQuery();
-
-  const {
-    data: dataListadoGrupoFamiliar,
-    loading: loadingListadoGrupoFamiliar,
-    error: errorListadoGrupoFamiliar,
-  } = useListarGrupoFamiliar();
 
   const [dataTable, setDataTable] = useState<IIntegranteVariablesNormalize[]>(
     []
@@ -152,14 +170,31 @@ const ListadoIntegrante = () => {
   const [openModalMsj, setOpenModalMsj] = useState<boolean>(false);
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
+  const [inputFilter, setInputFilter] = useState<IIntegranteFilterInput>({});
+
+  const {
+    data: dataListadoGrupoFamiliar,
+    loading: loadingListadoGrupoFamiliar,
+    error: errorListadoGrupoFamiliar,
+  } = useListarGrupoFamiliar();
+
+  const { data, loading, error } = useListaIntergranteFilterQuery(inputFilter);
 
   const [idGrupoFamiliarFilter, setIdGrupoFamiliarFilter] = useState<
     number | undefined
   >();
+  const [callePrincipalFilter, setCallePrincipalFilter] = useState<string>("");
+  const [cllInterseccionFilter, setClleInterseccionFilter] =
+    useState<string>("");
+  const [manzanaFilter, setManzanaFilter] = useState<string>("");
 
   useEffect(() => {
-    if (!loading && isNilOrEmpty(error)) setDataTable(extractData(data!));
-  }, [loading, error]);
+    if (!loading && !isNil(data) && isNil(error)) {
+      setDataTable(extractData(data!));
+      // console.log("extractData: ", extractData(data!));
+      // console.log("datas: ", data);
+    }
+  }, [loading, data]);
 
   const fuse = useMemo(() => {
     if (isNotNilOrEmpty(data)) {
@@ -187,26 +222,9 @@ const ListadoIntegrante = () => {
     }
   };
 
-  const onDelete = async ({ id }: any) => {
-    // try {
-    //   await mutate({ variables: { id: Number(id) } });
-    //   setTitleModalMsj("Grupo Familiar Eliminado");
-    //   setMensajeModalMsj(
-    //     "El Grupo Familiar seleccionado se ha eliminado correctamente"
-    //   );
-    //   setOpenModalMsj(true);
-    //   setDataTable(extractData(data));
-    // } catch (error) {
-    //   setTitleModalMsj("Grupo Familiar no Eliminado");
-    //   setMensajeModalMsj(
-    //     "Ha ocurrido un error. El Grupo Familiar seleccionado no se ha eliminado"
-    //   );
-    //   setOpenModalMsj(true);
-    // }
-    // console.log("data onDelete:", data, error);
-  };
+  const onDelete = async ({ id }: any) => {};
 
-  const ExportExcel = () => {
+  const ExportExcel = useCallback(() => {
     if (isNotNilOrEmpty(dataTable)) {
       const workSheet = XLSX.utils.json_to_sheet(dataTable);
       const workBook = XLSX.utils.book_new();
@@ -217,25 +235,37 @@ const ListadoIntegrante = () => {
         "Listado de Integrantes por Grupo Familiares.xlsx"
       );
     }
-  };
+  }, [dataTable]);
 
   const filtrar = useCallback(() => {
-    if (isNotNilOrEmpty(data) && isNotNilOrEmpty(idGrupoFamiliarFilter)) {
-      // const result = data?.ListaIntegrantes.map((integrante) => {
-      //   if (integrante.grupoFamiliar.id === idGrupoFamiliarFilter)
-      //     return integrante;
-      // });
+    setInputFilter({
+      idGrupoFamiliar:
+        equals(idGrupoFamiliarFilter, 0) || isNil(idGrupoFamiliarFilter)
+          ? undefined
+          : idGrupoFamiliarFilter,
+      calle_interseccion: isEmpty(cllInterseccionFilter)
+        ? undefined
+        : cllInterseccionFilter,
 
-      const result = data?.ListaIntegrantes.filter(
-        ({ grupoFamiliar }) => grupoFamiliar.id === idGrupoFamiliarFilter
-      );
-      setDataTable(VariablesNormalizeIntegrantes(result!));
-      // console.log("result: ", result);
-    }
-  }, [idGrupoFamiliarFilter]);
+      calle_principal: isEmpty(callePrincipalFilter)
+        ? undefined
+        : callePrincipalFilter,
+      manzana: isEmpty(manzanaFilter) ? undefined : manzanaFilter,
+    });
+  }, [
+    idGrupoFamiliarFilter,
+    cllInterseccionFilter,
+    callePrincipalFilter,
+    callePrincipalFilter,
+    manzanaFilter,
+  ]);
 
   const reset = useCallback(() => {
-    setDataTable(extractData(data!));
+    setIdGrupoFamiliarFilter(undefined);
+    setCallePrincipalFilter("");
+    setClleInterseccionFilter("");
+    setManzanaFilter("");
+    setInputFilter({});
   }, []);
 
   return (
@@ -281,18 +311,14 @@ const ListadoIntegrante = () => {
 
             <div className={classes.contenFilter}>
               <div className={classes.contentButtons}>
-                <div>
+                <div className={classes.contentForm}>
                   <FormControl variant="filled" className={classes.formControl}>
                     <InputLabel id="idGrupoFamiliar_label">
                       Grupo Familiar
                     </InputLabel>
                     <Select
                       className={classes.selectFilter}
-                      // variant="outlined"
                       labelId="idGrupoFamiliar_label"
-                      // label={<p>Grupo Familiar</p>}
-                      id="idGrupoFamiliar"
-                      name="idGrupoFamiliar"
                       value={idGrupoFamiliarFilter}
                       onChange={(e) =>
                         setIdGrupoFamiliarFilter(e.target.value as number)
@@ -310,7 +336,84 @@ const ListadoIntegrante = () => {
                         )}
                     </Select>
                   </FormControl>
+
+                  <FormControl variant="filled" className={classes.formControl}>
+                    <InputLabel id="callerPrincipal_label">
+                      Calle Principal
+                    </InputLabel>
+                    <Select
+                      className={classes.selectFilter}
+                      labelId="callerPrincipal_label"
+                      value={callePrincipalFilter}
+                      onChange={(e) =>
+                        setCallePrincipalFilter(e.target.value as string)
+                      }
+                    >
+                      <MenuItem value={""}> - Deseleccionar - </MenuItem>
+                      {CallesPrincipales.map((calle) => {
+                        return (
+                          <MenuItem
+                            key={"integranteListado" + calle}
+                            value={calle}
+                          >
+                            {calle}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                  <FormControl variant="filled" className={classes.formControl}>
+                    <InputLabel id="callerInterseccion_label">
+                      Calle Interseccion
+                    </InputLabel>
+                    <Select
+                      className={classes.selectFilter}
+                      labelId="callerInterseccion_label"
+                      value={cllInterseccionFilter}
+                      onChange={(e) =>
+                        setClleInterseccionFilter(e.target.value as string)
+                      }
+                    >
+                      <MenuItem value={""}> - Deseleccionar - </MenuItem>
+                      {calleInterseccion.map((calle) => {
+                        return (
+                          <MenuItem
+                            key={"integranteListado" + calle}
+                            value={calle}
+                          >
+                            {calle}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                  <FormControl variant="filled" className={classes.formControl}>
+                    <InputLabel id="manzana_label">Manzana</InputLabel>
+                    <Select
+                      className={classes.selectFilter}
+                      labelId="manzana_label"
+                      value={manzanaFilter}
+                      onChange={(e) =>
+                        setManzanaFilter(e.target.value as string)
+                      }
+                    >
+                      <MenuItem value={""}> - Deseleccionar - </MenuItem>
+                      {manzanas.map((manzana) => {
+                        return (
+                          <MenuItem
+                            key={"integranteListado" + manzana}
+                            value={manzana}
+                          >
+                            {manzana}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
                 </div>
+                <div></div>
+
+                <div></div>
 
                 <div>
                   <Button className={classes.button} onClick={filtrar}>

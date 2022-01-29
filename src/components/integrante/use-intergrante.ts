@@ -6,7 +6,9 @@ import {
   listadoIntegrante,
   getIntegrante,
   updateIntegrante,
+  listaIntergranteFilter,
 } from "./integrante-typedefs";
+import { equals } from "ramda";
 
 export const usePostIntegranteMutation = () => {
   const [mutate, { data, loading, error }] = useMutation<any, any>(
@@ -26,12 +28,16 @@ export const useUpdateIntegranteMutation = () => {
 
 export interface IIntegranteVariables {
   id: number;
-  apellido: string;
-  cedula: string;
-  fecha_nacimiento: string;
+  tipo_doc_identidad: string;
+  num_doc_identidad: string;
   nombre: string;
-  parentesco: string;
+  apellido: string;
   telefono: string;
+  email: string;
+  genero: string;
+  fecha_nacimiento: string;
+  piso_ocupa: string;
+  status: string;
   grupoFamiliar: IListadoGrupoFamiliarVariables;
 }
 
@@ -50,6 +56,13 @@ export interface IGetIntegranteQuery {
   GetIntegrante: IIntegranteVariables;
 }
 
+export interface IIntegranteFilterInput {
+  idGrupoFamiliar?: number;
+  calle_principal?: string;
+  calle_interseccion?: string;
+  manzana?: string;
+}
+
 export const useGetIntegranteQuery = (id: number) => {
   return useQuery<IGetIntegranteQuery>(getIntegrante, {
     variables: { id },
@@ -57,4 +70,27 @@ export const useGetIntegranteQuery = (id: number) => {
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
   });
+};
+
+export interface IListaIntegranteFilterQuery {
+  ListaIntegranteFilter: IIntegranteVariables[];
+}
+
+export const useListaIntergranteFilterQuery = (
+  input: IIntegranteFilterInput
+) => {
+  return useQuery<IListaIntegranteFilterQuery, IIntegranteFilterInput>(
+    listaIntergranteFilter,
+    {
+      variables: {
+        ...input,
+      },
+      skip: equals(input, {
+        calle_interseccion: "",
+        idGrupoFamiliar: 0,
+        calle_principal: "",
+        manzana: "",
+      }),
+    }
+  );
 };

@@ -44,6 +44,11 @@ export const headPagoTable = Object.freeze([
     accessor: "monto",
   },
   {
+    Header: "Estado",
+    accessor: "status",
+  },
+
+  {
     id: "actions",
     Cell: VisualizarActionsCell,
     padding: "none",

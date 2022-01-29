@@ -13,44 +13,47 @@ import {
   TextField,
   Paper,
   Button,
+  ListItem,
+  List,
+  Fab,
 } from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
+import AddIcon from "@material-ui/icons/Add";
+import ImageIcon from "@material-ui/icons/Image";
 import { useFormik } from "formik";
-import { dropLast, isEmpty, isNil, join, split, tail } from "ramda";
+import { isNil, join } from "ramda";
 import React from "react";
 import { useDropzone } from "react-dropzone";
 import * as yup from "yup";
-import {
-  isNotNilOrEmpty,
-  isNilOrEmpty,
-  isNotNil,
-} from "../../utils/is-nil-empty";
+import { isNotNilOrEmpty, isNilOrEmpty } from "../../utils/is-nil-empty";
 import { IAporteVariables, useListarAporteQuery } from "../aporte/use-aporte";
 import ModalAuth from "../core/input/dialog/modal-dialog";
 import { listadoGrupoFamiliar } from "../grupo-familiar/grupo-familiar-typeDefs";
 import { usePostPago } from "./use-pago";
-import DateFnsUtils from "@date-io/date-fns";
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
 import { grey } from "@material-ui/core/colors";
-import { parseStringDate } from "../utils/parseDate";
+import { rangoFechaAportePagoService } from "../../utils/parseDate";
+import FormControlHeader from "../core/input/form-control-select";
+import FormControlDate from "../core/input/form-control-date";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       // backgroundColor:"red",
+      display: "flex",
+      flexDirection: "column",
       marginTop: theme.spacing(10),
       marginBottom: theme.spacing(10),
       marginLeft: theme.spacing(2),
       marginRight: theme.spacing(2),
       padding: "60px",
-      minWidth: "320px",
+      // minWidth: 400,
       borderRadius: "10px",
       textAlign: "center",
       // width: "100%",
       // height: "100%",
       backgroundColor: "white",
+      justifyContent: "center",
+      alignItems: "center",
       // marginTop: theme.spacing(2)
     },
     formControl: {
@@ -60,6 +63,9 @@ const useStyles = makeStyles((theme) =>
     form: {
       display: "flex",
       flexDirection: "column",
+      justifyContent: "center",
+      alignContent: "center",
+      alignItems: "center",
       marginTop: theme.spacing(6),
     },
     textbox: {
@@ -71,10 +77,14 @@ const useStyles = makeStyles((theme) =>
       width: theme.spacing(60),
     },
     dropzone: {
+      display: "flex",
+      justifyContent: "center",
+      // alignItems: "center",
       padding: theme.spacing(4),
       minWidth: 500,
       backgroundColor: grey[700],
       color: "white",
+      maxWidth: 700,
     },
     button: {
       backgroundColor: colors.blueGrey[900],
@@ -91,15 +101,43 @@ const useStyles = makeStyles((theme) =>
       width: "100%",
       marginTop: theme.spacing(5),
     },
+    title: {
+      // display: "flex",
+      // flexDirection: "row",
+      width: "100%",
+      // backgroundColor: "red"
+    },
+    list: {
+      display: "flex",
+      flexDirection: "column",
+      width: "100%",
+
+      alignItems: "center",
+      justifyContent: "center",
+      justifyItems: "center",
+    },
+    listItem: {
+      width: "100%",
+      display: "flex",
+      justifyContent: "center",
+    },
+    containerLabelPago: {
+      marginTop: 20,
+      padding: 15,
+      color: "white",
+      background: colors.green[800],
+    },
+    labelMonto: {
+      fontWeight: theme.typography.pxToRem(60),
+      fontFamily: theme.typography.fontWeightBold,
+    },
   })
 );
 
 const initialValues = Object.freeze({
   idGrupoFamiliar: undefined,
   descripcion: "",
-  monto: 0,
   id_aporte: undefined,
-  fecha_pago: "",
   cod_recibo: "",
   fecha_recibo: new Date(),
 });
@@ -108,22 +146,32 @@ const validationSchema = yup.object().shape({
   id_aporte: yup.number().required(),
   idGrupoFamiliar: yup.number().required(),
   descripcion: yup.string(),
-  monto: yup.number().required(),
-  fecha_pago: yup.string().required(),
   cod_recibo: yup.string().required(),
   fecha_recibo: yup.date().required(),
 });
 
+interface IPagoMes {
+  f_pago: string;
+  monto: number;
+}
+
 export const PagoFormIngresar = () => {
   const [file, setFile] = React.useState<File>();
+
+  const [pagoMensual, setPagoMensual] = React.useState<IPagoMes[]>([]);
+  const [addFechaPago, setAddFechaPago] = React.useState<string | undefined>(
+    ""
+  );
+  const [addMonto, setAddMonto] = React.useState<number | undefined>();
+
   const onSubmit = React.useCallback(
     async (
       {
         idGrupoFamiliar,
         descripcion,
-        monto,
+        // monto,
         id_aporte,
-        fecha_pago,
+        // fecha_pago,
         cod_recibo,
         fecha_recibo,
       },
@@ -132,21 +180,26 @@ export const PagoFormIngresar = () => {
       try {
         if (
           isNotNilOrEmpty(idGrupoFamiliar) &&
-          isNotNilOrEmpty(monto) &&
+          isNotNilOrEmpty(pagoMensual) &&
           isNotNilOrEmpty(id_aporte) &&
-          isNotNilOrEmpty(fecha_pago) &&
+          // isNotNilOrEmpty(fecha_pago) &&
           isNotNilOrEmpty(cod_recibo) &&
           isNotNilOrEmpty(fecha_recibo) &&
           isNotNilOrEmpty(file)
         ) {
+          const ArrPagoMes = pagoMensual.map(({ f_pago, monto }) => {
+            return `${f_pago},${monto}`;
+          });
+          const pagoMes = join(";", ArrPagoMes);
           const pago = {
             idGrupoFamiliar: idGrupoFamiliar,
             idAporte: id_aporte,
             imagen_recibo: file!,
             fecha_subida: new Date(),
-            fecha_pago: fecha_pago,
+            pagoMes: pagoMes,
+            // fecha_pago: fecha_pago,
             descripcion: descripcion,
-            monto: monto,
+            // monto: monto,
             cod_recibo: cod_recibo,
             fecha_recibo: fecha_recibo,
           };
@@ -159,11 +212,15 @@ export const PagoFormIngresar = () => {
             isNotNilOrEmpty(data.PostPago)
           ) {
             const { message } = data.PostPago;
+            setErrorModal(false);
             setOpenModalMsj(true);
             setTitleModalMsj(message);
+            setPagoMensual([]);
+            resetForm();
           } else if (!loading && data === null) {
             setOpenModalMsj(true);
             setTitleModalMsj("Usuario no autorizado");
+            setErrorModal(true);
           }
         }
       } catch (err) {
@@ -171,6 +228,7 @@ export const PagoFormIngresar = () => {
         setTitleModalMsj("Pago Fallido");
         setMensajeModalMsj("Pago no se ha realizado el pago: " + err.message);
         setOpenModalMsj(true);
+        setErrorModal(true);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
@@ -183,6 +241,7 @@ export const PagoFormIngresar = () => {
     handleReset,
     handleSubmit,
     setFieldValue,
+    resetForm,
     isSubmitting,
     touched,
     values,
@@ -211,6 +270,8 @@ export const PagoFormIngresar = () => {
   const [openModalMsj, setOpenModalMsj] = React.useState<boolean>(false);
   const [titleModalMsj, setTitleModalMsj] = React.useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = React.useState<string>("");
+  const [errorModal, setErrorModal] = React.useState<boolean>(false);
+
   const [aporteSeleccionado, setAporteSeleccionado] =
     React.useState<IAporteVariables>();
 
@@ -235,7 +296,6 @@ export const PagoFormIngresar = () => {
   React.useEffect(() => {
     if (!loadingListarAporte && !isNil(dataListarAporte)) {
       setListaAporte(dataListarAporte.ListaAportes);
-      // setFieldValue("monto",)
       console.log("data: ", dataListarAporte.ListaAportes);
     }
   }, [loadingListarAporte]);
@@ -254,33 +314,45 @@ export const PagoFormIngresar = () => {
     const acum: any[] = [];
     for (let index = 0; index < arrString.length; index++) {
       acum.push(
-        <MenuItem value={arrString[index]}>
-          {join("-", dropLast(1, split("-", arrString[index])))}
-        </MenuItem>
+        <MenuItem value={arrString[index]}>{arrString[index]}</MenuItem>
       );
     }
     return acum;
   };
 
-  const rangoFechaAportePagoService = (aporte: IAporteVariables) => {
-    const { fecha_inicio, fecha_fin } = aporte;
-    const arrDate = eachMonthOfInterval({
-      start: parseStringDate(fecha_inicio)!,
-      end: parseStringDate(fecha_fin)!,
-    });
-
-    const arrDateString = arrDate.map((date) => {
-      return lightFormat(date, "yyyy-MM-dd");
-    });
-    return arrDateString;
-  };
-
   const arrFecha = React.useMemo(() => {
     if (isNotNilOrEmpty(aporteSeleccionado)) {
-      console.log("arrFecha: ");
       return rangoFechaAportePagoService(aporteSeleccionado!);
     }
   }, [aporteSeleccionado]);
+
+  const agregarPagoMes = React.useCallback(() => {
+    const result = pagoMensual.find(({ f_pago }) => f_pago === addFechaPago);
+    if (
+      isNil(result) &&
+      isNotNilOrEmpty(addMonto) &&
+      isNotNilOrEmpty(addFechaPago)
+    ) {
+      setPagoMensual([
+        ...pagoMensual,
+        { f_pago: addFechaPago!, monto: addMonto! },
+      ]);
+      setAddFechaPago(undefined);
+      setAddMonto(0);
+    }
+  }, [pagoMensual, addMonto, addFechaPago]);
+
+  const eliminarPago = React.useCallback(
+    (fecha_recibida: string) => {
+      const verif = pagoMensual.filter(
+        ({ f_pago }) => f_pago !== fecha_recibida
+      );
+      setPagoMensual(verif);
+      // setAddFechaPago(undefined);
+      // setAddMonto(0);
+    },
+    [pagoMensual, addMonto, addFechaPago]
+  );
 
   const classes = useStyles();
   return (
@@ -291,9 +363,20 @@ export const PagoFormIngresar = () => {
           setOpenModal={setOpenModalMsj}
           title={titleModalMsj}
           message={mensajeModalMsj}
+          error={errorModal}
         />
       )}
-      <Typography variant="h5"> Ingreso de Pago</Typography>
+      <Typography variant="h5" className={classes.title}>
+        {" "}
+        Ingreso de Pago
+      </Typography>
+      {isNotNilOrEmpty(aporteSeleccionado) && (
+        <Paper className={classes.containerLabelPago}>
+          <Typography className={classes.labelMonto} variant="overline">
+            Monto a pagar : ${aporteSeleccionado?.valor_mensual}{" "}
+          </Typography>
+        </Paper>
+      )}
       <form
         action="#"
         onSubmit={handleSubmit}
@@ -301,81 +384,38 @@ export const PagoFormIngresar = () => {
         className={classes.form}
       >
         <div>
-          <FormControl className={classes.formControl}>
-            <InputLabel id="idGrupoFamiliar_label">
-              Grupo Familiar del Deposito
-            </InputLabel>
-            <Select
-              labelId="idGrupoFamiliar_label"
-              id="idGrupoFamiliar"
-              name="idGrupoFamiliar"
-              value={values.idGrupoFamiliar}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={
-                touched.idGrupoFamiliar &&
-                isNotNilOrEmpty(errors.idGrupoFamiliar)
-              }
-              required
-            >
-              {!loading &&
-                dataGrupoFamiliar &&
-                dataGrupoFamiliar.map(({ id, nombre_familiar }) => {
-                  return <MenuItem value={id}>{nombre_familiar}</MenuItem>;
-                })}
-            </Select>
-          </FormControl>
-          <FormControl className={classes.formControl}>
-            <InputLabel id="aporte_label">Seleccione Aporte</InputLabel>
-            <Select
-              labelId="aporte_label"
-              id="id_aporte"
-              name="id_aporte"
-              value={values.id_aporte}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-            >
-              {dataListaAporte &&
-                dataListaAporte.map(({ id, nombre_aporte, tipo_aporte }) => {
-                  return (
-                    <MenuItem
-                      value={id}
-                    >{`${nombre_aporte} - ${tipo_aporte}`}</MenuItem>
-                  );
-                })}
-            </Select>
-          </FormControl>
-        </div>
-        <div>
-          <FormControl className={classes.formControl}>
-            <InputLabel id="fecha_pago_label">Seleccione Fecha</InputLabel>
-            <Select
-              labelId="fecha_pago_label"
-              id="fecha_pago"
-              name="fecha_pago"
-              value={values.fecha_pago}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-            >
-              {isNotNilOrEmpty(arrFecha) && MenuItemArrFecha(arrFecha!)}
-            </Select>
-          </FormControl>
-          <TextField
-            className={classes.textbox}
-            id="monto"
-            name="monto"
-            label="Monto del Deposito"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            type={"number"}
-            value={values.monto}
-            error={touched.monto && isNotNilOrEmpty(errors.monto)}
-            helperText={touched.monto ? errors.monto : undefined}
-            disabled={isNotNilOrEmpty(aporteSeleccionado?.valor_mensual)}
-            required
-          />
+          <FormControlHeader
+            classes={classes}
+            handleBlur={handleBlur}
+            id="idGrupoFamiliar"
+            handleChange={handleChange}
+            labetTitulo=" Grupo Familiar del Deposito"
+            value={values.idGrupoFamiliar}
+          >
+            {!loading &&
+              dataGrupoFamiliar &&
+              dataGrupoFamiliar.map(({ id, nombre_familiar }) => {
+                return <MenuItem value={id}>{nombre_familiar}</MenuItem>;
+              })}
+          </FormControlHeader>
+
+          <FormControlHeader
+            classes={classes}
+            handleBlur={handleBlur}
+            id="id_aporte"
+            handleChange={handleChange}
+            labetTitulo="Seleccione Aporte"
+            value={values.id_aporte}
+          >
+            {dataListaAporte &&
+              dataListaAporte.map(({ id, nombre_aporte, tipo_aporte }) => {
+                return (
+                  <MenuItem
+                    value={id}
+                  >{`${nombre_aporte} - ${tipo_aporte}`}</MenuItem>
+                );
+              })}
+          </FormControlHeader>
         </div>
 
         <div>
@@ -391,30 +431,17 @@ export const PagoFormIngresar = () => {
             helperText={touched.cod_recibo ? errors.cod_recibo : undefined}
             required
           />
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              className={classes.textbox}
-              id="fecha_recibo"
-              name="fecha_recibo"
-              label="Ingrese Fecha del Recibo"
-              inputVariant="outlined"
-              format="MM/dd/yyyy"
-              value={values.fecha_recibo}
-              // onChange={handleChange}
-              onChange={(value) => setFieldValue("fecha_recibo", value)}
-              error={
-                touched.fecha_recibo && isNotNilOrEmpty(errors.fecha_recibo)
-              }
-              helperText={
-                touched.fecha_recibo ? errors.fecha_recibo : undefined
-              }
-              disableFuture={true}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-              }}
-              required
-            />
-          </MuiPickersUtilsProvider>
+
+          <FormControlDate
+            classes={classes}
+            id="fecha_recibo"
+            disableFuture={true}
+            setFieldValue={setFieldValue}
+            error={errors.fecha_recibo}
+            touched={touched.fecha_recibo}
+            labelTitulo={"Ingrese Fecha del Recibo"}
+            value={values.fecha_recibo}
+          />
         </div>
 
         <div>
@@ -431,8 +458,69 @@ export const PagoFormIngresar = () => {
           />
         </div>
 
+        <div>
+          <FormControl variant="filled" className={classes.formControl}>
+            <InputLabel id="fecha_pago_label">Seleccione Fecha</InputLabel>
+            <Select
+              labelId="fecha_pago_label"
+              value={addFechaPago}
+              onChange={(e) => setAddFechaPago(e.target.value as string)}
+            >
+              {isNotNilOrEmpty(arrFecha) && MenuItemArrFecha(arrFecha!)}
+            </Select>
+          </FormControl>
+
+          <TextField
+            className={classes.textbox}
+            label="Monto del Deposito"
+            onChange={(e) => setAddMonto(Number(e.target.value))}
+            type={"number"}
+            value={addMonto}
+          />
+
+          <Fab
+            onClick={agregarPagoMes}
+            size="small"
+            color="primary"
+            aria-label="add"
+            style={{ marginTop: "12px" }}
+          >
+            <AddIcon />
+          </Fab>
+        </div>
+
+        <Paper style={{ margin: "20px" }}>
+          {isNotNilOrEmpty(pagoMensual) && (
+            <List className={classes.list}>
+              {pagoMensual.map(({ f_pago, monto }) => {
+                return (
+                  <ListItem style={{ width: "100%" }} alignItems="center">
+                    <div className={classes.listItem}>
+                      <Typography variant="overline">
+                        {`Fecha: ${f_pago} | Monto: $${monto}`}{" "}
+                      </Typography>
+
+                      <Fab
+                        // onClick={agregarPagoMes}
+                        size="small"
+                        color="primary"
+                        aria-label="Delete"
+                        onClick={() => eliminarPago(f_pago)}
+                        style={{ marginLeft: "20px" }}
+                      >
+                        <DeleteIcon />
+                      </Fab>
+                    </div>
+                  </ListItem>
+                );
+              })}
+            </List>
+          )}
+        </Paper>
+
         <Paper {...getRootProps()} className={classes.dropzone}>
           <input {...getInputProps()} />
+          <ImageIcon fontSize="large" />
           <Typography variant="overline">
             {"Haga click en este Cuadro para subir su imagen del recibo"}
           </Typography>

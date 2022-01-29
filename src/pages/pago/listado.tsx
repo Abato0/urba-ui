@@ -54,10 +54,14 @@ import { isNotNilOrEmpty } from "../../utils/is-nil-empty";
 import { useQuery } from "@apollo/client";
 import { listadoGrupoFamiliar } from "../../components/grupo-familiar/grupo-familiar-typeDefs";
 import ModalImagen from "../../components/core/input/dialog/modal-ver-imagen";
-import { useArrIntervaloFechaAporte } from "../../components/aporte/use-aporte";
+import {
+  useArrIntervaloFechaAporte,
+  useListarAporteQuery,
+} from "../../components/aporte/use-aporte";
 import XLSX from "xlsx";
 import { useListarGrupoFamiliar } from "../../components/grupo-familiar/use-grupo-familia";
 import { grey } from "@material-ui/core/colors";
+import { rangoFechaAportePagoService } from "../../utils/parseDate";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -65,15 +69,18 @@ const useStyles = makeStyles((theme) =>
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
       borderRadius: "12px",
+      // width: 80
+      margin:"30px"
     },
     contentButtons: {
       display: "flex",
       flexDirection: "row",
       justifyContent: "space-between",
+      // alignContent: "center",
+      alignItems: "center",
       width: "100%",
       padding: theme.spacing(2),
-      marginTop: theme.spacing(2)
-      
+      marginTop: theme.spacing(2),
     },
     button: {
       marginTop: theme.spacing(1),
@@ -84,6 +91,8 @@ const useStyles = makeStyles((theme) =>
       "&:hover": {
         backgroundColor: colors.blueGrey[800],
       },
+      minWidth:100,
+      maxHeight:40
     },
     textBox: {
       backgroundColor: "",
@@ -139,20 +148,19 @@ interface IDataTablePagoListado {
 }
 
 const extractData = (data: IDataListaPagoFilter[]) => {
-  const result: IDataTablePagoListado[] = data.map(
-    ({ id, pago, aporte, grupoFamiliar }) => {
-      return omit(["__typename"], {
-        id,
-        nombre_familiar: grupoFamiliar.nombre_familiar,
-        ...pago,
-        ...aporte,
+  console.log("data de la funcion extracData: ", data);
+  return data.map(({ id, pago, aporte, grupoFamiliar }, index) => {
+    return {
+      ...pago,
+      ...aporte,
+      id,
+      nombre_familiar: grupoFamiliar.nombre_familiar,
 
-        // nombre_aporte: aporte.nombre_aporte,
-        // tipo_aporte: aporte.tipo_aporte,
-      });
-    }
-  );
-  return result;
+      // nombre_aporte: aporte.nombre_aporte,
+      // tipo_aporte: aporte.tipo_aporte,
+    };
+  });
+
   // const allPagoBodyTable: AllPagoTable[] = [];
   // data.forEach(({ id, pago, grupoFamiliar }) => {
   //   allPagoBodyTable.push({
@@ -173,7 +181,6 @@ export const calcularMonto = (data: AllPagoTable[]) => {
   }
   return acum;
 };
-const getRowId = prop("id");
 
 const ListadoPago = () => {
   const classes = useStyles();
@@ -185,17 +192,25 @@ const ListadoPago = () => {
   const [idPago, setIdPago] = React.useState<number>(0);
   const [base64, setBase64] = React.useState<string>("");
 
-  const [tipoAporteFilter, setTipoAporteFilter] = React.useState<string>("");
+  const [tipoAporteFilter, setTipoAporteFilter] = React.useState<
+    number | undefined
+  >();
   const [idGrupoFamiliarFilter, setIdGrupoFamiliarFilter] = React.useState<
     number | undefined
   >();
-  const [fechaAporteFilter, setFechaAporteFilter] = React.useState<string>("");
 
+  const [fechaAporteFilter, setFechaAporteFilter] = React.useState<string>("");
   const [filterInput, setFilterInput] = React.useState<IPagoGrupoFamiliarInput>(
     {}
   );
 
   const { data, loading, error } = usePagoFamiliarFilters(filterInput);
+
+  const {
+    data: dataAporte,
+    loading: loadingAporte,
+    error: erroAporte,
+  } = useListarAporteQuery();
 
   const {
     data: dataListadoGrupoFamiliar,
@@ -269,7 +284,7 @@ const ListadoPago = () => {
 
       //   console.log("data: ", extractData(data.ListaPagos));
     }
-    console.log("data: ", data);
+    // console.log("data: ", data);
   }, [loading, data]);
 
   React.useEffect(() => {
@@ -291,6 +306,14 @@ const ListadoPago = () => {
     }
   }, [dataPagoFamiliar, loadingPagoFamiliar]);
 
+  // const getRowId = React.useMemo(() => {
+  //   return isNotNilOrEmpty(tipoAporteFilter) &&
+  //     isNotNilOrEmpty(fechaAporteFilter)
+  //     ? prop("nombre_familiar")
+  //     : prop("id");
+  // }, [tipoAporteFilter, fechaAporteFilter]);
+
+  const getRowId = prop("id");
   const {
     getTableProps,
     getTableBodyProps,
@@ -304,6 +327,7 @@ const ListadoPago = () => {
     {
       columns: headPagoTable,
       data: allPagoData,
+      getRowId,
       onSeeImg,
     },
     usePagination
@@ -326,10 +350,13 @@ const ListadoPago = () => {
         equals(idGrupoFamiliarFilter, 0) || isNil(idGrupoFamiliarFilter)
           ? undefined
           : idGrupoFamiliarFilter,
-      tipo_aporte: isEmpty(tipoAporteFilter) ? undefined : tipoAporteFilter,
+      id_aporte: isNil(tipoAporteFilter) ? undefined : Number(tipoAporteFilter),
     });
   };
   const cancelFiltrar = () => {
+    setIdGrupoFamiliarFilter(0);
+    setTipoAporteFilter(0);
+    setFechaAporteFilter("");
     setFilterInput({});
   };
 
@@ -407,17 +434,54 @@ const ListadoPago = () => {
               </FormControl>
 
               <FormControl variant="filled" className={classes.formControl}>
-                <InputLabel id="tipo_aporter_label">Tipo de Aporte</InputLabel>
+                <InputLabel id="tipo_aporter_label">Aporte</InputLabel>
                 <Select
                   labelId="tipo_aporter_label"
                   value={tipoAporteFilter}
                   onChange={(e) =>
-                    setTipoAporteFilter(e.target.value as string)
+                    setTipoAporteFilter(e.target.value as number)
                   }
                 >
                   <MenuItem value="">- Deseleccionar -</MenuItem>
-                  <MenuItem value="Implementacion">Implementacion</MenuItem>
-                  <MenuItem value="Mantenimiento">Mantenimiento</MenuItem>;
+                  {!loadingAporte &&
+                    isNotNilOrEmpty(dataAporte) &&
+                    dataAporte?.ListaAportes.map(
+                      ({ id, nombre_aporte, tipo_aporte }) => {
+                        return (
+                          <MenuItem key={"listadoPago-" + id} value={id}>
+                            {`${nombre_aporte} - ${tipo_aporte}`}
+                          </MenuItem>
+                        );
+                      }
+                    )}
+                </Select>
+              </FormControl>
+
+              <FormControl variant="filled" className={classes.formControl}>
+                <InputLabel id="fecha_aporte_label">Fecha</InputLabel>
+                <Select
+                  labelId="fecha_aporte_label"
+                  value={tipoAporteFilter}
+                  onChange={(e) =>
+                    setFechaAporteFilter(e.target.value as string)
+                  }
+                >
+                  <MenuItem value="">- Deseleccionar -</MenuItem>
+                  {!loadingAporte &&
+                    isNotNilOrEmpty(dataAporte) &&
+                    isNotNilOrEmpty(tipoAporteFilter) &&
+                    tipoAporteFilter !== 0 &&
+                    rangoFechaAportePagoService(
+                      dataAporte?.ListaAportes.find(
+                        ({ id }) => id === tipoAporteFilter
+                      )!
+                    ).map((date) => {
+                      return (
+                        <MenuItem key={"listadoPagoFecha-" + date} value={date}>
+                          {date}
+                        </MenuItem>
+                      );
+                    })}
                 </Select>
               </FormControl>
             </div>

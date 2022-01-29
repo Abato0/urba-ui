@@ -1,8 +1,10 @@
 export interface IGrupoFamiliar {
   id?: number;
   nombre_familiar: string;
-  celular: string;
+  calle_principal: string;
+  calle_interseccion: string;
   manzana: string;
   villa: string;
-  calle: string;
+  tipo_edificacion: string;
+  color_fachada: string;
 }

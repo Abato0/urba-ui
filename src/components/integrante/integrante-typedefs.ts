@@ -4,21 +4,29 @@ export const saveIntegrante = gql`
   mutation (
     $idGrupoFamiliar: Int!
     $apellido: String
-    $cedula: String
+    $email: String
     $fecha_nacimiento: String
+    $genero: String
     $nombre: String
-    $parentesco: String
+    $num_doc_identidad: String
+    $piso_ocupa: String
+    $status: String
     $telefono: String
+    $tipo_doc_identidad: String
   ) {
     PostIntegrante(
       idGrupoFamiliar: $idGrupoFamiliar
       input: {
         apellido: $apellido
-        cedula: $cedula
+        email: $email
         fecha_nacimiento: $fecha_nacimiento
+        genero: $genero
         nombre: $nombre
-        parentesco: $parentesco
+        num_doc_identidad: $num_doc_identidad
+        piso_ocupa: $piso_ocupa
+        status: $status
         telefono: $telefono
+        tipo_doc_identidad: $tipo_doc_identidad
       }
     ) {
       code
@@ -31,19 +39,26 @@ export const listadoIntegranteGrupoFamiliar = gql`
   query ($idGrupoFamiliar: Int!) {
     ListaIntegrantesGrupoFamiliar(idGrupoFamiliar: $idGrupoFamiliar) {
       id
-      cedula
+      tipo_doc_identidad
+      num_doc_identidad
       nombre
       apellido
+      telefono
+      email
+      genero
       fecha_nacimiento
+      piso_ocupa
+      status
       grupoFamiliar {
         id
         nombre_familiar
         manzana
         villa
-        calle
+        calle_principal
+        calle_interseccion
+        color_fachada
+        tipo_edificacion
       }
-      parentesco
-      telefono
     }
   }
 `;
@@ -52,19 +67,26 @@ export const listadoIntegrante = gql`
   query {
     ListaIntegrantes {
       id
-      cedula
+      tipo_doc_identidad
+      num_doc_identidad
       nombre
       apellido
+      telefono
+      email
+      genero
       fecha_nacimiento
+      piso_ocupa
+      status
       grupoFamiliar {
         id
         nombre_familiar
         manzana
         villa
-        calle
+        calle_principal
+        calle_interseccion
+        color_fachada
+        tipo_edificacion
       }
-      parentesco
-      telefono
     }
   }
 `;
@@ -73,19 +95,26 @@ export const getIntegrante = gql`
   query ($id: Int!) {
     GetIntegrante(id: $id) {
       id
-      cedula
+      tipo_doc_identidad
+      num_doc_identidad
       nombre
       apellido
+      telefono
+      email
+      genero
       fecha_nacimiento
+      piso_ocupa
+      status
       grupoFamiliar {
         id
         nombre_familiar
         manzana
         villa
-        calle
+        calle_principal
+        calle_interseccion
+        color_fachada
+        tipo_edificacion
       }
-      parentesco
-      telefono
     }
   }
 `;
@@ -94,25 +123,73 @@ export const updateIntegrante = gql`
   mutation (
     $id: Int!
     $apellido: String
-    $cedula: String
+    $email: String
     $fecha_nacimiento: String
+    $genero: String
     $nombre: String
-    $parentesco: String
+    $num_doc_identidad: String
+    $piso_ocupa: String
+    $status: String
     $telefono: String
+    $tipo_doc_identidad: String
   ) {
     UpdateIntegrante(
       id: $id
       input: {
         apellido: $apellido
-        cedula: $cedula
+        email: $email
         fecha_nacimiento: $fecha_nacimiento
+        genero: $genero
         nombre: $nombre
-        parentesco: $parentesco
+        num_doc_identidad: $num_doc_identidad
+        piso_ocupa: $piso_ocupa
+        status: $status
         telefono: $telefono
+        tipo_doc_identidad: $tipo_doc_identidad
       }
     ) {
       code
       message
+    }
+  }
+`;
+
+export const listaIntergranteFilter = gql`
+  query (
+    $calle_interseccion: String
+    $calle_principal: String
+    $idGrupoFamiliar: Int
+    $manzana: String
+  ) {
+    ListaIntegranteFilter(
+      input: {
+        calle_interseccion: $calle_interseccion
+        calle_principal: $calle_principal
+        idGrupoFamiliar: $idGrupoFamiliar
+        manzana: $manzana
+      }
+    ) {
+      id
+      tipo_doc_identidad
+      num_doc_identidad
+      nombre
+      apellido
+      telefono
+      email
+      genero
+      fecha_nacimiento
+      piso_ocupa
+      status
+      grupoFamiliar {
+        id
+        nombre_familiar
+        manzana
+        villa
+        calle_principal
+        calle_interseccion
+        color_fachada
+        tipo_edificacion
+      }
     }
   }
 `;

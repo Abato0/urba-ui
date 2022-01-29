@@ -20,31 +20,32 @@ const UpdateGrupoFamiliar = () => {
     return router.query.id;
   }, [router.query.id]);
 
-
   const { data, loading, error } = useQuery(GetGrupoFamiliar, {
     variables: { id: Number(id) },
-    skip: !isNilOrEmpty(Number(id)),
+    skip: isNilOrEmpty(id),
   });
 
- 
   useEffect(() => {
     if (!loading) {
       setGrupoFamiliarData(extractData(data));
+      console.log("data: ", data, id);
     }
-  }, [loading]);
+  }, [loading, id]);
 
   return !isNil(grupoFamiliarData) ? (
     <AppLayout>
-      <GrupoFamiliarFormRegistro
-        mutation={updateGrupoFamiliarMutation}
-        grupoFam={{
-          ...grupoFamiliarData,
-          // id: grupoFamiliarData.id,
-          // celular: grupoFamiliarData.celular,
-          // nombre_familiar: grupoFamiliarData.nombre_familiar,
-          // calle:
-        }}
-      />
+      {!loading && !isNilOrEmpty(Number(id)) && (
+        <GrupoFamiliarFormRegistro
+          mutation={updateGrupoFamiliarMutation}
+          grupoFam={{
+            ...grupoFamiliarData,
+            // id: grupoFamiliarData.id,
+            // celular: grupoFamiliarData.celular,
+            // nombre_familiar: grupoFamiliarData.nombre_familiar,
+            // calle:
+          }}
+        />
+      )}
     </AppLayout>
   ) : (
     <></>

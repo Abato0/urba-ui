@@ -48,13 +48,13 @@ export const getPagoFamiliar = gql`
 export const getPagoFamiliarFilter = gql`
   query ListaPagoFamiliarFilter(
     $idGrupoFamiliar: Int
-    $tipo_aporte: String
+    $id_aporte: Int
     $fecha_pago: String
   ) {
     ListaPagoFamiliarFilter(
       input: {
         idGrupoFamiliar: $idGrupoFamiliar
-        tipo_aporte: $tipo_aporte
+        id_aporte: $id_aporte
         fecha_pago: $fecha_pago
       }
     ) {
@@ -65,8 +65,8 @@ export const getPagoFamiliarFilter = gql`
       pago {
         fecha_pago
         descripcion
-        estado
         monto
+        status
       }
       aporte {
         nombre_aporte
@@ -81,10 +81,11 @@ export const savePago = gql`
     $idGrupoFamiliar: Int!
     $idAporte: Int!
     $descripcion: String
-    $fecha_pago: String
+    # $fecha_pago: String
     $fecha_subida: String
     $imagen_recibo: Upload
-    $monto: Int
+    # $monto: Int
+    $pagoMes: String
     $cod_recibo: String
     $fecha_recibo: String
   ) {
@@ -93,10 +94,11 @@ export const savePago = gql`
       idAporte: $idAporte
       input: {
         descripcion: $descripcion
-        fecha_pago: $fecha_pago
+        pagoMes:$pagoMes
+        # fecha_pago: $fecha_pago
         fecha_subida: $fecha_subida
         imagen_recibo: $imagen_recibo
-        monto: $monto
+        # monto: $monto
         cod_recibo: $cod_recibo
         fecha_recibo: $fecha_recibo
       }

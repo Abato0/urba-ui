@@ -7,6 +7,10 @@ import {
   TextField,
   Typography,
   Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import { useFormik } from "formik";
 import { isNotNilOrEmpty } from "../../utils/is-nil-empty";
@@ -20,25 +24,42 @@ import { DocumentNode } from "@apollo/client";
 import { isEmpty, isNil, omit } from "ramda";
 import { IGrupoFamiliar } from "../../interface/grupo-familiar.interface";
 import ModalAuth from "../core/input/dialog/modal-dialog";
+import {
+  calleInterseccion,
+  CallesPrincipales,
+  coloresPrincipalesFachada,
+  manzanas,
+  tiposEdificacion,
+} from "../core/input/dateSelect";
+import FormControlHeader from "../core/input/form-control-select";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
+      // display: "flex",
       // backgroundColor:"red",
       marginTop: theme.spacing(10),
       marginBottom: theme.spacing(10),
-      marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2),
+      marginLeft: theme.spacing(10),
+      marginRight: theme.spacing(10),
       padding: "60px",
-      minWidth: "320px",
+      // minWidth: "820px",
       borderRadius: "10px",
       textAlign: "center",
       backgroundColor: "white",
+      // width:600,
+      // justifyContent: "center",
+      // alignContent: "center"
+      // minWidth:600
+      // width:"100px"
     },
 
     form: {
       display: "flex",
       flexDirection: "column",
+      justifyContent: "center",
+      alignContent: "center",
+      alignItems: "center",
 
       marginTop: theme.spacing(6),
     },
@@ -66,29 +87,31 @@ const useStyles = makeStyles((theme) =>
       width: "100%",
       marginTop: theme.spacing(5),
     },
+    formControl: {
+      // margin: theme.spacing(1),
+      minWidth: 220,
+    },
   })
 );
 
 const initialValues = Object.freeze({
   nombre_familiar: "",
-  celular: "",
+  calle_principal: "",
+  calle_interseccion: "",
   manzana: "",
-  villa: "",
-  calle: "",
+  villa: 0,
+  tipo_edificacion: "",
+  color_fachada: "",
 });
 
 const validationSchema = yup.object().shape({
   nombre_familiar: yup.string().required("Requerido"),
-  celular: yup
-    .string()
-    .required()
-    .matches(/^[0-9]+$/, "Solo numeros")
-    .min(10, "El numero debe teenr 10 digitos exactamente")
-    .max(10, "El numero debe teenr 10 digitos exactamente")
-    .required("Requerido"),
   manzana: yup.string().required("Requerido"),
-  villa: yup.string().required("Requerido"),
-  calle: yup.string().required("Requerido"),
+  villa: yup.number().required("Requerido"),
+  calle_principal: yup.string().required("Requerido"),
+  calle_interseccion: yup.string().required("Requerido"),
+  color_fachada: yup.string().required("Requerido"),
+  tipo_edificacion: yup.string().required("Requerido"),
 });
 
 interface IProps {
@@ -102,6 +125,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
   const [mutate, loading, error] = isNil(grupoFam)
     ? useGrupoFamiliarMutation(mutation, {
         ...initialValues,
+        celular: "",
       })
     : useUpdateFamiliarMutation(
         0,
@@ -115,44 +139,87 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
   const [openModalMsj, setOpenModalMsj] = useState<boolean>(false);
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
+  const [errorModal, setErrorModal] = useState<boolean>(false);
 
   const onSubmit = useCallback(
     async (
-      { nombre_familiar, celular, manzana, villa, calle },
+      {
+        nombre_familiar,
+        calle_principal,
+        calle_interseccion,
+        manzana,
+        villa,
+        tipo_edificacion,
+        color_fachada,
+      },
       { setSubmitting }
     ) => {
       try {
-        const { data } = isNil(grupoFam)
-          ? await mutate({
-              variables: {
-                nombre_familiar: nombre_familiar,
-                celular,
-                manzana,
-                villa,
-                calle,
-              },
-            })
-          : await mutate({
-              variables: {
-                id: Number(grupoFam.id),
-                nombre_familiar: nombre_familiar,
-                celular,
-                manzana,
-                villa,
-                calle,
-              },
-            });
-        console.log("data: ", data);
-        setTitleModalMsj("Grupo Familiar Registrado");
-        setMensajeModalMsj(data.message);
-        setOpenModalMsj(true);
+        if (
+          isNotNilOrEmpty(nombre_familiar) &&
+          isNotNilOrEmpty(calle_principal) &&
+          isNotNilOrEmpty(calle_interseccion) &&
+          isNotNilOrEmpty(manzana) &&
+          isNotNilOrEmpty(villa) &&
+          isNotNilOrEmpty(tipo_edificacion) &&
+          isNotNilOrEmpty(color_fachada)
+        ) {
+          const {
+            data: dataMutate,
+            loading: loadingMutate,
+            error,
+          } = isNil(grupoFam)
+            ? await mutate({
+                variables: {
+                  nombre_familiar,
+                  calle_principal,
+                  calle_interseccion,
+                  manzana,
+                  villa,
+                  tipo_edificacion,
+                  color_fachada,
+                },
+              })
+            : await mutate({
+                variables: {
+                  id: Number(grupoFam.id),
+                  nombre_familiar,
+                  calle_principal,
+                  calle_interseccion,
+                  manzana,
+                  villa,
+                  tipo_edificacion,
+                  color_fachada,
+                },
+              });
+          if (
+            (!loadingMutate &&
+              isNotNilOrEmpty(dataMutate) &&
+              isNotNilOrEmpty(dataMutate.PostGrupoFamiliar)) ||
+            isNotNilOrEmpty(dataMutate.UpdateGrupoFamiliar)
+          ) {
+            const { message } = isNotNilOrEmpty(dataMutate.PostGrupoFamiliar)
+              ? dataMutate.PostGrupoFamiliar
+              : dataMutate.UpdateGrupoFamiliar;
+            setTitleModalMsj(message);
+            setErrorModal(false);
+            // setMensajeModalMsj(dataMutate.message);
+            setOpenModalMsj(true);
+
+            resetForm();
+          } else if (!loadingMutate && dataMutate === null) {
+            setOpenModalMsj(true);
+            setTitleModalMsj("Usuario no autorizado");
+          }
+        }
         // console.log("data: ", data, "loading: ", loading, "error: ", error);
       } catch (err) {
-        console.log("error : ", err);
+        // console.log("error : ", err);
         setTitleModalMsj("Grupo Familiar no Registrado");
-        setMensajeModalMsj(
-          "Ha ocurrido un erro al resgistrar el grupo familiar"
-        );
+        setErrorModal(true);
+        // setMensajeModalMsj(
+        //   "Ha ocurrido un erro al resgistrar el grupo familiar: "
+        // );
         setOpenModalMsj(true);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -171,6 +238,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
     isSubmitting,
     touched,
     values,
+    resetForm,
   } = useFormik({
     initialValues: init,
     onSubmit,
@@ -186,6 +254,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
           setOpenModal={setOpenModalMsj}
           title={titleModalMsj}
           message={mensajeModalMsj}
+          error={errorModal}
         />
       )}
       <Typography variant="h5"> Registro de Grupo Familiar</Typography>
@@ -215,37 +284,84 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
             required
           />
 
-          <TextField
-            className={classes.textbox}
-            variant="outlined"
-            id="celular"
-            value={values.celular}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            autoComplete="celular"
-            label="Numero de Celular"
-            margin="normal"
-            error={touched.celular && isNotNilOrEmpty(errors.celular)}
-            helperText={touched.celular ? errors.celular : undefined}
-            required
-          />
+          <FormControlHeader
+            classes={classes}
+            handleBlur={handleBlur}
+            id="tipo_edificacion"
+            handleChange={handleChange}
+            labetTitulo="Tipo de Edificación"
+            value={values.tipo_edificacion}
+          >
+            {tiposEdificacion.map(({ label, value }) => {
+              return (
+                <MenuItem key={"grupoFamiliar-" + value} value={value}>
+                  {label}
+                </MenuItem>
+              );
+            })}
+          </FormControlHeader>
         </div>
 
         <div className={classes.contentLastTextBox}>
-          <TextField
-            className={classes.textbox}
-            variant="outlined"
+          <FormControlHeader
+            classes={classes}
+            handleBlur={handleBlur}
+            id="calle_principal"
+            handleChange={handleChange}
+            labetTitulo="Calle Principal"
+            value={values.calle_principal}
+          >
+            {CallesPrincipales.map((calle_principal) => {
+              return (
+                <MenuItem
+                  key={"grupoFamiliar-" + calle_principal}
+                  value={calle_principal}
+                >
+                  {calle_principal}
+                </MenuItem>
+              );
+            })}
+          </FormControlHeader>
+
+          <FormControlHeader
+            classes={classes}
+            handleBlur={handleBlur}
+            id="calle_interseccion"
+            handleChange={handleChange}
+            labetTitulo="Calle Intersección"
+            value={values.calle_interseccion}
+          >
+            {calleInterseccion.map((calleInterseccion) => {
+              return (
+                <MenuItem
+                  key={"grupoFamiliar-" + calleInterseccion}
+                  value={calleInterseccion}
+                >
+                  {calleInterseccion}
+                </MenuItem>
+              );
+            })}
+          </FormControlHeader>
+        </div>
+
+        <div className={classes.contentLastTextBox}>
+          <FormControlHeader
+            classes={classes}
+            handleBlur={handleBlur}
             id="manzana"
+            handleChange={handleChange}
+            labetTitulo="Manzana"
             value={values.manzana}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            autoComplete="manzana"
-            label="Manzana"
-            margin="normal"
-            error={touched.manzana && isNotNilOrEmpty(errors.manzana)}
-            helperText={touched.manzana ? errors.manzana : undefined}
-            required
-          />
+          >
+            {manzanas.map((manzana) => {
+              return (
+                <MenuItem key={"grupoFamiliar-" + manzana} value={manzana}>
+                  {manzana}
+                </MenuItem>
+              );
+            })}
+          </FormControlHeader>
+
           <TextField
             className={classes.textbox}
             variant="outlined"
@@ -254,28 +370,34 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
             onChange={handleChange}
             onBlur={handleBlur}
             autoComplete="villa"
-            label="Villa"
+            label="Numero de lote (Villa)"
             margin="normal"
+            type={"number"}
             error={touched.villa && isNotNilOrEmpty(errors.villa)}
             helperText={touched.villa ? errors.villa : undefined}
             required
           />
         </div>
-        <div className={classes.contentLastTextBox}>
-          <TextField
-            className={classes.textbox}
-            variant="outlined"
-            id="calle"
-            value={values.calle}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            autoComplete="calle"
-            label="Calle"
-            margin="normal"
-            error={touched.calle && isNotNilOrEmpty(errors.calle)}
-            helperText={touched.calle ? errors.calle : undefined}
-            required
-          />
+        <div
+          style={{ marginRight: 245 }}
+          className={classes.contentLastTextBox}
+        >
+          <FormControlHeader
+            classes={classes}
+            handleBlur={handleBlur}
+            id="color_fachada"
+            handleChange={handleChange}
+            labetTitulo="Color de la Fachada"
+            value={values.color_fachada}
+          >
+            {coloresPrincipalesFachada.map((color) => {
+              return (
+                <MenuItem key={"grupoFamiliar-" + color} value={color}>
+                  {color}
+                </MenuItem>
+              );
+            })}
+          </FormControlHeader>
         </div>
 
         <div className={classes.contentButtons}>

@@ -8,8 +8,20 @@ export const head = Object.freeze([
     accessor: "nombre_familiar",
   },
   {
-    Header: "Celular",
-    accessor: "celular",
+    Header: "Tipo de edificacion",
+    accessor: "tipo_edificacion",
+  },
+  {
+    Header: "Color",
+    accessor: "color_fachada",
+  },
+  {
+    Header: "Calle Principal",
+    accessor: "calle_principal",
+  },
+  {
+    Header: "Calle Interseccion",
+    accessor: "calle_interseccion",
   },
   {
     Header: "Manzana",
@@ -19,10 +31,7 @@ export const head = Object.freeze([
     Header: "Villa",
     accessor: "villa",
   },
-  {
-    Header: "Calle",
-    accessor: "calle",
-  },
+
   {
     id: "actions",
     Cell: ActionsCell,

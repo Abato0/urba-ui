@@ -23,6 +23,9 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { isNotNilOrEmpty } from "../../utils/is-nil-empty";
 import ModalAuth from "../core/input/dialog/modal-dialog";
+import { equals } from "ramda";
+import { ETipoAporte } from "../core/input/dateSelect";
+import { lightFormat } from "date-fns";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -33,7 +36,7 @@ const useStyles = makeStyles((theme) =>
       marginLeft: theme.spacing(2),
       marginRight: theme.spacing(2),
       padding: "60px",
-      minWidth: "320px",
+      // minWidth: "320px",
       borderRadius: "10px",
       textAlign: "center",
       // width: "100%",
@@ -48,6 +51,9 @@ const useStyles = makeStyles((theme) =>
     form: {
       display: "flex",
       flexDirection: "column",
+      justifyContent: "center",
+      alignContent: "center",
+      alignItems: "center",
       marginTop: theme.spacing(6),
     },
     textbox: {
@@ -91,11 +97,14 @@ const initialValues = Object.freeze({
 });
 
 const validationSchema = yup.object().shape({
-  cuotas: yup.number().required(),
+  cuotas: yup
+    .number()
+    .required("Campo requerido")
+    .min(0, "El numero de cuotas debe ser mayor a 1"),
   fecha_inicio: yup.date().nullable(),
-  nombre_aporte: yup.string().required(),
-  valor_mensual: yup.number().required(),
-  tipo_aporte: yup.string().required(),
+  nombre_aporte: yup.string().required("Campo requerido"),
+  valor_mensual: yup.number().required("Campo requerido"),
+  tipo_aporte: yup.string().required("Campo requerido"),
 });
 
 export const AporteFormIngresar: FC = () => {
@@ -103,6 +112,7 @@ export const AporteFormIngresar: FC = () => {
   const [openModalMsj, setOpenModalMsj] = useState<boolean>(false);
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
+  const [errorModal, setErrorModal] = useState<boolean>(false);
 
   const classes = useStyles();
 
@@ -119,28 +129,33 @@ export const AporteFormIngresar: FC = () => {
           isNotNilOrEmpty(tipo_aporte) &&
           isNotNilOrEmpty(valor_mensual)
         ) {
-          const dataMutate = await mutate({
+          const { data: dataMutate, loading: loadingMutate } = await mutate({
             variables: {
-              cuotas,
-              fecha_inicio,
+              cuotas: cuotas,
+              fecha_inicio: lightFormat(fecha_inicio, "yyyy-MM-dd"),
               nombre_aporte,
               tipo_aporte,
               valor_mensual,
             },
           });
           if (
+            !loadingMutate &&
             isNotNilOrEmpty(dataMutate) &&
             isNotNilOrEmpty(dataMutate.PostAporte)
           ) {
             const { message } = dataMutate.PostAporte;
-            setOpenModalMsj(true);
+            setErrorModal(false);
             setTitleModalMsj(message);
-          } else if (dataMutate === null) {
             setOpenModalMsj(true);
+            resetForm();
+          } else if (!loadingMutate && dataMutate === null) {
+            setErrorModal(true);
             setTitleModalMsj("Usuario no autorizado");
+            setOpenModalMsj(true);
           }
         }
       } catch (err) {
+        setErrorModal(true);
         setOpenModalMsj(true);
         setTitleModalMsj("Error al Ingresar Aporte");
         setMensajeModalMsj(err.message);
@@ -159,6 +174,7 @@ export const AporteFormIngresar: FC = () => {
     isSubmitting,
     touched,
     setFieldValue,
+    resetForm,
     values,
   } = useFormik({
     initialValues,
@@ -173,6 +189,7 @@ export const AporteFormIngresar: FC = () => {
           setOpenModal={setOpenModalMsj}
           title={titleModalMsj}
           message={mensajeModalMsj}
+          error={errorModal}
         />
       )}
       <Typography variant="h5"> Ingreso de Aporte</Typography>
@@ -188,7 +205,7 @@ export const AporteFormIngresar: FC = () => {
           }}
           className={classes.contentLastTextBox}
         >
-          <FormControl className={classes.formControl}>
+          <FormControl variant="filled" className={classes.formControl}>
             <InputLabel id="tipo_aporte_label">Tipo de Aporte</InputLabel>
             <Select
               labelId="tipo_aporte_label"
@@ -200,8 +217,12 @@ export const AporteFormIngresar: FC = () => {
               className={classes.textbox}
               required
             >
-              <MenuItem value={"implementacion"}>Implementacion</MenuItem>
-              <MenuItem value={"mantenimiento"}>Mantenimiento</MenuItem>
+              <MenuItem value={ETipoAporte.implementacion}>
+                {ETipoAporte.implementacion}
+              </MenuItem>
+              <MenuItem value={ETipoAporte.mantenimiento}>
+                {ETipoAporte.mantenimiento}
+              </MenuItem>
             </Select>
           </FormControl>
           <TextField
@@ -252,13 +273,21 @@ export const AporteFormIngresar: FC = () => {
             onChange={handleChange}
             onBlur={handleBlur}
             type={"number"}
-            value={values.cuotas}
+            value={
+              equals(values.tipo_aporte, ETipoAporte.mantenimiento)
+                ? values.cuotas
+                : 1
+            }
             error={touched.cuotas && isNotNilOrEmpty(errors.cuotas)}
             helperText={touched.cuotas ? errors.cuotas : undefined}
+            disabled={values.tipo_aporte === ETipoAporte.implementacion}
             required
           />
         </div>
-        <div className={classes.contentLastTextBox}>
+        <div
+          style={{ marginRight: 245 }}
+          className={classes.contentLastTextBox}
+        >
           <TextField
             className={classes.textbox}
             id="valor_mensual"
