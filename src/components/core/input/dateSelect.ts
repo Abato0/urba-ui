@@ -167,3 +167,5 @@ export enum ETipoAporte {
   implementacion = "Implementacion",
   mantenimiento = "Mantenimiento",
 }
+
+export const tiposVehiculos = ["Automovil", "Motocicleta", "Caminion", "Bus"];

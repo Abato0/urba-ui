@@ -1,5 +1,4 @@
 import { useQuery } from "@apollo/client";
-import { addMonths, eachMonthOfInterval, lightFormat } from "date-fns";
 import {
   makeStyles,
   createStyles,
@@ -46,15 +45,11 @@ const useStyles = makeStyles((theme) =>
       marginLeft: theme.spacing(2),
       marginRight: theme.spacing(2),
       padding: "60px",
-      // minWidth: 400,
       borderRadius: "10px",
       textAlign: "center",
-      // width: "100%",
-      // height: "100%",
       backgroundColor: "white",
       justifyContent: "center",
       alignItems: "center",
-      // marginTop: theme.spacing(2)
     },
     formControl: {
       margin: theme.spacing(1),
@@ -291,14 +286,14 @@ export const PagoFormIngresar = () => {
       setDataGrupoFamiliar(data.ListaGruposFamiliares);
       console.log("data: ", data.ListaGruposFamiliares);
     }
-  }, [loading]);
+  }, [data, loading]);
 
   React.useEffect(() => {
     if (!loadingListarAporte && !isNil(dataListarAporte)) {
       setListaAporte(dataListarAporte.ListaAportes);
       console.log("data: ", dataListarAporte.ListaAportes);
     }
-  }, [loadingListarAporte]);
+  }, [dataListarAporte, loadingListarAporte]);
 
   React.useEffect(() => {
     if (isNotNilOrEmpty(values.id_aporte) && isNotNilOrEmpty(dataListaAporte)) {
@@ -411,6 +406,7 @@ export const PagoFormIngresar = () => {
               dataListaAporte.map(({ id, nombre_aporte, tipo_aporte }) => {
                 return (
                   <MenuItem
+                    key={"pago-listadoGrupoFamiliar-" + id}
                     value={id}
                   >{`${nombre_aporte} - ${tipo_aporte}`}</MenuItem>
                 );
@@ -494,7 +490,12 @@ export const PagoFormIngresar = () => {
             <List className={classes.list}>
               {pagoMensual.map(({ f_pago, monto }) => {
                 return (
-                  <ListItem style={{ width: "100%" }} alignItems="center">
+                  <ListItem
+                    key={"pago-mensual-" + f_pago + "-" + monto
+                  }
+                    style={{ width: "100%" }}
+                    alignItems="center"
+                  >
                     <div className={classes.listItem}>
                       <Typography variant="overline">
                         {`Fecha: ${f_pago} | Monto: $${monto}`}{" "}
