@@ -1,8 +1,4 @@
-import {
-  TableCell,
-  TableHead,
-  TableRow,
-} from "@material-ui/core";
+import { colors, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { FC } from "react";
 import { HeaderGroup } from "react-table";
 
@@ -13,14 +9,24 @@ interface IProps {
 const TableHeader: FC<IProps> = ({ headerGroups }) => {
   return (
     <>
-      <TableHead >
+      <TableHead>
         {headerGroups.map((headerGroup) => (
           <TableRow
-            // key={"tableHeader" + ìndex}
             {...headerGroup.getHeaderGroupProps()}
+            // key={"tableHeader" + ìndex}
           >
             {headerGroup.headers.map((column) => (
-              <TableCell {...column.getHeaderProps()}>
+              <TableCell
+                style={{
+                  // backgroundColor: colors.lightGreen[500],
+                  fontSize: 14,
+                  fontWeight: "bold",
+                  fontFamily: "Roboto",
+                  // color:"white"
+                }}
+                align="center"
+                {...column.getHeaderProps()}
+              >
                 {column.render("Header")}
               </TableCell>
             ))}

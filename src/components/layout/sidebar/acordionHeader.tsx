@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     heading: {
       fontSize: theme.typography.pxToRem(15),
+      fontWeight: "bold",
     },
     trNode: {
       "&:hover": {

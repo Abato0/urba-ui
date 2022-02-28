@@ -9,10 +9,15 @@ import {
   listaIntergranteFilter,
 } from "./integrante-typedefs";
 import { equals } from "ramda";
+import { IResultQueryParentesco } from "../mantenimento/parentesco/use-parentesco";
 
 export const usePostIntegranteMutation = () => {
   const [mutate, { data, loading, error }] = useMutation<any, any>(
-    saveIntegrante
+    saveIntegrante,
+    {
+      // refetchQueries: [{ query: listaIntergranteFilter }],
+      // awaitRefetchQueries: true,
+    }
   );
 
   return [mutate, data, loading, error];
@@ -20,7 +25,11 @@ export const usePostIntegranteMutation = () => {
 
 export const useUpdateIntegranteMutation = () => {
   const [mutate, { data, loading, error }] = useMutation<any, any>(
-    updateIntegrante
+    updateIntegrante,
+    {
+      // refetchQueries: [{ query: listaIntergranteFilter }],
+      // awaitRefetchQueries: true,
+    }
   );
 
   return [mutate, data, loading, error];
@@ -36,9 +45,11 @@ export interface IIntegranteVariables {
   email: string;
   genero: string;
   fecha_nacimiento: string;
-  piso_ocupa: string;
-  status: string;
+  // piso_ocupa: string;
+  // status: string;
   grupoFamiliar: IListadoGrupoFamiliarVariables;
+  parentesco: IResultQueryParentesco;
+  representante: string
 }
 
 export interface IListaListadoIntegranteQuery {
@@ -58,9 +69,9 @@ export interface IGetIntegranteQuery {
 
 export interface IIntegranteFilterInput {
   idGrupoFamiliar?: number;
-  calle_principal?: string;
-  calle_interseccion?: string;
-  manzana?: string;
+  //   calle_principal?: string;
+  //   calle_interseccion?: string;
+  //   manzana?: string;
 }
 
 export const useGetIntegranteQuery = (id: number) => {
@@ -86,10 +97,10 @@ export const useListaIntergranteFilterQuery = (
         ...input,
       },
       skip: equals(input, {
-        calle_interseccion: "",
+        // calle_interseccion: "",
         idGrupoFamiliar: 0,
-        calle_principal: "",
-        manzana: "",
+        // calle_principal: "",
+        // manzana: "",
       }),
     }
   );

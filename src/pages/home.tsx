@@ -7,15 +7,13 @@ import {
   Paper,
 } from "@material-ui/core";
 import React from "react";
-//   import AppLayout from "../components/layout/appLayout";
-//   import NavbarLayout from "../components/navbar-layout";
-//   import Page from "../components/layout/page";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUsers,
   faUser,
   faIndustry,
   faDonate,
+  faCarAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import CardItemHome from "../components/core/card/cardItemHome";
 import AppLayout from "../components/layout/app-layout";
@@ -25,13 +23,8 @@ import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
   gridContent: {
-    // display: "flex",
     marginTop: 80,
     marginBottom: 180,
-    // justifyItems: "center",
-    // alignItems: "center",
-    // justifyContent: "center",
-    // alignContent: "center",
   },
   paperItem: {
     minWidth: 300,
@@ -41,8 +34,6 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "row",
     padding: "30px",
-    // justifyItems: "center",
-    // alignContent: "center",
     alignItems: "center",
   },
   icon: {
@@ -57,19 +48,22 @@ const useStyles = makeStyles({
   },
   ListItem: {
     margin: "2px",
-    // backgroundColor:"red",
     width: "100%",
   },
   imageLogo: {
-    width: "100%",
-    // margin: "0px 80px",
-    // backgroundColor: "red",
     display: "flex",
     justifyContent: "center",
     marginBottom: 40,
+    padding: 20,
   },
   img: {
     borderRadius: 10,
+  },
+  containerImage: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
@@ -87,14 +81,17 @@ const ScreenHome = () => {
     <>
       <AppLayout>
         <Container className={classes.gridContent}>
-          <div className={classes.imageLogo}>
-            <Image
-              className={classes.img}
-              height={200}
-              width={500}
-              src={"/img/home/logo-home.jpeg"}
-            />
+          <div className={classes.containerImage}>
+            <Paper elevation={4} className={classes.imageLogo}>
+              <Image
+                className={classes.img}
+                height={200}
+                width={500}
+                src={"/img/home/logo-home.jpeg"}
+              />
+            </Paper>
           </div>
+
           <Grid
             container
             spacing={2}
@@ -129,7 +126,7 @@ const ScreenHome = () => {
                 titulo="Integrante Familiar"
               />
             </Grid>
-            <Grid item xs={12} sm={6} className={classes.paperItem}>
+            {/* <Grid item xs={12} sm={6} className={classes.paperItem}>
               <CardItemHome
                 onclickIngreso={() =>
                   redirect(EnlacesSidebar.aporte.registrar.route)
@@ -140,7 +137,7 @@ const ScreenHome = () => {
                 icon={faIndustry}
                 titulo="Aportes"
               />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} sm={6} className={classes.paperItem}>
               <CardItemHome
                 onclickIngreso={() =>
@@ -151,6 +148,19 @@ const ScreenHome = () => {
                 }
                 icon={faDonate}
                 titulo="Pagos"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6} className={classes.paperItem}>
+              <CardItemHome
+                onclickIngreso={() =>
+                  redirect(EnlacesSidebar.pago.registrar.route)
+                }
+                onclickListado={() =>
+                  redirect(EnlacesSidebar.pago.listado.route)
+                }
+                icon={faCarAlt}
+                titulo="Vehiculos"
               />
             </Grid>
           </Grid>

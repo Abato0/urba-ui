@@ -1,4 +1,6 @@
-import { Button } from "@material-ui/core";
+import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Button, colors, Typography } from "@material-ui/core";
 import jsPDF from "jspdf";
 import autoTable, { ColumnInput } from "jspdf-autotable";
 import { head, split } from "ramda";
@@ -48,12 +50,21 @@ export const ExportTablePdf: FC<IProps> = ({
   return (
     <Button
       className={classes}
-      variant="outlined"
+      variant="contained"
       // color="secondary"
       // title="Export PDF"
+      startIcon={<FontAwesomeIcon icon={faFilePdf} />}
+      style={{
+        backgroundColor: colors.red[800],
+      }}
       onClick={exportPdf}
     >
-      {"Export PDF"}
+      <Typography
+        variant="button"
+        style={{ fontSize: 11, fontFamily: "Roboto" }}
+      >
+        Exportar a Pdf
+      </Typography>
     </Button>
   );
 };

@@ -10,9 +10,11 @@ interface IGrupoFamiliar {
 interface IPago {
   id: number;
   fecha_pago: string;
-  tipo_aporte: string;
+  fecha_subida: string;
+  // tipo_aporte: string;
   imagen_recibo?: string;
   descripcion: string;
-  estado: string;
+  // estado: string;
+  tipo_pago: string;
   monto: number;
 }

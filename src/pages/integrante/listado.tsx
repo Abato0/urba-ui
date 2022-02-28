@@ -5,8 +5,6 @@ import {
   IIntegranteFilterInput,
   IIntegranteVariables,
   IListaIntegranteFilterQuery,
-  IListaListadoIntegranteQuery,
-  useListadoIntegranteQuery,
   useListaIntergranteFilterQuery,
 } from "../../components/integrante/use-intergrante";
 import AppLayout from "../../components/layout/app-layout";
@@ -31,12 +29,6 @@ import {
 } from "@material-ui/core";
 import { useListarGrupoFamiliar } from "../../components/grupo-familiar/use-grupo-familia";
 import { useRouter } from "next/router";
-import {
-  calleInterseccion,
-  CallesPrincipales,
-  manzanas,
-} from "../../components/core/input/dateSelect";
-import FormControlHeader from "../../components/core/input/form-control-select";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -104,9 +96,6 @@ const useStyles = makeStyles((theme) =>
     contentForm: {
       marginTop: theme.spacing(3),
     },
-    // table: {
-    //   backgroundColor: colors.grey[700],
-    // },
   })
 );
 
@@ -120,14 +109,15 @@ const extractData = (
 
 const VariablesNormalizeIntegrantes = (data: IIntegranteVariables[]) => {
   return isNotNilOrEmpty(data)
-    ? data.map(({ grupoFamiliar, ...input }) => {
+    ? data.map(({ grupoFamiliar, parentesco, ...input }) => {
         return omit(["__typename"], {
           ...input,
           nombre_familiar: grupoFamiliar.nombre_familiar,
-          manzana: grupoFamiliar.manzana,
-          calle_principal: grupoFamiliar.calle_principal,
-          calle_interseccion: grupoFamiliar.calle_interseccion,
-          villa: grupoFamiliar.villa,
+          parentesco: parentesco.parentesco,
+          // manzana: grupoFamiliar.manzana,
+          // calle_principal: grupoFamiliar.calle_principal,
+          // calle_interseccion: grupoFamiliar.calle_interseccion,
+          // villa: grupoFamiliar.villa,
         });
       })
     : [];
@@ -143,14 +133,16 @@ export interface IIntegranteVariablesNormalize {
   email: string;
   genero: string;
   fecha_nacimiento: string;
-  piso_ocupa: string;
-  status: string;
+  parentesco: string;
+  representante: string;
+  // piso_ocupa: string;
+  // status: string;
 
   nombre_familiar: string;
-  calle_principal: string;
-  calle_interseccion: string;
-  manzana: string;
-  villa: string;
+  // calle_principal: string;
+  // calle_interseccion: string;
+  // manzana: string;
+  // villa: string;
 }
 
 const optionsFuse: Fuse.IFuseOptions<any> = {
@@ -191,8 +183,6 @@ const ListadoIntegrante = () => {
   useEffect(() => {
     if (!loading && !isNil(data) && isNil(error)) {
       setDataTable(extractData(data!));
-      // console.log("extractData: ", extractData(data!));
-      // console.log("datas: ", data);
     }
   }, [loading, data]);
 
@@ -206,7 +196,7 @@ const ListadoIntegrante = () => {
   useEffect(() => {
     if (isNotNilOrEmpty(debounceSearch) && !isNil(fuse)) {
       const result = pluck("item", fuse.search(String(debounceSearch)));
-      // console.log("result:", fuse.search(String(debounceSearch)));
+
       setDataTable(result);
     } else {
       setDataTable(extractData(data!));
@@ -243,14 +233,14 @@ const ListadoIntegrante = () => {
         equals(idGrupoFamiliarFilter, 0) || isNil(idGrupoFamiliarFilter)
           ? undefined
           : idGrupoFamiliarFilter,
-      calle_interseccion: isEmpty(cllInterseccionFilter)
-        ? undefined
-        : cllInterseccionFilter,
+      // calle_interseccion: isEmpty(cllInterseccionFilter)
+      //   ? undefined
+      //   : cllInterseccionFilter,
 
-      calle_principal: isEmpty(callePrincipalFilter)
-        ? undefined
-        : callePrincipalFilter,
-      manzana: isEmpty(manzanaFilter) ? undefined : manzanaFilter,
+      // calle_principal: isEmpty(callePrincipalFilter)
+      //   ? undefined
+      //   : callePrincipalFilter,
+      // manzana: isEmpty(manzanaFilter) ? undefined : manzanaFilter,
     });
   }, [
     idGrupoFamiliarFilter,
@@ -297,11 +287,11 @@ const ListadoIntegrante = () => {
               "Nombre",
               "Apellido",
               "Fecha de Nacimiento",
-              "Familia",
+              "Grupo Familiar",
               "Parentesco",
-              "Manzana",
-              "Villa",
-              "Calle",
+              // "Manzana",
+              // "Villa",
+              // "Calle",
             ]}
             search={search}
             setSearch={setSearch}
@@ -336,7 +326,7 @@ const ListadoIntegrante = () => {
                         )}
                     </Select>
                   </FormControl>
-
+                  {/* 
                   <FormControl variant="filled" className={classes.formControl}>
                     <InputLabel id="callerPrincipal_label">
                       Calle Principal
@@ -409,7 +399,7 @@ const ListadoIntegrante = () => {
                         );
                       })}
                     </Select>
-                  </FormControl>
+                  </FormControl> */}
                 </div>
                 <div></div>
 

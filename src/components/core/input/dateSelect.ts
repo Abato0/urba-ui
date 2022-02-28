@@ -161,11 +161,64 @@ export const tipoDocumentosIdentidad: string[] = [
   "Carnet de extranjeria",
 ];
 
-export const arrAnios: number[] = range(2000, 2200);
-
+export const arrAnios: number[] = range(2000, 2100);
 export enum ETipoAporte {
   implementacion = "Implementacion",
   mantenimiento = "Mantenimiento",
 }
 
-export const tiposVehiculos = ["Automovil", "Motocicleta", "Caminion", "Bus"];
+export const tiposVehiculos = ["Automovil", "Motocicleta", "Camion", "Bus"];
+
+export enum TipoUsuario {
+  ADMIN = "administrador",
+  CONTABILIDAD = "contabilidad",
+  MORADOR = "morador",
+}
+
+export enum TipoTag {
+  PRIM_VEZ = "Primera vez",
+  RENOV = "Renovacion",
+  DANO = "Daño",
+}
+
+// export const tipoUsuarios = [
+//   TipoUsuario.ADMIN,
+//   TipoUsuario.CONTABILIDAD,
+//   TipoUsuario.MORADOR,
+// ];
+
+export const tipoUsuarios: ITipoEdificacion[] = [
+  {
+    label: "ADMINISTRADOR",
+    value: TipoUsuario.ADMIN,
+  },
+  {
+    label: "CONTABILIDAD",
+    value: TipoUsuario.CONTABILIDAD,
+  },
+  {
+    label: "MORADOR",
+    value: TipoUsuario.MORADOR,
+  },
+];
+
+interface IPagoTagValor {
+  id: number;
+  tipo_tag: string;
+  valor: string;
+}
+
+export const ArrTipoTag: ITipoEdificacion[] = [
+  {
+    label: "Primera Vez",
+    value: TipoTag.PRIM_VEZ,
+  },
+  {
+    label: "Renovacion",
+    value: TipoTag.RENOV,
+  },
+  {
+    label: "Daño",
+    value: TipoTag.DANO,
+  },
+];

@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Row, TableBodyPropGetter, TableBodyProps } from "react-table";
-import { TableBody, TableCell, TableRow } from "@material-ui/core";
+import { Checkbox, TableBody, TableCell, TableRow } from "@material-ui/core";
 
 interface IProps {
   getTableBodyProps: (
@@ -17,9 +17,15 @@ const CardTableBody: FC<IProps> = ({ getTableBodyProps, prepareRow, page }) => {
         prepareRow(row);
         return (
           <TableRow {...row.getRowProps()}>
+            {/* <TableCell padding="checkbox">
+              <Checkbox
+                checked={true}
+                inputProps={{ "aria-labelledby": "labelId" }}
+              />
+            </TableCell> */}
             {row.cells.map((cell) => {
               return (
-                <TableCell {...cell.getCellProps()}>
+                <TableCell align="center" {...cell.getCellProps()}>
                   {cell.render("Cell")}
                 </TableCell>
               );

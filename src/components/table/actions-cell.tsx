@@ -21,13 +21,7 @@ const ActionsCell: React.FC<IProps> = ({ onEdit, onDelete, row, className }) => 
         Editar
       </Button>
 
-      {/* <Button
-        variant="text"
-        color="secondary"
-        onClick={() => onDelete(row.original)}
-      >
-        Eliminar
-      </Button> */}
+
       </>
     </Tooltip>
   );

@@ -2,22 +2,20 @@ import { gql, useMutation } from "@apollo/client";
 
 export const saveGrupoFamiliar = gql`
   mutation (
-    $calle_principal: String
+    $id_calle_principal: Int
     $calle_interseccion: String
-    $color_fachada: String
-    $manzana: String
+    $id_manzana: Int
     $nombre_familiar: String
-    $tipo_edificacion: String
     $villa: Int
   ) {
     PostGrupoFamiliar(
       input: {
-        calle_principal: $calle_principal
+        id_calle_principal: $id_calle_principal
         calle_interseccion: $calle_interseccion
-        color_fachada: $color_fachada
-        manzana: $manzana
+        # id_color_fachada: $id_color_fachada
+        id_manzana: $id_manzana
         nombre_familiar: $nombre_familiar
-        tipo_edificacion: $tipo_edificacion
+        # id_tipo_edificacion: $id_tipo_edificacion
         villa: $villa
       }
     ) {
@@ -30,23 +28,23 @@ export const saveGrupoFamiliar = gql`
 export const updateGrupoFamiliarMutation = gql`
   mutation (
     $id: Int!
-    $calle_principal: String
+    $id_calle_principal: Int
     $calle_interseccion: String
-    $color_fachada: String
-    $manzana: String
+    # $id_color_fachada: Int
+    $id_manzana: Int
     $nombre_familiar: String
-    $tipo_edificacion: String
+    # $id_tipo_edificacion: Int
     $villa: Int
   ) {
     UpdateGrupoFamiliar(
       id: $id
       input: {
-        calle_principal: $calle_principal
+        id_calle_principal: $id_calle_principal
         calle_interseccion: $calle_interseccion
-        color_fachada: $color_fachada
-        manzana: $manzana
+        # id_color_fachada: $id_color_fachada
+        id_manzana: $id_manzana
         nombre_familiar: $nombre_familiar
-        tipo_edificacion: $tipo_edificacion
+        # id_tipo_edificacion: $id_tipo_edificacion
         villa: $villa
       }
     ) {
@@ -70,12 +68,24 @@ export const listadoGrupoFamiliar = gql`
     ListaGruposFamiliares {
       id
       nombre_familiar
-      manzana
+      manzana {
+        id
+        manzana
+      }
       villa
-      calle_principal
+      calle_principal {
+        id
+        calle
+      }
       calle_interseccion
-      color_fachada
-      tipo_edificacion
+      # color_fachada {
+      #   id
+      #   color
+      # }
+      # tipo_edificacion {
+      #   id
+      #   tipo_edificacion
+      # }
     }
   }
 `;
@@ -85,39 +95,63 @@ export const GetGrupoFamiliar = gql`
     GetGrupoFamiliar(id: $id) {
       id
       nombre_familiar
-      manzana
+      manzana {
+        id
+        manzana
+      }
       villa
-      calle_principal
+      calle_principal {
+        id
+        calle
+      }
       calle_interseccion
-      color_fachada
-      tipo_edificacion
+      # color_fachada {
+      #   id
+      #   color
+      # # }
+      # tipo_edificacion {
+      #   id
+      #   tipo_edificacion
+      # }
     }
   }
 `;
 
-export const listarGruposFamiliares = gql`
+export const listarGruposFamiliaresFilter = gql`
   query GrupoFamiliarOne(
-    $calle_interseccion: String
+    # $calle_interseccion: String
     $calle_principal: String
-    $idGrupoFamiliar: Int
+    # $idGrupoFamiliar: Int
     $manzana: String
   ) {
     ListaGruposFamiliaresFilter(
       input: {
-        calle_interseccion: $calle_interseccion
+        # calle_interseccion: $calle_interseccion
         calle_principal: $calle_principal
-        idGrupoFamiliar: $idGrupoFamiliar
+        # idGrupoFamiliar: $idGrupoFamiliar
         manzana: $manzana
       }
     ) {
       id
       nombre_familiar
-      manzana
+      manzana {
+        id
+        manzana
+      }
       villa
-      calle_principal
+      calle_principal {
+        id
+        calle
+      }
       calle_interseccion
-      color_fachada
-      tipo_edificacion
+      # color_fachada {
+      #   id
+      #   color
+      # # }
+      # tipo_edificacion {
+      #   id
+      #   tipo_edificacion
+      # }
     }
   }
 `;

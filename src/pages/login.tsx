@@ -14,7 +14,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import Image from "next/image";;
+import Image from "next/image";
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { isNotNilOrEmpty, isNilOrEmpty } from '../utils/is-nil-empty';

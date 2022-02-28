@@ -14,11 +14,14 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     width: "100%",
+    minHeight: 700,
+    // minHeight:"100%",
     minWidth: "400px",
-    backgroundColor: colors.green[300],
+    background: "linear-gradient(to right, #e0eafc, #cfdef3)",
     borderRadius: "10px",
     alignContent: "center",
     alignItems: "center",
+    margin: 10,
   },
   containerCard: {
     display: "flex",
@@ -42,9 +45,7 @@ const AppLayout: React.FC<IProps> = ({ children, className }) => {
       <NavBar />
       <div className={classes.root}>
         <SideBar />
-        <Box
-          className={classes.componentRoot}
-        >
+        <Box className={classes.componentRoot}>
           <div className={clsx(classes.containerCard, className)}>
             {children}
           </div>

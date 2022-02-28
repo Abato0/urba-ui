@@ -4,16 +4,8 @@ import ActionsCell from "../table/actions-cell";
 
 export const head = Object.freeze([
   {
-    Header: "Nombre Familiar",
+    Header: "Grupo Familiar",
     accessor: "nombre_familiar",
-  },
-  {
-    Header: "Tipo de edificacion",
-    accessor: "tipo_edificacion",
-  },
-  {
-    Header: "Color",
-    accessor: "color_fachada",
   },
   {
     Header: "Calle Principal",
@@ -31,7 +23,14 @@ export const head = Object.freeze([
     Header: "Villa",
     accessor: "villa",
   },
-
+  // {
+  //   Header: "Tipo de edificacion",
+  //   accessor: "tipo_edificacion",
+  // },
+  // {
+  //   Header: "Color",
+  //   accessor: "color_fachada",
+  // },
   {
     id: "actions",
     Cell: ActionsCell,

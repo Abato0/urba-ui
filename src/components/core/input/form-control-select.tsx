@@ -9,6 +9,7 @@ interface IProps {
   handleBlur: any;
   labetTitulo: string;
   id: string;
+  disabled?: boolean;
 }
 
 const FormControlHeader: React.FC<IProps> = ({
@@ -19,6 +20,7 @@ const FormControlHeader: React.FC<IProps> = ({
   children,
   id,
   labetTitulo,
+  disabled = false,
 }) => {
   return (
     <FormControl variant="filled" className={classes.formControl}>
@@ -32,6 +34,7 @@ const FormControlHeader: React.FC<IProps> = ({
         onBlur={handleBlur}
         className={classes.textbox}
         required
+        disabled={disabled}
       >
         {children}
       </Select>

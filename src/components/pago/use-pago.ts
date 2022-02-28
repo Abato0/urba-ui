@@ -10,7 +10,10 @@ import { isNil, isEmpty, equals } from "ramda";
 import { AllPago } from "../../interface/pago.interface";
 
 export const usePostPago = () => {
-  const [mutate, { data, loading, error }] = useMutation(savePago);
+  const [mutate, { data, loading, error }] = useMutation(savePago, {
+    refetchQueries: [{ query: listadoPago }, { query: getPagoFamiliarFilter }],
+    awaitRefetchQueries: true,
+  });
 
   return [mutate, data, loading, error];
 };
@@ -43,8 +46,9 @@ export const usePagoFamiliar = (id: number) => {
 
 export interface IPagoGrupoFamiliarInput {
   idGrupoFamiliar?: number;
-  id_aporte?: number;
-  fecha_pago?: string;
+  // id_aporte?: number;
+  mes?: string;
+  anio?: number;
 }
 
 interface IPagoGrupoFamiliarFiltersFunc {
@@ -57,19 +61,20 @@ export interface IDataListaPagoFilter {
     nombre_familiar: string;
   };
   pago: {
+    tipo_pago: string;
     fecha_pago: string;
+    fecha_subida: string;
     descripcion: string;
-    estado: string;
     monto: number;
   };
-  aporte: {
-    nombre_aporte: string;
-    tipo_aporte: string;
-  };
+  // aporte: {
+  //   nombre_aporte: string;
+  //   tipo_aporte: string;
+  // };
 }
 
 export const usePagoFamiliarFilters = (input: IPagoGrupoFamiliarInput) => {
-  console.log("Input: ", input);
+  //console.log("Input: ", input);
   return useQuery<IPagoGrupoFamiliarFiltersFunc, IPagoGrupoFamiliarInput>(
     getPagoFamiliarFilter,
     {
@@ -77,9 +82,10 @@ export const usePagoFamiliarFilters = (input: IPagoGrupoFamiliarInput) => {
         ...input,
       },
       skip: equals(input, {
-        fecha_pago: "",
+        mes: "",
         idGrupoFamiliar: 0,
-        id_aporte: 0,
+        anio: 0,
+        // id_aporte: 0,
       }),
       // skip: isEmpty(input),
     }

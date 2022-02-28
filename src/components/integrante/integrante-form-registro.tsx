@@ -1,5 +1,4 @@
 import { useQuery } from "@apollo/client";
-import DateFnsUtils from "@date-io/date-fns";
 import {
   makeStyles,
   createStyles,
@@ -12,17 +11,15 @@ import {
   Select,
   TextField,
   Button,
+  FormControlLabel,
+  FormGroup,
 } from "@material-ui/core";
-import { grey } from "@material-ui/core/colors";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
 import { useFormik } from "formik";
 import { isNil, omit } from "ramda";
 import { FC, useCallback, useEffect, useState, useMemo } from "react";
 import * as yup from "yup";
 import { isNotNilOrEmpty, isNilOrEmpty } from "../../utils/is-nil-empty";
+import { parseStringDate } from "../../utils/parseDate";
 import {
   plantaEdificacion,
   status_integrante,
@@ -32,11 +29,18 @@ import ModalAuth from "../core/input/dialog/modal-dialog";
 import FormControlDate from "../core/input/form-control-date";
 import FormControlHeader from "../core/input/form-control-select";
 import { listadoGrupoFamiliar } from "../grupo-familiar/grupo-familiar-typeDefs";
+import { Checkbox } from "@material-ui/core";
 import {
   IIntegranteVariables,
+  useListaIntergranteFilterQuery,
   usePostIntegranteMutation,
   useUpdateIntegranteMutation,
 } from "./use-intergrante";
+import { useListarGrupoFamiliar } from "../grupo-familiar/use-grupo-familia";
+import { useListaParentescoQuery } from "../mantenimento/parentesco/use-parentesco";
+import { IGrupoFamiliar } from "../../interface/grupo-familiar.interface";
+import { useListadoVehiculoFilterQuery } from "../vehiculo/use-vehiculo";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -102,12 +106,14 @@ const initialValues = Object.freeze({
   apellido: "",
   email: "",
   telefono: "",
-  status: "",
+  // status: "",
   fecha_nacimiento: new Date(),
   tipo_doc_identidad: "",
   num_doc_identidad: "",
-  piso_ocupa: "",
+  // piso_ocupa: "",
   genero: "",
+  id_parentesco: undefined,
+  representante: "I",
 });
 
 const validationSchema = yup.object().shape({
@@ -124,15 +130,16 @@ const validationSchema = yup.object().shape({
   apellido: yup.string().required("Campo requerido"),
   telefono: yup
     .string()
-    .matches(/^[0][0-9]+$/, "Solo numeros")
+    .matches(/^[0][0-9]+$/, "Solo numeros y debe empezar con 09")
     .min(10, "La cantidad de digitos debe ser igual 10 ")
     .max(10, "La cantidad de digitos debe ser igual 10 ")
     .required("Campo requerido"),
   email: yup.string().email("Campo debe ser un correo electronico").nullable(),
-  status: yup.string().required("Campo requerido"),
-  piso_ocupa: yup.string().required("Campo requerido"),
+  id_parentesco: yup.number().required("Campo requerido"),
+  // piso_ocupa: yup.string().required("Campo requerido"),
   genero: yup.string().required("Campo requerido"),
   fecha_nacimiento: yup.date().required("Campo requerido"),
+  representante: yup.string().required("Campo requerido"),
 });
 
 interface IProps {
@@ -151,41 +158,56 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
           telefono: integrante?.telefono,
           email: integrante?.email,
           genero: integrante?.genero,
-          piso_ocupa: integrante?.piso_ocupa,
-          status: integrante?.status,
+          representante: integrante?.representante,
+          id_parentesco: integrante?.parentesco.id,
+          // piso_ocupa: integrante?.piso_ocupa,
+          // status: integrante?.status,
           fecha_nacimiento: isNotNilOrEmpty(integrante?.fecha_nacimiento)
             ? parseStringDate(integrante?.fecha_nacimiento!)
             : new Date(),
         }
       : initialValues;
   }, [integrante]);
+  const router = useRouter();
   const classes = useStyles();
   const [openModalMsj, setOpenModalMsj] = useState<boolean>(false);
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
   const [errorModal, setErrorModal] = useState<boolean>(false);
+  const [boolPut, setBoolPut] = useState<boolean>(false);
+  const { refetch } = useListaIntergranteFilterQuery({});
 
   const {
     data: dataListaGrupoFamiliar,
     loading: loadingListaGrupoFamiliar,
     error: errorListaGrupoFamiliar,
-  } = useQuery(listadoGrupoFamiliar, {
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: "cache-and-network",
-  });
-
-  const [mutate, data, loading, error] = usePostIntegranteMutation();
-
-  const [mutateUpdate] = useUpdateIntegranteMutation();
-
-  const [dataGrupoFamiliar, setDataGrupoFamiliar] = useState([]);
+  } = useListarGrupoFamiliar();
 
   useEffect(() => {
-    if (!loadingListaGrupoFamiliar && !isNil(dataListaGrupoFamiliar)) {
-      setDataGrupoFamiliar(dataListaGrupoFamiliar.ListaGruposFamiliares);
-      console.log("data: ", dataListaGrupoFamiliar.ListaGruposFamiliares);
+    // setTimeout(() => {
+    if (!openModalMsj && boolPut) {
+      refetch().then(() => {
+        router.push({ pathname: "/integrante/listado" });
+      });
     }
-  }, [loadingListaGrupoFamiliar]);
+    // }, 2000);
+  }, [boolPut, openModalMsj]);
+
+  const {
+    data: dataParentesco,
+    loading: loadingParentesco,
+    error: errorParentesco,
+  } = useListaParentescoQuery();
+
+  const [mutate, data, loading, error] = isNil(integrante)
+    ? usePostIntegranteMutation()
+    : useUpdateIntegranteMutation();
+
+  // const [mutateUpdate] = useUpdateIntegranteMutation();
+
+  const [dataGrupoFamiliar, setDataGrupoFamiliar] = useState<IGrupoFamiliar[]>(
+    []
+  );
 
   const onSubmit = useCallback(
     async (
@@ -194,11 +216,11 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
         nombre,
         apellido,
         telefono,
-        status,
+        id_parentesco,
         fecha_nacimiento,
         tipo_doc_identidad,
         num_doc_identidad,
-        piso_ocupa,
+        representante,
         genero,
         email,
       },
@@ -211,29 +233,25 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
           isNotNilOrEmpty(num_doc_identidad) &&
           isNotNilOrEmpty(fecha_nacimiento) &&
           isNotNilOrEmpty(nombre) &&
-          isNotNilOrEmpty(status) &&
           isNotNilOrEmpty(telefono) &&
           isNotNilOrEmpty(tipo_doc_identidad) &&
-          isNotNilOrEmpty(piso_ocupa) &&
+          isNotNilOrEmpty(id_parentesco) &&
+          isNotNilOrEmpty(representante) &&
           isNotNilOrEmpty(genero)
         ) {
-          const {
-            data: dataMutate,
-            loading: loadingMutate,
-            error,
-          } = isNotNilOrEmpty(integrante)
-            ? await mutateUpdate({
+          const { data: dataMutate } = isNotNilOrEmpty(integrante)
+            ? await mutate({
                 variables: {
                   id: integrante?.id,
                   idGrupoFamiliar,
                   nombre,
                   apellido,
                   telefono,
-                  status,
+                  id_parentesco,
                   fecha_nacimiento,
                   tipo_doc_identidad,
                   num_doc_identidad,
-                  piso_ocupa,
+                  representante,
                   genero,
                   email,
                 },
@@ -244,30 +262,38 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                   nombre,
                   apellido,
                   telefono,
-                  status,
+                  id_parentesco,
                   fecha_nacimiento,
                   tipo_doc_identidad,
                   num_doc_identidad,
-                  piso_ocupa,
+                  representante,
                   genero,
                   email,
                 },
               });
           if (
-            !loadingMutate &&
             isNotNilOrEmpty(dataMutate) &&
-            isNotNilOrEmpty(dataMutate.PostIntegrante)
+            (isNotNilOrEmpty(dataMutate.PostIntegrante) ||
+              isNotNilOrEmpty(dataMutate.UpdateIntegrante))
           ) {
-            const { message } = dataMutate.PostIntegrante;
+            const { code, message } = isNotNilOrEmpty(dataMutate.PostIntegrante)
+              ? dataMutate.PostIntegrante
+              : dataMutate.UpdateIntegrante;
             setTitleModalMsj(message);
-            setErrorModal(false);
             setOpenModalMsj(true);
+            setErrorModal(code === 200 ? false : true);
+            if (isNotNilOrEmpty(dataMutate.UpdateIntegrante) && code === 200) {
+              setBoolPut(true);
+            }
+            
+            console.log("Messaget: ", message);
 
-            resetForm();
-          } else if (!loadingMutate && dataMutate === null) {
+            // resetForm();
+          } else if (dataMutate === null) {
             setTitleModalMsj("Usuario no autorizado");
             setErrorModal(true);
             setOpenModalMsj(true);
+            console.log("dasdasdasd");
           }
         }
       } catch (err: any) {
@@ -281,8 +307,6 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
     },
     [integrante]
   );
-
-  const resetValues = () => {};
 
   const {
     errors,
@@ -318,36 +342,10 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
       <form
         action="#"
         onSubmit={handleSubmit}
-        onReset={handleReset}
+        // onReset={handleReset}
         className={classes.form}
       >
         <div className={classes.contentLastTextBox}>
-          {/* <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel id="idGrupoFamiliar_label">
-              Grupo Familiar del Deposito
-            </InputLabel>
-            <Select
-              className={classes.textbox}
-              labelId="idGrupoFamiliar_label"
-              id="idGrupoFamiliar"
-              name="idGrupoFamiliar"
-              value={values.idGrupoFamiliar}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={
-                touched.idGrupoFamiliar &&
-                isNotNilOrEmpty(errors.idGrupoFamiliar)
-              }
-              required
-            >
-              {!loadingListaGrupoFamiliar &&
-                dataGrupoFamiliar &&
-                dataGrupoFamiliar.map(({ id, nombre_familiar }) => {
-                  return <MenuItem value={id}>{nombre_familiar}</MenuItem>;
-                })}
-            </Select>
-          </FormControl> */}
-
           <FormControlHeader
             classes={classes}
             handleBlur={handleBlur}
@@ -357,26 +355,43 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
             value={values.idGrupoFamiliar}
           >
             {!loadingListaGrupoFamiliar &&
-              dataGrupoFamiliar &&
-              dataGrupoFamiliar.map(({ id, nombre_familiar }) => {
-                return <MenuItem value={id}>{nombre_familiar}</MenuItem>;
-              })}
+              !isNil(dataListaGrupoFamiliar) &&
+              isNotNilOrEmpty(dataListaGrupoFamiliar.ListaGruposFamiliares) &&
+              dataListaGrupoFamiliar.ListaGruposFamiliares.map(
+                ({ id, nombre_familiar }) => {
+                  return (
+                    <MenuItem
+                      value={id}
+                      key={"ListGrupoFamiliarFormIntegrante-" + id}
+                    >
+                      {nombre_familiar}
+                    </MenuItem>
+                  );
+                }
+              )}
           </FormControlHeader>
+
           <FormControlHeader
             classes={classes}
             handleBlur={handleBlur}
-            id="status"
+            id="id_parentesco"
             handleChange={handleChange}
-            labetTitulo="Condición de habitación"
-            value={values.status}
+            labetTitulo="Parentesco"
+            value={values.id_parentesco}
           >
-            {status_integrante.map((status) => {
-              return (
-                <MenuItem key={"integrante-" + status} value={status}>
-                  {status}
-                </MenuItem>
-              );
-            })}
+            {!loadingParentesco &&
+              !isNil(dataParentesco) &&
+              isNotNilOrEmpty(dataParentesco.ListaParentesco) &&
+              dataParentesco.ListaParentesco.map(({ id, parentesco }) => {
+                return (
+                  <MenuItem
+                    key={"IngresarIntegranteFormParentesco-" + id}
+                    value={id}
+                  >
+                    {parentesco}
+                  </MenuItem>
+                );
+              })}
           </FormControlHeader>
         </div>
 
@@ -463,9 +478,18 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
             labetTitulo="Genero"
             value={values.genero}
           >
-            <MenuItem value={"masculino"}> Masculino</MenuItem>
-            <MenuItem value={"femenino"}> Femenino </MenuItem>
-            <MenuItem value={"otro"}> Otro</MenuItem>
+            <MenuItem key="ListGeneroMasculino" value={"masculino"}>
+              {" "}
+              Masculino
+            </MenuItem>
+            <MenuItem key="ListGeneroFemenino" value={"femenino"}>
+              {" "}
+              Femenino{" "}
+            </MenuItem>
+            <MenuItem key="ListGeneroOtro" value={"otro"}>
+              {" "}
+              Otro
+            </MenuItem>
           </FormControlHeader>
         </div>
         <div className={classes.contentLastTextBox}>
@@ -494,7 +518,39 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
             helperText={touched.email ? errors.email : undefined}
           />
         </div>
+
         <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            margin: 10,
+            marginLeft: 45,
+            marginRight: 45,
+          }}
+        >
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  defaultChecked={init.representante === "A"}
+                  // value={values.representante === "A" ? true : false}
+                  // checked={values.representante === "A" ? true : false}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setFieldValue("representante", "A");
+                    } else {
+                      setFieldValue("representante", "I");
+                    }
+                  }}
+                />
+              }
+              label="Representante"
+            />
+          </FormGroup>
+        </div>
+
+        {/* <div
           style={{ marginRight: 245 }}
           className={classes.contentLastTextBox}
         >
@@ -514,7 +570,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
               );
             })}
           </FormControlHeader>
-        </div>
+        </div> */}
         <div className={classes.contentButtons}>
           <div></div>
           <Button type="submit" variant="outlined">

@@ -6,10 +6,20 @@ import { showSidebar } from "../../utils/states";
 import AcordionHeader from "./sidebar/acordionHeader";
 import ItemSidebar from "./sidebar/acordionItemClick";
 import {
+  faBezierCurve,
+  faCar,
+  faCarCrash,
+  faClipboard,
   faDonate,
   faEdit,
+  faGopuram,
   faIndustry,
+  faKey,
   faListAlt,
+  faPalette,
+  faRoad,
+  faSquare,
+  faTools,
   faUser,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
@@ -83,97 +93,102 @@ export const EnlacesSidebar = {
       route: "/aporte/listado",
     },
   },
+  vehiculo: {
+    registrar: {
+      route: "/vehiculo/ingresar",
+    },
+    listado: {
+      route: "/vehiculo/listado",
+    },
+    activacion: {
+      route: "/vehiculo/activacion",
+    },
+  },
+  tag: {
+    listado: {
+      route: "/tag/listado",
+    },
+  },
+  mantenimiento: {
+    colores: {
+      registrar: {
+        route: "/mantenimiento/color/registrar",
+      },
+      listado: {
+        route: "/mantenimiento/color/listado",
+      },
+    },
+    calle: {
+      registrar: {
+        route: "/mantenimiento/calle/registrar",
+      },
+      listado: {
+        route: "/mantenimiento/calle/listado",
+      },
+    },
+    manzana: {
+      registrar: {
+        route: "/mantenimiento/manzana/registrar",
+      },
+      listado: {
+        route: "/mantenimiento/manzana/listado",
+      },
+    },
+    tipoEdificacion: {
+      registrar: {
+        route: "/mantenimiento/tipo-edificacion/registrar",
+      },
+      listado: {
+        route: "/mantenimiento/tipo-edificacion/listado",
+      },
+    },
+
+    marca: {
+      registrar: {
+        route: "/mantenimiento/marca/registrar",
+      },
+      listado: {
+        route: "/mantenimiento/marca/listado",
+      },
+    },
+
+    modelo: {
+      registrar: {
+        route: "/mantenimiento/modelo/registrar",
+      },
+      listado: {
+        route: "/mantenimiento/modelo/listado",
+      },
+    },
+    statusVehiculo: {
+      registrar: {
+        route: "/mantenimiento/status-vehiculo/registrar",
+      },
+      listado: {
+        route: "/mantenimiento/status-vehiculo/listado",
+      },
+    },
+
+    valorTag: {
+      registrar: {
+        route: "/mantenimiento/valor-tag/registrar",
+      },
+      listado: {
+        route: "/mantenimiento/valor-tag/listado",
+      },
+    },
+
+    parentesco: {
+      registrar: {
+        route: "/mantenimiento/parentesco/registrar",
+      },
+      listado: {
+        route: "/mantenimiento/parentesco/listado",
+      },
+    },
+  },
 };
 const Sidebar: FC = () => {
-  // const classes = useStyles();
-  // const router = useRouter();
-  // const ShowSidebar = useRecoilValue(showSidebar);
-
-  // console.log("showSidebar: ", ShowSidebar);
-
-  // return (
-  //   <div className={classes.root}>
-  //     <Slide direction="right" in={ShowSidebar}>
-  //       <TreeView
-  //         className={classes.sidebar}
-  //         defaultCollapseIcon={<ExpandMoreIcon />}
-  //         defaultExpandIcon={<ChevronRightIcon />}
-  //       >
-  //         <TreeItem nodeId="1" label="Familias" className={classes.nodePadre}>
-  //           <TreeItem nodeId="4" label="Grupo Familiar">
-  //             <Link href={EnlacesSidebar.grupoFamiliar.registrar.route}>
-  //               <TreeItem
-  //                 nodeId="8"
-  //                 label="Registrar Grupo Familiar"
-  //                 className={classes.nodeHijo}
-  //               />
-  //             </Link>
-  //             <Link href={EnlacesSidebar.grupoFamiliar.listado.route}>
-  //               <TreeItem
-  //                 nodeId="9"
-  //                 label="Listado"
-  //                 className={classes.nodeHijo}
-  //               />
-  //             </Link>
-  //           </TreeItem>
-  //           <TreeItem nodeId="5" label="Integrante">
-  //             <Link href={EnlacesSidebar.integrante.registrar.route}>
-  //               <TreeItem
-  //                 nodeId="10"
-  //                 label="Registrar Integrante"
-  //                 className={classes.nodeHijo}
-  //               />
-  //             </Link>
-  //             <Link href={EnlacesSidebar.integrante.listado.route}>
-  //               <TreeItem
-  //                 nodeId="11"
-  //                 label="Listado Integrante"
-  //                 className={classes.nodeHijo}
-  //               />
-  //             </Link>
-  //           </TreeItem>
-  //         </TreeItem>
-  //         <TreeItem nodeId="2" label="Pago" className={classes.nodePadre}>
-  //           <Link href={EnlacesSidebar.pago.registrar.route}>
-  //             <TreeItem
-  //               nodeId="6"
-  //               label="Ingresar Pago"
-  //               className={classes.nodeHijo}
-  //             />
-  //           </Link>
-  //           <Link href={EnlacesSidebar.pago.listado.route}>
-  //             <TreeItem
-  //               nodeId="7"
-  //               label="Listado de Pagos"
-  //               className={classes.nodeHijo}
-  //             />
-  //           </Link>
-
-  //         </TreeItem>
-  //         <TreeItem nodeId="3" label="Aporte" className={classes.nodePadre}>
-  //           <Link href={EnlacesSidebar.aporte.registrar.route}>
-  //             <TreeItem
-  //               nodeId="12"
-  //               label="Ingresar Aportacion"
-  //               className={classes.nodeHijo}
-  //             />
-  //           </Link>
-  //           <Link href={EnlacesSidebar.aporte.listado.route}>
-  //             <TreeItem
-  //               nodeId="13"
-  //               label="Listado de Aportaciones"
-  //               className={classes.nodeHijo}
-  //             />
-  //           </Link>
-
-  //         </TreeItem>
-  //       </TreeView>
-  //     </Slide>
-  //     <Box className={classes.box}>
-  //       <div className={classes.children}>{children}</div>
-  //     </Box>
-  //   </div>
-  // );
   const classes = useStyles();
   const router = useRouter();
 
@@ -226,7 +241,7 @@ const Sidebar: FC = () => {
               label={"Registrar"}
             />
           </AcordionHeader>
-          <AcordionHeader icon={faIndustry} label={"Aporte"}>
+          {/* <AcordionHeader icon={faIndustry} label={"Aporte"}>
             <ItemSidebar
               icon={faListAlt}
               eventClick={() =>
@@ -245,7 +260,8 @@ const Sidebar: FC = () => {
               }
               label={"Registrar"}
             />
-          </AcordionHeader>
+          </AcordionHeader> */}
+
           <AcordionHeader icon={faDonate} label={"Pago"}>
             <ItemSidebar
               icon={faListAlt}
@@ -265,6 +281,267 @@ const Sidebar: FC = () => {
               }
               label={"Registrar"}
             />
+          </AcordionHeader>
+
+          <AcordionHeader icon={faCar} label={"Vehiculo"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.vehiculo.listado.route),
+                })
+              }
+              label={"Listado"}
+            />
+            <ItemSidebar
+              icon={faEdit}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.vehiculo.registrar.route),
+                })
+              }
+              label={"Registrar"}
+            />
+          </AcordionHeader>
+
+          <AcordionHeader icon={faDonate} label={"Tag"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.tag.listado.route),
+                })
+              }
+              label={"Listado"}
+            />
+          </AcordionHeader>
+          <AcordionHeader icon={faTools} label={"Mantenimiento"}>
+            <AcordionHeader icon={faPalette} label={"Colores"}>
+              <ItemSidebar
+                icon={faListAlt}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.colores.listado.route
+                    ),
+                  })
+                }
+                label={"Listado"}
+              />
+              <ItemSidebar
+                icon={faEdit}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.colores.registrar.route
+                    ),
+                  })
+                }
+                label={"Registrar"}
+              />
+            </AcordionHeader>
+
+            <AcordionHeader icon={faRoad} label={"Calle"}>
+              <ItemSidebar
+                icon={faListAlt}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.calle.listado.route
+                    ),
+                  })
+                }
+                label={"Listado"}
+              />
+              <ItemSidebar
+                icon={faEdit}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.calle.registrar.route
+                    ),
+                  })
+                }
+                label={"Registrar"}
+              />
+            </AcordionHeader>
+
+            <AcordionHeader icon={faSquare} label={"Manzana"}>
+              <ItemSidebar
+                icon={faListAlt}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.manzana.listado.route
+                    ),
+                  })
+                }
+                label={"Listado"}
+              />
+              <ItemSidebar
+                icon={faEdit}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.manzana.registrar.route
+                    ),
+                  })
+                }
+                label={"Registrar"}
+              />
+            </AcordionHeader>
+
+            {/* <AcordionHeader icon={faGopuram} label={"Tipo Edificacion"}>
+              <ItemSidebar
+                icon={faListAlt}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.tipoEdificacion.listado.route
+                    ),
+                  })
+                }
+                label={"Listado"}
+              />
+              <ItemSidebar
+                icon={faEdit}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.tipoEdificacion.registrar
+                        .route
+                    ),
+                  })
+                }
+                label={"Registrar"}
+              />
+            </AcordionHeader> */}
+
+            <AcordionHeader icon={faBezierCurve} label={"Marca"}>
+              <ItemSidebar
+                icon={faListAlt}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.marca.listado.route
+                    ),
+                  })
+                }
+                label={"Listado"}
+              />
+              <ItemSidebar
+                icon={faEdit}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.marca.registrar.route
+                    ),
+                  })
+                }
+                label={"Registrar"}
+              />
+            </AcordionHeader>
+
+            <AcordionHeader icon={faCarCrash} label={"Modelo"}>
+              <ItemSidebar
+                icon={faListAlt}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.modelo.listado.route
+                    ),
+                  })
+                }
+                label={"Listado"}
+              />
+              <ItemSidebar
+                icon={faEdit}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.modelo.registrar.route
+                    ),
+                  })
+                }
+                label={"Registrar"}
+              />
+            </AcordionHeader>
+
+            <AcordionHeader icon={faClipboard} label={"Status Vehiculo"}>
+              <ItemSidebar
+                icon={faListAlt}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.statusVehiculo.listado.route
+                    ),
+                  })
+                }
+                label={"Listado"}
+              />
+              <ItemSidebar
+                icon={faEdit}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.statusVehiculo.registrar
+                        .route
+                    ),
+                  })
+                }
+                label={"Registrar"}
+              />
+            </AcordionHeader>
+
+            <AcordionHeader icon={faClipboard} label={"Valor Tag"}>
+              <ItemSidebar
+                icon={faListAlt}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.valorTag.listado.route
+                    ),
+                  })
+                }
+                label={"Listado"}
+              />
+              <ItemSidebar
+                icon={faEdit}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.valorTag.registrar.route
+                    ),
+                  })
+                }
+                label={"Registrar"}
+              />
+            </AcordionHeader>
+
+            <AcordionHeader icon={faClipboard} label={"Parentesco"}>
+              <ItemSidebar
+                icon={faListAlt}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.parentesco.listado.route
+                    ),
+                  })
+                }
+                label={"Listado"}
+              />
+              <ItemSidebar
+                icon={faEdit}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.parentesco.registrar.route
+                    ),
+                  })
+                }
+                label={"Registrar"}
+              />
+            </AcordionHeader>
           </AcordionHeader>
         </Box>
       </Slide>

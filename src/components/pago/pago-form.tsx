@@ -33,6 +33,7 @@ import { grey } from "@material-ui/core/colors";
 import { rangoFechaAportePagoService } from "../../utils/parseDate";
 import FormControlHeader from "../core/input/form-control-select";
 import FormControlDate from "../core/input/form-control-date";
+import { useListadoVehiculoFilterQuery } from "../vehiculo/use-vehiculo";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -245,6 +246,8 @@ export const PagoFormIngresar = () => {
     onSubmit,
     validationSchema,
   });
+
+
   const { data, loading, error } = useQuery(listadoGrupoFamiliar, {
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
@@ -491,8 +494,7 @@ export const PagoFormIngresar = () => {
               {pagoMensual.map(({ f_pago, monto }) => {
                 return (
                   <ListItem
-                    key={"pago-mensual-" + f_pago + "-" + monto
-                  }
+                    key={"pago-mensual-" + f_pago + "-" + monto}
                     style={{ width: "100%" }}
                     alignItems="center"
                   >

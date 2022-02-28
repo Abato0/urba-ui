@@ -4,33 +4,38 @@ import VisualizarActionsCell from "../table/ver-imagen-cell";
 export interface AllPagoTable {
   id: number;
   nombre_familiar: string;
+  tipo_pago: string;
   fecha_pago: string;
-  tipo_aporte: string;
+  fecha_subida: string;
   descripcion: string;
-  estado: string;
   monto: number;
-  mes_ano_pago?: string;
 }
 
 export const headPagoTable = Object.freeze([
   {
-    Header: "Nombre Familiar",
+    Header: "Grupo Familiar",
     accessor: "nombre_familiar",
   },
 
+  // {
+  //   Header: "Nombre del Aporte",
+  //   accessor: "nombre_aporte",
+  // },
   {
-    Header: "Nombre del Aporte",
-    accessor: "nombre_aporte",
-  },
-  {
-    Header: "Tipo del Aporte",
-    accessor: "tipo_aporte",
+    Header: "Tipo de Pago",
+    accessor: "tipo_pago",
   },
 
   {
     Header: "Fecha del Pago",
     accessor: "fecha_pago",
   },
+
+  {
+    Header: "Fecha de Subida",
+    accessor: "fecha_subida",
+  },
+
   // {
   //   Header: "Mes del pago",
   //   accessor: "mes_ano_pago",
@@ -43,10 +48,10 @@ export const headPagoTable = Object.freeze([
     Header: "Monto",
     accessor: "monto",
   },
-  {
-    Header: "Estado",
-    accessor: "status",
-  },
+  // {
+  //   Header: "Estado",
+  //   accessor: "status",
+  // },
 
   {
     id: "actions",

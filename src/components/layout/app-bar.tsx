@@ -35,18 +35,19 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     grow: {
       flexGrow: 1,
-     
+
       // minWidth: 900
     },
     menuButton: {
       marginRight: theme.spacing(2),
+      color: "white",
     },
     title: {
       display: "none",
       [theme.breakpoints.up("sm")]: {
         display: "block",
       },
-      color: colors.blueGrey[400],
+      color: colors.lightGreen[400],
     },
     search: {
       position: "relative",
@@ -98,18 +99,19 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     toolbar: {
-      backgroundColor: colors.blueGrey[100],
-      minWidth: theme.spacing(126)
+      // backgroundColor: colors.green[700],
+      background: "linear-gradient(to right, #4e54c8, #8f94fb)",
+      minWidth: theme.spacing(126),
     },
 
     appbar: {
       borderColor: "white",
       minWidth: "660px",
- 
+
       // width: "100%",
     },
 
-    iconAvatar: {},
+    icons: {},
   })
 );
 
@@ -173,7 +175,7 @@ const NavBar: React.FC = ({ children }) => {
     >
       <MenuItem>
         <IconButton aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="secondary">
+          <Badge badgeContent={4} color="primary">
             <MailIcon />
           </Badge>
         </IconButton>
@@ -213,7 +215,8 @@ const NavBar: React.FC = ({ children }) => {
           <IconButton
             edge="start"
             className={classes.menuButton}
-            color="primary"
+            // color="primary"
+            // classes={classes.icons}
             // color={colors.blueGrey[400]}
             aria-label="open drawer"
             onClick={() => setOpenSidebar(!openSidebar)}
@@ -247,21 +250,23 @@ const NavBar: React.FC = ({ children }) => {
               </Avatar>
             </IconButton>
             <IconButton
+              className={classes.menuButton}
               aria-label="show 4 new mails"
-              color="primary"
+
               //  color="black"
             >
-              <Badge badgeContent={4} color="secondary">
+              <Badge badgeContent={4} color="error">
                 <MailIcon />
               </Badge>
             </IconButton>
             <IconButton
               aria-label="show 17 new notifications"
-              color="primary"
+              // color="primary"
               // color="black"
+              className={classes.menuButton}
               {...bindTrigger(popupState)}
             >
-              <Badge badgeContent={17} color="secondary">
+              <Badge badgeContent={17} color="error">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -271,7 +276,7 @@ const NavBar: React.FC = ({ children }) => {
               aria-controls={menuId}
               aria-haspopup="true"
               onClick={handleProfileMenuOpen}
-              color="primary"
+              className={classes.menuButton}
               // color="black"
             >
               <AccountCircle />

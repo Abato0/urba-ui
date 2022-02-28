@@ -18,10 +18,10 @@ export const listadoPago = gql`
       }
       pago {
         fecha_pago
-        tipo_aporte
+        tipo_pago
         descripcion
-        estado
         monto
+        fecha_subida
       }
     }
   }
@@ -37,9 +37,11 @@ export const getPagoFamiliar = gql`
       pago {
         fecha_pago
         descripcion
-        estado
+        tipo_pago
+        # estado
         imagen_recibo
         monto
+        fecha_subida
       }
     }
   }
@@ -48,14 +50,16 @@ export const getPagoFamiliar = gql`
 export const getPagoFamiliarFilter = gql`
   query ListaPagoFamiliarFilter(
     $idGrupoFamiliar: Int
-    $id_aporte: Int
-    $fecha_pago: String
+    # $id_aporte: Int
+    $mes: String
+    $anio: Int
   ) {
     ListaPagoFamiliarFilter(
       input: {
         idGrupoFamiliar: $idGrupoFamiliar
-        id_aporte: $id_aporte
-        fecha_pago: $fecha_pago
+        # id_aporte: $id_aporte
+        mes: $mes
+        anio: $anio
       }
     ) {
       id
@@ -66,12 +70,14 @@ export const getPagoFamiliarFilter = gql`
         fecha_pago
         descripcion
         monto
-        status
+        tipo_pago
+        fecha_subida
+        # status
       }
-      aporte {
-        nombre_aporte
-        tipo_aporte
-      }
+      # aporte {
+      #   nombre_aporte
+      #   tipo_aporte
+      # }
     }
   }
 `;
@@ -79,28 +85,36 @@ export const getPagoFamiliarFilter = gql`
 export const savePago = gql`
   mutation (
     $idGrupoFamiliar: Int!
-    $idAporte: Int!
+    # $idAporte: Int!
     $descripcion: String
     # $fecha_pago: String
     $fecha_subida: String
     $imagen_recibo: Upload
     # $monto: Int
-    $pagoMes: String
+    # $pagoMes: String
     $cod_recibo: String
     $fecha_recibo: String
+    $mantenimiento: [PagoMantenimiento]
+    $otros: PagoOtros
+    $implementacion: Int
+    $tag: [PagoTag]
   ) {
     PostPago(
       idGrupoFamiliar: $idGrupoFamiliar
-      idAporte: $idAporte
+      # idAporte: $idAporte
       input: {
         descripcion: $descripcion
-        pagoMes:$pagoMes
+        # pagoMes:$pagoMes
         # fecha_pago: $fecha_pago
         fecha_subida: $fecha_subida
         imagen_recibo: $imagen_recibo
         # monto: $monto
         cod_recibo: $cod_recibo
         fecha_recibo: $fecha_recibo
+        mantenimiento: $mantenimiento
+        otros: $otros
+        implementacion: $implementacion
+        tag: $tag
       }
     ) {
       code

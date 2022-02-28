@@ -54,12 +54,19 @@ const useStyles = makeStyles({
   titulo: {
     textAlign: "center",
     paddingTop: "12px",
+    fontWeight: "bold",
+    color: colors.grey[700],
   },
   iconButton: {
     height: 15,
+    color: colors.grey[700],
+  },
+  labelButton: {
+    color: colors.grey[700],
+    fontWeight: "bold",
   },
   avatar: {
-    backgroundColor: colors.blueGrey[900],
+    backgroundColor: colors.grey[800],
     // color: "red"
   },
 });
@@ -80,7 +87,7 @@ const CardItemHome: React.FC<IProps> = ({
   icon.icon;
   const classes = useStyles();
   return (
-    <Paper className={classes.paperItem}>
+    <Paper elevation={4} className={classes.paperItem}>
       <Typography variant="h6" className={classes.titulo}>
         {titulo}
       </Typography>
@@ -98,20 +105,25 @@ const CardItemHome: React.FC<IProps> = ({
                 onClick={onclickListado}
               />
             }
-            variant="text"
+            variant="outlined"
             className={classes.ListItem}
           >
-            Listado
+            <Typography className={classes.labelButton} variant="button">
+              {" "}
+              Listado
+            </Typography>
           </Button>
           <Button
             startIcon={
               <FontAwesomeIcon icon={faEdit} className={classes.iconButton} />
             }
-            variant="text"
+            variant="outlined"
             className={classes.ListItem}
             onClick={onclickIngreso}
           >
-            Ingreso
+            <Typography className={classes.labelButton} variant="button">
+              Ingreso
+            </Typography>
           </Button>
         </div>
       </div>

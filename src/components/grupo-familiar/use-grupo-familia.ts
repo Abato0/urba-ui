@@ -2,26 +2,23 @@ import { useMutation, useQuery } from "@apollo/client";
 import { DocumentNode } from "graphql";
 import {
   deleteGrupoFamiliarMutation,
+  GetGrupoFamiliar,
   listadoGrupoFamiliar,
-  listarGruposFamiliares,
+  listarGruposFamiliaresFilter,
   updateGrupoFamiliarMutation,
 } from "./grupo-familiar-typeDefs";
-import { useCallback } from "react";
-import { IIntegranteFilterInput } from "../integrante/use-intergrante";
-import { equals } from "ramda";
+import { equals, isEmpty } from "ramda";
 import { IGrupoFamiliar } from "../../interface/grupo-familiar.interface";
+import { isNilOrEmpty } from "../../utils/is-nil-empty";
 
-export interface IGrupoFamiliarInput {
-  nombre_familiar: string;
-  celular: string;
-}
-
-export const useGrupoFamiliarMutation = (
-  mutation: DocumentNode,
-  input: IGrupoFamiliarInput
-) => {
+export const useGrupoFamiliarMutation = (mutation: DocumentNode) => {
   const [mutate, { data = {}, loading, error }] = useMutation(
-    mutation
+    mutation,
+    // {
+    //   refetchQueries: [{ query: listarGruposFamiliaresFilter }],
+    //   awaitRefetchQueries: true,
+    // }
+
     // , {
     // variables: { ...input },
     // }
@@ -30,13 +27,13 @@ export const useGrupoFamiliarMutation = (
   return [mutate, data, loading, error];
 };
 
-export const useUpdateFamiliarMutation = (
-  id: number,
-  input: IGrupoFamiliarInput,
-  mutation: DocumentNode
-) => {
+export const useUpdateFamiliarMutation = (mutation: DocumentNode) => {
   const [mutate, { data = {}, loading, error }] = useMutation(
-    mutation
+    mutation,
+    // {
+    //   refetchQueries: [{ query: listarGruposFamiliaresFilter }],
+    //   awaitRefetchQueries: true,
+    // }
     //   , {
     //   variables: { id, input },
     // }
@@ -47,7 +44,11 @@ export const useUpdateFamiliarMutation = (
 
 export const useDeleteGrupoFamiliarMutatio = (id: number) => {
   const [mutate, { data = {}, loading, error }] = useMutation(
-    deleteGrupoFamiliarMutation
+    deleteGrupoFamiliarMutation,
+    // {
+    //   refetchQueries: [{ query: listarGruposFamiliaresFilter }],
+    //   awaitRefetchQueries: true,
+    // }
     // ,
     // {
     //   variables: { id },
@@ -60,16 +61,16 @@ export const useDeleteGrupoFamiliarMutatio = (id: number) => {
 export interface IListadoGrupoFamiliarVariables {
   id: number;
   nombre_familiar: string;
-  color_fachada: string;
-  manzana: string;
-  villa: string;
-  calle_principal: string;
-  calle_interseccion: string;
-  tipo_edificacion: string;
+  // color_fachada: string;
+  // manzana: string;
+  // villa: string;
+  // calle_principal: string;
+  // calle_interseccion: string;
+  // tipo_edificacion: string;
 }
 
 interface IListadoGrupoFamiliar {
-  ListaGruposFamiliares: IListadoGrupoFamiliarVariables[];
+  ListaGruposFamiliares: IGrupoFamiliar[];
 }
 
 export const useListarGrupoFamiliar = () => {
@@ -79,26 +80,40 @@ export const useListarGrupoFamiliar = () => {
   });
 };
 
+export interface IGetGrupoFamiliar {
+  GetGrupoFamiliar: IGrupoFamiliar;
+}
+
+export const useGetGrupoFamiliar = (id?: string) => {
+  return useQuery<IGetGrupoFamiliar>(GetGrupoFamiliar, {
+    variables: { id: Number(id) },
+    skip: isNilOrEmpty(id),
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network",
+  });
+};
 
 export interface IListaGruposFamiliaresFilter {
   ListaGruposFamiliaresFilter: IGrupoFamiliar[];
 }
 
+export interface IGrupoFamiliarFilterInput {
+  // idGrupoFamiliar?: number;
+  calle_principal?: string;
+  //   calle_interseccion?: string;
+  manzana?: string;
+}
+
 export const useListarGrupoFamiliarFilterQuery = (
-  input: IIntegranteFilterInput
+  input: IGrupoFamiliarFilterInput
 ) => {
-  return useQuery<IListaGruposFamiliaresFilter, IIntegranteFilterInput>(
-    listarGruposFamiliares,
+  return useQuery<IListaGruposFamiliaresFilter, IGrupoFamiliarFilterInput>(
+    listarGruposFamiliaresFilter,
     {
       variables: {
         ...input,
       },
-      skip: equals(input, {
-        calle_interseccion: "",
-        idGrupoFamiliar: 0,
-        calle_principal: "",
-        manzana: "",
-      }),
+      skip: isEmpty(input.calle_principal) && isEmpty(input.manzana),
     }
   );
 };

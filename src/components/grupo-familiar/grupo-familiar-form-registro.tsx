@@ -17,21 +17,25 @@ import { isNotNilOrEmpty } from "../../utils/is-nil-empty";
 import { saveGrupoFamiliar } from "../../components/grupo-familiar/grupo-familiar-typeDefs";
 import {
   useGrupoFamiliarMutation,
+  useListarGrupoFamiliarFilterQuery,
   useUpdateFamiliarMutation,
 } from "../../components/grupo-familiar/use-grupo-familia";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { DocumentNode } from "@apollo/client";
-import { isEmpty, isNil, omit } from "ramda";
-import { IGrupoFamiliar } from "../../interface/grupo-familiar.interface";
-import ModalAuth from "../core/input/dialog/modal-dialog";
+import { equals, isEmpty, isNil, omit } from "ramda";
 import {
-  calleInterseccion,
-  CallesPrincipales,
-  coloresPrincipalesFachada,
-  manzanas,
-  tiposEdificacion,
-} from "../core/input/dateSelect";
+  IGrupoFamiliar,
+  IGrupoFamiliarInput,
+} from "../../interface/grupo-familiar.interface";
+import ModalAuth from "../core/input/dialog/modal-dialog";
+
 import FormControlHeader from "../core/input/form-control-select";
+import {
+  useListaCallesQuery,
+  usePostCalleMutation,
+} from "../mantenimento/calle/use-calle";
+import { useListaManzanaQuery } from "../mantenimento/manzana/use-manzana";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -91,123 +95,160 @@ const useStyles = makeStyles((theme) =>
       // margin: theme.spacing(1),
       minWidth: 220,
     },
+    title: {
+      fontSize: theme.typography.pxToRem(12),
+      backgroundColor: colors.grey[200],
+      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(1),
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(4),
+      borderRadius: 5,
+    },
   })
 );
 
 const initialValues = Object.freeze({
   nombre_familiar: "",
-  calle_principal: "",
+  id_calle_principal: 0,
   calle_interseccion: "",
-  manzana: "",
+  id_manzana: 0,
   villa: 0,
-  tipo_edificacion: "",
-  color_fachada: "",
+  // id_tipo_edificacion: 0,
+  // id_color_fachada: 0,
 });
 
 const validationSchema = yup.object().shape({
   nombre_familiar: yup.string().required("Requerido"),
-  manzana: yup.string().required("Requerido"),
+  id_manzana: yup.number().required("Requerido"),
   villa: yup.number().required("Requerido"),
-  calle_principal: yup.string().required("Requerido"),
+  id_calle_principal: yup.number().required("Requerido"),
   calle_interseccion: yup.string().required("Requerido"),
-  color_fachada: yup.string().required("Requerido"),
-  tipo_edificacion: yup.string().required("Requerido"),
+  // id_color_fachada: yup.number().required("Requerido"),
+  // id_tipo_edificacion: yup.number().required("Requerido"),
 });
 
 interface IProps {
   mutation: DocumentNode;
-  grupoFam?: IGrupoFamiliar;
+  grupoFam?: IGrupoFamiliarInput;
+  idGrupoFamiliar?: number;
   // nombre_familiar?: string;
   // celular?: string;
 }
 
-const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
-  const [mutate, loading, error] = isNil(grupoFam)
-    ? useGrupoFamiliarMutation(mutation, {
-        ...initialValues,
-        celular: "",
-      })
-    : useUpdateFamiliarMutation(
-        0,
-        {
-          nombre_familiar: "",
-          celular: "",
-        },
-        mutation
-      );
-
+const GrupoFamiliarFormRegistro: FC<IProps> = ({
+  mutation,
+  grupoFam,
+  idGrupoFamiliar,
+}) => {
+  const router = useRouter();
   const [openModalMsj, setOpenModalMsj] = useState<boolean>(false);
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
   const [errorModal, setErrorModal] = useState<boolean>(false);
+  const [boolPut, setBoolPut] = useState<boolean>(false);
+
+  const { refetch } = useListarGrupoFamiliarFilterQuery({});
+  const [mutate, loading, error] = isNil(grupoFam)
+    ? useGrupoFamiliarMutation(mutation)
+    : useUpdateFamiliarMutation(mutation);
+
+  const {
+    data: dataListadoManzana,
+    loading: loadingListadoManzana,
+    error: errorListadoManzana,
+  } = useListaManzanaQuery();
+
+  const {
+    data: dataListadoCalles,
+    loading: loadingListadoCalles,
+    error: errorListadoCalles,
+  } = useListaCallesQuery();
+
+  useEffect(() => {
+    // setTimeout(() => {
+    if (!openModalMsj && boolPut) {
+      refetch().then(() => {
+        router.push({ pathname: "/grupo-familiar/listado" });
+      });
+    }
+    // }, 2000);
+  }, [boolPut, openModalMsj]);
 
   const onSubmit = useCallback(
     async (
       {
         nombre_familiar,
-        calle_principal,
+        id_calle_principal,
         calle_interseccion,
-        manzana,
+        id_manzana,
         villa,
-        tipo_edificacion,
-        color_fachada,
+        // id_tipo_edificacion,
+        // id_color_fachada,
       },
       { setSubmitting }
     ) => {
       try {
         if (
           isNotNilOrEmpty(nombre_familiar) &&
-          isNotNilOrEmpty(calle_principal) &&
+          isNotNilOrEmpty(id_calle_principal) &&
+          !equals(id_calle_principal, 0) &&
           isNotNilOrEmpty(calle_interseccion) &&
-          isNotNilOrEmpty(manzana) &&
-          isNotNilOrEmpty(villa) &&
-          isNotNilOrEmpty(tipo_edificacion) &&
-          isNotNilOrEmpty(color_fachada)
+          isNotNilOrEmpty(id_manzana) &&
+          !equals(id_manzana, 0) &&
+          isNotNilOrEmpty(villa)
+          // isNotNilOrEmpty(id_tipo_edificacion) &&
+          // !equals(id_tipo_edificacion, 0) &&
+          // isNotNilOrEmpty(id_color_fachada) &&
+          // !equals(id_color_fachada, 0)
         ) {
-          const {
-            data: dataMutate,
-            loading: loadingMutate,
-            error,
-          } = isNil(grupoFam)
+          const { data: dataMutate } = isNil(grupoFam)
             ? await mutate({
                 variables: {
                   nombre_familiar,
-                  calle_principal,
+                  id_calle_principal,
                   calle_interseccion,
-                  manzana,
+                  id_manzana,
                   villa,
-                  tipo_edificacion,
-                  color_fachada,
+                  // id_tipo_edificacion,
+                  // id_color_fachada,
                 },
               })
             : await mutate({
                 variables: {
-                  id: Number(grupoFam.id),
+                  id: idGrupoFamiliar,
                   nombre_familiar,
-                  calle_principal,
+                  id_calle_principal,
                   calle_interseccion,
-                  manzana,
+                  id_manzana,
                   villa,
-                  tipo_edificacion,
-                  color_fachada,
+                  // id_tipo_edificacion,
+                  // id_color_fachada,
                 },
               });
           if (
-            (!loadingMutate &&
-              isNotNilOrEmpty(dataMutate) &&
+            (isNotNilOrEmpty(dataMutate) &&
               isNotNilOrEmpty(dataMutate.PostGrupoFamiliar)) ||
             isNotNilOrEmpty(dataMutate.UpdateGrupoFamiliar)
           ) {
-            const { message } = isNotNilOrEmpty(dataMutate.PostGrupoFamiliar)
+            const { code, message } = isNotNilOrEmpty(
+              dataMutate.PostGrupoFamiliar
+            )
               ? dataMutate.PostGrupoFamiliar
               : dataMutate.UpdateGrupoFamiliar;
+
             setTitleModalMsj(message);
             setErrorModal(false);
-            // setMensajeModalMsj(dataMutate.message);
             setOpenModalMsj(true);
+            setErrorModal(code === 200 ? false : true);
+            if (
+              isNotNilOrEmpty(dataMutate.UpdateGrupoFamiliar) &&
+              code === 200
+            ) {
+              setBoolPut(true);
+            }
 
-            resetForm();
-          } else if (!loadingMutate && dataMutate === null) {
+            // resetForm();
+          } else if (dataMutate === null) {
             setOpenModalMsj(true);
             setTitleModalMsj("Usuario no autorizado");
           }
@@ -227,7 +268,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
     []
   );
 
-  const init = !isNil(grupoFam) ? grupoFam : initialValues;
+  const init = useMemo(() => {
+    return !isNil(grupoFam) ? grupoFam : initialValues;
+  }, [grupoFam]);
 
   const {
     errors,
@@ -257,7 +300,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
           error={errorModal}
         />
       )}
-      <Typography variant="h5"> Registro de Grupo Familiar</Typography>
+      <div className={classes.title}>
+        <Typography variant="overline">Registro de Grupo Familiar</Typography>
+      </div>
       <form
         action="#"
         onSubmit={handleSubmit}
@@ -283,44 +328,29 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
             }
             required
           />
-
-          <FormControlHeader
-            classes={classes}
-            handleBlur={handleBlur}
-            id="tipo_edificacion"
-            handleChange={handleChange}
-            labetTitulo="Tipo de Edificación"
-            value={values.tipo_edificacion}
-          >
-            {tiposEdificacion.map(({ label, value }) => {
-              return (
-                <MenuItem key={"grupoFamiliar-" + value} value={value}>
-                  {label}
-                </MenuItem>
-              );
-            })}
-          </FormControlHeader>
         </div>
 
         <div className={classes.contentLastTextBox}>
           <FormControlHeader
             classes={classes}
             handleBlur={handleBlur}
-            id="calle_principal"
+            id="id_calle_principal"
             handleChange={handleChange}
             labetTitulo="Calle Principal"
-            value={values.calle_principal}
+            value={values.id_calle_principal}
           >
-            {CallesPrincipales.map((calle_principal) => {
-              return (
-                <MenuItem
-                  key={"grupoFamiliar-" + calle_principal}
-                  value={calle_principal}
-                >
-                  {calle_principal}
-                </MenuItem>
-              );
-            })}
+            {!loadingListadoCalles &&
+              !isNil(dataListadoCalles) &&
+              dataListadoCalles.ListaCalle.map(({ id, calle }) => {
+                return (
+                  <MenuItem
+                    key={"ingresoGrupoFamiliar-calle-principal" + id}
+                    value={id}
+                  >
+                    {calle}
+                  </MenuItem>
+                );
+              })}
           </FormControlHeader>
 
           <FormControlHeader
@@ -331,16 +361,18 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
             labetTitulo="Calle Intersección"
             value={values.calle_interseccion}
           >
-            {calleInterseccion.map((calleInterseccion) => {
-              return (
-                <MenuItem
-                  key={"grupoFamiliar-" + calleInterseccion}
-                  value={calleInterseccion}
-                >
-                  {calleInterseccion}
-                </MenuItem>
-              );
-            })}
+            {!loadingListadoCalles &&
+              !isNil(dataListadoCalles) &&
+              dataListadoCalles.ListaCalle.map(({ calle }) => {
+                return (
+                  <MenuItem
+                    key={"ingresoGrupoFamiliar-calle-interseccion" + calle}
+                    value={calle}
+                  >
+                    {calle}
+                  </MenuItem>
+                );
+              })}
           </FormControlHeader>
         </div>
 
@@ -348,18 +380,23 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
           <FormControlHeader
             classes={classes}
             handleBlur={handleBlur}
-            id="manzana"
+            id="id_manzana"
             handleChange={handleChange}
             labetTitulo="Manzana"
-            value={values.manzana}
+            value={values.id_manzana}
           >
-            {manzanas.map((manzana) => {
-              return (
-                <MenuItem key={"grupoFamiliar-" + manzana} value={manzana}>
-                  {manzana}
-                </MenuItem>
-              );
-            })}
+            {!loadingListadoManzana &&
+              !isNil(dataListadoManzana) &&
+              dataListadoManzana.ListaManzana.map(({ id, manzana }) => {
+                return (
+                  <MenuItem
+                    key={"ingresoGrupoFamiliar-manzana" + id}
+                    value={id}
+                  >
+                    {manzana}
+                  </MenuItem>
+                );
+              })}
           </FormControlHeader>
 
           <TextField
@@ -377,27 +414,6 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({ mutation, grupoFam }) => {
             helperText={touched.villa ? errors.villa : undefined}
             required
           />
-        </div>
-        <div
-          style={{ marginRight: 245 }}
-          className={classes.contentLastTextBox}
-        >
-          <FormControlHeader
-            classes={classes}
-            handleBlur={handleBlur}
-            id="color_fachada"
-            handleChange={handleChange}
-            labetTitulo="Color de la Fachada"
-            value={values.color_fachada}
-          >
-            {coloresPrincipalesFachada.map((color) => {
-              return (
-                <MenuItem key={"grupoFamiliar-" + color} value={color}>
-                  {color}
-                </MenuItem>
-              );
-            })}
-          </FormControlHeader>
         </div>
 
         <div className={classes.contentButtons}>

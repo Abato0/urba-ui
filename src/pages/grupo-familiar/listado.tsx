@@ -4,6 +4,7 @@ import {
   useDeleteGrupoFamiliarMutatio,
   useListarGrupoFamiliarFilterQuery,
   IListaGruposFamiliaresFilter,
+  IGrupoFamiliarFilterInput,
 } from "../../components/grupo-familiar/use-grupo-familia";
 import AppLayout from "../../components/layout/app-layout";
 //import { head, rows } from "../../components/core/input/data";
@@ -14,8 +15,6 @@ import { isNil, isEmpty, prop, pluck, omit, map, equals } from "ramda";
 
 import { IGrupoFamiliar } from "../../interface/grupo-familiar.interface";
 import Fuse from "fuse.js";
-import { listadoGrupoFamiliar } from "../../components/grupo-familiar/grupo-familiar-typeDefs";
-import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import useDebounce from "../../utils/useDebounce";
 import CardTable from "../../components/table/card-table";
@@ -33,21 +32,67 @@ import {
   InputLabel,
   Select,
   Button,
+  Typography,
 } from "@material-ui/core";
 import {
   calleInterseccion,
   CallesPrincipales,
   manzanas,
 } from "../../components/core/input/dateSelect";
+import { useListaCallesQuery } from "../../components/mantenimento/calle/use-calle";
+import { useListaManzanaQuery } from "../../components/mantenimento/manzana/use-manzana";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFilter, faEraser } from "@fortawesome/free-solid-svg-icons";
 
 const getRowId = prop("nombre_familiar");
 
-const optionsFuse: Fuse.IFuseOptions<IGrupoFamiliar> = {
-  keys: ["nombre_familiar"],
+const optionsFuse: Fuse.IFuseOptions<IGrupoFamiliarNormalize> = {
+  keys: ["nombre_familiar", "calle_principal", "calle_interseccion"],
 };
 
-const extractData = (data: IListaGruposFamiliaresFilter) => {
-  return !isNil(data) && !isEmpty(data) ? data.ListaGruposFamiliaresFilter : [];
+interface IGrupoFamiliarNormalize {
+  id?: number;
+  nombre_familiar: string;
+  // tipo_edificacion: string;
+  // color_fachada: string;
+  calle_principal: string;
+  calle_interseccion: string;
+  manzana: string;
+  villa: string;
+}
+
+const extractData = (data: IGrupoFamiliar[]): IGrupoFamiliarNormalize[] => {
+  return !isNil(data)
+    ? data.map(
+        ({
+          calle_interseccion,
+          calle_principal,
+          // color_fachada,
+          manzana,
+          // tipo_edificacion,
+          nombre_familiar,
+          villa,
+          id,
+        }) => {
+          return {
+            id,
+            calle_interseccion: isNil(calle_interseccion)
+              ? ""
+              : calle_interseccion,
+            calle_principal: isNil(calle_principal)
+              ? ""
+              : calle_principal.calle,
+            // color_fachada: isNil(color_fachada) ? "" : color_fachada.color,
+            manzana: isNil(manzana) ? "" : manzana.manzana,
+            // tipo_edificacion: isNil(tipo_edificacion)
+            //   ? ""
+            //   : tipo_edificacion.tipo_edificacion ?? "",
+            villa: isNil(villa) ? "" : villa,
+            nombre_familiar: isNil(nombre_familiar) ? "" : nombre_familiar,
+          };
+        }
+      )
+    : [];
 };
 
 const useStyles = makeStyles((theme) =>
@@ -56,7 +101,7 @@ const useStyles = makeStyles((theme) =>
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
       borderRadius: "12px",
-      margin:"30px"
+      margin: "30px",
     },
     contentButtons: {
       display: "flex",
@@ -72,13 +117,15 @@ const useStyles = makeStyles((theme) =>
       marginTop: theme.spacing(1),
       color: "white",
       margin: theme.spacing(1),
-      height: "50%",
+      // height: "50%",
       backgroundColor: colors.blueGrey[900],
       "&:hover": {
         backgroundColor: colors.blueGrey[800],
       },
-      minWidth:100,
-      maxHeight:40
+      minWidth: theme.spacing(14),
+      // height: theme.spacing(12),
+      padding: theme.spacing(3),
+      maxHeight: theme.spacing(1),
     },
     textBox: {
       backgroundColor: "",
@@ -109,7 +156,7 @@ const useStyles = makeStyles((theme) =>
     },
     contenFilter: {
       backgroundColor: colors.grey[50],
-      marginBottom: theme.spacing(5),
+      marginBottom: theme.spacing(2),
       marginTop: theme.spacing(2),
       // display: "flex",
       // alignItems: "center",
@@ -117,6 +164,10 @@ const useStyles = makeStyles((theme) =>
     },
     contentForm: {
       marginTop: theme.spacing(3),
+    },
+    labelButton: {
+      fontSize: theme.typography.pxToRem(11),
+      fontFamily: "Roboto",
     },
     // table: {
     //   backgroundColor: colors.grey[700],
@@ -127,7 +178,9 @@ const useStyles = makeStyles((theme) =>
 const ListadoUsuario = () => {
   const classes = useStyles();
 
-  const [dataTable, setDataTable] = React.useState<IGrupoFamiliar[]>([]);
+  const [dataTable, setDataTable] = React.useState<IGrupoFamiliarNormalize[]>(
+    []
+  );
   const [search, setSearch] = React.useState<string>("");
   const [openModalMsj, setOpenModalMsj] = useState<boolean>(false);
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
@@ -136,28 +189,36 @@ const ListadoUsuario = () => {
   const debounceSearch = useDebounce(search, 300);
   const [mutate] = useDeleteGrupoFamiliarMutatio(0);
 
-  const [inputFilter, setInputFilter] = useState<IIntegranteFilterInput>({});
-  const [idGrupoFamiliarFilter, setIdGrupoFamiliarFilter] = useState<
-    number | undefined
-  >();
+  const [inputFilter, setInputFilter] = useState<IGrupoFamiliarFilterInput>({});
   const [callePrincipalFilter, setCallePrincipalFilter] = useState<string>("");
-  const [cllInterseccionFilter, setClleInterseccionFilter] =
-    useState<string>("");
   const [manzanaFilter, setManzanaFilter] = useState<string>("");
 
   const { data, loading, error } =
     useListarGrupoFamiliarFilterQuery(inputFilter);
 
   const {
-    data: dataListadoGrupoFamiliar,
-    loading: loadingListadoGrupoFamiliar,
-    error: errorListadoGrupoFamiliar,
-  } = useListarGrupoFamiliar();
+    data: dataListadoManzana,
+    loading: loadingListadoManzana,
+    error: errorListadoManzana,
+  } = useListaManzanaQuery();
+
+  const {
+    data: dataListadoCalles,
+    loading: loadingListadoCalles,
+    error: errorListadoCalles,
+  } = useListaCallesQuery();
 
   const fuse = React.useMemo(() => {
     if (!isEmpty(data) && !isNil(data)) {
-      const myIndex = Fuse.createIndex(optionsFuse.keys!, extractData(data));
-      return new Fuse(extractData(data!), optionsFuse, myIndex);
+      const myIndex = Fuse.createIndex(
+        optionsFuse.keys!,
+        extractData(data.ListaGruposFamiliaresFilter)
+      );
+      return new Fuse(
+        extractData(data.ListaGruposFamiliaresFilter),
+        optionsFuse,
+        myIndex
+      );
     }
   }, [data]);
 
@@ -167,19 +228,24 @@ const ListadoUsuario = () => {
       // console.log("result:", fuse.search(String(debounceSearch)));
       setDataTable(result);
     } else {
-      setDataTable(extractData(data!));
+      if (!isNil(data)) {
+        setDataTable(extractData(data.ListaGruposFamiliaresFilter));
+      } else {
+        setDataTable([]);
+      }
     }
   }, [debounceSearch]);
 
   React.useEffect(() => {
     if (!loading && !isNil(data) && isNil(error)) {
-      setDataTable(extractData(data!));
+      setDataTable(extractData(data.ListaGruposFamiliaresFilter));
       // console.log("extractData: ", extractData(data!));
       // console.log("datas: ", data);
     }
   }, [loading, data, error]);
 
   const onEdit = ({ id }: any) => {
+    console.log("id:", id);
     // Navigate to corresponding filing wizard page to resume filing draft
     if (!isNil(id)) {
       router.push(
@@ -197,7 +263,7 @@ const ListadoUsuario = () => {
         "El Grupo Familiar seleccionado se ha eliminado correctamente"
       );
       setOpenModalMsj(true);
-      setDataTable(extractData(data!));
+      // setDataTable(extractData(data?.ListaGruposFamiliaresFilter!));
     } catch (error) {
       setTitleModalMsj("Grupo Familiar no Eliminado");
       setMensajeModalMsj(
@@ -221,13 +287,13 @@ const ListadoUsuario = () => {
 
   const filtrar = useCallback(() => {
     setInputFilter({
-      idGrupoFamiliar:
-        equals(idGrupoFamiliarFilter, 0) || isNil(idGrupoFamiliarFilter)
-          ? undefined
-          : idGrupoFamiliarFilter,
-      calle_interseccion: isEmpty(cllInterseccionFilter)
-        ? undefined
-        : cllInterseccionFilter,
+      // idGrupoFamiliar:
+      //   equals(idGrupoFamiliarFilter, 0) || isNil(idGrupoFamiliarFilter)
+      //     ? undefined
+      //     : idGrupoFamiliarFilter,
+      // calle_interseccion: isEmpty(cllInterseccionFilter)
+      //   ? undefined
+      //   : cllInterseccionFilter,
 
       calle_principal: isEmpty(callePrincipalFilter)
         ? undefined
@@ -235,17 +301,17 @@ const ListadoUsuario = () => {
       manzana: isEmpty(manzanaFilter) ? undefined : manzanaFilter,
     });
   }, [
-    idGrupoFamiliarFilter,
-    cllInterseccionFilter,
+    // idGrupoFamiliarFilter,
+    // cllInterseccionFilter,
     callePrincipalFilter,
     callePrincipalFilter,
     manzanaFilter,
   ]);
 
   const reset = useCallback(() => {
-    setIdGrupoFamiliarFilter(undefined);
+    // setIdGrupoFamiliarFilter(undefined);
     setCallePrincipalFilter("");
-    setClleInterseccionFilter("");
+    // setClleInterseccionFilter("");
     setManzanaFilter("");
     setInputFilter({});
   }, []);
@@ -285,38 +351,17 @@ const ListadoUsuario = () => {
             ]}
             search={search}
             setSearch={setSearch}
-            lengthData={extractData(data!).length}
+            lengthData={
+              !isNil(data)
+                ? extractData(data.ListaGruposFamiliaresFilter).length
+                : 0
+            }
           >
             <Divider />
 
             <div className={classes.contenFilter}>
               <div className={classes.contentButtons}>
                 <div className={classes.contentForm}>
-                  <FormControl variant="filled" className={classes.formControl}>
-                    <InputLabel id="idGrupoFamiliar_label">
-                      Grupo Familiar
-                    </InputLabel>
-                    <Select
-                      className={classes.selectFilter}
-                      labelId="idGrupoFamiliar_label"
-                      value={idGrupoFamiliarFilter}
-                      onChange={(e) =>
-                        setIdGrupoFamiliarFilter(e.target.value as number)
-                      }
-                    >
-                      <MenuItem value={undefined}> - Deseleccionar - </MenuItem>
-                      {!loadingListadoGrupoFamiliar &&
-                        isNotNilOrEmpty(dataListadoGrupoFamiliar) &&
-                        dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
-                          ({ id, nombre_familiar }) => {
-                            return (
-                              <MenuItem value={id}>{nombre_familiar}</MenuItem>
-                            );
-                          }
-                        )}
-                    </Select>
-                  </FormControl>
-
                   <FormControl variant="filled" className={classes.formControl}>
                     <InputLabel id="callerPrincipal_label">
                       Calle Principal
@@ -330,43 +375,21 @@ const ListadoUsuario = () => {
                       }
                     >
                       <MenuItem value={""}> - Deseleccionar - </MenuItem>
-                      {CallesPrincipales.map((calle) => {
-                        return (
-                          <MenuItem
-                            key={"integranteListado" + calle}
-                            value={calle}
-                          >
-                            {calle}
-                          </MenuItem>
-                        );
-                      })}
+                      {!loadingListadoCalles &&
+                        !isNil(dataListadoCalles) &&
+                        dataListadoCalles.ListaCalle.map(({ id, calle }) => {
+                          return (
+                            <MenuItem
+                              key={"integranteListado" + calle}
+                              value={calle}
+                            >
+                              {calle}
+                            </MenuItem>
+                          );
+                        })}
                     </Select>
                   </FormControl>
-                  <FormControl variant="filled" className={classes.formControl}>
-                    <InputLabel id="callerInterseccion_label">
-                      Calle Interseccion
-                    </InputLabel>
-                    <Select
-                      className={classes.selectFilter}
-                      labelId="callerInterseccion_label"
-                      value={cllInterseccionFilter}
-                      onChange={(e) =>
-                        setClleInterseccionFilter(e.target.value as string)
-                      }
-                    >
-                      <MenuItem value={""}> - Deseleccionar - </MenuItem>
-                      {calleInterseccion.map((calle) => {
-                        return (
-                          <MenuItem
-                            key={"integranteListado" + calle}
-                            value={calle}
-                          >
-                            {calle}
-                          </MenuItem>
-                        );
-                      })}
-                    </Select>
-                  </FormControl>
+
                   <FormControl variant="filled" className={classes.formControl}>
                     <InputLabel id="manzana_label">Manzana</InputLabel>
                     <Select
@@ -378,29 +401,53 @@ const ListadoUsuario = () => {
                       }
                     >
                       <MenuItem value={""}> - Deseleccionar - </MenuItem>
-                      {manzanas.map((manzana) => {
-                        return (
-                          <MenuItem
-                            key={"integranteListado" + manzana}
-                            value={manzana}
-                          >
-                            {manzana}
-                          </MenuItem>
-                        );
-                      })}
+                      {!loadingListadoManzana &&
+                        !isNil(dataListadoManzana) &&
+                        dataListadoManzana.ListaManzana.map(({ manzana }) => {
+                          return (
+                            <MenuItem
+                              key={"integranteListado" + manzana}
+                              value={manzana}
+                            >
+                              {manzana}
+                            </MenuItem>
+                          );
+                        })}
                     </Select>
                   </FormControl>
                 </div>
-                <div></div>
 
-                <div></div>
-
-                <div>
-                  <Button className={classes.button} onClick={filtrar}>
-                    Filtrar
+                <div
+                  style={{
+                    // backgroundColor: "red",
+                    // minWidth: 200,
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <Button
+                    startIcon={<FontAwesomeIcon icon={faFilter} />}
+                    className={classes.button}
+                    onClick={filtrar}
+                  >
+                    <Typography
+                      className={classes.labelButton}
+                      variant="button"
+                    >
+                      Filtrar
+                    </Typography>
                   </Button>
-                  <Button className={classes.button} onClick={reset}>
-                    Reset
+                  <Button
+                    startIcon={<FontAwesomeIcon icon={faEraser} />}
+                    className={classes.button}
+                    onClick={reset}
+                  >
+                    <Typography
+                      className={classes.labelButton}
+                      variant="button"
+                    >
+                      Reset
+                    </Typography>
                   </Button>
                 </div>
               </div>

@@ -2,12 +2,6 @@ import {
   Paper,
   TextField,
   TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  CardActions,
-  TablePagination,
   colors,
   makeStyles,
   createStyles,
@@ -15,13 +9,23 @@ import {
   Button,
 } from "@material-ui/core";
 import { FC, useCallback } from "react";
-import { Column, Row, usePagination, useTable } from "react-table";
+import {
+  Column,
+  Row,
+  usePagination,
+  useRowSelect,
+  useTable,
+} from "react-table";
 
 import { ExportTablePdf } from "./export-table-pdf";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import TableHeader from "./table-header";
 import CardTableBody from "./table-body";
 import TablePaginations from "./table-paginations";
+import IndeterminateCheckbox from "./checkbox-cell";
+import Typography from "@material-ui/core/Typography";
+import { faFileExcel, faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -30,7 +34,8 @@ const useStyles = makeStyles((theme) =>
       // marginBottom: theme.spacing(2),
       borderRadius: "12px",
       margin: "30px",
-      maxWidth:"800px"
+      width: "80%",
+      // maxWidth: "1100px",
     },
     contentButtons: {
       display: "flex",
@@ -46,20 +51,44 @@ const useStyles = makeStyles((theme) =>
       marginTop: theme.spacing(1),
       color: "white",
       margin: theme.spacing(1),
-      height: "50%",
+      // height: "50%",
       backgroundColor: colors.blueGrey[900],
       "&:hover": {
         backgroundColor: colors.blueGrey[800],
       },
-      minWidth: 100,
-      maxHeight: 40,
+      maxHeight: theme.spacing(6),
+      padding: theme.spacing(3),
+      // minWidth: 100,
+      // maxHeight: 40,
     },
     textBox: {
       backgroundColor: "",
+      width: theme.spacing(40),
+      marginTop: theme.spacing(2),
     },
-    // table: {
-    //   backgroundColor: colors.grey[600],
-    // },
+
+    containerTitle: {
+      // backgroundColor: "red",
+      display: "flex",
+      justifyContent: "center",
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(1),
+    },
+    title: {
+      fontSize: theme.typography.pxToRem(19),
+      backgroundColor: colors.grey[200],
+      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(1),
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(4),
+      borderRadius: 5,
+      // fontWeight: "bold",
+      // font
+    },
+    labelButton: {
+      fontSize: theme.typography.pxToRem(11),
+      fontFamily: "Roboto",
+    },
   })
 );
 
@@ -77,6 +106,7 @@ interface IProps {
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   lengthData: number;
   ExportExcel: () => void;
+  checkbox?: boolean;
 }
 
 const CardTable: FC<IProps> = ({
@@ -94,6 +124,7 @@ const CardTable: FC<IProps> = ({
   lengthData,
   ExportExcel,
   children,
+  checkbox = false,
 }) => {
   const classes = useStyles();
   const {
@@ -104,7 +135,7 @@ const CardTable: FC<IProps> = ({
     page,
     prepareRow,
     setPageSize,
-    state: { pageIndex, pageSize },
+    state: { pageIndex, pageSize, selectedRowIds },
   } = useTable(
     {
       columns,
@@ -126,17 +157,41 @@ const CardTable: FC<IProps> = ({
   return (
     <>
       <Paper className={classes.root}>
+        <div className={classes.containerTitle}>
+          <Typography variant="overline" className={classes.title}>
+            Listado de Grupos Familiares
+          </Typography>
+        </div>
         <div className={classes.contentButtons}>
+          {/* <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyItems: "center",
+              m
+              // alignItems: "center",
+            }}
+          > */}
+
           <TextField
             className={classes.textBox}
             variant="outlined"
-            placeholder="Search"
+            placeholder={"🔍 Buscar"}
             onChange={(e) => {
               setSearch(e.target.value);
             }}
             value={search}
           />
-          <div>
+          {/* </div> */}
+
+          <div
+            style={{
+              // backgroundColor: "red",
+              // minWidth: 200,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             <ExportTablePdf
               classes={classes.button}
               idTable={idTable}
@@ -145,10 +200,17 @@ const CardTable: FC<IProps> = ({
             />
             <Button
               className={classes.button}
+              variant="contained"
               color="secondary"
               onClick={ExportExcel}
+              style={{
+                backgroundColor: colors.green[800],
+              }}
+              startIcon={<FontAwesomeIcon icon={faFileExcel} />}
             >
-              Export Excel
+              <Typography className={classes.labelButton} variant="button">
+                Exportar a Excel
+              </Typography>
             </Button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import AppLayout from "../../components/layout/app-layout";
 import {
   IDataListaPagoFilter,
@@ -6,19 +6,7 @@ import {
   usePagoFamiliar,
   usePagoFamiliarFilters,
 } from "../../components/pago/use-pago";
-import {
-  concat,
-  equals,
-  head,
-  isEmpty,
-  isNil,
-  last,
-  omit,
-  pluck,
-  prop,
-  split,
-  tail,
-} from "ramda";
+import { equals, isEmpty, isNil, pluck, prop } from "ramda";
 import {
   AllPagoTable,
   headPagoTable,
@@ -26,7 +14,6 @@ import {
 import TablePaginations from "../../components/table/table-paginations";
 import {
   Button,
-  ButtonGroup,
   colors,
   createStyles,
   Divider,
@@ -42,6 +29,7 @@ import {
   TableFooter,
   TableRow,
   TextField,
+  Typography,
 } from "@material-ui/core";
 import { ExportTablePdf } from "../../components/table/export-table-pdf";
 import { usePagination, useTable } from "react-table";
@@ -51,17 +39,17 @@ import useDebounce from "../../utils/useDebounce";
 import Fuse from "fuse.js";
 import { TableCell } from "@material-ui/core";
 import { isNotNilOrEmpty } from "../../utils/is-nil-empty";
-import { useQuery } from "@apollo/client";
-import { listadoGrupoFamiliar } from "../../components/grupo-familiar/grupo-familiar-typeDefs";
 import ModalImagen from "../../components/core/input/dialog/modal-ver-imagen";
-import {
-  useArrIntervaloFechaAporte,
-  useListarAporteQuery,
-} from "../../components/aporte/use-aporte";
+import { useListarAporteQuery } from "../../components/aporte/use-aporte";
 import XLSX from "xlsx";
 import { useListarGrupoFamiliar } from "../../components/grupo-familiar/use-grupo-familia";
-import { grey } from "@material-ui/core/colors";
 import { rangoFechaAportePagoService } from "../../utils/parseDate";
+import { SelectMeses } from "../../components/core/input/select/select-meses";
+import { SelectAnios } from "../../components/core/input/select/select-anios";
+import { SelectChangeEvent } from "@mui/material";
+import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFilter, faEraser } from "@fortawesome/free-solid-svg-icons";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -70,7 +58,7 @@ const useStyles = makeStyles((theme) =>
       marginBottom: theme.spacing(2),
       borderRadius: "12px",
       // width: 80
-      margin:"30px"
+      margin: "30px",
     },
     contentButtons: {
       display: "flex",
@@ -86,16 +74,20 @@ const useStyles = makeStyles((theme) =>
       marginTop: theme.spacing(1),
       color: "white",
       margin: theme.spacing(1),
-      height: "50%",
+      // height: "50%",
       backgroundColor: colors.blueGrey[900],
       "&:hover": {
         backgroundColor: colors.blueGrey[800],
       },
-      minWidth:100,
-      maxHeight:40
+      minWidth: theme.spacing(14),
+      // height: theme.spacing(12),
+      padding: theme.spacing(3),
+      maxHeight: theme.spacing(1),
     },
     textBox: {
       backgroundColor: "",
+      width: theme.spacing(40),
+      marginTop: theme.spacing(2),
     },
     container: {
       display: "flex",
@@ -126,6 +118,29 @@ const useStyles = makeStyles((theme) =>
     contenFilter: {
       backgroundColor: colors.grey[50],
     },
+    labelButton: {
+      fontSize: theme.typography.pxToRem(11),
+      fontFamily: "Roboto",
+    },
+
+    containerTitle: {
+      // backgroundColor: "red",
+      display: "flex",
+      justifyContent: "center",
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(1),
+    },
+    title: {
+      fontSize: theme.typography.pxToRem(19),
+      backgroundColor: colors.grey[200],
+      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(1),
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(4),
+      borderRadius: 5,
+      // fontWeight: "bold",
+      // font
+    },
     // table: {
     //   backgroundColor: colors.grey[700],
     // },
@@ -139,20 +154,18 @@ const optionsFuse: Fuse.IFuseOptions<any> = {
 interface IDataTablePagoListado {
   id: number;
   nombre_familiar: string;
+  tipo_pago: string;
   fecha_pago: string;
+  fecha_subida: string;
   descripcion: string;
-  estado: string;
   monto: number;
-  nombre_aporte: string;
-  tipo_aporte: string;
 }
 
 const extractData = (data: IDataListaPagoFilter[]) => {
   console.log("data de la funcion extracData: ", data);
-  return data.map(({ id, pago, aporte, grupoFamiliar }, index) => {
+  return data.map(({ id, pago, grupoFamiliar }, index) => {
     return {
       ...pago,
-      ...aporte,
       id,
       nombre_familiar: grupoFamiliar.nombre_familiar,
 
@@ -160,16 +173,6 @@ const extractData = (data: IDataListaPagoFilter[]) => {
       // tipo_aporte: aporte.tipo_aporte,
     };
   });
-
-  // const allPagoBodyTable: AllPagoTable[] = [];
-  // data.forEach(({ id, pago, grupoFamiliar }) => {
-  //   allPagoBodyTable.push({
-  //     ...pago,
-  //     id,
-  //     nombre_familiar: grupoFamiliar.nombre_familiar,
-  //   });
-  // });
-  // return allPagoBodyTable;
 };
 
 export const calcularMonto = (data: AllPagoTable[]) => {
@@ -182,6 +185,8 @@ export const calcularMonto = (data: AllPagoTable[]) => {
   return acum;
 };
 
+const getRowId = prop("id");
+
 const ListadoPago = () => {
   const classes = useStyles();
   // const { data, loading, error } = useAllListadoPago();
@@ -192,10 +197,14 @@ const ListadoPago = () => {
   const [idPago, setIdPago] = React.useState<number>(0);
   const [base64, setBase64] = React.useState<string>("");
 
-  const [tipoAporteFilter, setTipoAporteFilter] = React.useState<
+  const [idGrupoFamiliarFilter, setIdGrupoFamiliarFilter] = React.useState<
     number | undefined
   >();
-  const [idGrupoFamiliarFilter, setIdGrupoFamiliarFilter] = React.useState<
+
+  const [mesPagoFilter, setmesPagoFilterFilter] = React.useState<
+    string | undefined
+  >();
+  const [anioPagoFilter, setAnioPagoFilter] = React.useState<
     number | undefined
   >();
 
@@ -206,11 +215,11 @@ const ListadoPago = () => {
 
   const { data, loading, error } = usePagoFamiliarFilters(filterInput);
 
-  const {
-    data: dataAporte,
-    loading: loadingAporte,
-    error: erroAporte,
-  } = useListarAporteQuery();
+  // const {
+  //   data: dataAporte,
+  //   loading: loadingAporte,
+  //   error: erroAporte,
+  // } = useListarAporteQuery();
 
   const {
     data: dataListadoGrupoFamiliar,
@@ -220,7 +229,7 @@ const ListadoPago = () => {
 
   const debounceSearch = useDebounce(search, 300);
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(!open);
+  // const handleOpen = () => setOpen(!open);
   const handleClose = () => setOpen(false);
 
   const {
@@ -277,11 +286,6 @@ const ListadoPago = () => {
       // setAllPagoData(extractData(data.ListaPagos));
       setAllPagoData(extractData(data.ListaPagoFamiliarFilter));
 
-      console.log(
-        "data extractData: ",
-        extractData(data.ListaPagoFamiliarFilter)
-      );
-
       //   console.log("data: ", extractData(data.ListaPagos));
     }
     // console.log("data: ", data);
@@ -306,14 +310,6 @@ const ListadoPago = () => {
     }
   }, [dataPagoFamiliar, loadingPagoFamiliar]);
 
-  // const getRowId = React.useMemo(() => {
-  //   return isNotNilOrEmpty(tipoAporteFilter) &&
-  //     isNotNilOrEmpty(fechaAporteFilter)
-  //     ? prop("nombre_familiar")
-  //     : prop("id");
-  // }, [tipoAporteFilter, fechaAporteFilter]);
-
-  const getRowId = prop("id");
   const {
     getTableProps,
     getTableBodyProps,
@@ -343,20 +339,26 @@ const ListadoPago = () => {
     [setPageSize]
   );
 
-  const filtrar = () => {
+  const filtrar = useCallback(() => {
     setFilterInput({
-      fecha_pago: isEmpty(fechaAporteFilter) ? undefined : fechaAporteFilter,
+      mes: isEmpty(mesPagoFilter) ? undefined : mesPagoFilter,
+      anio:
+        equals(anioPagoFilter, 0) || isNil(anioPagoFilter)
+          ? undefined
+          : anioPagoFilter,
       idGrupoFamiliar:
         equals(idGrupoFamiliarFilter, 0) || isNil(idGrupoFamiliarFilter)
           ? undefined
           : idGrupoFamiliarFilter,
-      id_aporte: isNil(tipoAporteFilter) ? undefined : Number(tipoAporteFilter),
+      // id_aporte: isNil(tipoAporteFilter) ? undefined : Number(tipoAporteFilter),
     });
-  };
+  }, [mesPagoFilter, anioPagoFilter, idGrupoFamiliarFilter]);
+
   const cancelFiltrar = () => {
     setIdGrupoFamiliarFilter(0);
-    setTipoAporteFilter(0);
-    setFechaAporteFilter("");
+    setmesPagoFilterFilter("");
+    setAnioPagoFilter(0);
+    // setFechaAporteFilter("");
     setFilterInput({});
   };
 
@@ -373,6 +375,11 @@ const ListadoPago = () => {
   return (
     <AppLayout>
       <Paper className={classes.root}>
+        <div className={classes.containerTitle}>
+          <Typography variant="overline" className={classes.title}>
+            Listado de Pagos
+          </Typography>
+        </div>
         <div className={classes.contentButtons}>
           <TextField
             className={classes.textBox}
@@ -392,10 +399,16 @@ const ListadoPago = () => {
             />
             <Button
               className={classes.button}
-              // color="secondary"
+              color="secondary"
               onClick={ExportExcel}
+              style={{
+                backgroundColor: colors.green[800],
+              }}
+              startIcon={<FontAwesomeIcon icon={faFileExcel} />}
             >
-              Export Excel
+              <Typography className={classes.labelButton} variant="button">
+                Exportar a Excel
+              </Typography>
             </Button>
           </div>
         </div>
@@ -403,95 +416,81 @@ const ListadoPago = () => {
 
         <div className={classes.contenFilter}>
           <div className={classes.contentButtons}>
-            <div>
-              <FormControl variant="filled" className={classes.formControl}>
-                <InputLabel id="idGrupoFamiliar_label">
-                  Grupo Familiar
-                </InputLabel>
-                <Select
-                  className={classes.selectFilter}
-                  // variant="outlined"
-                  labelId="idGrupoFamiliar_label"
-                  // label={<p>Grupo Familiar</p>}
-                  id="idGrupoFamiliar"
-                  name="idGrupoFamiliar"
-                  value={idGrupoFamiliarFilter}
-                  onChange={(e) =>
-                    setIdGrupoFamiliarFilter(e.target.value as number)
-                  }
-                >
-                  <MenuItem value={undefined}> - Deseleccionar - </MenuItem>
-                  {!loadingListadoGrupoFamiliar &&
-                    isNotNilOrEmpty(dataListadoGrupoFamiliar) &&
-                    dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
-                      ({ id, nombre_familiar }) => {
-                        return (
-                          <MenuItem value={id}>{nombre_familiar}</MenuItem>
-                        );
-                      }
-                    )}
-                </Select>
-              </FormControl>
+            <div className={classes.contentForm}>
+              <div>
+                <FormControl variant="filled" className={classes.formControl}>
+                  <InputLabel id="idGrupoFamiliar_label">
+                    Grupo Familiar
+                  </InputLabel>
+                  <Select
+                    className={classes.selectFilter}
+                    // variant="outlined"
+                    labelId="idGrupoFamiliar_label"
+                    // label={<p>Grupo Familiar</p>}
+                    id="idGrupoFamiliar"
+                    name="idGrupoFamiliar"
+                    value={idGrupoFamiliarFilter}
+                    onChange={(e) =>
+                      setIdGrupoFamiliarFilter(e.target.value as number)
+                    }
+                  >
+                    <MenuItem value={undefined}> - Deseleccionar - </MenuItem>
+                    {!loadingListadoGrupoFamiliar &&
+                      isNotNilOrEmpty(dataListadoGrupoFamiliar) &&
+                      dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
+                        ({ id, nombre_familiar }) => {
+                          return (
+                            <MenuItem value={id}>{nombre_familiar}</MenuItem>
+                          );
+                        }
+                      )}
+                  </Select>
+                </FormControl>
 
-              <FormControl variant="filled" className={classes.formControl}>
-                <InputLabel id="tipo_aporter_label">Aporte</InputLabel>
-                <Select
-                  labelId="tipo_aporter_label"
-                  value={tipoAporteFilter}
-                  onChange={(e) =>
-                    setTipoAporteFilter(e.target.value as number)
+                <SelectMeses
+                  handleChange={(e: SelectChangeEvent) =>
+                    setmesPagoFilterFilter(String(e.target.value))
                   }
-                >
-                  <MenuItem value="">- Deseleccionar -</MenuItem>
-                  {!loadingAporte &&
-                    isNotNilOrEmpty(dataAporte) &&
-                    dataAporte?.ListaAportes.map(
-                      ({ id, nombre_aporte, tipo_aporte }) => {
-                        return (
-                          <MenuItem key={"listadoPago-" + id} value={id}>
-                            {`${nombre_aporte} - ${tipo_aporte}`}
-                          </MenuItem>
-                        );
-                      }
-                    )}
-                </Select>
-              </FormControl>
+                  value={mesPagoFilter}
+                  label={"Mes"}
+                  id={"mes_manteniento"}
+                />
 
-              <FormControl variant="filled" className={classes.formControl}>
-                <InputLabel id="fecha_aporte_label">Fecha</InputLabel>
-                <Select
-                  labelId="fecha_aporte_label"
-                  value={tipoAporteFilter}
-                  onChange={(e) =>
-                    setFechaAporteFilter(e.target.value as string)
+                <SelectAnios
+                  handleChange={(e: SelectChangeEvent) =>
+                    setAnioPagoFilter(Number(e.target.value))
                   }
-                >
-                  <MenuItem value="">- Deseleccionar -</MenuItem>
-                  {!loadingAporte &&
-                    isNotNilOrEmpty(dataAporte) &&
-                    isNotNilOrEmpty(tipoAporteFilter) &&
-                    tipoAporteFilter !== 0 &&
-                    rangoFechaAportePagoService(
-                      dataAporte?.ListaAportes.find(
-                        ({ id }) => id === tipoAporteFilter
-                      )!
-                    ).map((date) => {
-                      return (
-                        <MenuItem key={"listadoPagoFecha-" + date} value={date}>
-                          {date}
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
-              </FormControl>
+                  value={anioPagoFilter}
+                  label={"Año"}
+                  id={"anio_manteniento"}
+                />
+              </div>
             </div>
-
-            <div>
-              <Button className={classes.button} onClick={filtrar}>
-                Filtrar
+            <div
+              style={{
+                // backgroundColor: "red",
+                // minWidth: 200,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Button
+                startIcon={<FontAwesomeIcon icon={faFilter} />}
+                className={classes.button}
+                onClick={filtrar}
+              >
+                <Typography className={classes.labelButton} variant="button">
+                  Filtrar
+                </Typography>
               </Button>
-              <Button className={classes.button} onClick={cancelFiltrar}>
-                Cancelar
+              <Button
+                startIcon={<FontAwesomeIcon icon={faEraser} />}
+                className={classes.button}
+                onClick={cancelFiltrar}
+              >
+                <Typography className={classes.labelButton} variant="button">
+                  Reset
+                </Typography>
               </Button>
             </div>
           </div>

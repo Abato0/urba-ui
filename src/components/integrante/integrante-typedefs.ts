@@ -7,10 +7,10 @@ export const saveIntegrante = gql`
     $email: String
     $fecha_nacimiento: String
     $genero: String
+    $id_parentesco: Int
     $nombre: String
     $num_doc_identidad: String
-    $piso_ocupa: String
-    $status: String
+    $representante: String
     $telefono: String
     $tipo_doc_identidad: String
   ) {
@@ -22,9 +22,9 @@ export const saveIntegrante = gql`
         fecha_nacimiento: $fecha_nacimiento
         genero: $genero
         nombre: $nombre
+        id_parentesco: $id_parentesco
         num_doc_identidad: $num_doc_identidad
-        piso_ocupa: $piso_ocupa
-        status: $status
+        representante: $representante
         telefono: $telefono
         tipo_doc_identidad: $tipo_doc_identidad
       }
@@ -47,8 +47,11 @@ export const listadoIntegranteGrupoFamiliar = gql`
       email
       genero
       fecha_nacimiento
-      piso_ocupa
-      status
+      parentesco {
+        parentesco
+      }
+      representante
+
       grupoFamiliar {
         id
         nombre_familiar
@@ -75,17 +78,13 @@ export const listadoIntegrante = gql`
       email
       genero
       fecha_nacimiento
-      piso_ocupa
-      status
+      parentesco {
+        parentesco
+      }
+      representante
       grupoFamiliar {
         id
         nombre_familiar
-        manzana
-        villa
-        calle_principal
-        calle_interseccion
-        color_fachada
-        tipo_edificacion
       }
     }
   }
@@ -103,17 +102,14 @@ export const getIntegrante = gql`
       email
       genero
       fecha_nacimiento
-      piso_ocupa
-      status
+      parentesco {
+        id
+        parentesco
+      }
+      representante
       grupoFamiliar {
         id
         nombre_familiar
-        manzana
-        villa
-        calle_principal
-        calle_interseccion
-        color_fachada
-        tipo_edificacion
       }
     }
   }
@@ -126,10 +122,10 @@ export const updateIntegrante = gql`
     $email: String
     $fecha_nacimiento: String
     $genero: String
+    $id_parentesco: Int
     $nombre: String
     $num_doc_identidad: String
-    $piso_ocupa: String
-    $status: String
+    $representante: String
     $telefono: String
     $tipo_doc_identidad: String
   ) {
@@ -141,9 +137,9 @@ export const updateIntegrante = gql`
         fecha_nacimiento: $fecha_nacimiento
         genero: $genero
         nombre: $nombre
+        id_parentesco: $id_parentesco
         num_doc_identidad: $num_doc_identidad
-        piso_ocupa: $piso_ocupa
-        status: $status
+        representante: $representante
         telefono: $telefono
         tipo_doc_identidad: $tipo_doc_identidad
       }
@@ -156,17 +152,17 @@ export const updateIntegrante = gql`
 
 export const listaIntergranteFilter = gql`
   query (
-    $calle_interseccion: String
-    $calle_principal: String
+    # $calle_interseccion: String
+    # $calle_principal: String
     $idGrupoFamiliar: Int
-    $manzana: String
-  ) {
+  ) # $manzana: String
+  {
     ListaIntegranteFilter(
       input: {
-        calle_interseccion: $calle_interseccion
-        calle_principal: $calle_principal
+        # calle_interseccion: $calle_interseccion
+        # calle_principal: $calle_principal
         idGrupoFamiliar: $idGrupoFamiliar
-        manzana: $manzana
+        # manzana: $manzana
       }
     ) {
       id
@@ -178,17 +174,13 @@ export const listaIntergranteFilter = gql`
       email
       genero
       fecha_nacimiento
-      piso_ocupa
-      status
+      parentesco {
+        parentesco
+      }
+      representante
       grupoFamiliar {
         id
         nombre_familiar
-        manzana
-        villa
-        calle_principal
-        calle_interseccion
-        color_fachada
-        tipo_edificacion
       }
     }
   }
