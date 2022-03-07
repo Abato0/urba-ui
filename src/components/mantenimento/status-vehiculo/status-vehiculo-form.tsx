@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
   makeStyles,
   createStyles,
@@ -20,6 +21,7 @@ import {
   usePutStatusVehiculoMutation,
 } from "./use-status-vehiculo";
 import SaveIcon from "@material-ui/icons/Save";
+import { LoadingButton } from "@mui/lab";
 // import {
 //   IResultQueryMarca,
 //   usePostMarcaMutation,
@@ -29,11 +31,11 @@ import SaveIcon from "@material-ui/icons/Save";
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      marginTop: theme.spacing(10),
-      marginBottom: theme.spacing(10),
-      marginLeft: theme.spacing(20),
-      marginRight: theme.spacing(20),
-      padding: "60px",
+      // marginTop: theme.spacing(10),
+      // marginBottom: theme.spacing(10),
+      // marginLeft: theme.spacing(20),
+      // marginRight: theme.spacing(20),
+      padding: theme.spacing(5),
       // minWidth: "820px",
       borderRadius: "10px",
       textAlign: "center",
@@ -117,6 +119,7 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
   const [errorModal, setErrorModal] = useState<boolean>(false);
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
   const [boolPut, setBoolPut] = useState<boolean>(false);
 
@@ -126,7 +129,7 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
       router.push({ pathname: "/mantenimiento/status-vehiculo/listado" });
     }
     // }, 2000);
-  }, [boolPut, openModalMsj]);
+  }, [boolPut, openModalMsj, router]);
 
   const [mutate] = isNil(statusVehiculoObj)
     ? usePostStatusVehiculoMutation()
@@ -143,6 +146,7 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
   const onSubmit = useCallback(async ({ statusVehiculo }) => {
     try {
       if (isNotNilOrEmpty(statusVehiculo)) {
+        setLoadingMutate(true);
         const { data } = isNil(statusVehiculoObj)
           ? await mutate({
               variables: {
@@ -157,36 +161,36 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
             });
 
         if (isNotNilOrEmpty(data)) {
-          const { message } = isNotNilOrEmpty(data.PutStatusVehiculo)
+          const { code, message } = isNotNilOrEmpty(data.PutStatusVehiculo)
             ? data.PutStatusVehiculo
             : data.PostStatusVehiculo;
+            setOpenModalMsj(true);
+            if (code === 200 && isNotNilOrEmpty(data.PutStatusVehiculo)) {
+              setBoolPut(true);
+              setErrorModal(false);
+            }
+          setLoadingMutate(false);
           setTitleModalMsj(message);
 
-          //   setTimeout(() => {
-
-          //   }, 2000);
-
-          setErrorModal(false);
-          // setMensajeModalMsj(dataMutate.message);
-          setOpenModalMsj(true);
-          if (isNotNilOrEmpty(data.PutStatusVehiculo)) {
-            setBoolPut(true);
-          }
+       
+          
           resetForm();
         } else {
+          setLoadingMutate(false);
           setOpenModalMsj(true);
           setErrorModal(false);
           setTitleModalMsj("Usuario no autorizado");
         }
       }
     } catch (error: any) {
+      setLoadingMutate(false);
       console.log("error.;", error);
       setTitleModalMsj("Envio Fallido");
       setErrorModal(true);
       setMensajeModalMsj("El status no ha sido guardado: " + error.message);
       setOpenModalMsj(true);
     }
-  }, []);
+  }, [id, statusVehiculoObj]);
 
   const {
     errors,
@@ -215,8 +219,10 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
           error={errorModal}
         />
       )}
-         <div className={classes.title}>
-        <Typography variant="overline">Registro de los estados de los Vehiculos</Typography>
+      <div className={classes.title}>
+        <Typography variant="overline">
+          Registro de los estados de los Vehiculos
+        </Typography>
       </div>
 
       <form
@@ -246,10 +252,15 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
         </div>
         <div className={classes.contentButtons}>
           <div></div>
-          <Button startIcon={<SaveIcon />} type="submit" variant="outlined">
-            {" "}
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="text"
+            startIcon={<SaveIcon />}
+          >
             Guardar
-          </Button>
+          </LoadingButton>
         </div>
       </form>
     </Box>

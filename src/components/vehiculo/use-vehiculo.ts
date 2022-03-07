@@ -27,10 +27,10 @@ export interface IVehiculoVariable {
   status: IResultQueryStatusVehiculo;
   modelo: IResultQueryModelo;
 
-  matriculaFrontal: File;
-  matriculaReverso: File;
-  cedulaFrontal: File;
-  cedulaReverso: File;
+  matriculaFrontal: string;
+  matriculaReverso: string;
+  cedulaFrontal: string;
+  cedulaReverso: string;
 }
 
 export interface IVehiculoVariableNormalize {

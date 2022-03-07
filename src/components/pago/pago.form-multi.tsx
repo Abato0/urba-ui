@@ -318,6 +318,7 @@ export const PagoFormMulti = () => {
     loading: loadingGrupoFamiliar,
     error: errorGrupoFamiliar,
   } = useListarGrupoFamiliar();
+
   const [mutate] = usePostPago();
 
   const agregarPagoMantenimiento = useCallback(() => {
@@ -623,7 +624,11 @@ export const PagoFormMulti = () => {
                   !isNil(dataGrupoFamiliar.ListaGruposFamiliares) &&
                   dataGrupoFamiliar.ListaGruposFamiliares.map(
                     ({ id, nombre_familiar }) => {
-                      return <MenuItem value={id}>{nombre_familiar}</MenuItem>;
+                      return (
+                        <MenuItem key={"grupoFamliar-" + id} value={id}>
+                          {nombre_familiar}
+                        </MenuItem>
+                      );
                     }
                   )}
               </FormControlHeader>
@@ -765,68 +770,74 @@ export const PagoFormMulti = () => {
                           padding: 15,
                         }}
                       >
-                        {pagoMantenimiento.map(({ anio, mes, monto }) => {
-                          return (
-                            <Grid item xs={4}>
-                              <Paper
-                                className={classes.itemListPago}
-                                elevation={1}
+                        {pagoMantenimiento.map(
+                          ({ anio, mes, monto }, index) => {
+                            return (
+                              <Grid
+                                key={"Grid PagoMantenimiento-" + index}
+                                item
+                                xs={4}
                               >
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyItems: "center",
-                                    alignItems: "center",
-                                    padding: 5,
-                                    justifyContent: "space-around",
-                                    // backgroundColor: "red",
-                                    height: "100%",
-                                  }}
+                                <Paper
+                                  className={classes.itemListPago}
+                                  elevation={1}
                                 >
                                   <div
                                     style={{
                                       display: "flex",
-                                      flexDirection: "column",
+                                      flexDirection: "row",
                                       justifyItems: "center",
                                       alignItems: "center",
-
-                                      // width: "100%",
-                                      // height:"100%"
                                       padding: 5,
+                                      justifyContent: "space-around",
+                                      // backgroundColor: "red",
+                                      height: "100%",
                                     }}
                                   >
-                                    <Typography
-                                      className={classes.itemLabel}
-                                      variant="overline"
-                                    >{`${mes}-${anio}  `}</Typography>
-                                    <Typography
-                                      className={classes.itemLabel}
-                                      variant="overline"
-                                    >{`Monto: $${monto}`}</Typography>
-                                  </div>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        justifyItems: "center",
+                                        alignItems: "center",
 
-                                  <Fab
-                                    size="small"
-                                    color="primary"
-                                    aria-label="add"
-                                    style={{ padding: 12, marginRight: 10 }}
-                                    onClick={() =>
-                                      eliminarPagoMantenimiento(
-                                        mes,
-                                        anio,
-                                        monto
-                                      )
-                                    }
-                                    // onClick={agregarPagoMantenimiento}
-                                  >
-                                    <DeleteIcon />
-                                  </Fab>
-                                </div>
-                              </Paper>
-                            </Grid>
-                          );
-                        })}
+                                        // width: "100%",
+                                        // height:"100%"
+                                        padding: 5,
+                                      }}
+                                    >
+                                      <Typography
+                                        className={classes.itemLabel}
+                                        variant="overline"
+                                      >{`${mes}-${anio}  `}</Typography>
+                                      <Typography
+                                        className={classes.itemLabel}
+                                        variant="overline"
+                                      >{`Monto: $${monto}`}</Typography>
+                                    </div>
+
+                                    <Fab
+                                      size="small"
+                                      color="primary"
+                                      aria-label="add"
+                                      style={{ padding: 12, marginRight: 10 }}
+                                      onClick={() =>
+                                        eliminarPagoMantenimiento(
+                                          mes,
+                                          anio,
+                                          monto
+                                        )
+                                      }
+                                      // onClick={agregarPagoMantenimiento}
+                                    >
+                                      <DeleteIcon />
+                                    </Fab>
+                                  </div>
+                                </Paper>
+                              </Grid>
+                            );
+                          }
+                        )}
                       </Grid>
                     </Paper>
                   )}

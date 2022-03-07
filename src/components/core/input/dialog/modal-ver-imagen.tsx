@@ -108,7 +108,7 @@ const ModalImagen: FC<IProps> = ({ open, handleClose, base64, classes }) => {
             }}
           >
             <TransformWrapper>
-              {({ zoomIn, zoomOut, resetTransform, ...rest }) => {
+              {({ zoomIn, zoomOut, resetTransform }) => {
                 return (
                   <Box className={classes.container}>
                     <ButtonGroup
@@ -123,8 +123,9 @@ const ModalImagen: FC<IProps> = ({ open, handleClose, base64, classes }) => {
                     <TransformComponent>
                       <Box className={classes.image}>
                         <Image
-                          src={"data:image/jpeg;base64," + base64}
+                          src={base64}
                           alt="test"
+                          quality={70}
                           width={400}
                           height={400}
                         />

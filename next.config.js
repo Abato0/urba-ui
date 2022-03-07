@@ -1,23 +1,27 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   webpack5: true,
+  images: {
+    domains: [
+      "urbanizacion.s3.amazonaws.com",
+      "urbanizacion.s3.sa-east-1.amazonaws.com",
+    ],
+  },
   async redirects() {
-        return [
-          {
-            source: '/',
-            destination: '/login',
-            permanent: false,
-          },
-        ]
-    },
+    return [
+      {
+        source: "/",
+        destination: "/login",
+        permanent: false,
+      },
+    ];
+  },
   webpack: (config) => {
     config.resolve.fallback = { fs: false };
 
     return config;
   },
 };
-
-
 
 // /** @type {import('next').NextConfig} */
 
@@ -26,8 +30,6 @@ module.exports = {
 // const withPlugins = require('next-compose-plugins');
 // const withGraphql = require('next-plugin-mini-graphql');
 // const bundleAnalyzer = require('@next/bundle-analyzer');
-
-
 
 // const nextConfig = {
 //   // Do not show the X-Powered-By header in the responses

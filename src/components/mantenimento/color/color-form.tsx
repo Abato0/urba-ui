@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
   makeStyles,
   createStyles,
@@ -20,19 +21,22 @@ import {
 } from "./use-color";
 import { isNotNilOrEmpty } from "../../../utils/is-nil-empty";
 import ModalAuth from "../../core/input/dialog/modal-dialog";
+import { useListaColorQuery } from "./use-color";
+import { LoadingButton } from "@mui/lab";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      marginTop: theme.spacing(10),
-      marginBottom: theme.spacing(10),
-      marginLeft: theme.spacing(20),
-      marginRight: theme.spacing(20),
+      // marginTop: theme.spacing(10),
+      // marginBottom: theme.spacing(10),
+      // marginLeft: theme.spacing(20),
+      // marginRight: theme.spacing(20),
       padding: "60px",
       // minWidth: "820px",
       borderRadius: "10px",
       textAlign: "center",
       backgroundColor: "white",
+      margin: theme.spacing(2),
       // width:"100px"
     },
     formControl: {
@@ -110,14 +114,18 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
   const [errorModal, setErrorModal] = useState<boolean>(false);
   const [boolPutColor, setBoolPutColor] = useState<boolean>(false);
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
+  const { refetch } = useListaColorQuery();
   useEffect(() => {
     // setTimeout(() => {
     if (!openModalMsj && boolPutColor) {
-      router.push({ pathname: "/mantenimiento/color/listado" });
+      refetch().then(() => {
+        router.push({ pathname: "/mantenimiento/color/listado" });
+      });
     }
     // }, 2000);
-  }, [boolPutColor, openModalMsj]);
+  }, [boolPutColor, openModalMsj, router]);
 
   const [mutate] = isNil(colorObj)
     ? usePostColorMutation()
@@ -131,52 +139,61 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
       : initialValues;
   }, [colorObj]);
 
-  const onSubmit = useCallback(async ({ color }) => {
-    try {
-      if (isNotNilOrEmpty(color)) {
-        const { data } = isNil(colorObj)
-          ? await mutate({
-              variables: {
-                color,
-              },
-            })
-          : await mutate({
-              variables: {
-                id,
-                color,
-              },
-            });
+  const onSubmit = useCallback(
+    async ({ color }) => {
+      try {
+        if (isNotNilOrEmpty(color)) {
+          setLoadingMutate(true);
+          const { data } = isNil(colorObj)
+            ? await mutate({
+                variables: {
+                  color,
+                },
+              })
+            : await mutate({
+                variables: {
+                  id,
+                  color,
+                },
+              });
 
-        if (isNotNilOrEmpty(data)) {
-          const { message } = isNotNilOrEmpty(data.PutColor)
-            ? data.PutColor
-            : data.PostColor;
-          setTitleModalMsj(message);
+          if (isNotNilOrEmpty(data)) {
+            const { message } = isNotNilOrEmpty(data.PutColor)
+              ? data.PutColor
+              : data.PostColor;
+            setLoadingMutate(false);
+            setTitleModalMsj(message);
 
-          //   setTimeout(() => {
+            //   setTimeout(() => {
 
-          //   }, 2000);
+            //   }, 2000);
 
-          setErrorModal(false);
-          // setMensajeModalMsj(dataMutate.message);
-          setOpenModalMsj(true);
-          if (isNotNilOrEmpty(data.PutColor)) {
-            setBoolPutColor(true);
+            setErrorModal(false);
+            // setMensajeModalMsj(dataMutate.message);
+            setOpenModalMsj(true);
+            if (isNotNilOrEmpty(data.PutColor)) {
+              setBoolPutColor(true);
+            } else if (isNotNilOrEmpty(data.PostColor)) {
+              await refetch();
+            }
+            resetForm();
+          } else {
+            setLoadingMutate(false);
+            setOpenModalMsj(true);
+            setErrorModal(false);
+            setTitleModalMsj("Usuario no autorizado");
           }
-          resetForm();
-        } else {
-          setOpenModalMsj(true);
-          setErrorModal(false);
-          setTitleModalMsj("Usuario no autorizado");
         }
+      } catch (error: any) {
+        setLoadingMutate(false);
+        setTitleModalMsj("Envio Fallido");
+        setErrorModal(true);
+        setMensajeModalMsj("Integrante no ha sido guardado: " + error.message);
+        setOpenModalMsj(true);
       }
-    } catch (error: any) {
-      setTitleModalMsj("Envio Fallido");
-      setErrorModal(true);
-      setMensajeModalMsj("Integrante no ha sido guardado: " + error.message);
-      setOpenModalMsj(true);
-    }
-  }, []);
+    },
+    [colorObj, id]
+  );
 
   const {
     errors,
@@ -231,10 +248,15 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
         </div>
         <div className={classes.contentButtons}>
           <div></div>
-          <Button type="submit" variant="outlined">
-            {" "}
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="outlined"
+            startIcon={<SaveIcon />}
+          >
             Guardar
-          </Button>
+          </LoadingButton>
         </div>
       </form>
     </Box>

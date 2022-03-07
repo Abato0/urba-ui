@@ -50,6 +50,7 @@ import { SelectChangeEvent } from "@mui/material";
 import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter, faEraser } from "@fortawesome/free-solid-svg-icons";
+import { SelectTipoPago } from "../../components/core/input/select/select-tipo-pago";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -208,6 +209,8 @@ const ListadoPago = () => {
     number | undefined
   >();
 
+  const [tipoPagoFilter, setTipoPagoFilter] = React.useState<string>();
+
   const [fechaAporteFilter, setFechaAporteFilter] = React.useState<string>("");
   const [filterInput, setFilterInput] = React.useState<IPagoGrupoFamiliarInput>(
     {}
@@ -300,7 +303,7 @@ const ListadoPago = () => {
       // if (data) setAllPagoData(extractData(data.ListaPagos));}
       if (data) setAllPagoData(extractData(data.ListaPagoFamiliarFilter));
     }
-  }, [debounceSearch]);
+  }, [data, debounceSearch, fuse]);
 
   React.useEffect(() => {
     if (!loading && isNotNilOrEmpty(dataPagoFamiliar)) {
@@ -308,7 +311,7 @@ const ListadoPago = () => {
       const { pago } = dataPagoFamiliar!.GetPagoFamiliar;
       setBase64(pago.imagen_recibo!);
     }
-  }, [dataPagoFamiliar, loadingPagoFamiliar]);
+  }, [dataPagoFamiliar, loading, loadingPagoFamiliar]);
 
   const {
     getTableProps,
@@ -350,14 +353,16 @@ const ListadoPago = () => {
         equals(idGrupoFamiliarFilter, 0) || isNil(idGrupoFamiliarFilter)
           ? undefined
           : idGrupoFamiliarFilter,
+      tipo_pago: isEmpty(tipoPagoFilter) ? undefined : tipoPagoFilter,
       // id_aporte: isNil(tipoAporteFilter) ? undefined : Number(tipoAporteFilter),
     });
-  }, [mesPagoFilter, anioPagoFilter, idGrupoFamiliarFilter]);
+  }, [mesPagoFilter, anioPagoFilter, idGrupoFamiliarFilter, tipoPagoFilter]);
 
   const cancelFiltrar = () => {
     setIdGrupoFamiliarFilter(0);
     setmesPagoFilterFilter("");
     setAnioPagoFilter(0);
+    setTipoPagoFilter("");
     // setFechaAporteFilter("");
     setFilterInput({});
   };
@@ -440,7 +445,12 @@ const ListadoPago = () => {
                       dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
                         ({ id, nombre_familiar }) => {
                           return (
-                            <MenuItem value={id}>{nombre_familiar}</MenuItem>
+                            <MenuItem
+                              key={"GrupoFamiliarFilterListadoPago-" + id}
+                              value={id}
+                            >
+                              {nombre_familiar}
+                            </MenuItem>
                           );
                         }
                       )}
@@ -463,6 +473,14 @@ const ListadoPago = () => {
                   value={anioPagoFilter}
                   label={"Año"}
                   id={"anio_manteniento"}
+                />
+                <SelectTipoPago
+                  handleChange={(e: SelectChangeEvent) =>
+                    setTipoPagoFilter(String(e.target.value))
+                  }
+                  value={tipoPagoFilter}
+                  label={"Tipo de Pago"}
+                  id={"tipo_pago"}
                 />
               </div>
             </div>

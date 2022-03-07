@@ -20,20 +20,22 @@ import {
   usePutModeloMutation,
 } from "./use-modelo";
 import SaveIcon from "@material-ui/icons/Save";
-
+import { LoadingButton } from "@mui/lab";
+import { useListaModeloQuery } from "./use-modelo";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      marginTop: theme.spacing(10),
-      marginBottom: theme.spacing(10),
-      marginLeft: theme.spacing(20),
-      marginRight: theme.spacing(20),
+      // marginTop: theme.spacing(10),
+      // marginBottom: theme.spacing(10),
+      // marginLeft: theme.spacing(20),
+      // marginRight: theme.spacing(20),
       padding: "60px",
       // minWidth: "820px",
       borderRadius: "10px",
       textAlign: "center",
       backgroundColor: "white",
+      // margin: theme.spacing(2),
       // width:"100px"
     },
     formControl: {
@@ -110,20 +112,27 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
   const [errorModal, setErrorModal] = useState<boolean>(false);
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
   const [boolPut, setBoolPut] = useState<boolean>(false);
+
+  const { refetch } = useListaModeloQuery();
 
   useEffect(() => {
     // setTimeout(() => {
     if (!openModalMsj && boolPut) {
-      router.push({ pathname: "/mantenimiento/marca/listado" });
+      refetch().then(() => {
+        router.push({ pathname: "/mantenimiento/marca/listado" });
+      });
     }
     // }, 2000);
-  }, [boolPut, openModalMsj]);
+  }, [boolPut, openModalMsj, router]);
 
   const [mutate] = isNil(modeloObj)
-    ? usePostModeloMutation()
-    : usePutModeloMutation();
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      usePostModeloMutation()
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      usePutModeloMutation();
 
   const init = useMemo(() => {
     return isNotNilOrEmpty(modeloObj)
@@ -133,53 +142,61 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
       : initialValues;
   }, [modeloObj]);
 
-  const onSubmit = useCallback(async ({ modelo }) => {
-    try {
-      if (isNotNilOrEmpty(modelo)) {
-        const { data } = isNil(modeloObj)
-          ? await mutate({
-              variables: {
-                modelo,
-              },
-            })
-          : await mutate({
-              variables: {
-                id,
-                modelo,
-              },
-            });
+  const onSubmit = useCallback(
+    async ({ modelo }) => {
+      try {
+        if (isNotNilOrEmpty(modelo)) {
+          setLoadingMutate(true);
+          const { data } = isNil(modeloObj)
+            ? await mutate({
+                variables: {
+                  modelo,
+                },
+              })
+            : await mutate({
+                variables: {
+                  id,
+                  modelo,
+                },
+              });
 
-        if (isNotNilOrEmpty(data)) {
-          const { message } = isNotNilOrEmpty(data.PutModelo)
-            ? data.PutModelo
-            : data.PostModelo;
-          setTitleModalMsj(message);
+          if (isNotNilOrEmpty(data)) {
+            const { message } = isNotNilOrEmpty(data.PutModelo)
+              ? data.PutModelo
+              : data.PostModelo;
+            setLoadingMutate(false);
+            setTitleModalMsj(message);
 
-          //   setTimeout(() => {
+            //   setTimeout(() => {
 
-          //   }, 2000);
+            //   }, 2000);
 
-          setErrorModal(false);
-          // setMensajeModalMsj(dataMutate.message);
-          setOpenModalMsj(true);
-          if (isNotNilOrEmpty(data.PutModelo)) {
-            setBoolPut(true);
+            setErrorModal(false);
+            // setMensajeModalMsj(dataMutate.message);
+
+            if (isNotNilOrEmpty(data.PutModelo)) {
+              setBoolPut(true);
+            }
+            setOpenModalMsj(true);
+            resetForm();
+          } else {
+            setLoadingMutate(false);
+            setOpenModalMsj(true);
+            setErrorModal(false);
+            setTitleModalMsj("Usuario no autorizado");
           }
-          resetForm();
-        } else {
-          setOpenModalMsj(true);
-          setErrorModal(false);
-          setTitleModalMsj("Usuario no autorizado");
         }
+      } catch (error: any) {
+        setLoadingMutate(false);
+        console.log("error.;", error);
+        setTitleModalMsj("Envio Fallido");
+        setErrorModal(true);
+        setMensajeModalMsj("El modelo no ha sido guardado: " + error.message);
+        setOpenModalMsj(true);
       }
-    } catch (error: any) {
-      console.log("error.;", error);
-      setTitleModalMsj("Envio Fallido");
-      setErrorModal(true);
-      setMensajeModalMsj("El modelo no ha sido guardado: " + error.message);
-      setOpenModalMsj(true);
-    }
-  }, []);
+    },
+    [id, modeloObj]
+  );
 
   const {
     errors,
@@ -237,10 +254,15 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
         </div>
         <div className={classes.contentButtons}>
           <div></div>
-          <Button type="submit" variant="outlined">
-            {" "}
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="outlined"
+            startIcon={<SaveIcon />}
+          >
             Guardar
-          </Button>
+          </LoadingButton>
         </div>
       </form>
     </Box>

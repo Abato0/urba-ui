@@ -14,21 +14,13 @@ import ModalAuth from "../core/input/dialog/modal-dialog";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import FormControlHeader from "../core/input/form-control-select";
-import { listadoGrupoFamiliar } from "../grupo-familiar/grupo-familiar-typeDefs";
-import { useQuery } from "@apollo/client";
-import { isNil, isEmpty } from "ramda";
-import {
-  IListadoGrupoFamiliarVariables,
-  useListarGrupoFamiliar,
-} from "../grupo-familiar/use-grupo-familia";
 import { tipoUsuarios } from "../core/input/dateSelect";
 import { isNilOrEmpty, isNotNilOrEmpty } from "../../utils/is-nil-empty";
-import ImageIcon from "@material-ui/icons/Image";
-import { useDropzone } from "react-dropzone";
-import { usePostUsuarioMutation } from "./use-usuario";
-import { CardMedia } from "@material-ui/core";
-import { getBase64 } from "../../utils/file-base64";
-import Image from "next/image";
+import { usePostUsuarioMutation, useListadoUsuario } from "./use-usuario";
+import { useListaTipoIdentificacionQuery } from "../mantenimento/tipo-identificacion/use-tipo-identificacion";
+import { LoadingButton } from "@mui/lab";
+import SaveIcon from "@material-ui/icons/Save";
+import { equals } from "ramda";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -92,21 +84,45 @@ const useStyles = makeStyles((theme) =>
       flexDirection: "row",
       alignContent: "center",
     },
+    title: {
+      fontSize: theme.typography.pxToRem(12),
+      backgroundColor: colors.grey[200],
+      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(1),
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(4),
+      borderRadius: 5,
+    },
   })
 );
 
 const validationSchema = yup.object().shape({
-  idGrupoFamiliar: yup.number().required("Campo requerido"),
-  user: yup.string().required("Campo requerido"),
-  password: yup.string().required("Campo requerido"),
   tipo_usuario: yup.string().required("Campo requerido"),
+  num_identificacion: yup
+    .string()
+    .matches(/^[0-9]+$/, "Solo números")
+    .required("Campo requerido"),
+  nombres: yup.string().required("Campo requerido"),
+  apellidos: yup.string().required("Campo requerido"),
+  email: yup
+    .string()
+    .email("Debe ser un correo electronico")
+    .required("Campo requerido"),
+  telefono: yup
+    .string()
+    .matches(/^[0-9]+$/, "Solo números")
+    .required("Campo requerido"),
+  idTipoIdentificacion: yup.number().required("Campo requerido"),
 });
 
 const initialValues = Object.freeze({
-  idGrupoFamiliar: undefined,
-  user: "",
-  password: "",
   tipo_usuario: "",
+  num_identificacion: "",
+  nombres: "",
+  apellidos: "",
+  email: "",
+  telefono: "",
+  idTipoIdentificacion: 0,
 });
 
 export const FormIngresarUsuario = () => {
@@ -115,85 +131,82 @@ export const FormIngresarUsuario = () => {
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
   const [errorModal, setErrorModal] = useState<boolean>(false);
-  const [file, setFile] = useState<File>();
-
-  const [imgBase64, setImgBase64] = useState<string>();
-
-  useEffect(() => {
-    if (!isNil(file)) {
-      getBase64(file).then((result) => {
-        console.log("result: ", String(result));
-        setImgBase64(String(result));
-      });
-    }
-  }, [file]);
-
-  const [dataGrupoFamiliar, setDataGrupoFamiliar] = useState<
-    IListadoGrupoFamiliarVariables[]
-  >([]);
-
-  const onDrop = useCallback(([file]: [File]) => {
-    setFile(file);
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: "image/jpeg , image/png",
-    noKeyboard: true,
-    multiple: false,
-    onDrop,
-  });
-
-  const {
-    data: dataListaGrupoFamiliar,
-    loading: loadingListaGrupoFamiliar,
-    error: errorListaGrupoFamiliar,
-  } = useListarGrupoFamiliar();
-
-  useEffect(() => {
-    if (!loadingListaGrupoFamiliar && !isNil(dataListaGrupoFamiliar)) {
-      setDataGrupoFamiliar(dataListaGrupoFamiliar.ListaGruposFamiliares);
-      console.log("data: ", dataListaGrupoFamiliar.ListaGruposFamiliares);
-    }
-  }, [loadingListaGrupoFamiliar]);
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
   const [mutate] = usePostUsuarioMutation();
+  const { refetch } = useListadoUsuario();
+
+  const {
+    data: dataTipoID,
+    loading: loadingTipoID,
+    error: errorTipoID,
+  } = useListaTipoIdentificacionQuery();
 
   const onSubmit = useCallback(
-    async ({ idGrupoFamiliar, user, password, tipo_usuario }, {}) => {
+    async (
+      {
+        tipo_usuario,
+        num_identificacion,
+        nombres,
+        apellidos,
+        email,
+        telefono,
+        idTipoIdentificacion,
+      },
+      {}
+    ) => {
+      console.log("dasdasdasdf");
       if (
-        isNotNilOrEmpty(idGrupoFamiliar) &&
-        isNotNilOrEmpty(user) &&
-        isNotNilOrEmpty(password) &&
-        isNotNilOrEmpty(tipo_usuario)
+        // isNotNilOrEmpty(idGrupoFamiliar) &&
+        isNotNilOrEmpty(nombres) &&
+        isNotNilOrEmpty(num_identificacion) &&
+        !equals(idTipoIdentificacion, 0) &&
+        isNotNilOrEmpty(nombres) &&
+        isNotNilOrEmpty(apellidos) &&
+        isNotNilOrEmpty(email) &&
+        isNotNilOrEmpty(idTipoIdentificacion) &&
+        isNotNilOrEmpty(telefono)
       ) {
+        setLoadingMutate(true);
         const { data, loading, error } = await mutate({
           variables: {
-            idGrupoFamiliar: idGrupoFamiliar,
-            imagen_perfil: file,
-            password: password,
             tipo_usuario: tipo_usuario,
-            user: user,
+            num_identificacion: num_identificacion,
+            nombres: nombres,
+            apellidos: apellidos,
+            email: email,
+            telefono: telefono,
+            idTipoIdentificacion: idTipoIdentificacion,
           },
         });
         if (
           !loading &&
           isNotNilOrEmpty(data) &&
-          isNotNilOrEmpty(data.PostPago)
+          isNotNilOrEmpty(data.PostUsuario)
         ) {
-          const { message } = data.PostUsuario;
-          setErrorModal(false);
+          const { code, message } = data.PostUsuario;
+
+          setErrorModal(true);
+          if (code === 200) {
+            await refetch();
+            setErrorModal(false);
+            resetForm();
+          }
+          setLoadingMutate(false);
+
           setOpenModalMsj(true);
           setTitleModalMsj(message);
-
-          resetForm();
         } else if (!loading && data === null) {
+          setLoadingMutate(false);
           setOpenModalMsj(true);
           setTitleModalMsj("Usuario no autorizado");
           setErrorModal(true);
         }
       }
+
       try {
       } catch (err: any) {
+        setLoadingMutate(false);
         console.log("error : ", err);
         setTitleModalMsj("Envio Fallido");
         setErrorModal(true);
@@ -232,10 +245,10 @@ export const FormIngresarUsuario = () => {
           error={errorModal}
         />
       )}
-      <Typography variant="h5">
-        {" "}
-        Registro de Usuarios de los Grupos Familiares
-      </Typography>
+      <div className={classes.title}>
+        <Typography variant="overline">Creación de Usuario</Typography>
+      </div>
+
       <form
         action="#"
         onSubmit={handleSubmit}
@@ -246,18 +259,100 @@ export const FormIngresarUsuario = () => {
           <FormControlHeader
             classes={classes}
             handleBlur={handleBlur}
-            id="idGrupoFamiliar"
+            id="idTipoIdentificacion"
             handleChange={handleChange}
-            labetTitulo=" Grupo Familiar del Deposito"
-            value={values.idGrupoFamiliar}
+            labetTitulo=" Tipo de documento de identidad"
+            value={values.idTipoIdentificacion}
           >
-            {!loadingListaGrupoFamiliar &&
-              dataGrupoFamiliar &&
-              dataGrupoFamiliar.map(({ id, nombre_familiar }) => {
-                return <MenuItem value={id}>{nombre_familiar}</MenuItem>;
-              })}
+            {!loadingTipoID &&
+              dataTipoID &&
+              isNotNilOrEmpty(dataTipoID.ListaTipoIdentificacion) &&
+              dataTipoID.ListaTipoIdentificacion.map(
+                ({ id, tipo_identificacion }) => {
+                  return (
+                    <MenuItem key={id} value={id}>
+                      {tipo_identificacion}
+                    </MenuItem>
+                  );
+                }
+              )}
           </FormControlHeader>
 
+          <TextField
+            className={classes.textbox}
+            id="num_identificacion"
+            name="num_identificacion"
+            label="Numero de identificación"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.num_identificacion}
+            error={
+              touched.num_identificacion &&
+              isNotNilOrEmpty(errors.num_identificacion)
+            }
+            helperText={
+              touched.num_identificacion ? errors.num_identificacion : undefined
+            }
+            required
+          />
+        </div>
+
+        <div>
+          <TextField
+            className={classes.textbox}
+            id="nombres"
+            name="nombres"
+            label="Nombres"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.nombres}
+            error={touched.nombres && isNotNilOrEmpty(errors.nombres)}
+            helperText={touched.nombres ? errors.nombres : undefined}
+            required
+          />
+          <TextField
+            className={classes.textbox}
+            id="apellidos"
+            name="apellidos"
+            label="Apellidos"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.apellidos}
+            error={touched.apellidos && isNotNilOrEmpty(errors.apellidos)}
+            helperText={touched.apellidos ? errors.apellidos : undefined}
+            required
+          />
+        </div>
+
+        <div>
+          <TextField
+            className={classes.textbox}
+            id="email"
+            name="email"
+            label="Email"
+            type={"email"}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.email}
+            error={touched.email && isNotNilOrEmpty(errors.email)}
+            helperText={touched.email ? errors.email : undefined}
+            required
+          />
+          <TextField
+            className={classes.textbox}
+            id="telefono"
+            name="telefono"
+            label="Telefono"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.telefono}
+            error={touched.telefono && isNotNilOrEmpty(errors.telefono)}
+            helperText={touched.telefono ? errors.telefono : undefined}
+            required
+          />
+        </div>
+
+        <div>
           <FormControlHeader
             classes={classes}
             handleBlur={handleBlur}
@@ -276,63 +371,17 @@ export const FormIngresarUsuario = () => {
           </FormControlHeader>
         </div>
 
-        <div>
-          <TextField
-            className={classes.textbox}
-            id="user"
-            name="user"
-            label="Usuario"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.user}
-            error={touched.user && isNotNilOrEmpty(errors.user)}
-            helperText={touched.user ? errors.user : undefined}
-            required
-          />
-          <TextField
-            className={classes.textbox}
-            id="password"
-            name="password"
-            label="Contraseña"
-            type={"password"}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.password}
-            error={touched.password && isNotNilOrEmpty(errors.password)}
-            helperText={touched.password ? errors.password : undefined}
-            required
-          />
-        </div>
-
-        {!isNotNilOrEmpty(imgBase64) && (
-          <div>
-            <Image src={imgBase64!} alt="test" width={400} height={400} />
-          </div>
-          //   <Image width={40} height={40} src={`${imgBase64}`} />
-        )}
-
-        <Paper {...getRootProps()} className={classes.dropzone}>
-          <input {...getInputProps()} />
-          <ImageIcon fontSize="large" />
-          <Typography variant="overline">
-            {"Haga click en este Cuadro para subir su imagen de Perfil"}
-          </Typography>
-          {!isNilOrEmpty(file) && (
-            <Typography variant="body2">
-              {" "}
-              {" *" + String(file?.path)}
-            </Typography>
-          )}
-        </Paper>
-
-        {/* <CardMedia/> */}
-
         <div className={classes.contentButtons}>
           <div></div>
-          <Button type="submit" variant="outlined">
-            {" "}
-            Enviar
-          </Button>
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="text"
+            startIcon={<SaveIcon />}
+          >
+            Guardar
+          </LoadingButton>
         </div>
       </form>
     </Box>

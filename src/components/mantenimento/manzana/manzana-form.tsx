@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
   makeStyles,
   createStyles,
@@ -20,19 +21,21 @@ import {
   usePutManzanaMutation,
 } from "./use-manzana";
 import SaveIcon from "@material-ui/icons/Save";
+import { LoadingButton } from "@mui/lab";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      marginTop: theme.spacing(10),
-      marginBottom: theme.spacing(10),
-      marginLeft: theme.spacing(20),
-      marginRight: theme.spacing(20),
+      // marginTop: theme.spacing(10),
+      // marginBottom: theme.spacing(10),
+      // marginLeft: theme.spacing(20),
+      // marginRight: theme.spacing(20),
       padding: "60px",
       // minWidth: "820px",
       borderRadius: "10px",
       textAlign: "center",
       backgroundColor: "white",
+      margin: theme.spacing(2),
       // width:"100px"
     },
     formControl: {
@@ -111,6 +114,7 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
   const [errorModal, setErrorModal] = useState<boolean>(false);
 
   const [boolPut, setBoolPut] = useState<boolean>(false);
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
   useEffect(() => {
     // setTimeout(() => {
@@ -118,7 +122,7 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
       router.push({ pathname: "/mantenimiento/manzana/listado" });
     }
     // }, 2000);
-  }, [boolPut, openModalMsj]);
+  }, [boolPut, openModalMsj, router]);
 
   const [mutate] = isNil(manzanaObj)
     ? usePostManzanaMutation()
@@ -132,52 +136,53 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
       : initialValues;
   }, [manzanaObj]);
 
-  const onSubmit = useCallback(async ({ manzana }) => {
-    try {
-      if (isNotNilOrEmpty(manzana)) {
-        const { data } = isNil(manzanaObj)
-          ? await mutate({
-              variables: {
-                manzana,
-              },
-            })
-          : await mutate({
-              variables: {
-                id,
-                manzana,
-              },
-            });
+  const onSubmit = useCallback(
+    async ({ manzana }) => {
+      try {
+        if (isNotNilOrEmpty(manzana)) {
+          setLoadingMutate(true);
+          const { data } = isNil(manzanaObj)
+            ? await mutate({
+                variables: {
+                  manzana,
+                },
+              })
+            : await mutate({
+                variables: {
+                  id,
+                  manzana,
+                },
+              });
 
-        if (isNotNilOrEmpty(data)) {
-          const { message } = isNotNilOrEmpty(data.PutManzana)
-            ? data.PutManzana
-            : data.PostManzana;
-          setTitleModalMsj(message);
-
-          //   setTimeout(() => {
-
-          //   }, 2000);
-
-          setErrorModal(false);
-          // setMensajeModalMsj(dataMutate.message);
-          setOpenModalMsj(true);
-          if (isNotNilOrEmpty(data.PutManzana)) {
-            setBoolPut(true);
+          if (isNotNilOrEmpty(data)) {
+            const { message } = isNotNilOrEmpty(data.PutManzana)
+              ? data.PutManzana
+              : data.PostManzana;
+            setLoadingMutate(false);
+            setTitleModalMsj(message);
+            setErrorModal(false);
+            setOpenModalMsj(true);
+            if (isNotNilOrEmpty(data.PutManzana)) {
+              setBoolPut(true);
+            }
+            resetForm();
+          } else {
+            setLoadingMutate(false);
+            setOpenModalMsj(true);
+            setErrorModal(false);
+            setTitleModalMsj("Usuario no autorizado");
           }
-          resetForm();
-        } else {
-          setOpenModalMsj(true);
-          setErrorModal(false);
-          setTitleModalMsj("Usuario no autorizado");
         }
+      } catch (error: any) {
+        setLoadingMutate(false);
+        setTitleModalMsj("Envio Fallido");
+        setErrorModal(true);
+        setMensajeModalMsj("Manzana no ha sido guardado: " + error.message);
+        setOpenModalMsj(true);
       }
-    } catch (error: any) {
-      setTitleModalMsj("Envio Fallido");
-      setErrorModal(true);
-      setMensajeModalMsj("Manzana no ha sido guardado: " + error.message);
-      setOpenModalMsj(true);
-    }
-  }, []);
+    },
+    [id, manzanaObj]
+  );
 
   const {
     errors,
@@ -233,10 +238,16 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
         </div>
         <div className={classes.contentButtons}>
           <div></div>
-          <Button type="submit" variant="outlined">
-            {" "}
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="outlined"
+            color="primary"
+            startIcon={<SaveIcon />}
+          >
             Guardar
-          </Button>
+          </LoadingButton>
         </div>
       </form>
     </Box>

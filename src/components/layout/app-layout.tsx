@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SideBar from "./app-sidebar";
-import { AppBar, Box, colors, Container, makeStyles } from "@material-ui/core";
+import {
+  AppBar,
+  Box,
+  colors,
+  Container,
+  LinearProgress,
+  makeStyles,
+} from "@material-ui/core";
 import NavBar from "./app-bar";
 import clsx from "clsx";
+import { authMe } from "../../auth/auth-service";
+import Cookies from "js-cookie";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
   root: {
@@ -40,17 +50,59 @@ interface IProps {
 }
 const AppLayout: React.FC<IProps> = ({ children, className }) => {
   const classes = useStyles();
+  const router = useRouter();
+  const [authFlag, setAuthFlag] = useState<boolean>();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const autho = async () => {
+    try {
+      const token = Cookies.get("token");
+      if (token) {
+        setLoading(true);
+        const result = await authMe(token);
+        if (result && result.code === 200) {
+          setAuthFlag(true);
+        }
+        setLoading(false);
+      } else {
+        setAuthFlag(false);
+        await redirectLogin();
+      }
+      console.log("token: ", token);
+    } catch (error) {
+      setAuthFlag(false);
+      setLoading(false);
+      await redirectLogin();
+      console.log("error: ", (error as Error).message);
+    }
+  };
+
+  const redirectLogin = async () => {
+    return await router.push("/login");
+  };
+
+  useEffect(() => {
+    autho();
+  }, []);
   return (
     <>
-      <NavBar />
-      <div className={classes.root}>
-        <SideBar />
-        <Box className={classes.componentRoot}>
-          <div className={clsx(classes.containerCard, className)}>
-            {children}
+      {!loading && authFlag ? (
+        <>
+          <NavBar />
+          <div className={classes.root}>
+            <SideBar />
+            <Box className={classes.componentRoot}>
+              <div className={clsx(classes.containerCard, className)}>
+                {children}
+              </div>
+            </Box>
           </div>
-        </Box>
-      </div>
+        </>
+      ) : !loading && authFlag === undefined ? (
+        <>
+          <LinearProgress />
+        </>
+      ) : null}
     </>
   );
 };

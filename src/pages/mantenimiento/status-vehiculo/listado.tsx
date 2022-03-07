@@ -1,4 +1,5 @@
 import {
+  Box,
   colors,
   createStyles,
   makeStyles,
@@ -30,6 +31,7 @@ import {
   useListaStatusVehiculoQuery,
 } from "../../../components/mantenimento/status-vehiculo/use-status-vehiculo";
 import { columnsStatusVehiculo } from "../../../components/mantenimento/status-vehiculo/status-vehiculo-dataTable";
+import { IngresarStatusVehiculoForm } from "../../../components/mantenimento/status-vehiculo/status-vehiculo-form";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -37,7 +39,11 @@ const useStyles = makeStyles((theme) =>
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
       borderRadius: "12px",
-      width: "50%",
+      // width: "50%",
+      display: "flex",
+      flexDirection: "column",
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(4),
     },
     contentButtons: {
       display: "flex",
@@ -98,6 +104,30 @@ const useStyles = makeStyles((theme) =>
     contentForm: {
       marginTop: theme.spacing(3),
     },
+    containerRoot: {
+      display: "flex",
+      width: "100%",
+      margin: theme.spacing(2),
+    },
+
+    containerTitle: {
+      // backgroundColor: "red",
+      display: "flex",
+      justifyContent: "center",
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(1),
+    },
+    title: {
+      fontSize: theme.typography.pxToRem(13),
+      backgroundColor: colors.grey[200],
+      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(1),
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(4),
+      borderRadius: 5,
+      // fontWeight: "bold",
+      // font
+    },
   })
 );
 
@@ -135,14 +165,17 @@ const MantenimientoStatusVehiculoListado = () => {
     }
   }, [data, loading, error]);
 
-  const onEdit = useCallback(({ id }: any) => {
-    if (!isNil(id)) {
-      router.push(
-        { pathname: "/mantenimiento/status-vehiculo/registrar/[id]" },
-        `/mantenimiento/status-vehiculo/registrar/${encodeURIComponent(id)}`
-      );
-    }
-  }, []);
+  const onEdit = useCallback(
+    ({ id }: any) => {
+      if (!isNil(id)) {
+        router.push(
+          { pathname: "/mantenimiento/status-vehiculo/registrar/[id]" },
+          `/mantenimiento/status-vehiculo/registrar/${encodeURIComponent(id)}`
+        );
+      }
+    },
+    [router]
+  );
 
   const onDelete = useCallback(async ({ id }: any) => {
     try {
@@ -212,7 +245,7 @@ const MantenimientoStatusVehiculoListado = () => {
     } else {
       setColorMarca(extractData(data?.ListaStatusVehiculo!));
     }
-  }, [debounceSearch]);
+  }, [data?.ListaStatusVehiculo, debounceSearch, fuse]);
 
   const onChangePage = useCallback((event, page) => gotoPage(page), [gotoPage]);
 
@@ -234,43 +267,66 @@ const MantenimientoStatusVehiculoListado = () => {
           />
         )}
       </>
-      <Paper className={classes.root}>
-        <div className={classes.contentButtons}>
-          <TextField
-            className={classes.textBox}
-            variant="outlined"
-            placeholder="Search"
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            value={search}
-          />
+      <div
+        style={{ justifyContent: "space-around" }}
+        className={classes.containerRoot}
+      >
+        <div>
+          <IngresarStatusVehiculoForm />
         </div>
-        <TableContainer>
-          <Table
-            // className={classes.table}
-            padding="normal"
-            stickyHeader
-            aria-label="sticky table"
-            {...getTableProps()}
-            id={"TableColor"}
-          >
-            <TableHeader headerGroups={headerGroups} />
-            <CardTableBody
-              getTableBodyProps={getTableBodyProps}
-              page={page}
-              prepareRow={prepareRow}
+
+        <div
+        // style={{
+        //   display: "flex",
+        //   width: "100%",
+        //   justifyContent: "center",
+        //   alignItems: "center",
+        // }}
+        >
+          <Paper className={classes.root}>
+            <div className={classes.containerTitle}>
+              <Typography variant="overline" className={classes.title}>
+                Listado de Estados de los Vehiculos
+              </Typography>
+            </div>
+            <div className={classes.contentButtons}>
+              <TextField
+                className={classes.textBox}
+                variant="outlined"
+                placeholder="Search"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                value={search}
+              />
+            </div>
+            <TableContainer>
+              <Table
+                // className={classes.table}
+                padding="normal"
+                stickyHeader
+                aria-label="sticky table"
+                {...getTableProps()}
+                id={"TableColor"}
+              >
+                <TableHeader headerGroups={headerGroups} />
+                <CardTableBody
+                  getTableBodyProps={getTableBodyProps}
+                  page={page}
+                  prepareRow={prepareRow}
+                />
+              </Table>
+            </TableContainer>
+            <TablePaginations
+              lengthData={isNilOrEmpty(dataMarca) ? 0 : dataMarca.length}
+              onChangePage={onChangePage}
+              onChangeRowsPerPage={onChangeRowsPerPage}
+              pageIndex={pageIndex}
+              pageSize={pageSize}
             />
-          </Table>
-        </TableContainer>
-        <TablePaginations
-          lengthData={isNilOrEmpty(dataMarca) ? 0 : dataMarca.length}
-          onChangePage={onChangePage}
-          onChangeRowsPerPage={onChangeRowsPerPage}
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-        />
-      </Paper>
+          </Paper>
+        </div>
+      </div>
     </AppLayout>
   );
 };

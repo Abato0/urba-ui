@@ -49,6 +49,7 @@ export interface IPagoGrupoFamiliarInput {
   // id_aporte?: number;
   mes?: string;
   anio?: number;
+  tipo_pago?: String;
 }
 
 interface IPagoGrupoFamiliarFiltersFunc {
@@ -85,6 +86,7 @@ export const usePagoFamiliarFilters = (input: IPagoGrupoFamiliarInput) => {
         mes: "",
         idGrupoFamiliar: 0,
         anio: 0,
+        tipo_pago: "",
         // id_aporte: 0,
       }),
       // skip: isEmpty(input),

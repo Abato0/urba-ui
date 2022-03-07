@@ -10,24 +10,23 @@ import {
   colors,
   Grid,
   Hidden,
-
   TextField,
   Typography,
 } from "@material-ui/core";
 import Image from "next/image";
-import * as yup from 'yup';
-import { useFormik } from 'formik';
-import { isNotNilOrEmpty, isNilOrEmpty } from '../utils/is-nil-empty';
+import * as yup from "yup";
+import { useFormik } from "formik";
+import { isNotNilOrEmpty, isNilOrEmpty } from "../utils/is-nil-empty";
 import { useRouter } from "next/router";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { login } from "../auth/auth-service"
-import { useSetRecoilState} from 'recoil'
-import { userInfo } from '../utils/states';
+import { login } from "../auth/auth-service";
+import { useSetRecoilState } from "recoil";
+import { userInfo } from "../utils/states";
 import ModalAuth from "../components/core/input/dialog/modal-dialog";
 import { EnlacesSidebar } from "../components/layout/app-sidebar";
+import AppLayoutLogin from "../components/layout/auth-login";
 // import bcrypt from 'bcrypt'
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,14 +36,13 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(8),
     paddingRight: theme.spacing(8),
     minHeight: "100vh",
-    minWidth:"500px",
+    minWidth: "500px",
     backgroundColor: colors.blueGrey[100],
-},
+  },
   container: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-
   },
   cardLogin: {
     display: "flex",
@@ -54,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "19px",
     padding: "4px",
     marginTop: theme.spacing(6),
-    marginBottom: theme.spacing(8)
+    marginBottom: theme.spacing(8),
   },
   cardLoginColumn: {
     display: "flex",
@@ -166,75 +164,73 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-
-const initialValues = Object.freeze({ usuario: '', password: '' });
+const initialValues = Object.freeze({ usuario: "", password: "" });
 
 const validationSchema = yup.object().shape({
-  usuario: yup.string().required('Required'),
-  password: yup.string().min(5, 'Too short').required('Required')
+  usuario: yup.string().required("Required"),
+  password: yup.string().min(5, "Too short").required("Required"),
 });
 
-
 const LoginScreen = () => {
-
   const router = useRouter();
-  const [openErrorLogin, setOpenErrorLogin] = useState<boolean>(false)
-  const [messageError, setMessageError] = useState<string>("")
-  const setUserInfo = useSetRecoilState(userInfo)
+  const [openErrorLogin, setOpenErrorLogin] = useState<boolean>(false);
+  const [messageError, setMessageError] = useState<string>("");
+  const setUserInfo = useSetRecoilState(userInfo);
 
+  const onSubmit = useCallback(
+    async ({ usuario, password }, { setSubmitting }) => {
+      try {
+        // return router.push("home/user");
+        console.log("user: ", usuario, "password", password);
+        // console.log(login)
+        if (isNotNilOrEmpty(usuario) && isNotNilOrEmpty(password)) {
+          //   const hash =btoa(password)
+          // console.log("hash ",hash)
+          const data = await login(usuario, password);
+          console.log("data: ", data);
+          // localStorage.setItem("token.sig",data.token!);
+          // setUserInfo(data)
+          return router.push(EnlacesSidebar.home.route);
+        }
 
-  const onSubmit = useCallback(async ({  usuario, password }, { setSubmitting }) => {
-    try {
-      // return router.push("home/user");
-      console.log("user: ", usuario, "password", password);
-      // console.log(login)
-      if(isNotNilOrEmpty(usuario) && isNotNilOrEmpty(password)){
-      //   const hash =btoa(password)
-      // console.log("hash ",hash)
-        const data = await login(usuario, password)
-        console.log("data: ",data)
-        // localStorage.setItem("token.sig",data.token!);
-        // setUserInfo(data)
-        return router.push(EnlacesSidebar.home.route);
+        // Reset error state before attempting to login
+        //   setFailedLoginError(null);
+
+        //   const { user } = await authenticate(email, password);
+
+        //   // Set recently logged in user information in the `AuthContext`
+        //   // and alert other pages of the authentipauthcation status change
+        //   setUser(user);
+
+        //   if (isNil(router?.query.return)) {
+        //     // If we don't have a callback path where to return (e.g.: `?return=`), send
+        //     // users to My Cases page
+        //     return router.push('/my-cases');
+        //   }
+
+        //   // Go back to where we came after a successful login
+        //   return router.push(router.query.return);
+      } catch (err) {
+        setOpenErrorLogin(true);
+        setMessageError(String(err.message));
+        // console.log("eerr: ",err.message)
+        //   const failedLoginError = isBadRequestError(err)
+        //     ? 'Missing username or password'
+        //     : isAuthorizationError(err)
+        //     ? 'Wrong username or password'
+        //     : undefined;
+
+        //   setSubmitting(false);
+        //   // Show an error message on known authentication issues (like bad username/password)
+        //   // or an alert dialog for unexpected messages
+        //   setFailedLoginError(failedLoginError);
+        //   setAlertOpen(failedLoginError === undefined);
+        //   setAlertDetails(err.message);
       }
-
-      // Reset error state before attempting to login
-      //   setFailedLoginError(null);
-
-      //   const { user } = await authenticate(email, password);
-
-      //   // Set recently logged in user information in the `AuthContext`
-      //   // and alert other pages of the authentipauthcation status change
-      //   setUser(user);
-
-      //   if (isNil(router?.query.return)) {
-      //     // If we don't have a callback path where to return (e.g.: `?return=`), send
-      //     // users to My Cases page
-      //     return router.push('/my-cases');
-      //   }
-
-      //   // Go back to where we came after a successful login
-      //   return router.push(router.query.return);
-    } catch (err) {
-      setOpenErrorLogin(true)
-      setMessageError(String(err.message))
-      // console.log("eerr: ",err.message)
-    //   const failedLoginError = isBadRequestError(err)
-    //     ? 'Missing username or password'
-    //     : isAuthorizationError(err)
-    //     ? 'Wrong username or password'
-    //     : undefined;
-
-    //   setSubmitting(false);
-    //   // Show an error message on known authentication issues (like bad username/password)
-    //   // or an alert dialog for unexpected messages
-    //   setFailedLoginError(failedLoginError);
-    //   setAlertOpen(failedLoginError === undefined);
-    //   setAlertDetails(err.message);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    []
+  );
 
   const {
     errors,
@@ -244,141 +240,158 @@ const LoginScreen = () => {
     handleSubmit,
     isSubmitting,
     touched,
-    values
+    values,
   } = useFormik({
     initialValues,
     onSubmit,
-    validationSchema
+    validationSchema,
   });
 
   const classes = useStyles();
   return (
-    <>
-    <Head>
-      <title>Login</title>
-    </Head>
-    <Box className={classes.root}>
-      <Container className={classes.container}>
-      {openErrorLogin &&  <ModalAuth
-        openModal={openErrorLogin}
-        setOpenModal={setOpenErrorLogin}
-        title={"Error login"}
-        message={messageError}
-        />}
-        <Box className={classes.cardLogin}>
-          <Box className={classes.cardLoginColumn}>
-            <div className={classes.cardTituloLogin}>
-              <Typography variant="h5" className={classes.titulo}>
-                {" "}
-                Login
-              </Typography>
-            </div>
-            <form
-              action="#"
-              onSubmit={handleSubmit}
-              onReset={handleReset}
-              noValidate
-              className={classes.formLogin}
-            >
-              <div className={classes.contentTextBox}>
-                <TextField
-                  className={classes.textBoox}
-                  variant="outlined"
-                  id="usuario"
-                  value={values.usuario}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  autoComplete="username"
-                  label="Email"
-                  margin="normal"
-                  error={touched.usuario && isNotNilOrEmpty(errors.usuario)}
-                  helperText={touched.usuario ? errors.usuario : undefined}
-                  required
-                  // fullWidth
-                />
-                <TextField
-                  className={classes.textBoox}
-                  variant="outlined"
-                  id="password"
-                  type={"password"}
-                  // className="mt3"
-                  value={values.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  autoComplete="current-password"
-                  label="Password"
-                  margin="normal"
-                  error={touched.password && isNotNilOrEmpty(errors.password)}
-                  helperText={touched.password ? errors.password : undefined}
-                  required
-                  // fullWidth
-                />
-              </div>
+    <AppLayoutLogin>
+      <>
+        <Head>
+          <title>Login</title>
+        </Head>
+        <Box className={classes.root}>
+          <Container className={classes.container}>
+            {openErrorLogin && (
+              <ModalAuth
+                openModal={openErrorLogin}
+                setOpenModal={setOpenErrorLogin}
+                title={"Error login"}
+                message={messageError}
+              />
+            )}
+            <Box className={classes.cardLogin}>
+              <Box className={classes.cardLoginColumn}>
+                <div className={classes.cardTituloLogin}>
+                  <Typography variant="h5" className={classes.titulo}>
+                    {" "}
+                    Login
+                  </Typography>
+                </div>
+                <form
+                  action="#"
+                  onSubmit={handleSubmit}
+                  onReset={handleReset}
+                  noValidate
+                  className={classes.formLogin}
+                >
+                  <div className={classes.contentTextBox}>
+                    <TextField
+                      className={classes.textBoox}
+                      variant="outlined"
+                      id="usuario"
+                      value={values.usuario}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      autoComplete="username"
+                      label="Email"
+                      margin="normal"
+                      error={touched.usuario && isNotNilOrEmpty(errors.usuario)}
+                      helperText={touched.usuario ? errors.usuario : undefined}
+                      required
+                      // fullWidth
+                    />
+                    <TextField
+                      className={classes.textBoox}
+                      variant="outlined"
+                      id="password"
+                      type={"password"}
+                      // className="mt3"
+                      value={values.password}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      autoComplete="current-password"
+                      label="Password"
+                      margin="normal"
+                      error={
+                        touched.password && isNotNilOrEmpty(errors.password)
+                      }
+                      helperText={
+                        touched.password ? errors.password : undefined
+                      }
+                      required
+                      // fullWidth
+                    />
+                  </div>
 
-              <div className={classes.contentButtons}>
-                <div></div>
-                {/* <Button
-                variant="text"
-                color="primary"
-                className={classes.button}
-              >
-                {" "}
-                Registrarse
-              </Button> */}
-                <Button
-                  type="submit"
-                  variant="text"
-                  className={classes.btnLogin}
-                >
-                  {" "}
-                  Ingresar
-                </Button>
-              </div>
-            </form>
-          </Box>
-          <Hidden smDown>
-            <Box className={classes.cardLoginImg}>
-              <div className={classes.imgContainer}>
-                <Carousel
-                  showIndicators={true}
-                  showStatus={false}
-                  showArrows={false}
-                  autoPlay={true}
-                  infiniteLoop={true}
-                  className={classes.carrusel}
-                >
-                  <div>
-                    <Image
-                      width={450}
-                      height={570}
-                      className={classes.img}
-                      src={"/img/login/iowa-city.jpg"}
-                    />
+                  <div className={classes.contentButtons}>
+                    <div>
+                      <Button
+                        variant="text"
+                        color="secondary"
+                        className={classes.button}
+                        onClick={async () =>
+                          await router.push("/recordar-contrasena")
+                        }
+                      >
+                        <Typography style={{ fontSize: 10 }} variant="body1">
+                          Recordar Contraseña
+                        </Typography>
+                      </Button>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      variant="text"
+                      className={classes.btnLogin}
+                    >
+                      {" "}
+                      Ingresar
+                    </Button>
                   </div>
-                  <div>
-                    <Image
-                      width={450}
-                      height={570}
-                      className={classes.img}
-                      src={"/img/login/los-angeles.webp"}
-                    />
+                </form>
+              </Box>
+              <Hidden smDown>
+                <Box className={classes.cardLoginImg}>
+                  <div className={classes.imgContainer}>
+                    <Carousel
+                      showIndicators={true}
+                      showStatus={false}
+                      showArrows={false}
+                      autoPlay={true}
+                      infiniteLoop={true}
+                      className={classes.carrusel}
+                    >
+                      <div>
+                        <Image
+                          width={450}
+                          height={570}
+                          className={classes.img}
+                          src={"/img/login/iowa-city.jpg"}
+                          alt={"img"}
+                        />
+                      </div>
+                      <div>
+                        <Image
+                          width={450}
+                          height={570}
+                          className={classes.img}
+                          src={"/img/login/los-angeles.webp"}
+                          alt={"img"}
+                        />
+                      </div>
+                      <div>
+                        <Image
+                          width={450}
+                          height={570}
+                          className={classes.img}
+                          src={"/img/login/rascacielo.jpg"}
+                          alt={"img"}
+                        />
+                      </div>
+                    </Carousel>
                   </div>
-                  <div>
-                    <Image
-                      width={450}
-                      height={570}
-                      className={classes.img}
-                      src={"/img/login/rascacielo.jpg"}
-                    />
-                  </div>
-                </Carousel>
-              </div>
+                </Box>
+              </Hidden>
             </Box>
-          </Hidden>
+          </Container>
         </Box>
-      </Container>
-    </Box>
-    </>
+      </>
+    </AppLayoutLogin>
   );
 };
 

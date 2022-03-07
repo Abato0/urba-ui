@@ -53,6 +53,7 @@ export const getPagoFamiliarFilter = gql`
     # $id_aporte: Int
     $mes: String
     $anio: Int
+    $tipo_pago: String
   ) {
     ListaPagoFamiliarFilter(
       input: {
@@ -60,6 +61,7 @@ export const getPagoFamiliarFilter = gql`
         # id_aporte: $id_aporte
         mes: $mes
         anio: $anio
+        tipo_pago: $tipo_pago
       }
     ) {
       id

@@ -192,10 +192,10 @@ export const tipoUsuarios: ITipoEdificacion[] = [
     label: "ADMINISTRADOR",
     value: TipoUsuario.ADMIN,
   },
-  {
-    label: "CONTABILIDAD",
-    value: TipoUsuario.CONTABILIDAD,
-  },
+  // {
+  //   label: "CONTABILIDAD",
+  //   value: TipoUsuario.CONTABILIDAD,
+  // },
   {
     label: "MORADOR",
     value: TipoUsuario.MORADOR,
@@ -220,5 +220,102 @@ export const ArrTipoTag: ITipoEdificacion[] = [
   {
     label: "Daño",
     value: TipoTag.DANO,
+  },
+];
+
+export enum EMODULOS {
+  MANTENIMIENTO = "Mantenimiento",
+  GRUPO_FAMILIAR = "Grupo Familiar",
+  INTEGRANTE_FAMILIAR = "Integrante Familiar",
+  PAGO = "Pago",
+  VEHICULO = "Vehiculo",
+}
+
+export enum EMANTENIMIENTO {
+  MANZANA = "Manzana",
+  MARCA = "Marca",
+  CALLE = "Calle",
+  COLOR = "Color",
+  MODELO = "Modelo",
+  PARENTESCO = "Parentesco",
+  STATUS_VEHICULO = "Status del Vehiculo",
+  VALOR_TAG = "Valor del Tag",
+}
+
+export const arrModulos: ITipoEdificacion[] = [
+  {
+    label: EMODULOS.GRUPO_FAMILIAR,
+    value: EMODULOS.GRUPO_FAMILIAR,
+  },
+  {
+    label: EMODULOS.INTEGRANTE_FAMILIAR,
+    value: EMODULOS.INTEGRANTE_FAMILIAR,
+  },
+
+  {
+    label: EMODULOS.PAGO,
+    value: EMODULOS.PAGO,
+  },
+  {
+    label: EMODULOS.VEHICULO,
+    value: EMODULOS.VEHICULO,
+  },
+  {
+    label: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.CALLE}`,
+    value: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.CALLE}`,
+  },
+  {
+    label: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.COLOR}`,
+    value: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.COLOR}`,
+  },
+  {
+    label: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.MANZANA}`,
+    value: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.MANZANA}`,
+  },
+  {
+    label: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.MARCA}`,
+    value: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.MARCA}`,
+  },
+  {
+    label: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.MODELO}`,
+    value: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.MODELO}`,
+  },
+  {
+    label: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.PARENTESCO}`,
+    value: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.PARENTESCO}`,
+  },
+  {
+    label: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.STATUS_VEHICULO}`,
+    value: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.STATUS_VEHICULO}`,
+  },
+  {
+    label: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.VALOR_TAG}`,
+    value: `${EMODULOS.MANTENIMIENTO} - ${EMANTENIMIENTO.VALOR_TAG}`,
+  },
+];
+
+export enum ETipoPago {
+  implementacion = "Implementacion",
+  mantenimiento = "Mantenimiento",
+  tag = "TAG",
+  otros = "Otros",
+}
+
+export const ArrTipoPago: ITipoEdificacion[] = [
+  {
+    label: ETipoPago.implementacion,
+    value: ETipoPago.implementacion,
+  },
+  {
+    label: ETipoPago.mantenimiento,
+    value: ETipoPago.mantenimiento,
+  },
+  {
+    label: ETipoPago.tag,
+    value: ETipoPago.tag,
+  },
+  {
+    label: ETipoPago.otros,
+    value: ETipoPago.otros,
   },
 ];

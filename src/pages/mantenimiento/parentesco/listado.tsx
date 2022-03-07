@@ -36,6 +36,7 @@ import {
   useListaParentescoQuery,
 } from "../../../components/mantenimento/parentesco/use-parentesco";
 import { columnsParentesco } from "../../../components/mantenimento/parentesco/parentesco-dataTable";
+import { IngresarParentescoForm } from "../../../components/mantenimento/parentesco/parentesco-form";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -104,6 +105,32 @@ const useStyles = makeStyles((theme) =>
     contentForm: {
       marginTop: theme.spacing(3),
     },
+
+    containerRoot: {
+      display: "flex",
+      flexDirection: "row",
+      width: "100%",
+      margin: theme.spacing(2),
+    },
+
+    containerTitle: {
+      // backgroundColor: "red",
+      display: "flex",
+      justifyContent: "center",
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(1),
+    },
+    title: {
+      fontSize: theme.typography.pxToRem(14),
+      backgroundColor: colors.grey[200],
+      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(1),
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(4),
+      borderRadius: 5,
+      // fontWeight: "bold",
+      // font
+    },
   })
 );
 
@@ -143,40 +170,46 @@ const MantenimientoParentescoListado = () => {
     }
   }, [data, loading, error]);
 
-  const onEdit = useCallback(({ id }: any) => {
-    if (!isNil(id)) {
-      router.push(
-        { pathname: "/mantenimiento/parentesco/registrar/[id]" },
-        `/mantenimiento/parentesco/registrar/${encodeURIComponent(id)}`
-      );
-    }
-  }, []);
+  const onEdit = useCallback(
+    ({ id }: any) => {
+      if (!isNil(id)) {
+        router.push(
+          { pathname: "/mantenimiento/parentesco/registrar/[id]" },
+          `/mantenimiento/parentesco/registrar/${encodeURIComponent(id)}`
+        );
+      }
+    },
+    [router]
+  );
 
-  const onDelete = useCallback(async ({ id }: any) => {
-    try {
-      const { data } = await mutateEliminar({
-        variables: {
-          id,
-        },
-      });
-      if (isNotNil(data)) {
-        const { message } = data.DeleteParentesco;
-        setTitleModalMsj(message);
-        setErrorModal(false);
-        setOpenModalMsj(true);
-      } else {
-        setTitleModalMsj("Usuario no autorizado");
+  const onDelete = useCallback(
+    async ({ id }: any) => {
+      try {
+        const { data } = await mutateEliminar({
+          variables: {
+            id,
+          },
+        });
+        if (isNotNil(data)) {
+          const { message } = data.DeleteParentesco;
+          setTitleModalMsj(message);
+          setErrorModal(false);
+          setOpenModalMsj(true);
+        } else {
+          setTitleModalMsj("Usuario no autorizado");
+          setErrorModal(true);
+          setOpenModalMsj(true);
+        }
+      } catch (error: any) {
+        console.log("error:", error);
+        setTitleModalMsj("Envio Fallido");
         setErrorModal(true);
+        setMensajeModalMsj("" + error.message);
         setOpenModalMsj(true);
       }
-    } catch (error: any) {
-      console.log("error:", error);
-      setTitleModalMsj("Envio Fallido");
-      setErrorModal(true);
-      setMensajeModalMsj("" + error.message);
-      setOpenModalMsj(true);
-    }
-  }, []);
+    },
+    [mutateEliminar]
+  );
 
   const {
     getTableProps,
@@ -220,7 +253,7 @@ const MantenimientoParentescoListado = () => {
     } else {
       setDataParentesco(extractData(data?.ListaParentesco!));
     }
-  }, [debounceSearch]);
+  }, [data?.ListaParentesco, debounceSearch, fuse]);
 
   const onChangePage = useCallback((event, page) => gotoPage(page), [gotoPage]);
 
@@ -242,43 +275,58 @@ const MantenimientoParentescoListado = () => {
           />
         )}
       </>
-      <Paper className={classes.root}>
-        <div className={classes.contentButtons}>
-          <TextField
-            className={classes.textBox}
-            variant="outlined"
-            placeholder="Search"
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            value={search}
-          />
+      <div
+        style={{ justifyContent: "space-around" }}
+        className={classes.containerRoot}
+      >
+        <div>
+          <IngresarParentescoForm />
         </div>
-        <TableContainer>
-          <Table
-            // className={classes.table}
-            padding="normal"
-            stickyHeader
-            aria-label="sticky table"
-            {...getTableProps()}
-            id={"TableColor"}
-          >
-            <TableHeader headerGroups={headerGroups} />
-            <CardTableBody
-              getTableBodyProps={getTableBodyProps}
-              page={page}
-              prepareRow={prepareRow}
+        <Paper className={classes.root}>
+          <div className={classes.containerTitle}>
+            <Typography variant="overline" className={classes.title}>
+              Listado de Parentescos
+            </Typography>
+          </div>
+          <div className={classes.contentButtons}>
+            <TextField
+              className={classes.textBox}
+              variant="outlined"
+              placeholder="Search"
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              value={search}
             />
-          </Table>
-        </TableContainer>
-        <TablePaginations
-          lengthData={isNilOrEmpty(dataParentesco) ? 0 : dataParentesco.length}
-          onChangePage={onChangePage}
-          onChangeRowsPerPage={onChangeRowsPerPage}
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-        />
-      </Paper>
+          </div>
+          <TableContainer>
+            <Table
+              // className={classes.table}
+              padding="normal"
+              stickyHeader
+              aria-label="sticky table"
+              {...getTableProps()}
+              id={"TableColor"}
+            >
+              <TableHeader headerGroups={headerGroups} />
+              <CardTableBody
+                getTableBodyProps={getTableBodyProps}
+                page={page}
+                prepareRow={prepareRow}
+              />
+            </Table>
+          </TableContainer>
+          <TablePaginations
+            lengthData={
+              isNilOrEmpty(dataParentesco) ? 0 : dataParentesco.length
+            }
+            onChangePage={onChangePage}
+            onChangeRowsPerPage={onChangeRowsPerPage}
+            pageIndex={pageIndex}
+            pageSize={pageSize}
+          />
+        </Paper>
+      </div>
     </AppLayout>
   );
 };

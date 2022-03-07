@@ -9,7 +9,7 @@ import {
 import { isNilOrEmpty } from "../../../utils/is-nil-empty";
 
 export interface IOutput {
-  code: string;
+  code: number;
   message: string;
 }
 

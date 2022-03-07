@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
   makeStyles,
   createStyles,
@@ -19,14 +20,16 @@ import {
   usePostParentescoMutation,
   usePutParentescoMutation,
 } from "./use-parentesco";
+import { LoadingButton } from "@mui/lab";
+import SaveIcon from "@material-ui/icons/Save";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      marginTop: theme.spacing(10),
-      marginBottom: theme.spacing(10),
-      marginLeft: theme.spacing(20),
-      marginRight: theme.spacing(20),
+      // marginTop: theme.spacing(10),
+      // marginBottom: theme.spacing(10),
+      // marginLeft: theme.spacing(20),
+      // marginRight: theme.spacing(20),
       padding: "60px",
       // minWidth: "820px",
       borderRadius: "10px",
@@ -108,8 +111,8 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
   const [errorModal, setErrorModal] = useState<boolean>(false);
-
   const [boolPut, setBoolPut] = useState<boolean>(false);
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
   useEffect(() => {
     // setTimeout(() => {
@@ -117,7 +120,7 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
       router.push({ pathname: "/mantenimiento/parentesco/listado" });
     }
     // }, 2000);
-  }, [boolPut, openModalMsj]);
+  }, [boolPut, openModalMsj, router]);
 
   const [mutate] = isNil(parentescoObj)
     ? usePostParentescoMutation()
@@ -131,49 +134,59 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
       : initialValues;
   }, [parentescoObj]);
 
-  const onSubmit = useCallback(async ({ parentesco }) => {
-    try {
-      if (isNotNilOrEmpty(parentesco)) {
-        const { data } = isNil(parentescoObj)
-          ? await mutate({
-              variables: {
-                parentesco,
-              },
-            })
-          : await mutate({
-              variables: {
-                id,
-                parentesco,
-              },
-            });
+  const onSubmit = useCallback(
+    async ({ parentesco }) => {
+      try {
+        if (isNotNilOrEmpty(parentesco)) {
+          setLoadingMutate(true);
+          const { data } = isNil(parentescoObj)
+            ? await mutate({
+                variables: {
+                  parentesco,
+                },
+              })
+            : await mutate({
+                variables: {
+                  id,
+                  parentesco,
+                },
+              });
 
-        if (isNotNilOrEmpty(data)) {
-          const { code, message } = isNotNilOrEmpty(data.PostParentesco)
-            ? data.PostParentesco
-            : data.PutParentesco;
-          setTitleModalMsj(message);
+          if (isNotNilOrEmpty(data)) {
+            const { code, message } = isNotNilOrEmpty(data.PostParentesco)
+              ? data.PostParentesco
+              : data.PutParentesco;
+            setLoadingMutate(false);
+            setTitleModalMsj(message);
 
-          setOpenModalMsj(true);
-          if (isNotNilOrEmpty(data.PutParentesco)) {
-            setBoolPut(true);
-          }
-          if (code === 200) {
+            
+            if (isNotNilOrEmpty(data.PutParentesco)) {
+              setBoolPut(true);
+            }
+            if (code === 200) {
+              setErrorModal(false);
+            }
+            setOpenModalMsj(true);
+          } else {
+            setLoadingMutate(false);
+            setOpenModalMsj(true);
             setErrorModal(false);
+            setTitleModalMsj("Usuario no autorizado");
           }
-        } else {
-          setOpenModalMsj(true);
-          setErrorModal(false);
-          setTitleModalMsj("Usuario no autorizado");
         }
+      } catch (error: any) {
+        setLoadingMutate(false);
+        console.log("error.;", error);
+        setTitleModalMsj("Envio Fallido");
+        setErrorModal(true);
+        setMensajeModalMsj(
+          "El parentesco no ha sido guardado: " + error.message
+        );
+        setOpenModalMsj(true);
       }
-    } catch (error: any) {
-      console.log("error.;", error);
-      setTitleModalMsj("Envio Fallido");
-      setErrorModal(true);
-      setMensajeModalMsj("El parentesco no ha sido guardado: " + error.message);
-      setOpenModalMsj(true);
-    }
-  }, []);
+    },
+    [id, parentescoObj]
+  );
 
   const {
     errors,
@@ -229,10 +242,15 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
         </div>
         <div className={classes.contentButtons}>
           <div></div>
-          <Button type="submit" variant="outlined">
-            {" "}
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="text"
+            startIcon={<SaveIcon />}
+          >
             Guardar
-          </Button>
+          </LoadingButton>
         </div>
       </form>
     </Box>

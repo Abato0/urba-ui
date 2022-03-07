@@ -92,7 +92,7 @@ const CardItemHome: React.FC<IProps> = ({
         {titulo}
       </Typography>
       <div className={classes.cardItem}>
-        <Avatar variant="circle" className={classes.avatar}>
+        <Avatar variant="circular" className={classes.avatar}>
           <FontAwesomeIcon className={classes.icon} icon={icon} />
         </Avatar>
 

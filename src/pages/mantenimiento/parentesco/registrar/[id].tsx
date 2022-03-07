@@ -1,11 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import AppLayout from "../../../../components/layout/app-layout";
-import { IngresarModeloForm } from "../../../../components/mantenimento/modelo/modelo-form";
-import {
-  useGetModeloQuery,
-  IResultQueryModelo,
-} from "../../../../components/mantenimento/modelo/use-modelo";
 import { isNotNilOrEmpty } from "../../../../utils/is-nil-empty";
 import {
   IResultQueryParentesco,

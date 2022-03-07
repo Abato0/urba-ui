@@ -31,6 +31,10 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { useRouter } from "next/router";
 import { EnlacesSidebar } from "./app-sidebar";
 
+import Cookies from "js-cookie";
+import getAuthToken from "../../auth/auth-token";
+import { authMe } from "../../auth/auth-service";
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     grow: {
@@ -146,6 +150,25 @@ const NavBar: React.FC = ({ children }) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const autho = async () => {
+    try {
+      const token = Cookies.get("token");
+      if (token) {
+        const result = await authMe(token);
+        console.log("result:", result);
+      }
+      console.log("token: ", token);
+    } catch (error) {
+      console.log("error: ", (error as Error).message);
+    }
+  };
+
+  const cerrarSession = () => {
+    Cookies.remove("token");
+    handleMenuClose();
+    return router.push("/login");
+  };
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -157,8 +180,15 @@ const NavBar: React.FC = ({ children }) => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={autho}>Perfil</MenuItem>
+      <MenuItem
+        onClick={() =>
+          router.push(EnlacesSidebar.usuario.cambioContrasena.route)
+        }
+      >
+        Cambiar Contraseña
+      </MenuItem>
+      <MenuItem onClick={cerrarSession}>Cerrar Sesión</MenuItem>
     </Menu>
   );
 

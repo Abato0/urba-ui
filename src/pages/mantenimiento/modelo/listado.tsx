@@ -35,14 +35,16 @@ import {
   useListaModeloQuery,
 } from "../../../components/mantenimento/modelo/use-modelo";
 import { columnsModelo } from "../../../components/mantenimento/modelo/modelo-dataTable";
+import { IngresarModeloForm } from "../../../components/mantenimento/modelo/modelo-form";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
+      // marginTop: theme.spacing(2),
+      // marginBottom: theme.spacing(2),
       borderRadius: "12px",
       width: "50%",
+      margin: theme.spacing(2),
     },
     contentButtons: {
       display: "flex",
@@ -102,6 +104,31 @@ const useStyles = makeStyles((theme) =>
     },
     contentForm: {
       marginTop: theme.spacing(3),
+    },
+    containerRoot: {
+      display: "flex",
+      flexDirection: "row",
+      width: "100%",
+      margin: theme.spacing(2),
+    },
+
+    containerTitle: {
+      // backgroundColor: "red",
+      display: "flex",
+      justifyContent: "center",
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(1),
+    },
+    title: {
+      fontSize: theme.typography.pxToRem(14),
+      backgroundColor: colors.grey[200],
+      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(1),
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(4),
+      borderRadius: 5,
+      // fontWeight: "bold",
+      // font
     },
   })
 );
@@ -213,7 +240,7 @@ const MantenimientoModeloListado = () => {
     } else {
       setColorMarca(extractData(data?.ListaModelo!));
     }
-  }, [debounceSearch]);
+  }, [data?.ListaModelo, debounceSearch, fuse]);
 
   const onChangePage = useCallback((event, page) => gotoPage(page), [gotoPage]);
 
@@ -235,43 +262,52 @@ const MantenimientoModeloListado = () => {
           />
         )}
       </>
-      <Paper className={classes.root}>
-        <div className={classes.contentButtons}>
-          <TextField
-            className={classes.textBox}
-            variant="outlined"
-            placeholder="Search"
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            value={search}
-          />
+      <div
+        style={{ justifyContent: "space-around" }}
+        className={classes.containerRoot}
+      >
+        <div>
+          <IngresarModeloForm />
         </div>
-        <TableContainer>
-          <Table
-            // className={classes.table}
-            padding="normal"
-            stickyHeader
-            aria-label="sticky table"
-            {...getTableProps()}
-            id={"TableColor"}
-          >
-            <TableHeader headerGroups={headerGroups} />
-            <CardTableBody
-              getTableBodyProps={getTableBodyProps}
-              page={page}
-              prepareRow={prepareRow}
+
+        <Paper className={classes.root}>
+          <div className={classes.contentButtons}>
+            <TextField
+              className={classes.textBox}
+              variant="outlined"
+              placeholder="Search"
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              value={search}
             />
-          </Table>
-        </TableContainer>
-        <TablePaginations
-          lengthData={isNilOrEmpty(dataMarca) ? 0 : dataMarca.length}
-          onChangePage={onChangePage}
-          onChangeRowsPerPage={onChangeRowsPerPage}
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-        />
-      </Paper>
+          </div>
+          <TableContainer>
+            <Table
+              // className={classes.table}
+              padding="normal"
+              stickyHeader
+              aria-label="sticky table"
+              {...getTableProps()}
+              id={"TableColor"}
+            >
+              <TableHeader headerGroups={headerGroups} />
+              <CardTableBody
+                getTableBodyProps={getTableBodyProps}
+                page={page}
+                prepareRow={prepareRow}
+              />
+            </Table>
+          </TableContainer>
+          <TablePaginations
+            lengthData={isNilOrEmpty(dataMarca) ? 0 : dataMarca.length}
+            onChangePage={onChangePage}
+            onChangeRowsPerPage={onChangeRowsPerPage}
+            pageIndex={pageIndex}
+            pageSize={pageSize}
+          />
+        </Paper>
+      </div>
     </AppLayout>
   );
 };

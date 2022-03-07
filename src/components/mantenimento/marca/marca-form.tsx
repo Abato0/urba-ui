@@ -20,19 +20,21 @@ import {
   usePutMarcaMutation,
 } from "./use-marca";
 import SaveIcon from "@material-ui/icons/Save";
+import { LoadingButton } from "@mui/lab";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      marginTop: theme.spacing(10),
-      marginBottom: theme.spacing(10),
-      marginLeft: theme.spacing(20),
-      marginRight: theme.spacing(20),
+      // marginTop: theme.spacing(10),
+      // marginBottom: theme.spacing(10),
+      // marginLeft: theme.spacing(20),
+      // marginRight: theme.spacing(20),
       padding: "60px",
       // minWidth: "820px",
       borderRadius: "10px",
       textAlign: "center",
       backgroundColor: "white",
+      margin: theme.spacing(2),
       // width:"100px"
     },
     formControl: {
@@ -109,6 +111,7 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
   const [errorModal, setErrorModal] = useState<boolean>(false);
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
   const [boolPut, setBoolPut] = useState<boolean>(false);
 
@@ -118,10 +121,12 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
       router.push({ pathname: "/mantenimiento/marca/listado" });
     }
     // }, 2000);
-  }, [boolPut, openModalMsj]);
+  }, [boolPut, openModalMsj, router]);
 
   const [mutate] = isNil(marcaObj)
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     ? usePostMarcaMutation()
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     : usePutMarcaMutation();
 
   const init = useMemo(() => {
@@ -135,6 +140,7 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
   const onSubmit = useCallback(async ({ marca }) => {
     try {
       if (isNotNilOrEmpty(marca)) {
+        setLoadingMutate(true);
         const { data } = isNil(marcaObj)
           ? await mutate({
               variables: {
@@ -152,6 +158,7 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
           const { message } = isNotNilOrEmpty(data.PutMarca)
             ? data.PutMarca
             : data.PostMarca;
+            setLoadingMutate(false);
           setTitleModalMsj(message);;
 
           setErrorModal(false);
@@ -161,19 +168,21 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
           }
           resetForm();
         } else {
+          setLoadingMutate(false);
           setOpenModalMsj(true);
           setErrorModal(false);
           setTitleModalMsj("Usuario no autorizado");
         }
       }
     } catch (error: any) {
+      setLoadingMutate(false);
       console.log("error.;", error);
       setTitleModalMsj("Envio Fallido");
       setErrorModal(true);
       setMensajeModalMsj("La marca no ha sido guardado: " + error.message);
       setOpenModalMsj(true);
     }
-  }, []);
+  }, [id, marcaObj]);
 
   const {
     errors,
@@ -204,7 +213,7 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
       )}
       <div className={classes.title}>
         <Typography variant="overline">
-          Registro de Marcas de Vehiculos
+          Registro de Marcas de los Vehiculos
         </Typography>
       </div>
       <form
@@ -230,10 +239,15 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
         </div>
         <div className={classes.contentButtons}>
           <div></div>
-          <Button startIcon={<SaveIcon />} type="submit" variant="outlined">
-            {" "}
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="outlined"
+            startIcon={<SaveIcon />}
+          >
             Guardar
-          </Button>
+          </LoadingButton>
         </div>
       </form>
     </Box>

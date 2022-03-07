@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
   makeStyles,
   createStyles,
@@ -11,7 +12,6 @@ import { useFormik } from "formik";
 import { isNil } from "ramda";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import * as yup from "yup";
-import SaveIcon from "@material-ui/icons/Save";
 import { useRouter } from "next/router";
 import { Paper } from "@material-ui/core";
 import {
@@ -22,14 +22,16 @@ import {
 } from "./use-valor-tag";
 import { isNilOrEmpty, isNotNilOrEmpty } from "../../../utils/is-nil-empty";
 import ModalAuth from "../../core/input/dialog/modal-dialog";
+import { LoadingButton } from "@mui/lab";
+import SaveIcon from "@material-ui/icons/Save";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      marginTop: theme.spacing(10),
-      marginBottom: theme.spacing(10),
-      marginLeft: theme.spacing(20),
-      marginRight: theme.spacing(20),
+      // marginTop: theme.spacing(10),
+      // marginBottom: theme.spacing(10),
+      // marginLeft: theme.spacing(20),
+      // marginRight: theme.spacing(20),
       padding: "60px",
       // minWidth: "820px",
       borderRadius: "10px",
@@ -127,6 +129,7 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
   const [errorModal, setErrorModal] = useState<boolean>(false);
   const [boolPut, setBoolPut] = useState<boolean>(false);
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
   const { refetch } = useListadoValorTag();
 
@@ -155,49 +158,59 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
     ? usePostValorTag()
     : usePutValorTag();
 
-  const onSubmit = useCallback(async ({ tipo_tag, valor }) => {
-    try {
-      if (isNotNilOrEmpty(valor) && isNotNilOrEmpty(tipo_tag)) {
-        const { data } = isNilOrEmpty(valorTagObj)
-          ? await mutate({
-              variables: {
-                tipo_tag,
-                valor,
-              },
-            })
-          : await mutate({
-              variables: {
-                id: Number(id),
-                tipo_tag,
-                valor,
-              },
-            });
+  const onSubmit = useCallback(
+    async ({ tipo_tag, valor }) => {
+      try {
+        if (isNotNilOrEmpty(valor) && isNotNilOrEmpty(tipo_tag)) {
+          setLoadingMutate(true);
+          const { data } = isNilOrEmpty(valorTagObj)
+            ? await mutate({
+                variables: {
+                  tipo_tag,
+                  valor,
+                },
+              })
+            : await mutate({
+                variables: {
+                  id: Number(id),
+                  tipo_tag,
+                  valor,
+                },
+              });
 
-        if (isNotNilOrEmpty(data)) {
-          const { code, message } = isNilOrEmpty(valorTagObj)
-            ? data.PostValorTag
-            : data.PutValorTag;
-          setTitleModalMsj(message);
-          setErrorModal(code === 200 ? false : true);
-          setOpenModalMsj(true);
-          if (isNotNilOrEmpty(data.PutValorTag) && code === 200) {
-            setBoolPut(true);
+          if (isNotNilOrEmpty(data)) {
+            const { code, message } = isNilOrEmpty(valorTagObj)
+              ? data.PostValorTag
+              : data.PutValorTag;
+            setLoadingMutate(false);
+            setTitleModalMsj(message);
+            setErrorModal(code === 200 ? false : true);
+            setOpenModalMsj(true);
+            if (isNotNilOrEmpty(data.PutValorTag) && code === 200) {
+              setBoolPut(true);
+            } else if (isNotNilOrEmpty(data.PostValorTag) && code === 200) {
+              await refetch();
+            }
+
+            // resetForm();
+          } else {
+            setLoadingMutate(false);
+            setOpenModalMsj(true);
+            setErrorModal(false);
+            setTitleModalMsj("Usuario no autorizado");
           }
-          // resetForm();
-        } else {
-          setOpenModalMsj(true);
-          setErrorModal(false);
-          setTitleModalMsj("Usuario no autorizado");
         }
+      } catch (error: any) {
+        setLoadingMutate(false);
+        console.log("error.;", error);
+        setTitleModalMsj("Envio Fallido");
+        setErrorModal(true);
+        setMensajeModalMsj("La marca no ha sido guardado: " + error.message);
+        setOpenModalMsj(true);
       }
-    } catch (error: any) {
-      console.log("error.;", error);
-      setTitleModalMsj("Envio Fallido");
-      setErrorModal(true);
-      setMensajeModalMsj("La marca no ha sido guardado: " + error.message);
-      setOpenModalMsj(true);
-    }
-  }, []);
+    },
+    [id, valorTagObj]
+  );
 
   const {
     errors,
@@ -269,10 +282,15 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
         </div>
         <div className={classes.contentButtons}>
           <div></div>
-          <Button startIcon={<SaveIcon />} type="submit" variant="outlined">
-            {" "}
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="text"
+            startIcon={<SaveIcon />}
+          >
             Guardar
-          </Button>
+          </LoadingButton>
         </div>
       </form>
     </Box>

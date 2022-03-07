@@ -97,9 +97,9 @@ export const CarruselVehiculoImagenModal: FC<IProps> = ({
                     src={
                       isNilOrEmpty(data.GetVehiculos.matriculaFrontal)
                         ? "/img/image-not-found.png"
-                        : "data:image/jpeg;base64," +
-                          data.GetVehiculos.matriculaFrontal
+                        : String(data.GetVehiculos.matriculaFrontal)
                     }
+                    alt={"matricula-frontal"}
                   />
                   <p className="legend">Matricula Frontal</p>
                 </div>
@@ -111,9 +111,9 @@ export const CarruselVehiculoImagenModal: FC<IProps> = ({
                     src={
                       isNilOrEmpty(data.GetVehiculos.matriculaReverso)
                         ? "/img/image-not-found.png"
-                        : "data:image/jpeg;base64," +
-                          data.GetVehiculos.matriculaReverso
+                        : String(data.GetVehiculos.matriculaReverso)
                     }
+                    alt={"matricula-reverso"}
                   />
                   <p className="legend">Matricula Reverso</p>
                 </div>
@@ -125,9 +125,9 @@ export const CarruselVehiculoImagenModal: FC<IProps> = ({
                     src={
                       isNilOrEmpty(data.GetVehiculos.cedulaFrontal)
                         ? "/img/image-not-found.png"
-                        : "data:image/jpeg;base64," +
-                          data.GetVehiculos.cedulaFrontal
+                        : data.GetVehiculos.cedulaFrontal
                     }
+                    alt={"cedula-frontal"}
                   />
                   <p className="legend">Cedula Frontal</p>
                 </div>
@@ -139,9 +139,9 @@ export const CarruselVehiculoImagenModal: FC<IProps> = ({
                     src={
                       isNilOrEmpty(data.GetVehiculos.cedulaReverso)
                         ? "/img/image-not-found.png"
-                        : "data:image/jpeg;base64," +
-                          data.GetVehiculos.cedulaReverso
+                        : data.GetVehiculos.cedulaReverso
                     }
+                    alt={"cedula-reverso"}
                   />
                   <p className="legend">Cedula Reverso</p>
                 </div>

@@ -17,7 +17,10 @@ import {
 import { isNil, pluck, prop } from "ramda";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePagination, useTable } from "react-table";
-import { IResultQueryTags, useListaTags } from "../../components/tag/use-tag";
+import {
+  IResultQueryTagPagos,
+  useListaTagPagos,
+} from "../../components/tag/use-tag";
 import { isNilOrEmpty, isNotNilOrEmpty } from "../../utils/is-nil-empty";
 import Fuse from "fuse.js";
 import { columnsTags } from "../../components/tag/tag-dataTable";
@@ -147,17 +150,19 @@ interface ITagsVariablesNormalize {
   fecha_pago: string;
 }
 
-const extractData = (data: IResultQueryTags[]): ITagsVariablesNormalize[] => {
+const extractData = (
+  data: IResultQueryTagPagos[]
+): ITagsVariablesNormalize[] => {
   return isNotNilOrEmpty(data)
-    ? data.map(({ id, tag, vehiculo }) => {
+    ? data.map(({ id, valorTag, vehiculo, fecha_pago, monto }) => {
         return {
           id,
           idGrupoFamiliar: vehiculo.grupoFamiliar.id!,
           nombre_familiar: vehiculo.grupoFamiliar.nombre_familiar,
           placa: vehiculo.placa,
-          tipo_tag: tag.valorTag.tipo_tag,
-          monto: tag.monto,
-          fecha_pago: tag.fecha_pago,
+          tipo_tag: valorTag.tipo_tag,
+          monto: monto,
+          fecha_pago: fecha_pago,
         };
       })
     : [];
@@ -172,7 +177,7 @@ const getRowId = prop("id");
 const MantenimientoParentescoListado = () => {
   const classes = useStyles();
   //   const router = useRouter();
-  const { data, loading, error, refetch } = useListaTags();
+  const { data, loading, error, refetch } = useListaTagPagos();
   const [dataTag, setDataTag] = useState<ITagsVariablesNormalize[]>([]);
   const [search, setSearch] = useState<string>("");
   const [openModalMsj, setOpenModalMsj] = useState<boolean>(false);
@@ -201,7 +206,7 @@ const MantenimientoParentescoListado = () => {
 
   useEffect(() => {
     if (isNotNilOrEmpty(data) && !loading) {
-      setDataTag(extractData(data?.ListaTags!));
+      setDataTag(extractData(data?.ListaTagPago!));
     }
   }, [data, loading, error]);
 
@@ -229,9 +234,9 @@ const MantenimientoParentescoListado = () => {
     if (isNotNilOrEmpty(data)) {
       const myIndex = Fuse.createIndex(
         optionsFuse.keys!,
-        extractData(data?.ListaTags!)
+        extractData(data?.ListaTagPago!)
       );
-      return new Fuse(extractData(data?.ListaTags!), optionsFuse, myIndex);
+      return new Fuse(extractData(data?.ListaTagPago!), optionsFuse, myIndex);
     }
   }, [data]);
 
@@ -241,7 +246,7 @@ const MantenimientoParentescoListado = () => {
       // console.log("result:", fuse.search(String(debounceSearch)));
       setDataTag(result);
     } else {
-      setDataTag(extractData(data?.ListaTags!));
+      setDataTag(extractData(data?.ListaTagPago!));
     }
   }, [debounceSearch]);
 
@@ -253,21 +258,26 @@ const MantenimientoParentescoListado = () => {
   );
 
   const filtrar = useCallback(() => {
-    if (idGrupoFamiliarFilter && idValorTagFilter && data && data.ListaTags) {
-      const result = data.ListaTags.filter(
-        ({ vehiculo, tag }) =>
+    if (
+      idGrupoFamiliarFilter &&
+      idValorTagFilter &&
+      data &&
+      data.ListaTagPago
+    ) {
+      const result = data.ListaTagPago.filter(
+        ({ vehiculo, valorTag }) =>
           vehiculo.grupoFamiliar.id === idGrupoFamiliarFilter ||
-          tag.valorTag.id === idValorTagFilter
+          valorTag.id === idValorTagFilter
       );
       setDataTag(extractData(result));
-    } else if (idGrupoFamiliarFilter && data && data.ListaTags) {
-      const result = data.ListaTags.filter(
+    } else if (idGrupoFamiliarFilter && data && data.ListaTagPago) {
+      const result = data.ListaTagPago.filter(
         ({ vehiculo }) => vehiculo.grupoFamiliar.id === idGrupoFamiliarFilter
       );
       setDataTag(extractData(result));
-    } else if (idValorTagFilter && data && data.ListaTags) {
-      const result = data.ListaTags.filter(
-        ({ tag }) => tag.valorTag.id === idValorTagFilter
+    } else if (idValorTagFilter && data && data.ListaTagPago) {
+      const result = data.ListaTagPago.filter(
+        ({ valorTag }) => valorTag.id === idValorTagFilter
       );
       setDataTag(extractData(result));
     }
@@ -276,7 +286,7 @@ const MantenimientoParentescoListado = () => {
 
   const reset = useCallback(() => {
     if (!loading && data) {
-      setDataTag(extractData(data?.ListaTags!));
+      setDataTag(extractData(data?.ListaTagPago!));
     }
   }, [loading, data]);
 
@@ -296,7 +306,7 @@ const MantenimientoParentescoListado = () => {
       <Paper className={classes.root}>
         <div className={classes.containerTitle}>
           <Typography variant="overline" className={classes.title}>
-            Listado de TAGs de los Vehiculos
+            Listado de Pagos por concepto de Tags
           </Typography>
         </div>
         <div className={classes.contentButtons}>
@@ -316,7 +326,6 @@ const MantenimientoParentescoListado = () => {
             style={{ justifyContent: "space-between" }}
             className={classes.contentForm}
           >
-            {/* <div> */}
             <div>
               <FormControl variant="filled" className={classes.formControl}>
                 <InputLabel id="idGrupoFamiliar_label">

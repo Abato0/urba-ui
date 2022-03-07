@@ -24,10 +24,10 @@ import SaveIcon from "@material-ui/icons/Save";
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      marginTop: theme.spacing(10),
-      marginBottom: theme.spacing(10),
-      marginLeft: theme.spacing(20),
-      marginRight: theme.spacing(20),
+      // marginTop: theme.spacing(10),
+      // marginBottom: theme.spacing(10),
+      // marginLeft: theme.spacing(20),
+      // marginRight: theme.spacing(20),
       padding: "60px",
       // minWidth: "820px",
       borderRadius: "10px",
@@ -177,7 +177,7 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
       setMensajeModalMsj("Calle no ha sido guardado: " + error.message);
       setOpenModalMsj(true);
     }
-  }, []);
+  }, [calleObj, id, mutate]);
 
   const {
     errors,
