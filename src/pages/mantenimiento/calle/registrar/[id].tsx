@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import { IngresarColorForm } from "../../../../components/color/color-form";
 import AppLayout from "../../../../components/layout/app-layout";
 
 import { isNotNilOrEmpty } from "../../../../utils/is-nil-empty";
@@ -10,6 +9,9 @@ import {
 } from "../../../../components/mantenimento/calle/use-calle";
 
 import { IngresarCalleForm } from "../../../../components/mantenimento/calle/calle-form";
+import { TipoUsuario } from "../../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../../components/layout/auth-layout/permiso-layout";
+import NavBar from "../../../../components/layout/app-bar";
 
 const MantenimientoCalleEditar = () => {
   const router = useRouter();
@@ -30,11 +32,26 @@ const MantenimientoCalleEditar = () => {
   }, [loading, error, data]);
 
   return (
-    <AppLayout>
-      {!loading && isNotNilOrEmpty(dataCalle) && isNotNilOrEmpty(id) && (
-        <IngresarCalleForm calleObj={dataCalle} id={id} />
-      )}
-    </AppLayout>
+    <>
+      <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+        {!loading && isNotNilOrEmpty(dataCalle) && isNotNilOrEmpty(id) && (
+          <IngresarCalleForm calleObj={dataCalle} id={id} />
+        )}
+      </PermisoLayout>
+    </>
+  );
+};
+
+MantenimientoCalleEditar.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Actualización de Calle">
+        {page}
+      </AppLayout>
+    </>
   );
 };
 

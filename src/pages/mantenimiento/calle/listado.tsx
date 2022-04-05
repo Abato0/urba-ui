@@ -31,6 +31,9 @@ import {
 import { columnsCalle } from "../../../components/mantenimento/calle/calle-dataTable";
 import { useRouter } from "next/router";
 import { IngresarCalleForm } from "../../../components/mantenimento/calle/calle-form";
+import { TipoUsuario } from "../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../components/layout/auth-layout/permiso-layout";
+import NavBar from "../../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -246,70 +249,83 @@ const MantenimientoCalleListado = () => {
   );
 
   return (
-    <AppLayout>
-      <>
-        {openModalMsj && (
-          <ModalAuth
-            openModal={openModalMsj}
-            setOpenModal={setOpenModalMsj}
-            title={titleModalMsj}
-            message={mensajeModalMsj}
-            error={errorModal}
-          />
-        )}
-      </>
-      <div
-        style={{ justifyContent: "space-around" }}
-        className={classes.containerRoot}
-      >
-        <div>
-          <IngresarCalleForm />
-        </div>
-
-        <Paper className={classes.root}>
-          <div className={classes.containerTitle}>
-            <Typography variant="overline" className={classes.title}>
-              Listado de Calles
-            </Typography>
-          </div>
-          <div className={classes.contentButtons}>
-            <TextField
-              className={classes.textBox}
-              variant="outlined"
-              placeholder="Search"
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              value={search}
+    <>
+      <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+        <>
+          {openModalMsj && (
+            <ModalAuth
+              openModal={openModalMsj}
+              setOpenModal={setOpenModalMsj}
+              title={titleModalMsj}
+              message={mensajeModalMsj}
+              error={errorModal}
             />
+          )}
+        </>
+        <div
+          style={{ justifyContent: "space-around" }}
+          className={classes.containerRoot}
+        >
+          <div>
+            <IngresarCalleForm />
           </div>
-          <TableContainer>
-            <Table
-              // className={classes.table}
-              padding="normal"
-              stickyHeader
-              aria-label="sticky table"
-              {...getTableProps()}
-              id={"TableColor"}
-            >
-              <TableHeader headerGroups={headerGroups} />
-              <CardTableBody
-                getTableBodyProps={getTableBodyProps}
-                page={page}
-                prepareRow={prepareRow}
+
+          <Paper className={classes.root}>
+            <div className={classes.containerTitle}>
+              <Typography variant="overline" className={classes.title}>
+                Listado de Calles
+              </Typography>
+            </div>
+            <div className={classes.contentButtons}>
+              <TextField
+                className={classes.textBox}
+                variant="outlined"
+                placeholder="Search"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                value={search}
               />
-            </Table>
-          </TableContainer>
-          <TablePaginations
-            lengthData={isNilOrEmpty(dataColor) ? 0 : dataColor.length}
-            onChangePage={onChangePage}
-            onChangeRowsPerPage={onChangeRowsPerPage}
-            pageIndex={pageIndex}
-            pageSize={pageSize}
-          />
-        </Paper>
-      </div>
-    </AppLayout>
+            </div>
+            <TableContainer>
+              <Table
+                // className={classes.table}
+                padding="normal"
+                stickyHeader
+                aria-label="sticky table"
+                {...getTableProps()}
+                id={"TableColor"}
+              >
+                <TableHeader headerGroups={headerGroups} />
+                <CardTableBody
+                  getTableBodyProps={getTableBodyProps}
+                  page={page}
+                  prepareRow={prepareRow}
+                />
+              </Table>
+            </TableContainer>
+            <TablePaginations
+              lengthData={isNilOrEmpty(dataColor) ? 0 : dataColor.length}
+              onChangePage={onChangePage}
+              onChangeRowsPerPage={onChangeRowsPerPage}
+              pageIndex={pageIndex}
+              pageSize={pageSize}
+            />
+          </Paper>
+        </div>
+      </PermisoLayout>
+    </>
+  );
+};
+
+MantenimientoCalleListado.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Calle">{page}</AppLayout>;
+    </>
   );
 };
 

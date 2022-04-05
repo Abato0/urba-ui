@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
   makeStyles,
   createStyles,
@@ -29,6 +30,9 @@ import { useListaMarcaQuery } from "../mantenimento/marca/use-marca";
 import { useListaStatusVehiculoQuery } from "../mantenimento/status-vehiculo/use-status-vehiculo";
 import { equals, isNil } from "ramda";
 import { useListaColorQuery } from "../mantenimento/color/use-color";
+import { LoadingButton } from "@mui/lab";
+import SaveIcon from "@material-ui/icons/Save";
+
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -57,7 +61,7 @@ const useStyles = makeStyles((theme) =>
       justifyContent: "center",
       alignContent: "center",
       alignItems: "center",
-      marginTop: theme.spacing(6),
+      // marginTop: theme.spacing(6),
     },
     textbox: {
       margin: theme.spacing(1),
@@ -157,6 +161,7 @@ const initialValues = Object.freeze({
   matriculaReverso: null,
   cedulaFrontal: null,
   cedulaReverso: null,
+  num_doc_identidad: "",
   // matriculaPdf: ""
 });
 
@@ -209,6 +214,13 @@ const validationSchema = yup.object().shape({
       "File too large",
       (value) => value && value.size <= FILE_SIZE
     ),
+
+  num_doc_identidad: yup
+    .string()
+    .matches(/^[0-9]+$/, "Solo numeros")
+    .min(10, "La cantidad de digitos debe ser mayor o igual 10 ")
+    .max(15, "La cantidad de digitos debe ser menor o igual 15 ")
+    .required("Campo requerido"),
   // .test(
   //   "fileFormat",
   //   "Unsupported Format",
@@ -227,6 +239,7 @@ export interface IVehiculoInputRegistro {
   matriculaReverso?: File;
   cedulaFrontal?: File;
   cedulaReverso?: File;
+  num_doc_identidad: string;
   // matriculaPdf?: string;
 }
 
@@ -243,6 +256,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
   const [errorModal, setErrorModal] = React.useState<boolean>(false);
 
   const [boolPut, setBoolPut] = React.useState<boolean>(false);
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
   const {
     data: dataModelo,
@@ -329,11 +343,13 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
         matriculaReverso,
         cedulaFrontal,
         cedulaReverso,
+        num_doc_identidad
       },
       { setSubmitting }
     ) => {
       try {
         if (isNotNilOrEmpty(idGrupoFamiliar) && !equals(idGrupoFamiliar, 0)) {
+          setLoadingMutate(true);
           const { data, loading, error } = isNotNilOrEmpty(vehiculo)
             ? await mutate({
                 variables: {
@@ -348,6 +364,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                   matriculaReverso,
                   cedulaFrontal,
                   cedulaReverso,
+                  num_doc_identidad
                 },
               })
             : await mutate({
@@ -362,6 +379,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                   matriculaFrontal,
                   matriculaReverso,
                   cedulaFrontal,
+                  num_doc_identidad,
                   cedulaReverso,
                 },
               });
@@ -370,6 +388,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
             const { message } = isNotNilOrEmpty(data.PostVehiculo)
               ? data.PostVehiculo
               : data.UpdateVehiculo;
+              setLoadingMutate(false);
 
             console.log("data:", data);
             setErrorModal(false);
@@ -381,12 +400,14 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
 
             resetForm();
           } else if (!loading && data === null) {
+            setLoadingMutate(false);
             setOpenModalMsj(true);
             setTitleModalMsj("Usuario no autorizado");
             setErrorModal(true);
           }
         }
       } catch (error: any) {
+        setLoadingMutate(false);
         console.log("error : ", error);
         setTitleModalMsj("Registro Fallido");
         setMensajeModalMsj(
@@ -427,9 +448,9 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
           error={errorModal}
         />
       )}
-      <div className={classes.title}>
+      {/* <div className={classes.title}>
         <Typography variant="overline">Registro de Vehiculos</Typography>
-      </div>
+      </div> */}
       <form
         action="#"
         onSubmit={handleSubmit}
@@ -557,6 +578,22 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                 );
               })}
           </FormControlHeader>
+        </div>
+        {/* TODO:*/}
+        <div>
+          <TextField
+            className={classes.textbox}
+            id="num_doc_identidad"
+            name="num_doc_identidad"
+            label="Cedula del Propietario"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.num_doc_identidad}
+            error={touched.num_doc_identidad && isNotNilOrEmpty(errors.num_doc_identidad)}
+            helperText={touched.num_doc_identidad ? errors.num_doc_identidad : undefined}
+            required
+          
+          />
         </div>
 
         <div
@@ -731,10 +768,15 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
 
         <div className={classes.contentButtons}>
           <div></div>
-          <Button type="submit" variant="outlined">
-            {" "}
-            Enviar
-          </Button>
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="text"
+            startIcon={<SaveIcon />}
+          >
+            Guardar
+          </LoadingButton>
         </div>
       </form>
     </Box>

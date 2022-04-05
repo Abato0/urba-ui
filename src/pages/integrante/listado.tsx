@@ -26,9 +26,14 @@ import {
   Select,
   MenuItem,
   Button,
+  IconButton,
+  Tooltip,
 } from "@material-ui/core";
 import { useListarGrupoFamiliar } from "../../components/grupo-familiar/use-grupo-familia";
 import { useRouter } from "next/router";
+import { Paper } from "@material-ui/core";
+import { Filter as FilterIcon, Reload as ReloadIcon } from "mdi-material-ui";
+import NavBar from "../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -43,7 +48,7 @@ const useStyles = makeStyles((theme) =>
       justifyContent: "space-between",
       width: "100%",
       padding: theme.spacing(2),
-      marginTop: theme.spacing(2),
+      // marginTop: theme.spacing(1),
     },
     button: {
       marginTop: theme.spacing(1),
@@ -86,15 +91,19 @@ const useStyles = makeStyles((theme) =>
       paddingTop: theme.spacing(3),
     },
     contenFilter: {
-      backgroundColor: colors.grey[50],
-      marginBottom: theme.spacing(5),
-      marginTop: theme.spacing(2),
+      // backgroundColor: colors.grey[50],
+      // marginBottom: theme.spacing(5),
+      // marginTop: theme.spacing(2),
       // display: "flex",
       // alignItems: "center",
       // justifyContent: "center",
     },
     contentForm: {
       marginTop: theme.spacing(3),
+    },
+    paperFilter: {
+      width: "80%",
+      borderRadius: 8,
     },
   })
 );
@@ -109,17 +118,20 @@ const extractData = (
 
 const VariablesNormalizeIntegrantes = (data: IIntegranteVariables[]) => {
   return isNotNilOrEmpty(data)
-    ? data.map(({ grupoFamiliar, parentesco, ...input }) => {
-        return omit(["__typename"], {
-          ...input,
-          nombre_familiar: grupoFamiliar.nombre_familiar,
-          parentesco: parentesco.parentesco,
-          // manzana: grupoFamiliar.manzana,
-          // calle_principal: grupoFamiliar.calle_principal,
-          // calle_interseccion: grupoFamiliar.calle_interseccion,
-          // villa: grupoFamiliar.villa,
-        });
-      })
+    ? data.map(
+        ({ grupoFamiliar, parentesco, tipoIdentificacion, ...input }) => {
+          return omit(["__typename"], {
+            ...input,
+            nombre_familiar: grupoFamiliar.nombre_familiar,
+            parentesco: parentesco.parentesco,
+            tipo_doc_identidad: tipoIdentificacion.tipo_identificacion ?? "",
+            // manzana: grupoFamiliar.manzana,
+            // calle_principal: grupoFamiliar.calle_principal,
+            // calle_interseccion: grupoFamiliar.calle_interseccion,
+            // villa: grupoFamiliar.villa,
+          });
+        }
+      )
     : [];
 };
 
@@ -184,7 +196,7 @@ const ListadoIntegrante = () => {
     if (!loading && !isNil(data) && isNil(error)) {
       setDataTable(extractData(data!));
     }
-  }, [loading, data]);
+  }, [loading, data, error]);
 
   const fuse = useMemo(() => {
     if (isNotNilOrEmpty(data)) {
@@ -201,7 +213,7 @@ const ListadoIntegrante = () => {
     } else {
       setDataTable(extractData(data!));
     }
-  }, [debounceSearch]);
+  }, [data, debounceSearch, fuse]);
 
   const onEdit = ({ id }: any) => {
     if (!isNil(id)) {
@@ -216,13 +228,48 @@ const ListadoIntegrante = () => {
 
   const ExportExcel = useCallback(() => {
     if (isNotNilOrEmpty(dataTable)) {
-      const workSheet = XLSX.utils.json_to_sheet(dataTable);
+      const newCampos = dataTable.map(
+        ({
+          apellido,
+          email,
+          fecha_nacimiento,
+          genero,
+          nombre,
+          nombre_familiar,
+          num_doc_identidad,
+          parentesco,
+          representante,
+          telefono,
+          tipo_doc_identidad,
+        }) => {
+          return {
+            GrupoFamiliar: nombre_familiar,
+            Nombre: nombre,
+            Apellido: apellido,
+            TipoDocIdentidad: tipo_doc_identidad,
+            NumIdentidad: num_doc_identidad,
+            FechaNacimiento: fecha_nacimiento,
+            Genero: genero,
+            Parentesco: parentesco,
+            Telefono: telefono,
+            Email: email,
+            Representante: representante,
+          };
+        }
+      );
+
+      const workSheet = XLSX.utils.json_to_sheet(newCampos);
+      workSheet.A1.v = "Grupo Familiar";
+      workSheet.D1.v = "Tipo de documento de identidad";
+      workSheet.E1.v = "Numero de identificación";
+      workSheet.F1.v = "Fecha de nacimiento";
+
       const workBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workBook, workSheet, "Integrantes");
       XLSX.write(workBook, { bookType: "xlsx", type: "binary" });
       XLSX.writeFile(
         workBook,
-        "Listado de Integrantes por Grupo Familiares.xlsx"
+        "Listado de Integrantes por Grupo Familiar.xlsx"
       );
     }
   }, [dataTable]);
@@ -242,13 +289,7 @@ const ListadoIntegrante = () => {
       //   : callePrincipalFilter,
       // manzana: isEmpty(manzanaFilter) ? undefined : manzanaFilter,
     });
-  }, [
-    idGrupoFamiliarFilter,
-    cllInterseccionFilter,
-    callePrincipalFilter,
-    callePrincipalFilter,
-    manzanaFilter,
-  ]);
+  }, [idGrupoFamiliarFilter]);
 
   const reset = useCallback(() => {
     setIdGrupoFamiliarFilter(undefined);
@@ -259,7 +300,7 @@ const ListadoIntegrante = () => {
   }, []);
 
   return (
-    <AppLayout>
+    <>
       {!loading && (
         <>
           {openModalMsj && (
@@ -270,35 +311,7 @@ const ListadoIntegrante = () => {
               message={mensajeModalMsj}
             />
           )}
-
-          <CardTable
-            columns={headIntegranteTable}
-            dataTable={dataTable}
-            ExportExcel={ExportExcel}
-            // data={data}
-
-            getRowId={getRowId}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            idTable={"integrantesTable"}
-            titlePdf={"Listado de Integrantes por Familias"}
-            columnsPdf={[
-              "Cedula",
-              "Nombre",
-              "Apellido",
-              "Fecha de Nacimiento",
-              "Grupo Familiar",
-              "Parentesco",
-              // "Manzana",
-              // "Villa",
-              // "Calle",
-            ]}
-            search={search}
-            setSearch={setSearch}
-            lengthData={extractData(data!).length}
-          >
-            <Divider />
-
+          <Paper className={classes.paperFilter}>
             <div className={classes.contenFilter}>
               <div className={classes.contentButtons}>
                 <div className={classes.contentForm}>
@@ -314,112 +327,98 @@ const ListadoIntegrante = () => {
                         setIdGrupoFamiliarFilter(e.target.value as number)
                       }
                     >
-                      <MenuItem value={undefined}> - Deseleccionar - </MenuItem>
+                      <MenuItem value={undefined}> - Todos - </MenuItem>
                       {!loadingListadoGrupoFamiliar &&
                         isNotNilOrEmpty(dataListadoGrupoFamiliar) &&
                         dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
-                          ({ id, nombre_familiar }) => {
+                          ({ id, nombre_familiar }, index) => {
                             return (
-                              <MenuItem value={id}>{nombre_familiar}</MenuItem>
+                              <MenuItem key={index} value={id}>
+                                {nombre_familiar}
+                              </MenuItem>
                             );
                           }
                         )}
                     </Select>
                   </FormControl>
-                  {/* 
-                  <FormControl variant="filled" className={classes.formControl}>
-                    <InputLabel id="callerPrincipal_label">
-                      Calle Principal
-                    </InputLabel>
-                    <Select
-                      className={classes.selectFilter}
-                      labelId="callerPrincipal_label"
-                      value={callePrincipalFilter}
-                      onChange={(e) =>
-                        setCallePrincipalFilter(e.target.value as string)
-                      }
-                    >
-                      <MenuItem value={""}> - Deseleccionar - </MenuItem>
-                      {CallesPrincipales.map((calle) => {
-                        return (
-                          <MenuItem
-                            key={"integranteListado" + calle}
-                            value={calle}
-                          >
-                            {calle}
-                          </MenuItem>
-                        );
-                      })}
-                    </Select>
-                  </FormControl>
-                  <FormControl variant="filled" className={classes.formControl}>
-                    <InputLabel id="callerInterseccion_label">
-                      Calle Interseccion
-                    </InputLabel>
-                    <Select
-                      className={classes.selectFilter}
-                      labelId="callerInterseccion_label"
-                      value={cllInterseccionFilter}
-                      onChange={(e) =>
-                        setClleInterseccionFilter(e.target.value as string)
-                      }
-                    >
-                      <MenuItem value={""}> - Deseleccionar - </MenuItem>
-                      {calleInterseccion.map((calle) => {
-                        return (
-                          <MenuItem
-                            key={"integranteListado" + calle}
-                            value={calle}
-                          >
-                            {calle}
-                          </MenuItem>
-                        );
-                      })}
-                    </Select>
-                  </FormControl>
-                  <FormControl variant="filled" className={classes.formControl}>
-                    <InputLabel id="manzana_label">Manzana</InputLabel>
-                    <Select
-                      className={classes.selectFilter}
-                      labelId="manzana_label"
-                      value={manzanaFilter}
-                      onChange={(e) =>
-                        setManzanaFilter(e.target.value as string)
-                      }
-                    >
-                      <MenuItem value={""}> - Deseleccionar - </MenuItem>
-                      {manzanas.map((manzana) => {
-                        return (
-                          <MenuItem
-                            key={"integranteListado" + manzana}
-                            value={manzana}
-                          >
-                            {manzana}
-                          </MenuItem>
-                        );
-                      })}
-                    </Select>
-                  </FormControl> */}
                 </div>
-                <div></div>
 
-                <div></div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                  }}
+                >
+                  <Tooltip title="Filtrar" placement="top">
+                    <IconButton color="primary" onClick={filtrar}>
+                      <FilterIcon color="primary" />
+                    </IconButton>
+                  </Tooltip>
 
-                <div>
-                  <Button className={classes.button} onClick={filtrar}>
+                  <Tooltip title="Limpiar" placement="top">
+                    <IconButton color="primary" onClick={reset}>
+                      <ReloadIcon color="primary" />
+                    </IconButton>
+                  </Tooltip>
+                  {/* <Button className={classes.button} onClick={filtrar}>
                     Filtrar
                   </Button>
                   <Button className={classes.button} onClick={reset}>
                     Reset
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>
+          </Paper>
+
+          <CardTable
+            columns={headIntegranteTable}
+            dataTable={dataTable}
+            ExportExcel={ExportExcel}
+            // data={data}
+
+            getRowId={getRowId}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            idTable={"integrantesTable"}
+            titlePdf={"Listado de Integrantes por Familias"}
+            columnsPdf={[
+              "Grupo Familiar",
+              "Nombre",
+              "Apellido",
+              "Tipo de identificación",
+              "Numero de Identificación",
+              "Genero",
+              "Fecha de Nacimiento",
+              "Telefono",
+              "Email",
+              "Parentesco",
+              "Representante",
+            ]}
+            search={search}
+            setSearch={setSearch}
+            lengthData={extractData(data!).length}
+            orientacion="landscape"
+          >
+            <Divider />
+
             <Divider />
           </CardTable>
         </>
       )}
-    </AppLayout>
+    </>
+  );
+};
+
+
+ListadoIntegrante.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <div>
+      <NavBar />
+      <AppLayout titulo="Integrante Familiar - Listado ">{page}</AppLayout>;
+    </div>
   );
 };
 

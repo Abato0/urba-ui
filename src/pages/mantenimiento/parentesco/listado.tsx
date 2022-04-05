@@ -37,6 +37,9 @@ import {
 } from "../../../components/mantenimento/parentesco/use-parentesco";
 import { columnsParentesco } from "../../../components/mantenimento/parentesco/parentesco-dataTable";
 import { IngresarParentescoForm } from "../../../components/mantenimento/parentesco/parentesco-form";
+import { TipoUsuario } from "../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../components/layout/auth-layout/permiso-layout";
+import NavBar from "../../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -263,71 +266,84 @@ const MantenimientoParentescoListado = () => {
   );
 
   return (
-    <AppLayout>
-      <>
-        {openModalMsj && (
-          <ModalAuth
-            openModal={openModalMsj}
-            setOpenModal={setOpenModalMsj}
-            title={titleModalMsj}
-            message={mensajeModalMsj}
-            error={errorModal}
-          />
-        )}
-      </>
-      <div
-        style={{ justifyContent: "space-around" }}
-        className={classes.containerRoot}
-      >
-        <div>
-          <IngresarParentescoForm />
-        </div>
-        <Paper className={classes.root}>
-          <div className={classes.containerTitle}>
-            <Typography variant="overline" className={classes.title}>
-              Listado de Parentescos
-            </Typography>
-          </div>
-          <div className={classes.contentButtons}>
-            <TextField
-              className={classes.textBox}
-              variant="outlined"
-              placeholder="Search"
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              value={search}
+    <>
+      <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+        <>
+          {openModalMsj && (
+            <ModalAuth
+              openModal={openModalMsj}
+              setOpenModal={setOpenModalMsj}
+              title={titleModalMsj}
+              message={mensajeModalMsj}
+              error={errorModal}
             />
+          )}
+        </>
+        <div
+          style={{ justifyContent: "space-around" }}
+          className={classes.containerRoot}
+        >
+          <div>
+            <IngresarParentescoForm />
           </div>
-          <TableContainer>
-            <Table
-              // className={classes.table}
-              padding="normal"
-              stickyHeader
-              aria-label="sticky table"
-              {...getTableProps()}
-              id={"TableColor"}
-            >
-              <TableHeader headerGroups={headerGroups} />
-              <CardTableBody
-                getTableBodyProps={getTableBodyProps}
-                page={page}
-                prepareRow={prepareRow}
+          <Paper className={classes.root}>
+            <div className={classes.containerTitle}>
+              <Typography variant="overline" className={classes.title}>
+                Listado de Parentescos
+              </Typography>
+            </div>
+            <div className={classes.contentButtons}>
+              <TextField
+                className={classes.textBox}
+                variant="outlined"
+                placeholder="Search"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                value={search}
               />
-            </Table>
-          </TableContainer>
-          <TablePaginations
-            lengthData={
-              isNilOrEmpty(dataParentesco) ? 0 : dataParentesco.length
-            }
-            onChangePage={onChangePage}
-            onChangeRowsPerPage={onChangeRowsPerPage}
-            pageIndex={pageIndex}
-            pageSize={pageSize}
-          />
-        </Paper>
-      </div>
-    </AppLayout>
+            </div>
+            <TableContainer>
+              <Table
+                // className={classes.table}
+                padding="normal"
+                stickyHeader
+                aria-label="sticky table"
+                {...getTableProps()}
+                id={"TableColor"}
+              >
+                <TableHeader headerGroups={headerGroups} />
+                <CardTableBody
+                  getTableBodyProps={getTableBodyProps}
+                  page={page}
+                  prepareRow={prepareRow}
+                />
+              </Table>
+            </TableContainer>
+            <TablePaginations
+              lengthData={
+                isNilOrEmpty(dataParentesco) ? 0 : dataParentesco.length
+              }
+              onChangePage={onChangePage}
+              onChangeRowsPerPage={onChangeRowsPerPage}
+              pageIndex={pageIndex}
+              pageSize={pageSize}
+            />
+          </Paper>
+        </div>
+      </PermisoLayout>
+    </>
+  );
+};
+
+MantenimientoParentescoListado.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Parentesco">{page}</AppLayout>;
+    </>
   );
 };
 

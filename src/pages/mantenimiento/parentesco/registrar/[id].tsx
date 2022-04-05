@@ -7,6 +7,9 @@ import {
   useGetParentescoQuery,
 } from "../../../../components/mantenimento/parentesco/use-parentesco";
 import { IngresarParentescoForm } from "../../../../components/mantenimento/parentesco/parentesco-form";
+import { TipoUsuario } from "../../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../../components/layout/auth-layout/permiso-layout";
+import NavBar from "../../../../components/layout/app-bar";
 
 const MantenimientoParentescoEditar = () => {
   const router = useRouter();
@@ -28,11 +31,25 @@ const MantenimientoParentescoEditar = () => {
   }, [loading, error, data]);
 
   return (
-    <AppLayout>
+    <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
       {!loading && isNotNilOrEmpty(dataParentesco) && isNotNilOrEmpty(id) && (
         <IngresarParentescoForm parentescoObj={dataParentesco} id={id} />
       )}
-    </AppLayout>
+    </PermisoLayout>
+  );
+};
+
+MantenimientoParentescoEditar.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Actualización de Parentesco">
+        {page}
+      </AppLayout>
+      ;
+    </>
   );
 };
 

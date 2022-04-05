@@ -4,6 +4,7 @@ import {
   createStyles,
   Divider,
   FormControl,
+  IconButton,
   InputLabel,
   makeStyles,
   MenuItem,
@@ -12,6 +13,7 @@ import {
   Table,
   TableContainer,
   TextField,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
 import { isNil, pluck, prop } from "ramda";
@@ -44,13 +46,20 @@ import { SelectModulos } from "../../components/core/input/select/select-modulos
 import { SelectChangeEvent } from "@mui/material";
 import { useListarGrupoFamiliar } from "../../components/grupo-familiar/use-grupo-familia";
 import { SelectTipoUsuario } from "../../components/core/input/select/select-tipo-usuario";
+import {
+  FileExcelBox as FileExcelBoxIcon,
+  Filter as FilterIcon,
+  Reload as ReloadIcon,
+} from "mdi-material-ui";
+import NavBar from "../../components/layout/app-bar";
+
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
       borderRadius: "12px",
-      width: "70%",
+      width: "85%",
     },
     contentButtons: {
       display: "flex",
@@ -106,7 +115,7 @@ const useStyles = makeStyles((theme) =>
       paddingTop: theme.spacing(3),
     },
     contenFilter: {
-      backgroundColor: colors.grey[50],
+      // backgroundColor: colors.grey[50],
       marginBottom: theme.spacing(5),
       marginTop: theme.spacing(2),
       // display: "flex",
@@ -137,6 +146,10 @@ const useStyles = makeStyles((theme) =>
     labelButton: {
       fontSize: theme.typography.pxToRem(11),
       fontFamily: "Roboto",
+    },
+    paperFilter: {
+      width: "85%",
+      borderRadius: 8,
     },
   })
 );
@@ -233,10 +246,9 @@ const LogListado = () => {
   const filtrar = () => {
     if (nombreGrupoFamiliarFilter || tipoUsuarioFilter || moduloFilter) {
       const result = dataLog.filter(
-        ({ modulo, tipoUsuario, nombre_familiar }) =>
-          modulo == moduloFilter ||
-          tipoUsuario == tipoUsuarioFilter ||
-          nombre_familiar == nombreGrupoFamiliarFilter
+        ({ modulo, tipoUsuario }) =>
+          modulo == moduloFilter || tipoUsuario == tipoUsuarioFilter
+        // nombre_familiar == nombreGrupoFamiliarFilter
       );
 
       setLogData(result);
@@ -254,13 +266,58 @@ const LogListado = () => {
   };
 
   return (
-    <AppLayout>
+    <>
+      <Paper className={classes.paperFilter}>
+        <div className={classes.contenFilter}>
+          <div className={classes.contentButtons}>
+            <div className={classes.contentForm}>
+              <div>
+                <SelectModulos
+                  handleChange={(e: SelectChangeEvent) =>
+                    setModuloFilter(e.target.value)
+                  }
+                  value={moduloFilter}
+                  label={"Módulo"}
+                  id={"modulo_log"}
+                />
+                <SelectTipoUsuario
+                  handleChange={(e: SelectChangeEvent) =>
+                    setTipoUsuarioFilter(e.target.value)
+                  }
+                  value={tipoUsuarioFilter}
+                  id={"tipoUsuarioFilter"}
+                  label={"Rol"}
+                />
+              </div>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
+              <Tooltip title="Filtrar" placement="top">
+                <IconButton color="primary" onClick={filtrar}>
+                  <FilterIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Limpiar" placement="top">
+                <IconButton color="primary" onClick={reset}>
+                  <ReloadIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            </div>
+          </div>
+        </div>
+      </Paper>
+
       <Paper className={classes.root}>
-        <div className={classes.containerTitle}>
+        {/* <div className={classes.containerTitle}>
           <Typography variant="overline" className={classes.title}>
             Logs
           </Typography>
-        </div>
+        </div> */}
 
         <div className={classes.contentButtons}>
           <TextField
@@ -285,106 +342,20 @@ const LogListado = () => {
                 "Fecha",
               ]}
             />
-            <Button
-              className={classes.button}
-              color="secondary"
-              onClick={ExportExcel}
-              style={{
-                backgroundColor: colors.green[800],
-              }}
-              startIcon={<FontAwesomeIcon icon={faFileExcel} />}
-            >
-              <Typography className={classes.labelButton} variant="button">
-                Exportar a Excel
-              </Typography>
-            </Button>
+            <Tooltip title="Exportar a Excel">
+              <IconButton>
+                <FileExcelBoxIcon
+                  fontSize="large"
+                  style={{
+                    color: colors.green[800],
+                  }}
+                  onClick={ExportExcel}
+                />
+              </IconButton>
+            </Tooltip>
           </div>
         </div>
 
-        <Divider />
-        <div className={classes.contenFilter}>
-          <div className={classes.contentButtons}>
-            <div className={classes.contentForm}>
-              <div>
-                <FormControl variant="filled" className={classes.formControl}>
-                  <InputLabel id="idGrupoFamiliar_label">
-                    Grupo Familiar
-                  </InputLabel>
-                  <Select
-                    className={classes.selectFilter}
-                    // variant="outlined"
-                    labelId="idGrupoFamiliar_label"
-                    // label={<p>Grupo Familiar</p>}
-                    id="idGrupoFamiliar"
-                    name="idGrupoFamiliar"
-                    value={nombreGrupoFamiliarFilter}
-                    onChange={(e) =>
-                      setNombreGrupoFamiliarFilter(e.target.value as string)
-                    }
-                  >
-                    <MenuItem value={undefined}> - Deseleccionar - </MenuItem>
-                    {!loadingListadoGrupoFamiliar &&
-                      isNotNilOrEmpty(dataListadoGrupoFamiliar) &&
-                      dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
-                        ({ id, nombre_familiar }) => {
-                          return (
-                            <MenuItem
-                              key={"GrupoFamiliarFilter Listado Log" + id}
-                              value={nombre_familiar}
-                            >
-                              {nombre_familiar}
-                            </MenuItem>
-                          );
-                        }
-                      )}
-                  </Select>
-                </FormControl>
-                <SelectModulos
-                  handleChange={(e: SelectChangeEvent) =>
-                    setModuloFilter(e.target.value)
-                  }
-                  value={moduloFilter}
-                  label={"Módulo"}
-                  id={"modulo_log"}
-                />
-                <SelectTipoUsuario
-                  handleChange={(e: SelectChangeEvent) =>
-                    setTipoUsuarioFilter(e.target.value)
-                  }
-                  value={tipoUsuarioFilter}
-                  id={"tipoUsuarioFilter"}
-                  label={"Rol"}
-                />
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Button
-                startIcon={<FontAwesomeIcon icon={faFilter} />}
-                className={classes.button}
-                onClick={filtrar}
-              >
-                <Typography className={classes.labelButton} variant="button">
-                  Filtrar
-                </Typography>
-              </Button>
-              <Button
-                startIcon={<FontAwesomeIcon icon={faEraser} />}
-                className={classes.button}
-                onClick={reset}
-              >
-                <Typography className={classes.labelButton} variant="button">
-                  Reset
-                </Typography>
-              </Button>
-            </div>
-          </div>
-        </div>
-        <Divider />
         <TableContainer>
           <Table
             // className={classes.table}
@@ -410,7 +381,18 @@ const LogListado = () => {
           pageSize={pageSize}
         />
       </Paper>
-    </AppLayout>
+    </>
+  );
+};
+
+LogListado.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <div>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Logs">{page}</AppLayout>;
+    </div>
   );
 };
 

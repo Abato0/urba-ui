@@ -240,7 +240,11 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
         />
       )}
       <div className={classes.title}>
-        <Typography variant="overline">Registro del valor del Tag</Typography>
+        <Typography variant="overline">
+          {valorTagObj
+            ? `Actualización del valor del tag: ${valorTagObj.tipo_tag}`
+            : "Registro del valor del Tag"}
+        </Typography>
       </div>
 
       <form

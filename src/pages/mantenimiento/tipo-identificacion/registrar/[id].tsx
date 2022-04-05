@@ -15,6 +15,8 @@ import {
 } from "../../../../components/mantenimento/tipo-identificacion/use-tipo-identificacion";
 
 import TipoIdentificacionFormEditar from "../../../../components/mantenimento/tipo-identificacion/tipo-identificacion-form-update";
+import { TipoUsuario } from "../../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../../components/layout/auth-layout/permiso-layout";
 
 const MantenimientoTipoIdentificacionEditar = () => {
   const router = useRouter();
@@ -47,12 +49,14 @@ const MantenimientoTipoIdentificacionEditar = () => {
   }, [loading, error, data]);
 
   return (
-    <AppLayout>
-      {!loading &&
-        isNotNilOrEmpty(dataTipoIdentificacion) &&
-        isNotNilOrEmpty(id) && (
-          <TipoIdentificacionFormEditar tipoId={dataTipoIdentificacion!} />
-        )}
+    <AppLayout titulo="Mantenimiento - Actualización de Tipo de Identificación">
+      <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+        {!loading &&
+          isNotNilOrEmpty(dataTipoIdentificacion) &&
+          isNotNilOrEmpty(id) && (
+            <TipoIdentificacionFormEditar tipoId={dataTipoIdentificacion!} />
+          )}
+      </PermisoLayout>
     </AppLayout>
   );
 };

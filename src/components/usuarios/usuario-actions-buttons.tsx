@@ -1,6 +1,8 @@
 import React from "react";
 import { Button, Tooltip } from "@material-ui/core";
 import { Row } from "react-table";
+import IconButton from "@material-ui/core/IconButton";
+import { TrashCan as TrashCanIcon } from "mdi-material-ui";
 
 interface IProps {
   className?: string;
@@ -15,15 +17,15 @@ const ActionsUsuarioCellEditDelete: React.FC<IProps> = ({
 }) => {
   return (
     <Tooltip className={className} title={"Editar"}>
-      <>
-        <Button
-          variant="text"
-          color="secondary"
+      <Tooltip title="Eliminar" placement="top">
+        <IconButton
+          // variant="text"
+          color="primary"
           onClick={() => onDelete(row.original)}
         >
-          Eliminar
-        </Button>
-      </>
+          <TrashCanIcon />
+        </IconButton>
+      </Tooltip>
     </Tooltip>
   );
 };

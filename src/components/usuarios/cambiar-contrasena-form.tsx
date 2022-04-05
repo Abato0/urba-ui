@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) =>
       borderRadius: "10px",
       textAlign: "center",
       backgroundColor: "white",
+ 
       // width:"100px"
     },
     formControl: {
@@ -182,9 +183,9 @@ export const CambiarContrasenaUsuarioForm = () => {
           error={errorModal}
         />
       )}
-      <div className={classes.title}>
+      {/* <div className={classes.title}>
         <Typography variant="overline">Cambio de Contraseña</Typography>
-      </div>
+      </div> */}
 
       <form
         action="#"
@@ -192,34 +193,37 @@ export const CambiarContrasenaUsuarioForm = () => {
         onReset={handleReset}
         className={classes.form}
       >
-        <TextField
-          className={classes.textbox}
-          variant="outlined"
-          id="password"
-          value={values.password}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          type={"password"}
-          label="Contraseña anterior"
-          margin="normal"
-          error={touched.password && isNotNilOrEmpty(errors.password)}
-          helperText={touched.password ? errors.password : undefined}
-          required
-        />
-        <TextField
-          className={classes.textbox}
-          variant="outlined"
-          id="newPassword"
-          value={values.newPassword}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          type={"password"}
-          label="Nueva contraseña"
-          margin="normal"
-          error={touched.newPassword && isNotNilOrEmpty(errors.newPassword)}
-          helperText={touched.newPassword ? errors.newPassword : undefined}
-          required
-        />
+        <div>
+          <TextField
+            className={classes.textbox}
+            variant="outlined"
+            id="password"
+            value={values.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            type={"password"}
+            label="Contraseña anterior"
+            margin="normal"
+            error={touched.password && isNotNilOrEmpty(errors.password)}
+            helperText={touched.password ? errors.password : undefined}
+            required
+          />
+          <TextField
+            className={classes.textbox}
+            variant="outlined"
+            id="newPassword"
+            value={values.newPassword}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            type={"password"}
+            label="Nueva contraseña"
+            margin="normal"
+            error={touched.newPassword && isNotNilOrEmpty(errors.newPassword)}
+            helperText={touched.newPassword ? errors.newPassword : undefined}
+            required
+          />
+        </div>
+
         <TextField
           className={classes.textbox}
           variant="outlined"

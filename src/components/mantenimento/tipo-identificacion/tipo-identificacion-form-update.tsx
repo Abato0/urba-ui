@@ -254,7 +254,7 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
             <Box className={classes.root}>
               <div className={classes.title}>
                 <Typography variant="overline">
-                  Registro de Tipo de Identificación
+                  {`Actulización de tipo de identificación: ${tipoId.tipo_identificacion}`}
                 </Typography>
               </div>
 

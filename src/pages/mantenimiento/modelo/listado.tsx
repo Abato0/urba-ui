@@ -36,6 +36,9 @@ import {
 } from "../../../components/mantenimento/modelo/use-modelo";
 import { columnsModelo } from "../../../components/mantenimento/modelo/modelo-dataTable";
 import { IngresarModeloForm } from "../../../components/mantenimento/modelo/modelo-form";
+import { TipoUsuario } from "../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../components/layout/auth-layout/permiso-layout";
+import NavBar from "../../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -250,7 +253,7 @@ const MantenimientoModeloListado = () => {
   );
 
   return (
-    <AppLayout>
+    <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
       <>
         {openModalMsj && (
           <ModalAuth
@@ -308,7 +311,21 @@ const MantenimientoModeloListado = () => {
           />
         </Paper>
       </div>
-    </AppLayout>
+    </PermisoLayout>
+  );
+};
+
+MantenimientoModeloListado.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Modelos de Vehiculos">
+        {page}
+      </AppLayout>
+      ;
+    </>
   );
 };
 

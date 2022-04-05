@@ -3,6 +3,7 @@ import {
   colors,
   createStyles,
   FormControl,
+  IconButton,
   InputLabel,
   makeStyles,
   MenuItem,
@@ -11,6 +12,7 @@ import {
   Table,
   TableContainer,
   TextField,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
 import React, { useCallback, useEffect } from "react";
@@ -43,13 +45,20 @@ import { CarruselVehiculoImagenModal } from "../../components/core/input/dialog/
 import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter, faEraser } from "@fortawesome/free-solid-svg-icons";
+import {
+  Filter as FilterIcon,
+  Reload as ReloadIcon,
+  FileExcelBox as FileExcelBoxIcon,
+} from "mdi-material-ui";
+import NavBar from "../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       borderRadius: "12px",
       margin: "30px",
-      maxWidth: "800px",
+      // maxWidth: "800px",
+      width: "85%",
     },
     contentButtons: {
       display: "flex",
@@ -119,10 +128,10 @@ const useStyles = makeStyles((theme) =>
       // fontWeight: "bold",
       // font
     },
-    // table: {
-    // table: {
-    //   backgroundColor: colors.grey[600],
-    // },
+    paperFilter: {
+      width: "85%",
+      borderRadius: 8,
+    },
   })
 );
 
@@ -246,7 +255,20 @@ const ListadoVehiculo = () => {
 
   const ExportExcel = useCallback(() => {
     if (isNotNilOrEmpty(allVehiculo)) {
-      const workSheet = XLSX.utils.json_to_sheet(allVehiculo);
+      const newCampos = allVehiculo.map(
+        ({ color, marca, modelo, nombre_familiar, placa, status }) => {
+          return {
+            GrupoFamiliar: nombre_familiar,
+            Marca: marca,
+            Modelo: modelo,
+            Placa: placa,
+            Color: color,
+            Status: status,
+          };
+        }
+      );
+      const workSheet = XLSX.utils.json_to_sheet(newCampos);
+      workSheet.A1.v = "Grupo Familiar";
       const workBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workBook, workSheet, "Vehiculos");
       XLSX.write(workBook, { bookType: "xlsx", type: "binary" });
@@ -313,7 +335,7 @@ const ListadoVehiculo = () => {
   );
 
   return (
-    <AppLayout>
+    <>
       {!loading && (
         <>
           {openModalMsj && (
@@ -329,52 +351,7 @@ const ListadoVehiculo = () => {
             handleClose={handleClose}
             id={idVehiculoSeleccionado}
           />
-          <Paper className={classes.root}>
-            <div className={classes.containerTitle}>
-              <Typography variant="overline" className={classes.title}>
-                Listado de Vehiculos
-              </Typography>
-            </div>
-            <div className={classes.contentButtons}>
-              <TextField
-                className={classes.textBox}
-                variant="outlined"
-                placeholder="Search"
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                }}
-                value={search}
-              />
-              <div
-                style={{
-                  // backgroundColor: "red",
-                  // minWidth: 200,
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <ExportTablePdf
-                  classes={classes.button}
-                  idTable={idTable}
-                  title={titlePdf}
-                  columns={columnsPdf}
-                />
-                <Button
-                  className={classes.button}
-                  color="secondary"
-                  onClick={ExportExcel}
-                  style={{
-                    backgroundColor: colors.green[800],
-                  }}
-                  startIcon={<FontAwesomeIcon icon={faFileExcel} />}
-                >
-                  <Typography className={classes.labelButton} variant="button">
-                    Exportar a Excel
-                  </Typography>
-                </Button>
-              </div>
-            </div>
-
+          <Paper className={classes.paperFilter}>
             <div className={classes.contenFilter}>
               <div className={classes.contentButtons}>
                 <div className={classes.contentForm}>
@@ -394,16 +371,13 @@ const ListadoVehiculo = () => {
                           setIdGrupoFamiliar(e.target.value as number)
                         }
                       >
-                        <MenuItem value={undefined}>
-                          {" "}
-                          - Deseleccionar -{" "}
-                        </MenuItem>
+                        <MenuItem value={undefined}> - Todos - </MenuItem>
                         {!loadingListadoGrupoFamiliar &&
                           isNotNilOrEmpty(dataListadoGrupoFamiliar) &&
                           dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
-                            ({ id, nombre_familiar }) => {
+                            ({ id, nombre_familiar }, index) => {
                               return (
-                                <MenuItem value={id}>
+                                <MenuItem value={id} key={index}>
                                   {nombre_familiar}
                                 </MenuItem>
                               );
@@ -423,10 +397,7 @@ const ListadoVehiculo = () => {
                         value={marca}
                         onChange={(e) => setMarca(e.target.value as string)}
                       >
-                        <MenuItem value={undefined}>
-                          {" "}
-                          - Deseleccionar -{" "}
-                        </MenuItem>
+                        <MenuItem value={undefined}> - Todos - </MenuItem>
                         {!loadingMarca &&
                           isNotNilOrEmpty(dataMarca) &&
                           dataMarca?.ListaMarca.map(({ id, marca }) => {
@@ -453,10 +424,7 @@ const ListadoVehiculo = () => {
                         value={modelo}
                         onChange={(e) => setModelo(e.target.value as string)}
                       >
-                        <MenuItem value={undefined}>
-                          {" "}
-                          - Deseleccionar -{" "}
-                        </MenuItem>
+                        <MenuItem value={undefined}> - Todos - </MenuItem>
                         {!loadingModelo &&
                           isNotNilOrEmpty(dataModelo) &&
                           dataModelo?.ListaModelo.map(({ id, modelo }) => {
@@ -483,10 +451,7 @@ const ListadoVehiculo = () => {
                         value={status}
                         onChange={(e) => setStatus(e.target.value as string)}
                       >
-                        <MenuItem value={undefined}>
-                          {" "}
-                          - Deseleccionar -{" "}
-                        </MenuItem>
+                        <MenuItem value={undefined}> - Todos - </MenuItem>
                         {!loadingStatus &&
                           isNotNilOrEmpty(dataStatus) &&
                           dataStatus?.ListaStatusVehiculo.map(
@@ -510,34 +475,67 @@ const ListadoVehiculo = () => {
                     // backgroundColor: "red",
                     // minWidth: 200,
                     display: "flex",
-                    flexDirection: "column",
+                    flexDirection: "row",
                   }}
                 >
-                  <Button
-                    startIcon={<FontAwesomeIcon icon={faFilter} />}
-                    className={classes.button}
-                    onClick={filtrar}
-                  >
-                    <Typography
-                      className={classes.labelButton}
-                      variant="button"
-                    >
-                      Filtrar
-                    </Typography>
-                  </Button>
-                  <Button
-                    startIcon={<FontAwesomeIcon icon={faEraser} />}
-                    className={classes.button}
-                    onClick={reset}
-                  >
-                    <Typography
-                      className={classes.labelButton}
-                      variant="button"
-                    >
-                      Reset
-                    </Typography>
-                  </Button>
+                  <Tooltip title="Filtrar" placement="top">
+                    <IconButton color="primary" onClick={filtrar}>
+                      <FilterIcon color="primary" />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Limpiar" placement="top">
+                    <IconButton color="primary" onClick={reset}>
+                      <ReloadIcon color="primary" />
+                    </IconButton>
+                  </Tooltip>
                 </div>
+              </div>
+            </div>
+          </Paper>
+
+          <Paper className={classes.root}>
+            {/* <div className={classes.containerTitle}>
+              <Typography variant="overline" className={classes.title}>
+                Listado de Vehiculos
+              </Typography>
+            </div> */}
+            <div className={classes.contentButtons}>
+              <TextField
+                className={classes.textBox}
+                variant="outlined"
+                placeholder="Search"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                value={search}
+              />
+              <div
+                style={{
+                  // backgroundColor: "red",
+                  // minWidth: 200,
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                <ExportTablePdf
+                  classes={classes.button}
+                  idTable={idTable}
+                  title={titlePdf}
+                  columns={columnsPdf}
+                />
+
+                <Tooltip title="Exportar a Excel">
+                  <IconButton>
+                    <FileExcelBoxIcon
+                      fontSize="large"
+                      style={{
+                        color: colors.green[800],
+                      }}
+                      onClick={ExportExcel}
+                    />
+                  </IconButton>
+                </Tooltip>
               </div>
             </div>
 
@@ -567,7 +565,16 @@ const ListadoVehiculo = () => {
           </Paper>
         </>
       )}
-    </AppLayout>
+    </>
+  );
+};
+
+ListadoVehiculo.getLayout = function getLayout(page: React.ReactElement) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Vehiculo - Listado">{page}</AppLayout>;
+    </>
   );
 };
 

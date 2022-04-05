@@ -31,6 +31,9 @@ import CardTableBody from "../../components/table/table-body";
 import TableHeader from "../../components/table/table-header";
 import TablePaginations from "../../components/table/table-paginations";
 import { columnsUsuario } from "../../components/usuarios/usuario-dataTable";
+import { TipoUsuario } from "../../components/core/input/dateSelect";
+import PermisoLayout from "../../components/layout/auth-layout/permiso-layout";
+import NavBar from "../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -253,7 +256,8 @@ const IngresarUsuario = () => {
   );
 
   return (
-    <AppLayout>
+    // <AppLayout titulo="Usuario - Creación de usuario">
+    <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
       <>
         {openModalMsj && (
           <ModalAuth
@@ -317,7 +321,16 @@ const IngresarUsuario = () => {
           />
         </Paper>
       </div>
-    </AppLayout>
+    </PermisoLayout>
+  );
+};
+
+IngresarUsuario.getLayout = function getLayout(page: React.ReactElement) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Usuario - Creación de usuario">{page}</AppLayout>;
+    </>
   );
 };
 

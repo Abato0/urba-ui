@@ -1,8 +1,10 @@
 import { useMutation, useQuery } from "@apollo/client";
 import {
+  carteraVencida,
   getPagoFamiliar,
   getPagoFamiliarFilter,
   listadoPago,
+  matrizOperaciones,
   savePago,
   subirFoto,
 } from "./pago-typedefs";
@@ -67,11 +69,25 @@ export interface IDataListaPagoFilter {
     fecha_subida: string;
     descripcion: string;
     monto: number;
+    fecha_recibo: string;
   };
   // aporte: {
   //   nombre_aporte: string;
   //   tipo_aporte: string;
   // };
+}
+
+export interface IArrKeyData {
+  keys: string[];
+  data: string[];
+}
+
+export interface ICarteraVencidaQuery {
+  CarteraVencida: IArrKeyData;
+}
+
+export interface IMatrizOperacionesQuery {
+  MatrizOperaciones: IArrKeyData;
 }
 
 export const usePagoFamiliarFilters = (input: IPagoGrupoFamiliarInput) => {
@@ -92,4 +108,30 @@ export const usePagoFamiliarFilters = (input: IPagoGrupoFamiliarInput) => {
       // skip: isEmpty(input),
     }
   );
+};
+
+export const useCarteraVencida = (fecha: string) => {
+  return useQuery<ICarteraVencidaQuery>(carteraVencida, {
+    skip: isNil(fecha) || isEmpty(fecha),
+    variables: {
+      fecha,
+    },
+  });
+};
+
+export const useMatrizOperaciones = (
+  fechaDesde: string,
+  fechaHasta: string
+) => {
+  return useQuery<IMatrizOperacionesQuery>(matrizOperaciones, {
+    skip:
+      isNil(fechaDesde) ||
+      isEmpty(fechaHasta) ||
+      isNil(fechaDesde) ||
+      isEmpty(fechaHasta),
+    variables: {
+      fechaDesde,
+      fechaHasta,
+    },
+  });
 };

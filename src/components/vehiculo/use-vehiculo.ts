@@ -31,6 +31,7 @@ export interface IVehiculoVariable {
   matriculaReverso: string;
   cedulaFrontal: string;
   cedulaReverso: string;
+  num_doc_identidad:string
 }
 
 export interface IVehiculoVariableNormalize {

@@ -22,6 +22,7 @@ export const listadoPago = gql`
         descripcion
         monto
         fecha_subida
+        fecha_recibo
       }
     }
   }
@@ -42,6 +43,7 @@ export const getPagoFamiliar = gql`
         imagen_recibo
         monto
         fecha_subida
+        fecha_recibo
       }
     }
   }
@@ -74,6 +76,7 @@ export const getPagoFamiliarFilter = gql`
         monto
         tipo_pago
         fecha_subida
+        fecha_recibo
         # status
       }
       # aporte {
@@ -121,6 +124,24 @@ export const savePago = gql`
     ) {
       code
       message
+    }
+  }
+`;
+
+export const carteraVencida = gql`
+  query CarteraVencida($fecha: String) {
+    CarteraVencida(fecha: $fecha) {
+      keys
+      data
+    }
+  }
+`;
+
+export const matrizOperaciones = gql`
+  query MatrizOperaciones($fechaDesde: String, $fechaHasta: String) {
+    MatrizOperaciones(fechaDesde: $fechaDesde, fechaHasta: $fechaHasta) {
+      keys
+      data
     }
   }
 `;

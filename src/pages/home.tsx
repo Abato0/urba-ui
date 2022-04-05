@@ -20,6 +20,7 @@ import AppLayout from "../components/layout/app-layout";
 import Image from "next/image";
 import { EnlacesSidebar } from "../components/layout/app-sidebar";
 import { useRouter } from "next/router";
+import NavBar from "../components/layout/app-bar";
 
 const useStyles = makeStyles({
   gridContent: {
@@ -78,94 +79,27 @@ const ScreenHome = () => {
   };
 
   return (
+    <Container className={classes.gridContent}>
+      <div className={classes.containerImage}>
+        <Paper elevation={4} className={classes.imageLogo}>
+          <Image
+            alt="logo"
+            className={classes.img}
+            height={200}
+            width={500}
+            src={"/img/home/logo-home.jpeg"}
+          />
+        </Paper>
+      </div>
+    </Container>
+  );
+};
+
+ScreenHome.getLayout = function getLayout(page: React.ReactElement) {
+  return (
     <>
-      <AppLayout>
-        <Container className={classes.gridContent}>
-          <div className={classes.containerImage}>
-            <Paper elevation={4} className={classes.imageLogo}>
-              <Image
-                className={classes.img}
-                height={200}
-                width={500}
-                src={"/img/home/logo-home.jpeg"}
-              />
-            </Paper>
-          </div>
-
-          <Grid
-            container
-            spacing={2}
-            // direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            {/* <Grid    className={classes.imageLogo} item xs={12}> */}
-
-            {/* </Grid> */}
-            <Grid item xs={12} sm={6} className={classes.paperItem}>
-              <CardItemHome
-                onclickIngreso={() =>
-                  redirect(EnlacesSidebar.grupoFamiliar.registrar.route)
-                }
-                onclickListado={() =>
-                  redirect(EnlacesSidebar.grupoFamiliar.listado.route)
-                }
-                icon={faUsers}
-                titulo="Grupo Familiares"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} className={classes.paperItem}>
-              <CardItemHome
-                onclickIngreso={() =>
-                  redirect(EnlacesSidebar.integrante.registrar.route)
-                }
-                onclickListado={() =>
-                  redirect(EnlacesSidebar.integrante.listado.route)
-                }
-                icon={faUser}
-                titulo="Integrante Familiar"
-              />
-            </Grid>
-            {/* <Grid item xs={12} sm={6} className={classes.paperItem}>
-              <CardItemHome
-                onclickIngreso={() =>
-                  redirect(EnlacesSidebar.aporte.registrar.route)
-                }
-                onclickListado={() =>
-                  redirect(EnlacesSidebar.aporte.listado.route)
-                }
-                icon={faIndustry}
-                titulo="Aportes"
-              />
-            </Grid> */}
-            <Grid item xs={12} sm={6} className={classes.paperItem}>
-              <CardItemHome
-                onclickIngreso={() =>
-                  redirect(EnlacesSidebar.pago.registrar.route)
-                }
-                onclickListado={() =>
-                  redirect(EnlacesSidebar.pago.listado.route)
-                }
-                icon={faDonate}
-                titulo="Pagos"
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6} className={classes.paperItem}>
-              <CardItemHome
-                onclickIngreso={() =>
-                  redirect(EnlacesSidebar.pago.registrar.route)
-                }
-                onclickListado={() =>
-                  redirect(EnlacesSidebar.pago.listado.route)
-                }
-                icon={faCarAlt}
-                titulo="Vehiculos"
-              />
-            </Grid>
-          </Grid>
-        </Container>
-      </AppLayout>
+      <NavBar />
+      <AppLayout>{page}</AppLayout>;
     </>
   );
 };

@@ -12,7 +12,7 @@ export const saveIntegrante = gql`
     $num_doc_identidad: String
     $representante: String
     $telefono: String
-    $tipo_doc_identidad: String
+    $id_tipo_doc_identidad: Int
   ) {
     PostIntegrante(
       idGrupoFamiliar: $idGrupoFamiliar
@@ -26,7 +26,7 @@ export const saveIntegrante = gql`
         num_doc_identidad: $num_doc_identidad
         representante: $representante
         telefono: $telefono
-        tipo_doc_identidad: $tipo_doc_identidad
+        id_tipo_doc_identidad: $id_tipo_doc_identidad
       }
     ) {
       code
@@ -39,7 +39,10 @@ export const listadoIntegranteGrupoFamiliar = gql`
   query ($idGrupoFamiliar: Int!) {
     ListaIntegrantesGrupoFamiliar(idGrupoFamiliar: $idGrupoFamiliar) {
       id
-      tipo_doc_identidad
+      tipoIdentificacion {
+        id
+        tipo_identificacion
+      }
       num_doc_identidad
       nombre
       apellido
@@ -70,7 +73,10 @@ export const listadoIntegrante = gql`
   query {
     ListaIntegrantes {
       id
-      tipo_doc_identidad
+      tipoIdentificacion {
+        id
+        tipo_identificacion
+      }
       num_doc_identidad
       nombre
       apellido
@@ -94,7 +100,10 @@ export const getIntegrante = gql`
   query ($id: Int!) {
     GetIntegrante(id: $id) {
       id
-      tipo_doc_identidad
+      tipoIdentificacion {
+        id
+        tipo_identificacion
+      }
       num_doc_identidad
       nombre
       apellido
@@ -127,7 +136,7 @@ export const updateIntegrante = gql`
     $num_doc_identidad: String
     $representante: String
     $telefono: String
-    $tipo_doc_identidad: String
+    $id_tipo_doc_identidad: Int
   ) {
     UpdateIntegrante(
       id: $id
@@ -141,7 +150,7 @@ export const updateIntegrante = gql`
         num_doc_identidad: $num_doc_identidad
         representante: $representante
         telefono: $telefono
-        tipo_doc_identidad: $tipo_doc_identidad
+        id_tipo_doc_identidad: $id_tipo_doc_identidad
       }
     ) {
       code
@@ -154,9 +163,8 @@ export const listaIntergranteFilter = gql`
   query (
     # $calle_interseccion: String
     # $calle_principal: String
-    $idGrupoFamiliar: Int
-  ) # $manzana: String
-  {
+    $idGrupoFamiliar: Int # $manzana: String
+  ) {
     ListaIntegranteFilter(
       input: {
         # calle_interseccion: $calle_interseccion
@@ -166,7 +174,10 @@ export const listaIntergranteFilter = gql`
       }
     ) {
       id
-      tipo_doc_identidad
+      tipoIdentificacion {
+        id
+        tipo_identificacion
+      }
       num_doc_identidad
       nombre
       apellido

@@ -10,9 +10,17 @@ import {
 } from "../../../../components/mantenimento/calle/use-calle";
 
 import { IngresarCalleForm } from "../../../../components/mantenimento/calle/calle-form";
-import { IResultQueryManzana, useGetManzanaQuery } from '../../../../components/mantenimento/manzana/use-manzana';
+import {
+  IResultQueryManzana,
+  useGetManzanaQuery,
+} from "../../../../components/mantenimento/manzana/use-manzana";
 import { IngresarManzanaForm } from "../../../../components/mantenimento/manzana/manzana-form";
-import { manzanas } from '../../../../components/core/input/dateSelect';
+import {
+  manzanas,
+  TipoUsuario,
+} from "../../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../../components/layout/auth-layout/permiso-layout";
+import NavBar from "../../../../components/layout/app-bar";
 
 const MantenimientoManzanaEditar = () => {
   const router = useRouter();
@@ -33,11 +41,26 @@ const MantenimientoManzanaEditar = () => {
   }, [loading, error, data]);
 
   return (
-    <AppLayout>
-      {!loading && isNotNilOrEmpty(dataManzana) && isNotNilOrEmpty(id) && (
-        <IngresarManzanaForm manzanaObj={dataManzana} id={id} />
-      )}
-    </AppLayout>
+    <>
+      <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+        {!loading && isNotNilOrEmpty(dataManzana) && isNotNilOrEmpty(id) && (
+          <IngresarManzanaForm manzanaObj={dataManzana} id={id} />
+        )}
+      </PermisoLayout>
+    </>
+  );
+};
+
+MantenimientoManzanaEditar.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Actualización de Manzana">
+        {page}
+      </AppLayout>
+    </>
   );
 };
 

@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
+const withReactSvg = require("next-react-svg");
+const path = require("path");
+
+module.exports = withReactSvg({
   webpack5: true,
+  include: path.resolve(__dirname, "public/icons"),
   images: {
     domains: [
       "urbanizacion.s3.amazonaws.com",
@@ -18,10 +22,14 @@ module.exports = {
   },
   webpack: (config) => {
     config.resolve.fallback = { fs: false };
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ["@svgr/webpack"],
+    });
 
     return config;
   },
-};
+});
 
 // /** @type {import('next').NextConfig} */
 

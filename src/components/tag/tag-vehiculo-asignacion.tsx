@@ -33,8 +33,8 @@ import { IVehiculoVariable } from "../vehiculo/use-vehiculo";
 import { useListarGrupoFamiliar } from "../grupo-familiar/use-grupo-familia";
 import { id } from "date-fns/locale";
 import FormControlHeader from "../core/input/form-control-select";
-import { SelectHeader } from "../core/input/select/select-header";
-import { SelectChangeEvent } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import SaveIcon from "@material-ui/icons/Save";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) =>
       justifyContent: "center",
       alignContent: "center",
       alignItems: "center",
-      marginTop: theme.spacing(6),
+      marginTop: theme.spacing(2),
     },
     textbox: {
       margin: theme.spacing(1),
@@ -122,6 +122,7 @@ export const IngresarTagVehiculoForm: FC = () => {
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
   const [errorModal, setErrorModal] = useState<boolean>(false);
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
   // const [boolPut, setBoolPut] = useState<boolean>(false);
 
@@ -165,45 +166,44 @@ export const IngresarTagVehiculoForm: FC = () => {
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [mutate] = usePostTagVehiculoMutation();
-  const onSubmit = useCallback(
-    async ({ idVehiculo, idTag }) => {
-      try {
-        console.log("dasdniosa");
-        if (isNotNilOrEmpty(idTag) && isNotNilOrEmpty(idVehiculo)) {
-          const { data } = await mutate({
-            variables: {
-              idVehiculo,
-              idTag,
-            },
-          });
+  const onSubmit = useCallback(async ({ idVehiculo, idTag }) => {
+    try {
+      if (isNotNilOrEmpty(idTag) && isNotNilOrEmpty(idVehiculo)) {
+        setLoadingMutate(true);
+        const { data } = await mutate({
+          variables: {
+            idVehiculo,
+            idTag,
+          },
+        });
 
-          if (isNotNilOrEmpty(data)) {
-            const { code, message } = data.PostTagVehiculo;
-            setTitleModalMsj(message);
-            setOpenModalMsj(true);
-            // if (isNotNilOrEmpty(data.PutTag)) {
-            //   setBoolPut(true);
-            // }
-            if (code === 200) {
-              setErrorModal(false);
-              await refetch();
-            }
-          } else {
-            setOpenModalMsj(true);
+        if (isNotNilOrEmpty(data)) {
+          const { code, message } = data.PostTagVehiculo;
+          setTitleModalMsj(message);
+          setOpenModalMsj(true);
+          // if (isNotNilOrEmpty(data.PutTag)) {
+          //   setBoolPut(true);
+          // }
+          if (code === 200) {
             setErrorModal(false);
-            setTitleModalMsj("Usuario no autorizado");
+            await refetch();
           }
+        } else {
+          setLoadingMutate(false);
+          setOpenModalMsj(true);
+          setErrorModal(false);
+          setTitleModalMsj("Usuario no autorizado");
         }
-      } catch (error: any) {
-        console.log("error.;", error);
-        setTitleModalMsj("Envio Fallido");
-        setErrorModal(true);
-        setMensajeModalMsj("El tag no ha sido guardado: " + error.message);
-        setOpenModalMsj(true);
       }
-    },
-    [mutate]
-  );
+    } catch (error: any) {
+      setLoadingMutate(false);
+      console.log("error.;", error);
+      setTitleModalMsj("Envio Fallido");
+      setErrorModal(true);
+      setMensajeModalMsj("El tag no ha sido guardado: " + error.message);
+      setOpenModalMsj(true);
+    }
+  }, []);
 
   const {
     errors,
@@ -233,9 +233,9 @@ export const IngresarTagVehiculoForm: FC = () => {
           error={errorModal}
         />
       )}
-      <div className={classes.title}>
+      {/* <div className={classes.title}>
         <Typography variant="overline">Asignación de Tags</Typography>
-      </div>
+      </div> */}
 
       <form
         action="#"
@@ -254,7 +254,7 @@ export const IngresarTagVehiculoForm: FC = () => {
                 setIdGrupoFamiliarFilter(e.target.value as number)
               }
             >
-              <MenuItem value={undefined}> - Deseleccionar - </MenuItem>
+              <MenuItem value={undefined}> - Todos - </MenuItem>
               {!loadingListadoGrupoFamiliar &&
                 isNotNilOrEmpty(dataListadoGrupoFamiliar) &&
                 dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
@@ -313,10 +313,15 @@ export const IngresarTagVehiculoForm: FC = () => {
         </div>
         <div className={classes.contentButtons}>
           <div></div>
-          <Button type="submit" variant="outlined">
-            {" "}
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="text"
+            startIcon={<SaveIcon />}
+          >
             Guardar
-          </Button>
+          </LoadingButton>
         </div>
       </form>
     </Box>

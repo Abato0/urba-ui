@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import * as yup from "yup";
 import {
   makeStyles,
@@ -5,12 +6,8 @@ import {
   colors,
   Box,
   TextField,
-  Typography,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
   MenuItem,
+  Typography,
 } from "@material-ui/core";
 import { useFormik } from "formik";
 import { isNotNilOrEmpty } from "../../utils/is-nil-empty";
@@ -36,6 +33,8 @@ import {
 } from "../mantenimento/calle/use-calle";
 import { useListaManzanaQuery } from "../mantenimento/manzana/use-manzana";
 import { useRouter } from "next/router";
+import { LoadingButton } from "@mui/lab";
+import SaveIcon from "@material-ui/icons/Save";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -65,7 +64,7 @@ const useStyles = makeStyles((theme) =>
       alignContent: "center",
       alignItems: "center",
 
-      marginTop: theme.spacing(6),
+      marginTop: theme.spacing(3),
     },
     button: {
       backgroundColor: colors.blueGrey[900],
@@ -147,6 +146,8 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
   const [errorModal, setErrorModal] = useState<boolean>(false);
   const [boolPut, setBoolPut] = useState<boolean>(false);
 
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
+
   const { refetch } = useListarGrupoFamiliarFilterQuery({});
   const [mutate, loading, error] = isNil(grupoFam)
     ? useGrupoFamiliarMutation(mutation)
@@ -201,6 +202,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
           // isNotNilOrEmpty(id_color_fachada) &&
           // !equals(id_color_fachada, 0)
         ) {
+          setLoadingMutate(true);
           const { data: dataMutate } = isNil(grupoFam)
             ? await mutate({
                 variables: {
@@ -238,6 +240,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
 
             setTitleModalMsj(message);
             setErrorModal(false);
+            setLoadingMutate(false);
             setOpenModalMsj(true);
             setErrorModal(code === 200 ? false : true);
             if (
@@ -255,6 +258,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
         }
         // console.log("data: ", data, "loading: ", loading, "error: ", error);
       } catch (err) {
+        setLoadingMutate(false);
         // console.log("error : ", err);
         setTitleModalMsj("Grupo Familiar no Registrado");
         setErrorModal(true);
@@ -265,7 +269,8 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grupoFam, idGrupoFamiliar]
   );
 
   const init = useMemo(() => {
@@ -300,9 +305,13 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
           error={errorModal}
         />
       )}
-      <div className={classes.title}>
-        <Typography variant="overline">Registro de Grupo Familiar</Typography>
-      </div>
+      {grupoFam && (
+        <div className={classes.title}>
+          <Typography variant="overline">
+            {`Actualización de grupo familiar: ${grupoFam.nombre_familiar}`}
+          </Typography>
+        </div>
+      )}
       <form
         action="#"
         onSubmit={handleSubmit}
@@ -418,10 +427,15 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
 
         <div className={classes.contentButtons}>
           <div></div>
-          <Button type="submit" variant="outlined">
-            {" "}
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="text"
+            startIcon={<SaveIcon />}
+          >
             Guardar
-          </Button>
+          </LoadingButton>
         </div>
       </form>
     </Box>

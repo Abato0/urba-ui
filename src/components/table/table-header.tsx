@@ -1,31 +1,47 @@
-import { colors, TableCell, TableHead, TableRow } from "@material-ui/core";
+import {
+  colors,
+  createStyles,
+  makeStyles,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@material-ui/core";
 import { FC } from "react";
 import { HeaderGroup } from "react-table";
 
 interface IProps {
   headerGroups: HeaderGroup<any>[];
 }
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      background: colors.deepPurple[400],
+      color: "white",
+      fontSize: 14,
+      fontWeight: "unset",
+      fontFamily: "Roboto",
+    },
+  })
+);
 
 const TableHeader: FC<IProps> = ({ headerGroups }) => {
+  const classes = useStyles();
   return (
     <>
       <TableHead>
-        {headerGroups.map((headerGroup) => (
+        {headerGroups.map((headerGroup, index) => (
           <TableRow
             {...headerGroup.getHeaderGroupProps()}
+            key={index}
+
             // key={"tableHeader" + ìndex}
           >
-            {headerGroup.headers.map((column) => (
+            {headerGroup.headers.map((column, index) => (
               <TableCell
-                style={{
-                  // backgroundColor: colors.lightGreen[500],
-                  fontSize: 14,
-                  fontWeight: "bold",
-                  fontFamily: "Roboto",
-                  // color:"white"
-                }}
+                className={classes.root}
                 align="center"
                 {...column.getHeaderProps()}
+                key={index}
               >
                 {column.render("Header")}
               </TableCell>

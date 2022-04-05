@@ -1,6 +1,9 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
+import { TipoUsuario } from "../../../../components/core/input/dateSelect";
+import NavBar from "../../../../components/layout/app-bar";
 import AppLayout from "../../../../components/layout/app-layout";
+import PermisoLayout from "../../../../components/layout/auth-layout/permiso-layout";
 import { IngresarModeloForm } from "../../../../components/mantenimento/modelo/modelo-form";
 import {
   useGetModeloQuery,
@@ -27,11 +30,25 @@ const MantenimientoModeloEditar = () => {
   }, [loading, error, data]);
 
   return (
-    <AppLayout>
+    <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
       {!loading && isNotNilOrEmpty(dataModelo) && isNotNilOrEmpty(id) && (
         <IngresarModeloForm modeloObj={dataModelo} id={id} />
       )}
-    </AppLayout>
+    </PermisoLayout>
+  );
+};
+
+MantenimientoModeloEditar.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Actualización de Modelo de Vehiculo">
+        {page}
+      </AppLayout>
+      ;
+    </>
   );
 };
 

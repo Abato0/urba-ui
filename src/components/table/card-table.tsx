@@ -26,6 +26,9 @@ import TablePaginations from "./table-paginations";
 import IndeterminateCheckbox from "./checkbox-cell";
 import Typography from "@material-ui/core/Typography";
 import { faFileExcel, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { Tooltip, IconButton } from "@material-ui/core";
+
+import { FileExcelBox as FileExcelBoxIcon } from "mdi-material-ui";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -76,7 +79,7 @@ const useStyles = makeStyles((theme) =>
     },
     title: {
       fontSize: theme.typography.pxToRem(19),
-      backgroundColor: colors.grey[200],
+      // backgroundColor: colors.grey[200],
       paddingTop: theme.spacing(1),
       paddingBottom: theme.spacing(1),
       paddingLeft: theme.spacing(4),
@@ -107,6 +110,7 @@ interface IProps {
   lengthData: number;
   ExportExcel: () => void;
   checkbox?: boolean;
+  orientacion?: "landscape" | "portrait";
 }
 
 const CardTable: FC<IProps> = ({
@@ -125,6 +129,7 @@ const CardTable: FC<IProps> = ({
   ExportExcel,
   children,
   checkbox = false,
+  orientacion = "portrait",
 }) => {
   const classes = useStyles();
   const {
@@ -157,26 +162,11 @@ const CardTable: FC<IProps> = ({
   return (
     <>
       <Paper className={classes.root}>
-        <div className={classes.containerTitle}>
-          <Typography variant="overline" className={classes.title}>
-            Listado de Grupos Familiares
-          </Typography>
-        </div>
         <div className={classes.contentButtons}>
-          {/* <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyItems: "center",
-              m
-              // alignItems: "center",
-            }}
-          > */}
-
           <TextField
             className={classes.textBox}
             variant="outlined"
-            placeholder={"🔍 Buscar"}
+            placeholder={"Buscar"}
             onChange={(e) => {
               setSearch(e.target.value);
             }}
@@ -189,7 +179,7 @@ const CardTable: FC<IProps> = ({
               // backgroundColor: "red",
               // minWidth: 200,
               display: "flex",
-              flexDirection: "column",
+              flexDirection: "row",
             }}
           >
             <ExportTablePdf
@@ -197,8 +187,20 @@ const CardTable: FC<IProps> = ({
               idTable={idTable}
               title={titlePdf}
               columns={columnsPdf}
+              orientacion={orientacion}
             />
-            <Button
+            <Tooltip title="Exportar a Excel">
+              <IconButton>
+                <FileExcelBoxIcon
+                  fontSize="large"
+                  style={{
+                    color: colors.green[800],
+                  }}
+                  onClick={ExportExcel}
+                />
+              </IconButton>
+            </Tooltip>
+            {/* <Button
               className={classes.button}
               variant="contained"
               color="secondary"
@@ -211,7 +213,7 @@ const CardTable: FC<IProps> = ({
               <Typography className={classes.labelButton} variant="button">
                 Exportar a Excel
               </Typography>
-            </Button>
+            </Button> */}
           </div>
         </div>
         <>{children}</>

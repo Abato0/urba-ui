@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, Select } from "@material-ui/core";
+import { colors, FormControl, InputLabel, Select } from "@material-ui/core";
 import { ClassNameMap } from "@material-ui/styles";
 import React, { ChangeEvent } from "react";
 
@@ -24,9 +24,15 @@ const FormControlHeader: React.FC<IProps> = ({
 }) => {
   return (
     <FormControl variant="filled" className={classes.formControl}>
-      <InputLabel id={id + "_label"}>{labetTitulo}</InputLabel>
+      <InputLabel
+        id={id + "_label"}
+         style={{ fontSize: "12px" }}
+      >
+        {labetTitulo}
+      </InputLabel>
       <Select
         labelId={id + "_label"}
+       // style={{ backgroundColor: colors.deepPurple[50] }}
         id={id}
         name={id}
         value={value}

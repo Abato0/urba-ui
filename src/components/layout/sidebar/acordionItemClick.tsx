@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   AccordionDetails,
+  Button,
   colors,
   createStyles,
   makeStyles,
@@ -23,12 +24,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     trNode: {
       "&:hover": {
-        background: colors.blueGrey[50],
+        background: colors.deepPurple[50],
       },
       borderWidth: 1,
       borderStyle: "solid",
-      borderColor: colors.grey[400],
+      borderColor: colors.deepPurple[400],
       margin: 2,
+      color:colors.deepPurple[400],
 
       width: "100%",
       height: "100%",
@@ -42,12 +44,12 @@ const useStyles = makeStyles((theme: Theme) =>
       // justifyContent: "center"
     },
     icon: {
-      marginRight: 10,
-      marginLeft: 8,
-      maxHeight: 14,
+      // marginRight: 10,
+      // marginLeft: 8,
+      // maxHeight: 14,
     },
     label: {
-      color: colors.grey[800],
+      color: colors.deepPurple[800],
       fontWeight: "bold",
       fontSize: theme.typography.pxToRem(12),
     },
@@ -57,17 +59,20 @@ const useStyles = makeStyles((theme: Theme) =>
 const ItemSidebar: React.FC<IProps> = ({ eventClick, label, icon }) => {
   const classes = useStyles();
   return (
-    <div
+    <Button
+      variant="outlined"
       className={classes.trNode}
       style={{ cursor: "pointer" }}
       onClick={eventClick}
+
+      // startIcon={<FontAwesomeIcon icon={icon} className={classes.icon} />}
     >
       <Typography className={classes.label} variant="body2">
         {" "}
-        {icon && <FontAwesomeIcon icon={icon} className={classes.icon} />}{" "}
+        {/* {icon && <FontAwesomeIcon icon={icon} className={classes.icon} />}{" "} */}
         {label}
       </Typography>
-    </div>
+    </Button>
   );
 };
 

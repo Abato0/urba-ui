@@ -12,6 +12,9 @@ import {
   useGetStatusVehiculoQuery,
 } from "../../../../components/mantenimento/status-vehiculo/use-status-vehiculo";
 import { IngresarStatusVehiculoForm } from "../../../../components/mantenimento/status-vehiculo/status-vehiculo-form";
+import { TipoUsuario } from "../../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../../components/layout/auth-layout/permiso-layout";
+import NavBar from "../../../../components/layout/app-bar";
 
 const MantenimientoStatusVehiculoEditar = () => {
   const router = useRouter();
@@ -33,7 +36,7 @@ const MantenimientoStatusVehiculoEditar = () => {
   }, [loading, error, data]);
 
   return (
-    <AppLayout>
+    <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
       {!loading &&
         isNotNilOrEmpty(dataStatusVehiculo) &&
         isNotNilOrEmpty(id) && (
@@ -42,7 +45,21 @@ const MantenimientoStatusVehiculoEditar = () => {
             id={id}
           />
         )}
-    </AppLayout>
+    </PermisoLayout>
+  );
+};
+
+MantenimientoStatusVehiculoEditar.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Actualización de Status del Vehiculo">
+        {page}
+      </AppLayout>
+      ;
+    </>
   );
 };
 

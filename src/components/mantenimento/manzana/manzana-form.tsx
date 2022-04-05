@@ -212,7 +212,11 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
         />
       )}
       <div className={classes.title}>
-        <Typography variant="overline">Registro de Manzanas</Typography>
+        <Typography variant="overline">
+          {manzanaObj
+            ? `Actualización de manzana: ${manzanaObj.manzana}`
+            : "Registro de Manzanas"}
+        </Typography>
       </div>
 
       <form

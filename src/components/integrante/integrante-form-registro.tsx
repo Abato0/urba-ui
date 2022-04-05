@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useQuery } from "@apollo/client";
 import {
   makeStyles,
@@ -41,6 +42,9 @@ import { useListaParentescoQuery } from "../mantenimento/parentesco/use-parentes
 import { IGrupoFamiliar } from "../../interface/grupo-familiar.interface";
 import { useListadoVehiculoFilterQuery } from "../vehiculo/use-vehiculo";
 import { useRouter } from "next/router";
+import { useListaTipoIdentificacionQuery } from "../mantenimento/tipo-identificacion/use-tipo-identificacion";
+import { LoadingButton } from "@mui/lab";
+import SaveIcon from "@material-ui/icons/Save";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -66,7 +70,7 @@ const useStyles = makeStyles((theme) =>
       justifyContent: "center",
       alignContent: "center",
       alignItems: "center",
-      marginTop: theme.spacing(6),
+      marginTop: theme.spacing(2),
     },
     textbox: {
       margin: theme.spacing(1),
@@ -97,6 +101,15 @@ const useStyles = makeStyles((theme) =>
       flexDirection: "row",
       alignContent: "center",
     },
+    title: {
+      fontSize: theme.typography.pxToRem(12),
+      backgroundColor: colors.grey[200],
+      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(1),
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(4),
+      borderRadius: 5,
+    },
   })
 );
 
@@ -108,7 +121,7 @@ const initialValues = Object.freeze({
   telefono: "",
   // status: "",
   fecha_nacimiento: new Date(),
-  tipo_doc_identidad: "",
+  id_tipo_doc_identidad: undefined,
   num_doc_identidad: "",
   // piso_ocupa: "",
   genero: "",
@@ -119,7 +132,7 @@ const initialValues = Object.freeze({
 const validationSchema = yup.object().shape({
   //   id_aporte: yup.number().required(),
   idGrupoFamiliar: yup.number().required("Campo requerido"),
-  tipo_doc_identidad: yup.string().required("Campo requerido"),
+  id_tipo_doc_identidad: yup.number().required("Campo requerido"),
   num_doc_identidad: yup
     .string()
     .matches(/^[0-9]+$/, "Solo numeros")
@@ -151,7 +164,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
     return isNotNilOrEmpty(integrante)
       ? {
           idGrupoFamiliar: integrante?.grupoFamiliar.id,
-          tipo_doc_identidad: integrante?.tipo_doc_identidad,
+          id_tipo_doc_identidad: integrante?.tipoIdentificacion.id,
           num_doc_identidad: integrante?.num_doc_identidad,
           nombre: integrante?.nombre,
           apellido: integrante?.apellido,
@@ -176,12 +189,19 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
   const [errorModal, setErrorModal] = useState<boolean>(false);
   const [boolPut, setBoolPut] = useState<boolean>(false);
   const { refetch } = useListaIntergranteFilterQuery({});
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
   const {
     data: dataListaGrupoFamiliar,
     loading: loadingListaGrupoFamiliar,
     error: errorListaGrupoFamiliar,
   } = useListarGrupoFamiliar();
+
+  const {
+    data: dataListadoTipoID,
+    loading: loadingListadoTipoID,
+    error: errorListadoTipoID,
+  } = useListaTipoIdentificacionQuery();
 
   useEffect(() => {
     // setTimeout(() => {
@@ -191,6 +211,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
       });
     }
     // }, 2000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boolPut, openModalMsj]);
 
   const {
@@ -218,7 +239,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
         telefono,
         id_parentesco,
         fecha_nacimiento,
-        tipo_doc_identidad,
+        id_tipo_doc_identidad,
         num_doc_identidad,
         representante,
         genero,
@@ -234,11 +255,12 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
           isNotNilOrEmpty(fecha_nacimiento) &&
           isNotNilOrEmpty(nombre) &&
           isNotNilOrEmpty(telefono) &&
-          isNotNilOrEmpty(tipo_doc_identidad) &&
+          isNotNilOrEmpty(id_tipo_doc_identidad) &&
           isNotNilOrEmpty(id_parentesco) &&
           isNotNilOrEmpty(representante) &&
           isNotNilOrEmpty(genero)
         ) {
+          setLoadingMutate(true);
           const { data: dataMutate } = isNotNilOrEmpty(integrante)
             ? await mutate({
                 variables: {
@@ -249,7 +271,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                   telefono,
                   id_parentesco,
                   fecha_nacimiento,
-                  tipo_doc_identidad,
+                  id_tipo_doc_identidad,
                   num_doc_identidad,
                   representante,
                   genero,
@@ -264,7 +286,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                   telefono,
                   id_parentesco,
                   fecha_nacimiento,
-                  tipo_doc_identidad,
+                  id_tipo_doc_identidad,
                   num_doc_identidad,
                   representante,
                   genero,
@@ -280,16 +302,18 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
               ? dataMutate.PostIntegrante
               : dataMutate.UpdateIntegrante;
             setTitleModalMsj(message);
+            setLoadingMutate(false);
             setOpenModalMsj(true);
             setErrorModal(code === 200 ? false : true);
             if (isNotNilOrEmpty(dataMutate.UpdateIntegrante) && code === 200) {
               setBoolPut(true);
             }
-            
+
             console.log("Messaget: ", message);
 
             // resetForm();
           } else if (dataMutate === null) {
+            setLoadingMutate(false);
             setTitleModalMsj("Usuario no autorizado");
             setErrorModal(true);
             setOpenModalMsj(true);
@@ -297,14 +321,15 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
           }
         }
       } catch (err: any) {
+        setLoadingMutate(false);
         console.log("error : ", err);
         setTitleModalMsj("Envio Fallido");
         setErrorModal(true);
         setMensajeModalMsj("Integrante no ha sido guardado: " + err.message);
         setOpenModalMsj(true);
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [integrante]
   );
 
@@ -335,10 +360,15 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
           error={errorModal}
         />
       )}
-      <Typography variant="h5">
-        {" "}
-        Registro de Integrante de las Familias
-      </Typography>
+
+      {integrante && (
+        <div className={classes.title}>
+          <Typography variant="overline">
+            {`Actualización de grupo familiar: ${integrante.nombre} ${integrante.apellido}`}
+          </Typography>
+        </div>
+      )}
+
       <form
         action="#"
         onSubmit={handleSubmit}
@@ -399,18 +429,30 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
           <FormControlHeader
             classes={classes}
             handleBlur={handleBlur}
-            id="tipo_doc_identidad"
+            id="id_tipo_doc_identidad"
             handleChange={handleChange}
             labetTitulo="Tipo de identificacion"
-            value={values.tipo_doc_identidad}
+            value={values.id_tipo_doc_identidad}
           >
-            {tipoDocumentosIdentidad.map((tipo) => {
+            {!loadingListadoTipoID &&
+              dataListaGrupoFamiliar &&
+              isNotNilOrEmpty(dataListadoTipoID?.ListaTipoIdentificacion) &&
+              dataListadoTipoID?.ListaTipoIdentificacion.map(
+                ({ id, tipo_identificacion }) => {
+                  return (
+                    <MenuItem key={id} value={id}>
+                      {tipo_identificacion}
+                    </MenuItem>
+                  );
+                }
+              )}
+            {/* {tipoDocumentosIdentidad.map((tipo) => {
               return (
                 <MenuItem key={"integrante-" + tipo} value={tipo}>
                   {tipo}
                 </MenuItem>
               );
-            })}
+            })} */}
           </FormControlHeader>
 
           <TextField
@@ -545,38 +587,26 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                   }}
                 />
               }
-              label="Representante"
+              label={
+                <Typography variant="body1" style={{ color: colors.grey[700] }}>
+                  Representante
+                </Typography>
+              }
             />
           </FormGroup>
         </div>
 
-        {/* <div
-          style={{ marginRight: 245 }}
-          className={classes.contentLastTextBox}
-        >
-          <FormControlHeader
-            classes={classes}
-            handleBlur={handleBlur}
-            id="piso_ocupa"
-            handleChange={handleChange}
-            labetTitulo="Piso que ocupa"
-            value={values.piso_ocupa}
-          >
-            {plantaEdificacion.map((planta) => {
-              return (
-                <MenuItem key={"integrante-" + planta} value={planta}>
-                  {planta}
-                </MenuItem>
-              );
-            })}
-          </FormControlHeader>
-        </div> */}
         <div className={classes.contentButtons}>
           <div></div>
-          <Button type="submit" variant="outlined">
-            {" "}
-            Enviar
-          </Button>
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="text"
+            startIcon={<SaveIcon />}
+          >
+            Guardar
+          </LoadingButton>
         </div>
       </form>
     </Box>

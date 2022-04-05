@@ -8,7 +8,7 @@ export interface IResultQueryLog {
   tipoUsuario: string;
   fecha: string;
   accion: string;
-  nombre_familiar: string;
+  // nombre_familiar: string;
 }
 
 export interface IListaLog {

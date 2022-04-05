@@ -21,12 +21,11 @@ import { useRouter } from "next/router";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { login } from "../auth/auth-service";
-import { useSetRecoilState } from "recoil";
-import { userInfo } from "../utils/states";
 import ModalAuth from "../components/core/input/dialog/modal-dialog";
 import { EnlacesSidebar } from "../components/layout/app-sidebar";
 import AppLayoutLogin from "../components/layout/auth-login";
-// import bcrypt from 'bcrypt'
+import { LoadingButton } from "@mui/lab";
+import SaveIcon from "@material-ui/icons/Save";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -147,6 +146,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     width: "100%",
     marginTop: theme.spacing(5),
+    alignItems: "center",
   },
   titulo: {
     fontWeight: "bold",
@@ -155,7 +155,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   button: {
-    marginTop: theme.spacing(2),
+    // marginTop: theme.spacing(2),
     borderRadius: "10px",
     // width: "120px",
     // "&:hover": {
@@ -175,11 +175,13 @@ const LoginScreen = () => {
   const router = useRouter();
   const [openErrorLogin, setOpenErrorLogin] = useState<boolean>(false);
   const [messageError, setMessageError] = useState<string>("");
-  const setUserInfo = useSetRecoilState(userInfo);
+
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = useCallback(
     async ({ usuario, password }, { setSubmitting }) => {
       try {
+        setLoading(true);
         // return router.push("home/user");
         console.log("user: ", usuario, "password", password);
         // console.log(login)
@@ -188,6 +190,7 @@ const LoginScreen = () => {
           // console.log("hash ",hash)
           const data = await login(usuario, password);
           console.log("data: ", data);
+          setLoading(false);
           // localStorage.setItem("token.sig",data.token!);
           // setUserInfo(data)
           return router.push(EnlacesSidebar.home.route);
@@ -211,8 +214,9 @@ const LoginScreen = () => {
         //   // Go back to where we came after a successful login
         //   return router.push(router.query.return);
       } catch (err) {
+        setLoading(false);
         setOpenErrorLogin(true);
-        setMessageError(String(err.message));
+        setMessageError(String((err as Error).message));
         // console.log("eerr: ",err.message)
         //   const failedLoginError = isBadRequestError(err)
         //     ? 'Missing username or password'
@@ -249,149 +253,154 @@ const LoginScreen = () => {
 
   const classes = useStyles();
   return (
-    <AppLayoutLogin>
-      <>
-        <Head>
-          <title>Login</title>
-        </Head>
-        <Box className={classes.root}>
-          <Container className={classes.container}>
-            {openErrorLogin && (
-              <ModalAuth
-                openModal={openErrorLogin}
-                setOpenModal={setOpenErrorLogin}
-                title={"Error login"}
-                message={messageError}
-              />
-            )}
-            <Box className={classes.cardLogin}>
-              <Box className={classes.cardLoginColumn}>
-                <div className={classes.cardTituloLogin}>
-                  <Typography variant="h5" className={classes.titulo}>
-                    {" "}
-                    Login
-                  </Typography>
+    <>
+      <Head>
+        <title>Login</title>
+      </Head>
+      <Box className={classes.root}>
+        <Container className={classes.container}>
+          {openErrorLogin && (
+            <ModalAuth
+              openModal={openErrorLogin}
+              setOpenModal={setOpenErrorLogin}
+              title={"Error login"}
+              message={messageError}
+            />
+          )}
+          <Box className={classes.cardLogin}>
+            <Box className={classes.cardLoginColumn}>
+              <div className={classes.cardTituloLogin}>
+                <Typography variant="h5" className={classes.titulo}>
+                  {" "}
+                  Login
+                </Typography>
+              </div>
+              <form
+                action="#"
+                onSubmit={handleSubmit}
+                onReset={handleReset}
+                noValidate
+                className={classes.formLogin}
+              >
+                <div className={classes.contentTextBox}>
+                  <TextField
+                    className={classes.textBoox}
+                    variant="outlined"
+                    id="usuario"
+                    value={values.usuario}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    autoComplete="username"
+                    label="Email"
+                    margin="normal"
+                    error={touched.usuario && isNotNilOrEmpty(errors.usuario)}
+                    helperText={touched.usuario ? errors.usuario : undefined}
+                    required
+                    // fullWidth
+                  />
+                  <TextField
+                    className={classes.textBoox}
+                    variant="outlined"
+                    id="password"
+                    type={"password"}
+                    // className="mt3"
+                    value={values.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    autoComplete="current-password"
+                    label="Password"
+                    margin="normal"
+                    error={touched.password && isNotNilOrEmpty(errors.password)}
+                    helperText={touched.password ? errors.password : undefined}
+                    required
+                    // fullWidth
+                  />
                 </div>
-                <form
-                  action="#"
-                  onSubmit={handleSubmit}
-                  onReset={handleReset}
-                  noValidate
-                  className={classes.formLogin}
-                >
-                  <div className={classes.contentTextBox}>
-                    <TextField
-                      className={classes.textBoox}
-                      variant="outlined"
-                      id="usuario"
-                      value={values.usuario}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      autoComplete="username"
-                      label="Email"
-                      margin="normal"
-                      error={touched.usuario && isNotNilOrEmpty(errors.usuario)}
-                      helperText={touched.usuario ? errors.usuario : undefined}
-                      required
-                      // fullWidth
-                    />
-                    <TextField
-                      className={classes.textBoox}
-                      variant="outlined"
-                      id="password"
-                      type={"password"}
-                      // className="mt3"
-                      value={values.password}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      autoComplete="current-password"
-                      label="Password"
-                      margin="normal"
-                      error={
-                        touched.password && isNotNilOrEmpty(errors.password)
-                      }
-                      helperText={
-                        touched.password ? errors.password : undefined
-                      }
-                      required
-                      // fullWidth
-                    />
-                  </div>
 
-                  <div className={classes.contentButtons}>
-                    <div>
-                      <Button
-                        variant="text"
-                        color="secondary"
-                        className={classes.button}
-                        onClick={async () =>
-                          await router.push("/recordar-contrasena")
-                        }
-                      >
-                        <Typography style={{ fontSize: 10 }} variant="body1">
-                          Recordar Contraseña
-                        </Typography>
-                      </Button>
-                    </div>
+                <div className={classes.contentButtons}>
+                  <Button
+                    variant="text"
+                    color="secondary"
+                    className={classes.button}
+                    onClick={async () =>
+                      await router.push("/recordar-contrasena")
+                    }
+                  >
+                    <Typography style={{ fontSize: 10 }} variant="body1">
+                      Recordar Contraseña
+                    </Typography>
+                  </Button>
 
-                    <Button
-                      type="submit"
-                      variant="text"
-                      className={classes.btnLogin}
-                    >
-                      {" "}
-                      Ingresar
-                    </Button>
-                  </div>
-                </form>
-              </Box>
-              <Hidden smDown>
-                <Box className={classes.cardLoginImg}>
-                  <div className={classes.imgContainer}>
-                    <Carousel
-                      showIndicators={true}
-                      showStatus={false}
-                      showArrows={false}
-                      autoPlay={true}
-                      infiniteLoop={true}
-                      className={classes.carrusel}
-                    >
-                      <div>
-                        <Image
-                          width={450}
-                          height={570}
-                          className={classes.img}
-                          src={"/img/login/iowa-city.jpg"}
-                          alt={"img"}
-                        />
-                      </div>
-                      <div>
-                        <Image
-                          width={450}
-                          height={570}
-                          className={classes.img}
-                          src={"/img/login/los-angeles.webp"}
-                          alt={"img"}
-                        />
-                      </div>
-                      <div>
-                        <Image
-                          width={450}
-                          height={570}
-                          className={classes.img}
-                          src={"/img/login/rascacielo.jpg"}
-                          alt={"img"}
-                        />
-                      </div>
-                    </Carousel>
-                  </div>
-                </Box>
-              </Hidden>
+                  <LoadingButton
+                    loading={loading}
+                    loadingPosition="start"
+                    type="submit"
+                    variant="text"
+                    className={classes.button}
+                    // className={classes.btnLogin}
+                    startIcon={<SaveIcon />}
+                  >
+                    <Typography style={{ fontSize: 10 }} variant="body1">
+                      Guardar
+                    </Typography>
+                  </LoadingButton>
+                </div>
+              </form>
             </Box>
-          </Container>
-        </Box>
-      </>
-    </AppLayoutLogin>
+            <Hidden smDown>
+              <Box className={classes.cardLoginImg}>
+                <div className={classes.imgContainer}>
+                  <Carousel
+                    showIndicators={true}
+                    showStatus={false}
+                    showArrows={false}
+                    autoPlay={true}
+                    infiniteLoop={true}
+                    className={classes.carrusel}
+                  >
+                    <div>
+                      <Image
+                        width={450}
+                        height={570}
+                        className={classes.img}
+                        src={"/img/login/iowa-city.jpg"}
+                        alt={"img"}
+                      />
+                    </div>
+                    <div>
+                      <Image
+                        width={450}
+                        height={570}
+                        className={classes.img}
+                        src={"/img/login/los-angeles.webp"}
+                        alt={"img"}
+                      />
+                    </div>
+                    <div>
+                      <Image
+                        width={450}
+                        height={570}
+                        className={classes.img}
+                        src={"/img/login/rascacielo.jpg"}
+                        alt={"img"}
+                      />
+                    </div>
+                  </Carousel>
+                </div>
+              </Box>
+            </Hidden>
+          </Box>
+        </Container>
+      </Box>
+    </>
+  );
+};
+
+LoginScreen.getLayout = function getLayout(page: React.ReactElement) {
+  return (
+    <>
+      <AppLayoutLogin>{page}</AppLayoutLogin>;
+    </>
   );
 };
 

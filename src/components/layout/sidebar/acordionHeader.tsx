@@ -4,6 +4,7 @@ import {
   AccordionSummary,
   colors,
   createStyles,
+  Grid,
   makeStyles,
   Theme,
   Typography,
@@ -18,6 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
     heading: {
       fontSize: theme.typography.pxToRem(15),
       fontWeight: "bold",
+      color: colors.deepPurple[900],
     },
     trNode: {
       "&:hover": {
@@ -36,6 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: 10,
       marginLeft: 8,
       maxHeight: 16,
+      color: colors.deepPurple[900],
     },
   })
 );
@@ -49,11 +52,18 @@ const AcordionHeader: React.FC<IProps> = ({ label, children, icon }) => {
   const classes = useStyles();
   return (
     <Accordion>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography className={classes.heading}>
-          {icon && <FontAwesomeIcon icon={icon} className={classes.icon} />}
-          {label}
-        </Typography>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon className={classes.icon} />}
+      >
+        <Grid container spacing={2} alignItems={"center"}>
+          <Grid item xs={3}>
+            {icon && <FontAwesomeIcon icon={icon} className={classes.icon} />}
+          </Grid>
+          <Grid item xs={9}>
+            {" "}
+            <Typography className={classes.heading}>{label}</Typography>
+          </Grid>
+        </Grid>
       </AccordionSummary>
       <AccordionDetails>
         <div className={classes.container}>{children}</div>

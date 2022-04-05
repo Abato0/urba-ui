@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
   makeStyles,
   createStyles,
@@ -20,6 +21,7 @@ import {
   usePutCalleMutation,
 } from "./use-calle";
 import SaveIcon from "@material-ui/icons/Save";
+import { LoadingButton } from "@mui/lab";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -109,6 +111,7 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
   const [errorModal, setErrorModal] = useState<boolean>(false);
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
   const [boolPut, setBoolPut] = useState<boolean>(false);
 
@@ -132,52 +135,60 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
       : initialValues;
   }, [calleObj]);
 
-  const onSubmit = useCallback(async ({ calle }) => {
-    try {
-      if (isNotNilOrEmpty(calle)) {
-        const { data } = isNil(calleObj)
-          ? await mutate({
-              variables: {
-                calle,
-              },
-            })
-          : await mutate({
-              variables: {
-                id,
-                calle,
-              },
-            });
+  const onSubmit = useCallback(
+    async ({ calle }) => {
+      try {
+        if (isNotNilOrEmpty(calle)) {
+          setLoadingMutate(true);
+          const { data } = isNil(calleObj)
+            ? await mutate({
+                variables: {
+                  calle,
+                },
+              })
+            : await mutate({
+                variables: {
+                  id,
+                  calle,
+                },
+              });
 
-        if (isNotNilOrEmpty(data)) {
-          const { message } = isNotNilOrEmpty(data.PutCalle)
-            ? data.PutCalle
-            : data.PostCalle;
-          setTitleModalMsj(message);
+          if (isNotNilOrEmpty(data)) {
+            const { message } = isNotNilOrEmpty(data.PutCalle)
+              ? data.PutCalle
+              : data.PostCalle;
+            setLoadingMutate(false);
+            setTitleModalMsj(message);
 
-          //   setTimeout(() => {
+            //   setTimeout(() => {
 
-          //   }, 2000);
+            //   }, 2000);
 
-          setErrorModal(false);
-          // setMensajeModalMsj(dataMutate.message);
-          setOpenModalMsj(true);
-          if (isNotNilOrEmpty(data.PutCalle)) {
-            setBoolPut(true);
+            setErrorModal(false);
+            // setMensajeModalMsj(dataMutate.message);
+            setOpenModalMsj(true);
+            if (isNotNilOrEmpty(data.PutCalle)) {
+              setBoolPut(true);
+            }
+            resetForm();
+          } else {
+            setLoadingMutate(false);
+            setOpenModalMsj(true);
+            setErrorModal(false);
+            setTitleModalMsj("Usuario no autorizado");
           }
-          resetForm();
-        } else {
-          setOpenModalMsj(true);
-          setErrorModal(false);
-          setTitleModalMsj("Usuario no autorizado");
         }
+      } catch (error: any) {
+        setLoadingMutate(false);
+        setTitleModalMsj("Envio Fallido");
+        setErrorModal(true);
+        setMensajeModalMsj("Calle no ha sido guardado: " + error.message);
+        setOpenModalMsj(true);
       }
-    } catch (error: any) {
-      setTitleModalMsj("Envio Fallido");
-      setErrorModal(true);
-      setMensajeModalMsj("Calle no ha sido guardado: " + error.message);
-      setOpenModalMsj(true);
-    }
-  }, [calleObj, id, mutate]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [calleObj, id]
+  );
 
   const {
     errors,
@@ -207,8 +218,13 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
         />
       )}
       <div className={classes.title}>
-        <Typography variant="overline">Registro del Calles</Typography>
+        <Typography variant="overline">
+          {calleObj
+            ? `Actualización de calle: ${calleObj.calle}`
+            : "Registro del Calles"}
+        </Typography>
       </div>
+
       <form
         action="#"
         onSubmit={handleSubmit}
@@ -232,10 +248,15 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
         </div>
         <div className={classes.contentButtons}>
           <div></div>
-          <Button startIcon={<SaveIcon />} type="submit" variant="outlined">
-            {" "}
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="text"
+            startIcon={<SaveIcon />}
+          >
             Guardar
-          </Button>
+          </LoadingButton>
         </div>
       </form>
     </Box>

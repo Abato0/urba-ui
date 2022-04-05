@@ -1,11 +1,13 @@
 import {
   colors,
   createStyles,
+  IconButton,
   makeStyles,
   Paper,
   Table,
   TableContainer,
   TextField,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
 import { isNil, pluck, prop } from "ramda";
@@ -33,6 +35,15 @@ import {
 } from "../../utils/is-nil-empty";
 import useDebounce from "../../utils/useDebounce";
 import { columnsListadoTags } from "../../components/tag/tag-dataTable";
+import { TipoUsuario } from "../../components/core/input/dateSelect";
+import PermisoLayout from "../../components/layout/auth-layout/permiso-layout";
+import {
+  Filter as FilterIcon,
+  Reload as ReloadIcon,
+  FileExcelBox as FileExcelBoxIcon,
+} from "mdi-material-ui";
+import { ExportTablePdf } from "../../components/table/export-table-pdf";
+import NavBar from "../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -244,61 +255,74 @@ const MantenimientoColorListado = () => {
   );
 
   return (
-    <AppLayout>
-      <>
-        {openModalMsj && (
-          <ModalAuth
-            openModal={openModalMsj}
-            setOpenModal={setOpenModalMsj}
-            title={titleModalMsj}
-            message={mensajeModalMsj}
-            error={errorModal}
-          />
-        )}
-      </>
-      <Paper className={classes.root}>
-        <div className={classes.containerTitle}>
-          <Typography variant="overline" className={classes.title}>
-            Listado de Tags
-          </Typography>
-        </div>
-        <div className={classes.contentButtons}>
-          <TextField
-            className={classes.textBox}
-            variant="outlined"
-            placeholder="Search"
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            value={search}
-          />
-        </div>
-        <TableContainer>
-          <Table
-            // className={classes.table}
-            padding="normal"
-            stickyHeader
-            aria-label="sticky table"
-            {...getTableProps()}
-            id={"TableColor"}
-          >
-            <TableHeader headerGroups={headerGroups} />
-            <CardTableBody
-              getTableBodyProps={getTableBodyProps}
-              page={page}
-              prepareRow={prepareRow}
+    <>
+      <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+        <>
+          {openModalMsj && (
+            <ModalAuth
+              openModal={openModalMsj}
+              setOpenModal={setOpenModalMsj}
+              title={titleModalMsj}
+              message={mensajeModalMsj}
+              error={errorModal}
             />
-          </Table>
-        </TableContainer>
-        <TablePaginations
-          lengthData={isNilOrEmpty(dataTag) ? 0 : dataTag.length}
-          onChangePage={onChangePage}
-          onChangeRowsPerPage={onChangeRowsPerPage}
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-        />
-      </Paper>
-    </AppLayout>
+          )}
+        </>
+        <Paper className={classes.root}>
+          {/* <div className={classes.containerTitle}>
+            <Typography variant="overline" className={classes.title}>
+              Listado de Tags
+            </Typography>
+          </div> */}
+          <div className={classes.contentButtons}>
+            <TextField
+              className={classes.textBox}
+              variant="outlined"
+              placeholder="Search"
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              value={search}
+            />
+          </div>
+          <TableContainer>
+            <Table
+              // className={classes.table}
+              padding="normal"
+              stickyHeader
+              aria-label="sticky table"
+              {...getTableProps()}
+              id={"ListadoTags"}
+            >
+              <TableHeader headerGroups={headerGroups} />
+              <CardTableBody
+                getTableBodyProps={getTableBodyProps}
+                page={page}
+                prepareRow={prepareRow}
+              />
+            </Table>
+          </TableContainer>
+          <TablePaginations
+            lengthData={isNilOrEmpty(dataTag) ? 0 : dataTag.length}
+            onChangePage={onChangePage}
+            onChangeRowsPerPage={onChangeRowsPerPage}
+            pageIndex={pageIndex}
+            pageSize={pageSize}
+          />
+        </Paper>
+      </PermisoLayout>
+    </>
+  );
+};
+
+MantenimientoColorListado.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Listado de Tags">{page}</AppLayout>;
+    </>
   );
 };
 

@@ -31,7 +31,7 @@ export const SelectTipoUsuario: React.FC<IProps> = ({
       id={id}
       label={label}
     >
-         <MenuItem value={undefined}> - Deseleccionar - </MenuItem>
+         <MenuItem value={undefined}> - Todos - </MenuItem>
       {tipoUsuarios.map(({ label, value }) => {
         return (
           <MenuItem value={value} key={id + "TipoUsuario - " + value}>

@@ -19,6 +19,10 @@ export const headVehiculoTable = Object.freeze([
   //   Header: "Tipo Vehiculo",
   //   accessor: "tipo_vehiculo",
   // },
+  {
+    Header: "Grupo Familiar",
+    accessor: "nombre_familiar",
+  },
 
   {
     Header: "Marca",
@@ -40,10 +44,6 @@ export const headVehiculoTable = Object.freeze([
     accessor: "color",
   },
 
-  {
-    Header: "Grupo Familiar",
-    accessor: "nombre_familiar",
-  },
   {
     Header: "Status",
     accessor: "status",

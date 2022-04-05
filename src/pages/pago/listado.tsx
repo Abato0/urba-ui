@@ -18,6 +18,7 @@ import {
   createStyles,
   Divider,
   FormControl,
+  IconButton,
   InputLabel,
   makeStyles,
   MenuItem,
@@ -29,6 +30,7 @@ import {
   TableFooter,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
 import { ExportTablePdf } from "../../components/table/export-table-pdf";
@@ -38,7 +40,7 @@ import CardTableBody from "../../components/table/table-body";
 import useDebounce from "../../utils/useDebounce";
 import Fuse from "fuse.js";
 import { TableCell } from "@material-ui/core";
-import { isNotNilOrEmpty } from "../../utils/is-nil-empty";
+import { isNotNilOrEmpty, isNotNil } from "../../utils/is-nil-empty";
 import ModalImagen from "../../components/core/input/dialog/modal-ver-imagen";
 import { useListarAporteQuery } from "../../components/aporte/use-aporte";
 import XLSX from "xlsx";
@@ -51,6 +53,12 @@ import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter, faEraser } from "@fortawesome/free-solid-svg-icons";
 import { SelectTipoPago } from "../../components/core/input/select/select-tipo-pago";
+import {
+  FileExcelBox as FileExcelBoxIcon,
+  Filter as FilterIcon,
+  Reload as ReloadIcon,
+} from "mdi-material-ui";
+import NavBar from "../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -142,6 +150,10 @@ const useStyles = makeStyles((theme) =>
       // fontWeight: "bold",
       // font
     },
+    paperFilter: {
+      width: "85%",
+      borderRadius: 8,
+    },
     // table: {
     //   backgroundColor: colors.grey[700],
     // },
@@ -159,6 +171,7 @@ interface IDataTablePagoListado {
   fecha_pago: string;
   fecha_subida: string;
   descripcion: string;
+  fecha_recibo: string;
   monto: number;
 }
 
@@ -251,18 +264,20 @@ const ListadoPago = () => {
 
   const columnsPdf = React.useMemo(() => {
     return [
-      "Nombre Familiar",
-      "Nombre del Aporte",
-      "Tipo del Aporte",
+      "Grupo Familiar",
+      "Tipo de Pago",
       "Fecha del Pago",
+      "Fecha del Recibo	",
       "Descripcion",
       "Monto",
     ];
   }, []);
 
-  const onSeeImg = ({ id }: any) => {
+  const onSeeImg = ({ id, imagen_recibo }: any) => {
     // console.log({ id });
     if (id) {
+      console.log("image", imagen_recibo);
+      // setBase64(null);
       setIdPago(id);
       setOpen(true);
     }
@@ -309,9 +324,13 @@ const ListadoPago = () => {
     if (!loading && isNotNilOrEmpty(dataPagoFamiliar)) {
       // console.log("dataPagoFamiliar: ", dataPagoFamiliar);
       const { pago } = dataPagoFamiliar!.GetPagoFamiliar;
-      setBase64(pago.imagen_recibo!);
+      const image = isNotNilOrEmpty(pago.imagen_recibo)
+        ? pago.imagen_recibo
+        : "";
+      setBase64(pago.imagen_recibo ? pago.imagen_recibo : "");
+      console.log("adsdas", image);
     }
-  }, [dataPagoFamiliar, loading, loadingPagoFamiliar]);
+  }, [dataPagoFamiliar, loading]);
 
   const {
     getTableProps,
@@ -369,7 +388,35 @@ const ListadoPago = () => {
 
   const ExportExcel = () => {
     if (isNotNilOrEmpty(allPagoData)) {
-      const workSheet = XLSX.utils.json_to_sheet(allPagoData);
+      const newCampos = allPagoData.map(
+        ({
+          descripcion,
+          fecha_pago,
+          fecha_recibo,
+          fecha_subida,
+          monto,
+          nombre_familiar,
+          tipo_pago,
+        }) => {
+          return {
+            GrupoFamiliar: nombre_familiar,
+            TipoPago: tipo_pago,
+            FechaPago: fecha_pago,
+            FechaRecibo: fecha_recibo,
+            FechaSubida: fecha_subida,
+            Descripcion: descripcion,
+            Monto: monto,
+          };
+        }
+      );
+      const workSheet = XLSX.utils.json_to_sheet(newCampos);
+
+      workSheet.A1.v = "Grupo familiar";
+      workSheet.B1.v = "Tipo de pago";
+      workSheet.C1.v = "Fecha del pago";
+      workSheet.D1.v = "Fecha del recibo del pago";
+      workSheet.E1.v = "Fecha de subida del pago";
+
       const workBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workBook, workSheet, "Pagos");
       XLSX.write(workBook, { bookType: "xlsx", type: "binary" });
@@ -378,50 +425,11 @@ const ListadoPago = () => {
   };
 
   return (
-    <AppLayout>
-      <Paper className={classes.root}>
-        <div className={classes.containerTitle}>
-          <Typography variant="overline" className={classes.title}>
-            Listado de Pagos
-          </Typography>
-        </div>
-        <div className={classes.contentButtons}>
-          <TextField
-            className={classes.textBox}
-            variant="outlined"
-            placeholder="Search"
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            value={search}
-          />
-          <div>
-            <ExportTablePdf
-              classes={classes.button}
-              idTable={idTable}
-              title={titlePdf}
-              columns={columnsPdf}
-            />
-            <Button
-              className={classes.button}
-              color="secondary"
-              onClick={ExportExcel}
-              style={{
-                backgroundColor: colors.green[800],
-              }}
-              startIcon={<FontAwesomeIcon icon={faFileExcel} />}
-            >
-              <Typography className={classes.labelButton} variant="button">
-                Exportar a Excel
-              </Typography>
-            </Button>
-          </div>
-        </div>
-        <Divider />
-
+    <>
+      <Paper className={classes.paperFilter}>
         <div className={classes.contenFilter}>
           <div className={classes.contentButtons}>
-            <div className={classes.contentForm}>
+            <div>
               <div>
                 <FormControl variant="filled" className={classes.formControl}>
                   <InputLabel id="idGrupoFamiliar_label">
@@ -439,7 +447,7 @@ const ListadoPago = () => {
                       setIdGrupoFamiliarFilter(e.target.value as number)
                     }
                   >
-                    <MenuItem value={undefined}> - Deseleccionar - </MenuItem>
+                    <MenuItem value={undefined}> Todos </MenuItem>
                     {!loadingListadoGrupoFamiliar &&
                       isNotNilOrEmpty(dataListadoGrupoFamiliar) &&
                       dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
@@ -489,31 +497,62 @@ const ListadoPago = () => {
                 // backgroundColor: "red",
                 // minWidth: 200,
                 display: "flex",
-                flexDirection: "column",
+                flexDirection: "row",
               }}
             >
-              <Button
-                startIcon={<FontAwesomeIcon icon={faFilter} />}
-                className={classes.button}
-                onClick={filtrar}
-              >
-                <Typography className={classes.labelButton} variant="button">
-                  Filtrar
-                </Typography>
-              </Button>
-              <Button
-                startIcon={<FontAwesomeIcon icon={faEraser} />}
-                className={classes.button}
-                onClick={cancelFiltrar}
-              >
-                <Typography className={classes.labelButton} variant="button">
-                  Reset
-                </Typography>
-              </Button>
+              <Tooltip title="Filtrar" placement="top">
+                <IconButton color="primary" onClick={filtrar}>
+                  <FilterIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Limpiar" placement="top">
+                <IconButton color="primary" onClick={cancelFiltrar}>
+                  <ReloadIcon color="primary" />
+                </IconButton>
+              </Tooltip>
             </div>
           </div>
         </div>
-        <Divider />
+      </Paper>
+      <Paper className={classes.root}>
+        {/* <div className={classes.containerTitle}>
+          <Typography variant="overline" className={classes.title}>
+            Listado de Pagos
+          </Typography>
+        </div> */}
+        <div className={classes.contentButtons}>
+          <TextField
+            className={classes.textBox}
+            variant="outlined"
+            placeholder="Search"
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
+            value={search}
+          />
+          <div>
+            <ExportTablePdf
+              classes={classes.button}
+              idTable={idTable}
+              title={titlePdf}
+              columns={columnsPdf}
+              orientacion={"landscape"}
+            />
+
+            <Tooltip title="Exportar a Excel">
+              <IconButton>
+                <FileExcelBoxIcon
+                  fontSize="large"
+                  style={{
+                    color: colors.green[800],
+                  }}
+                  onClick={ExportExcel}
+                />
+              </IconButton>
+            </Tooltip>
+          </div>
+        </div>
 
         <TableContainer>
           <Table
@@ -521,6 +560,7 @@ const ListadoPago = () => {
             aria-label="sticky table"
             {...getTableProps()}
             id={idTable}
+
             // className={classes.table}
           >
             <TableHeader headerGroups={headerGroups} />
@@ -549,13 +589,23 @@ const ListadoPago = () => {
           pageSize={pageSize}
         />
       </Paper>
+
       <ModalImagen
         open={open}
         handleClose={handleClose}
         base64={base64}
         classes={classes}
       />
-    </AppLayout>
+    </>
+  );
+};
+
+ListadoPago.getLayout = function getLayout(page: React.ReactElement) {
+  return (
+    <div>
+      <NavBar />
+      <AppLayout titulo="Pagos - Listado">{page}</AppLayout>;
+    </div>
   );
 };
 

@@ -26,12 +26,8 @@ import { useListaModeloQuery } from "./use-modelo";
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      // marginTop: theme.spacing(10),
-      // marginBottom: theme.spacing(10),
-      // marginLeft: theme.spacing(20),
-      // marginRight: theme.spacing(20),
       padding: "60px",
-      // minWidth: "820px",
+
       borderRadius: "10px",
       textAlign: "center",
       backgroundColor: "white",
@@ -227,7 +223,9 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
       )}
       <div className={classes.title}>
         <Typography variant="overline">
-          Registro de Modelos de Vehiculos
+          {modeloObj
+            ? `Actualización de modelo: ${modeloObj.modelo}`
+            : ""}
         </Typography>
       </div>
 

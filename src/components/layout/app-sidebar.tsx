@@ -28,6 +28,7 @@ import {
   faUser,
   faUsers,
   faUsersCog,
+  faEnvelope,
 } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
 
@@ -36,14 +37,16 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: "flex",
       flexDirection: "column",
-      height: "100vh",
-      flexGrow: 1,
+      height: "100%",
+      maxHeight: "120vh",
+      // flexGrow: 1,
       padding: "6px",
-      backgroundColor: "white",
+      // background: "linear-gradient(to bootom, #b993d6, #8ca6db)",
       minWidth: "300px",
       maxWidth: "350px",
-      marginTop: 30,
+      // marginTop: 30,
       overflow: "auto",
+      // borderTop: "10px solid"
     },
     nodoPadre: {
       margin: "5px",
@@ -85,6 +88,9 @@ export const EnlacesSidebar = {
     cambioContrasena: {
       route: "/usuario/cambio-password",
     },
+    envioCorreo: {
+      route: "/usuario/envio-correo",
+    },
   },
   pago: {
     registrar: {
@@ -92,6 +98,12 @@ export const EnlacesSidebar = {
     },
     listado: {
       route: "/pago/listado",
+    },
+    carteraVencida: {
+      route: "/pago/cartera-vencida",
+    },
+    matrizOperaciones: {
+      route: "/pago/matriz-operaciones",
     },
   },
   aporte: {
@@ -216,6 +228,11 @@ export const EnlacesSidebar = {
         route: "/mantenimiento/tipoIdentificacion/listado",
       },
     },
+    modeloMail: {
+      listado: {
+        route: "/mantenimiento/modelo-mail/listado",
+      },
+    },
   },
 };
 const Sidebar: FC = () => {
@@ -224,205 +241,228 @@ const Sidebar: FC = () => {
 
   const [openShowSideBar, setOpenShowSideBar] = useRecoilState(showSidebar);
 
-
   return (
-    <>
-      <Slide direction="right" in={openShowSideBar} mountOnEnter unmountOnExit>
-        <Box className={classes.root}>
-          <AcordionHeader icon={faUser} label={"Usuarios"}>
+    <Slide direction="right" in={openShowSideBar} mountOnEnter unmountOnExit>
+      <Box className={classes.root}>
+        <AcordionHeader icon={faUser} label={"Usuarios"}>
+          <ItemSidebar
+            icon={faListAlt}
+            eventClick={() =>
+              router.push({
+                pathname: String(EnlacesSidebar.usuario.listado.route),
+              })
+            }
+            label={"Registro de Usuarios"}
+          />
+          <ItemSidebar
+            icon={faListAlt}
+            eventClick={() =>
+              router.push({
+                pathname: String(EnlacesSidebar.usuario.envioCorreo.route),
+              })
+            }
+            label={"Envio de Correos"}
+          />
+        </AcordionHeader>
+
+        <AcordionHeader icon={faFolderOpen} label={"Listados"}>
+          <AcordionHeader icon={faUsers} label={"Grupos Familiares"}>
             <ItemSidebar
               icon={faListAlt}
               eventClick={() =>
                 router.push({
-                  pathname: String(EnlacesSidebar.usuario.listado.route),
+                  pathname: String(EnlacesSidebar.grupoFamiliar.listado.route),
                 })
               }
-              label={"Registro de Usuarios"}
+              label={"Listado de Grupos Familiares"}
+            />
+          </AcordionHeader>
+          <AcordionHeader icon={faUser} label={"Integrantes"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.integrante.listado.route),
+                })
+              }
+              label={"Listado de Integrantes Familiares"}
+            />
+          </AcordionHeader>
+          <AcordionHeader icon={faDonate} label={"Pagos"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.pago.listado.route),
+                })
+              }
+              label={"Listado de Pagos"}
+            />
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.pago.carteraVencida.route),
+                })
+              }
+              label={"Cartera Vencida"}
+            />
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.pago.matrizOperaciones.route),
+                })
+              }
+              label={"Matriz de Operaciones"}
+            />
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.tag.listado.route),
+                })
+              }
+              label={"Listado de Pago por Tag"}
+            />
+          </AcordionHeader>
+          <AcordionHeader icon={faCar} label={"Vehiculos"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.vehiculo.listado.route),
+                })
+              }
+              label={"Listado de Vehiculos"}
             />
           </AcordionHeader>
 
-          <AcordionHeader icon={faFolderOpen} label={"Listados"}>
-            <AcordionHeader icon={faUsers} label={"Grupos Familiares"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(
-                      EnlacesSidebar.grupoFamiliar.listado.route
-                    ),
-                  })
-                }
-                label={"Listado de Grupos Familiares"}
-              />
-            </AcordionHeader>
-            <AcordionHeader icon={faUser} label={"Integrantes"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(EnlacesSidebar.integrante.listado.route),
-                  })
-                }
-                label={"Listado de Integrantes Familiares"}
-              />
-            </AcordionHeader>
-            <AcordionHeader icon={faDonate} label={"Pagos"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(EnlacesSidebar.pago.listado.route),
-                  })
-                }
-                label={"Listado de Pagos"}
-              />
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(EnlacesSidebar.tag.listado.route),
-                  })
-                }
-                label={"Listado de Pago por Tag"}
-              />
-            </AcordionHeader>
-            <AcordionHeader icon={faCar} label={"Vehiculos"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(EnlacesSidebar.vehiculo.listado.route),
-                  })
-                }
-                label={"Listado de Vehiculos"}
-              />
-            </AcordionHeader>
+          <AcordionHeader icon={faDonate} label={"Tags"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.tag.listadoTag.route),
+                })
+              }
+              label={"Listado de Tags"}
+            />
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.push({
+                  pathname: String(
+                    EnlacesSidebar.tag.asignacionTag.listado.route
+                  ),
+                })
+              }
+              label={"Listado de asignación de Tag"}
+            />
+          </AcordionHeader>
+        </AcordionHeader>
 
-            <AcordionHeader icon={faDonate} label={"Tags"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(EnlacesSidebar.tag.listadoTag.route),
-                  })
-                }
-                label={"Listado de Tags"}
-              />
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(
-                      EnlacesSidebar.tag.asignacionTag.listado.route
-                    ),
-                  })
-                }
-                label={"Listado de asignación de Tag"}
-              />
-            </AcordionHeader>
+        <AcordionHeader icon={faTools} label={"Registros"}>
+          <AcordionHeader icon={faUsers} label={"Grupos Familiares"}>
+            <ItemSidebar
+              icon={faEdit}
+              eventClick={() =>
+                router.push({
+                  pathname: String(
+                    EnlacesSidebar.grupoFamiliar.registrar.route
+                  ),
+                })
+              }
+              label={"Registrar grupo familiar"}
+            />
+          </AcordionHeader>
+          <AcordionHeader icon={faUser} label={"Integrantes"}>
+            <ItemSidebar
+              icon={faEdit}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.integrante.registrar.route),
+                })
+              }
+              label={"Registrar integrante familiar"}
+            />
+          </AcordionHeader>
+          <AcordionHeader icon={faDonate} label={"Pagos"}>
+            <ItemSidebar
+              icon={faEdit}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.pago.registrar.route),
+                })
+              }
+              label={"Registrar pago"}
+            />
+          </AcordionHeader>
+          <AcordionHeader icon={faCar} label={"Vehiculos"}>
+            <ItemSidebar
+              icon={faEdit}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.vehiculo.registrar.route),
+                })
+              }
+              label={"Registrar vehiculo"}
+            />
           </AcordionHeader>
 
-          <AcordionHeader icon={faTools} label={"Registros"}>
-            <AcordionHeader icon={faUsers} label={"Grupos Familiares"}>
-              <ItemSidebar
-                icon={faEdit}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(
-                      EnlacesSidebar.grupoFamiliar.registrar.route
-                    ),
-                  })
-                }
-                label={"Registrar grupo familiar"}
-              />
-            </AcordionHeader>
-            <AcordionHeader icon={faUser} label={"Integrantes"}>
-              <ItemSidebar
-                icon={faEdit}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(EnlacesSidebar.integrante.registrar.route),
-                  })
-                }
-                label={"Registrar integrante familiar"}
-              />
-            </AcordionHeader>
-            <AcordionHeader icon={faDonate} label={"Pagos"}>
-              <ItemSidebar
-                icon={faEdit}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(EnlacesSidebar.pago.registrar.route),
-                  })
-                }
-                label={"Registrar pago"}
-              />
-            </AcordionHeader>
-            <AcordionHeader icon={faCar} label={"Vehiculos"}>
-              <ItemSidebar
-                icon={faEdit}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(EnlacesSidebar.vehiculo.registrar.route),
-                  })
-                }
-                label={"Registrar vehiculo"}
-              />
-            </AcordionHeader>
+          <AcordionHeader icon={faDonate} label={"Tags"}>
+            <ItemSidebar
+              icon={faEdit}
+              eventClick={() =>
+                router.push({
+                  pathname: String(EnlacesSidebar.tag.registrar.route),
+                })
+              }
+              label={"Registrar Tag"}
+            />
 
-            <AcordionHeader icon={faDonate} label={"Tags"}>
-              <ItemSidebar
-                icon={faEdit}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(EnlacesSidebar.tag.registrar.route),
-                  })
-                }
-                label={"Registrar Tag"}
-              />
+            <ItemSidebar
+              icon={faEdit}
+              eventClick={() =>
+                router.push({
+                  pathname: String(
+                    EnlacesSidebar.tag.asignacionTag.registrar.route
+                  ),
+                })
+              }
+              label={"Asignación de Tag"}
+            />
+          </AcordionHeader>
+        </AcordionHeader>
 
-              <ItemSidebar
-                icon={faEdit}
-                eventClick={() =>
-                  router.push({
-                    pathname: String(
-                      EnlacesSidebar.tag.asignacionTag.registrar.route
-                    ),
-                  })
-                }
-                label={"Asignación de Tag"}
-              />
-            </AcordionHeader>
+        <AcordionHeader icon={faTools} label={"Mantenimiento"}>
+          <AcordionHeader icon={faFileSignature} label={"Logs"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.replace({
+                  pathname: String(
+                    EnlacesSidebar.mantenimiento.logs.listado.route
+                  ),
+                })
+              }
+              label={"Listado de Actividades"}
+            />
           </AcordionHeader>
 
-          <AcordionHeader icon={faTools} label={"Mantenimiento"}>
-            <AcordionHeader icon={faFileSignature} label={"Logs"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.replace({
-                    pathname: String(
-                      EnlacesSidebar.mantenimiento.logs.listado.route
-                    ),
-                  })
-                }
-                label={"Listado de Actividades"}
-              />
-            </AcordionHeader>
-
-            <AcordionHeader icon={faPalette} label={"Colores"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.replace({
-                    pathname: String(
-                      EnlacesSidebar.mantenimiento.colores.listado.route
-                    ),
-                  })
-                }
-                label={"Listado"}
-              />
-              {/* <ItemSidebar
+          <AcordionHeader icon={faPalette} label={"Colores"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.replace({
+                  pathname: String(
+                    EnlacesSidebar.mantenimiento.colores.listado.route
+                  ),
+                })
+              }
+              label={"Listado"}
+            />
+            {/* <ItemSidebar
                 icon={faEdit}
                 eventClick={() =>
                   router.replace({
@@ -433,21 +473,21 @@ const Sidebar: FC = () => {
                 }
                 label={"Registrar"}
               /> */}
-            </AcordionHeader>
+          </AcordionHeader>
 
-            <AcordionHeader icon={faRoad} label={"Calle"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.replace({
-                    pathname: String(
-                      EnlacesSidebar.mantenimiento.calle.listado.route
-                    ),
-                  })
-                }
-                label={"Listado"}
-              />
-              {/* <ItemSidebar
+          <AcordionHeader icon={faRoad} label={"Calle"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.replace({
+                  pathname: String(
+                    EnlacesSidebar.mantenimiento.calle.listado.route
+                  ),
+                })
+              }
+              label={"Listado"}
+            />
+            {/* <ItemSidebar
                 icon={faEdit}
                 eventClick={() =>
                   router.replace({
@@ -458,21 +498,21 @@ const Sidebar: FC = () => {
                 }
                 label={"Registrar"}
               /> */}
-            </AcordionHeader>
+          </AcordionHeader>
 
-            <AcordionHeader icon={faSquare} label={"Manzana"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.replace({
-                    pathname: String(
-                      EnlacesSidebar.mantenimiento.manzana.listado.route
-                    ),
-                  })
-                }
-                label={"Listado"}
-              />
-              {/* <ItemSidebar
+          <AcordionHeader icon={faSquare} label={"Manzana"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.replace({
+                  pathname: String(
+                    EnlacesSidebar.mantenimiento.manzana.listado.route
+                  ),
+                })
+              }
+              label={"Listado"}
+            />
+            {/* <ItemSidebar
                 icon={faEdit}
                 eventClick={() =>
                   router.replace({
@@ -483,21 +523,21 @@ const Sidebar: FC = () => {
                 }
                 label={"Registrar"}
               /> */}
-            </AcordionHeader>
+          </AcordionHeader>
 
-            <AcordionHeader icon={faBezierCurve} label={"Marca"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.replace({
-                    pathname: String(
-                      EnlacesSidebar.mantenimiento.marca.listado.route
-                    ),
-                  })
-                }
-                label={"Listado"}
-              />
-              {/* <ItemSidebar
+          <AcordionHeader icon={faBezierCurve} label={"Marca"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.replace({
+                  pathname: String(
+                    EnlacesSidebar.mantenimiento.marca.listado.route
+                  ),
+                })
+              }
+              label={"Listado"}
+            />
+            {/* <ItemSidebar
                 icon={faEdit}
                 eventClick={() =>
                   router.replace({
@@ -508,21 +548,21 @@ const Sidebar: FC = () => {
                 }
                 label={"Registrar"}
               /> */}
-            </AcordionHeader>
+          </AcordionHeader>
 
-            <AcordionHeader icon={faCarCrash} label={"Modelo"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.replace({
-                    pathname: String(
-                      EnlacesSidebar.mantenimiento.modelo.listado.route
-                    ),
-                  })
-                }
-                label={"Listado"}
-              />
-              {/* <ItemSidebar
+          <AcordionHeader icon={faCarCrash} label={"Modelo"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.replace({
+                  pathname: String(
+                    EnlacesSidebar.mantenimiento.modelo.listado.route
+                  ),
+                })
+              }
+              label={"Listado"}
+            />
+            {/* <ItemSidebar
                 icon={faEdit}
                 eventClick={() =>
                   router.replace({
@@ -533,21 +573,21 @@ const Sidebar: FC = () => {
                 }
                 label={"Registrar"}
               /> */}
-            </AcordionHeader>
+          </AcordionHeader>
 
-            <AcordionHeader icon={faCarBattery} label={"Status Vehiculo"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.replace({
-                    pathname: String(
-                      EnlacesSidebar.mantenimiento.statusVehiculo.listado.route
-                    ),
-                  })
-                }
-                label={"Listado"}
-              />
-              {/* <ItemSidebar
+          <AcordionHeader icon={faCarBattery} label={"Status Vehiculo"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.replace({
+                  pathname: String(
+                    EnlacesSidebar.mantenimiento.statusVehiculo.listado.route
+                  ),
+                })
+              }
+              label={"Listado"}
+            />
+            {/* <ItemSidebar
                 icon={faEdit}
                 eventClick={() =>
                   router.replace({
@@ -559,21 +599,21 @@ const Sidebar: FC = () => {
                 }
                 label={"Registrar"}
               /> */}
-            </AcordionHeader>
+          </AcordionHeader>
 
-            <AcordionHeader icon={faFileInvoiceDollar} label={"Valor Tag"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.replace({
-                    pathname: String(
-                      EnlacesSidebar.mantenimiento.valorTag.listado.route
-                    ),
-                  })
-                }
-                label={"Listado"}
-              />
-              {/* <ItemSidebar
+          <AcordionHeader icon={faFileInvoiceDollar} label={"Valor Tag"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.replace({
+                  pathname: String(
+                    EnlacesSidebar.mantenimiento.valorTag.listado.route
+                  ),
+                })
+              }
+              label={"Listado"}
+            />
+            {/* <ItemSidebar
                 icon={faEdit}
                 eventClick={() =>
                   router.replace({
@@ -584,61 +624,62 @@ const Sidebar: FC = () => {
                 }
                 label={"Registrar"}
               /> */}
-            </AcordionHeader>
-
-            <AcordionHeader icon={faUsersCog} label={"Parentesco"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.replace({
-                    pathname: String(
-                      EnlacesSidebar.mantenimiento.parentesco.listado.route
-                    ),
-                  })
-                }
-                label={"Listado"}
-              />
-              {/* <ItemSidebar
-                icon={faEdit}
-                eventClick={() =>
-                  router.replace({
-                    pathname: String(
-                      EnlacesSidebar.mantenimiento.parentesco.registrar.route
-                    ),
-                  })
-                }
-                label={"Registrar"}
-              /> */}
-            </AcordionHeader>
-            <AcordionHeader icon={faIdCard} label={"Tipo de identificación"}>
-              <ItemSidebar
-                icon={faListAlt}
-                eventClick={() =>
-                  router.replace({
-                    pathname: String(
-                      EnlacesSidebar.mantenimiento.tipoIdentificacion.listado
-                        .route
-                    ),
-                  })
-                }
-                label={"Listado"}
-              />
-              {/* <ItemSidebar
-                icon={faEdit}
-                eventClick={() =>
-                  router.replace({
-                    pathname: String(
-                      EnlacesSidebar.mantenimiento.parentesco.registrar.route
-                    ),
-                  })
-                }
-                label={"Registrar"}
-              /> */}
-            </AcordionHeader>
           </AcordionHeader>
-        </Box>
-      </Slide>
-    </>
+
+          <AcordionHeader icon={faUsersCog} label={"Parentesco"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.replace({
+                  pathname: String(
+                    EnlacesSidebar.mantenimiento.parentesco.listado.route
+                  ),
+                })
+              }
+              label={"Listado"}
+            />
+            {/* <ItemSidebar
+                icon={faEdit}
+                eventClick={() =>
+                  router.replace({
+                    pathname: String(
+                      EnlacesSidebar.mantenimiento.parentesco.registrar.route
+                    ),
+                  })
+                }
+                label={"Registrar"}
+              /> */}
+          </AcordionHeader>
+          <AcordionHeader icon={faIdCard} label={"Tipo de identificación"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.replace({
+                  pathname: String(
+                    EnlacesSidebar.mantenimiento.tipoIdentificacion.listado
+                      .route
+                  ),
+                })
+              }
+              label={"Listado"}
+            />
+          </AcordionHeader>
+          <AcordionHeader icon={faEnvelope} label={"Modelo del correo"}>
+            <ItemSidebar
+              icon={faListAlt}
+              eventClick={() =>
+                router.replace({
+                  pathname: String(
+                    EnlacesSidebar.mantenimiento.modeloMail.listado.route
+                  ),
+                })
+              }
+              label={"Listado"}
+            />
+          </AcordionHeader>
+        </AcordionHeader>
+      </Box>
+    </Slide>
   );
 };
 

@@ -6,6 +6,7 @@ import {
   IIntegranteVariables,
   useGetIntegranteQuery,
 } from "../../../components/integrante/use-intergrante";
+import NavBar from "../../../components/layout/app-bar";
 import AppLayout from "../../../components/layout/app-layout";
 import { isNilOrEmpty, isNotNilOrEmpty } from "../../../utils/is-nil-empty";
 
@@ -29,11 +30,22 @@ const IntegranteEditar = () => {
   //   }
   // }, [loading, error, data]);
   return (
-    <AppLayout>
+    <>
       {!loading && !isNil(data) && isNotNilOrEmpty(data.GetIntegrante) && (
         <IntegranteFormIngresar integrante={data.GetIntegrante} />
       )}
-    </AppLayout>
+    </>
+  );
+};
+
+IntegranteEditar.getLayout = function getLayout(page: React.ReactElement) {
+  return (
+    <div>
+      <NavBar />
+      <AppLayout titulo="Integrante Familiar -  Actualización">
+        {page}
+      </AppLayout>
+    </div>
   );
 };
 

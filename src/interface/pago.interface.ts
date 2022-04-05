@@ -14,6 +14,7 @@ interface IPago {
   // tipo_aporte: string;
   imagen_recibo?: string;
   descripcion: string;
+  fecha_recibo: string;
   // estado: string;
   tipo_pago: string;
   monto: number;

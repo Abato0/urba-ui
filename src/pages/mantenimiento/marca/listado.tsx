@@ -38,6 +38,12 @@ import {
 } from "../../../components/mantenimento/marca/use-marca";
 import { columnsMarca } from "../../../components/mantenimento/marca/marca-dataTable";
 import { IngresarMarcaForm } from "../../../components/mantenimento/marca/marca-form";
+import PermisoLayout from "../../../components/layout/auth-layout/permiso-layout";
+import {
+  TipoUsuario,
+  tipoUsuarios,
+} from "../../../components/core/input/dateSelect";
+import NavBar from "../../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -252,70 +258,85 @@ const MantenimientoManzanaListado = () => {
   );
 
   return (
-    <AppLayout>
-      <>
-        {openModalMsj && (
-          <ModalAuth
-            openModal={openModalMsj}
-            setOpenModal={setOpenModalMsj}
-            title={titleModalMsj}
-            message={mensajeModalMsj}
-            error={errorModal}
-          />
-        )}
-      </>
-      <div
-        style={{ justifyContent: "space-around" }}
-        className={classes.containerRoot}
-      >
+    <>
+      <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
         <div>
-          <IngresarMarcaForm />
-        </div>
-
-        <Paper className={classes.root}>
-          <div className={classes.containerTitle}>
-            <Typography variant="overline" className={classes.title}>
-              Listado de Marcas de los Vehiculos
-            </Typography>
-          </div>
-          <div className={classes.contentButtons}>
-            <TextField
-              className={classes.textBox}
-              variant="outlined"
-              placeholder="Search"
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              value={search}
-            />
-          </div>
-          <TableContainer>
-            <Table
-              // className={classes.table}
-              padding="normal"
-              stickyHeader
-              aria-label="sticky table"
-              {...getTableProps()}
-              id={"TableColor"}
-            >
-              <TableHeader headerGroups={headerGroups} />
-              <CardTableBody
-                getTableBodyProps={getTableBodyProps}
-                page={page}
-                prepareRow={prepareRow}
+          <>
+            {openModalMsj && (
+              <ModalAuth
+                openModal={openModalMsj}
+                setOpenModal={setOpenModalMsj}
+                title={titleModalMsj}
+                message={mensajeModalMsj}
+                error={errorModal}
               />
-            </Table>
-          </TableContainer>
-          <TablePaginations
-            lengthData={isNilOrEmpty(dataMarca) ? 0 : dataMarca.length}
-            onChangePage={onChangePage}
-            onChangeRowsPerPage={onChangeRowsPerPage}
-            pageIndex={pageIndex}
-            pageSize={pageSize}
-          />
-        </Paper>
-      </div>
-    </AppLayout>
+            )}
+          </>
+          <div
+            style={{ justifyContent: "space-around" }}
+            className={classes.containerRoot}
+          >
+            <div>
+              <IngresarMarcaForm />
+            </div>
+
+            <Paper className={classes.root}>
+              <div className={classes.containerTitle}>
+                <Typography variant="overline" className={classes.title}>
+                  {"Listado de Marcas de los Vehiculos"}
+                </Typography>
+              </div>
+              <div className={classes.contentButtons}>
+                <TextField
+                  className={classes.textBox}
+                  variant="outlined"
+                  placeholder="Search"
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                  }}
+                  value={search}
+                />
+              </div>
+              <TableContainer>
+                <Table
+                  // className={classes.table}
+                  padding="normal"
+                  stickyHeader
+                  aria-label="sticky table"
+                  {...getTableProps()}
+                  id={"TableColor"}
+                >
+                  <TableHeader headerGroups={headerGroups} />
+                  <CardTableBody
+                    getTableBodyProps={getTableBodyProps}
+                    page={page}
+                    prepareRow={prepareRow}
+                  />
+                </Table>
+              </TableContainer>
+              <TablePaginations
+                lengthData={isNilOrEmpty(dataMarca) ? 0 : dataMarca.length}
+                onChangePage={onChangePage}
+                onChangeRowsPerPage={onChangeRowsPerPage}
+                pageIndex={pageIndex}
+                pageSize={pageSize}
+              />
+            </Paper>
+          </div>
+        </div>
+      </PermisoLayout>
+    </>
+  );
+};
+
+MantenimientoManzanaListado.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Marcas Vehiculares">{page}</AppLayout>;
+    </>
   );
 };
 

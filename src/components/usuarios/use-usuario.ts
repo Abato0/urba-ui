@@ -3,6 +3,7 @@ import {
   cambioContrasena,
   contrasenaOlvidada,
   deleteUsuario,
+  envioCorreos,
   getUsuarioQuery,
   getUsuarioTokenQuery,
   listadoUsuarios,
@@ -69,5 +70,10 @@ export const useContrasenaOlvidadaMutation = () => {
 
 export const useUpdateUsuarioMutation = () => {
   const [mutate, { data, loading, error }] = useMutation(updateUsuario);
+  return [mutate, data, loading, error];
+};
+
+export const useEnvioCorreoMutation = () => {
+  const [mutate, { data, loading, error }] = useMutation(envioCorreos);
   return [mutate, data, loading, error];
 };

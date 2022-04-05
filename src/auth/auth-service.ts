@@ -31,8 +31,8 @@ export const authMe = async (token: string) => {
 };
 
 export const recordarContrasena = async (
-  user: string,
-  newPassword: string,
+  // user: string,
+  // newPassword: string,
   num_identificacion: string
 ): Promise<IOutput> => {
   const resultado = await axios({
@@ -40,8 +40,8 @@ export const recordarContrasena = async (
     url: `${URL_BASE_API}/api/usuario/recordar-pass`,
     withCredentials: true,
     data: {
-      user,
-      newPassword,
+      // user,
+      // newPassword,
       num_identificacion,
     },
   });

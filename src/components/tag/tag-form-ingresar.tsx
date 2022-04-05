@@ -22,6 +22,8 @@ import {
 } from "./use-tag";
 import { isNotNilOrEmpty } from "../../utils/is-nil-empty";
 import ModalAuth from "../core/input/dialog/modal-dialog";
+import { LoadingButton } from "@mui/lab";
+import SaveIcon from "@material-ui/icons/Save";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -47,7 +49,7 @@ const useStyles = makeStyles((theme) =>
       justifyContent: "center",
       alignContent: "center",
       alignItems: "center",
-      marginTop: theme.spacing(6),
+      marginTop: theme.spacing(2),
     },
     textbox: {
       margin: theme.spacing(1),
@@ -114,6 +116,8 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
 
   const [boolPut, setBoolPut] = useState<boolean>(false);
 
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
+
   const { refetch } = useListaAllTag();
 
   useEffect(() => {
@@ -141,6 +145,7 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
     async ({ code }) => {
       try {
         if (isNotNilOrEmpty(code)) {
+          setLoadingMutate(true);
           const { data } = isNil(tag)
             ? await mutate({
                 variables: {
@@ -155,6 +160,7 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
               });
 
           if (isNotNilOrEmpty(data)) {
+            setLoadingMutate(false);
             const { code, message } = isNotNilOrEmpty(data.PostTag)
               ? data.PostTag
               : data.PutTag;
@@ -168,12 +174,14 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
               setErrorModal(false);
             }
           } else {
+            setLoadingMutate(false);
             setOpenModalMsj(true);
             setErrorModal(false);
             setTitleModalMsj("Usuario no autorizado");
           }
         }
       } catch (error: any) {
+        setLoadingMutate(false);
         console.log("error.;", error);
         setTitleModalMsj("Envio Fallido");
         setErrorModal(true);
@@ -211,9 +219,11 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
           error={errorModal}
         />
       )}
-      <div className={classes.title}>
-        <Typography variant="overline">Registro de Tags</Typography>
-      </div>
+      {tag && (
+        <div className={classes.title}>
+          <Typography variant="overline">{`Actualización de tag: ${tag.code}`}</Typography>
+        </div>
+      )}
 
       <form
         action="#"
@@ -238,10 +248,15 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
         </div>
         <div className={classes.contentButtons}>
           <div></div>
-          <Button type="submit" variant="outlined">
-            {" "}
+          <LoadingButton
+            loading={loadingMutate}
+            loadingPosition="start"
+            type="submit"
+            variant="text"
+            startIcon={<SaveIcon />}
+          >
             Guardar
-          </Button>
+          </LoadingButton>
         </div>
       </form>
     </Box>

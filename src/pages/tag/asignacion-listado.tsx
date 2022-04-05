@@ -4,6 +4,7 @@ import {
   createStyles,
   Divider,
   FormControl,
+  IconButton,
   InputLabel,
   makeStyles,
   MenuItem,
@@ -12,6 +13,7 @@ import {
   Table,
   TableContainer,
   TextField,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
 import { isNil, pluck, prop } from "ramda";
@@ -40,6 +42,15 @@ import { padding } from "@mui/system/spacing";
 import { useListadoValorTag } from "../../components/mantenimento/valor-tag/use-valor-tag";
 import { faEraser, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { TipoUsuario } from "../../components/core/input/dateSelect";
+import PermisoLayout from "../../components/layout/auth-layout/permiso-layout";
+import {
+  FileExcelBox as FileExcelBoxIcon,
+  Filter as FilterIcon,
+  Reload as ReloadIcon,
+} from "mdi-material-ui";
+import { ExportTablePdf } from "../../components/table/export-table-pdf";
+import NavBar from "../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -47,7 +58,7 @@ const useStyles = makeStyles((theme) =>
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
       borderRadius: "12px",
-      width: "50%",
+      width: "85%",
     },
     contentButtons: {
       display: "flex",
@@ -101,7 +112,7 @@ const useStyles = makeStyles((theme) =>
       paddingTop: theme.spacing(3),
     },
     contenFilter: {
-      backgroundColor: colors.grey[50],
+      // backgroundColor: colors.grey[50],
       marginBottom: theme.spacing(5),
       marginTop: theme.spacing(2),
       display: "flex",
@@ -141,6 +152,10 @@ const useStyles = makeStyles((theme) =>
     labelButton: {
       fontSize: theme.typography.pxToRem(11),
       fontFamily: "Roboto",
+    },
+    paperFilter: {
+      width: "85%",
+      borderRadius: 8,
     },
   })
 );
@@ -293,125 +308,169 @@ const MantenimientoParentescoListado = () => {
   }, [loading, data]);
 
   return (
-    <AppLayout>
-      <>
-        {openModalMsj && (
-          <ModalAuth
-            openModal={openModalMsj}
-            setOpenModal={setOpenModalMsj}
-            title={titleModalMsj}
-            message={mensajeModalMsj}
-            error={errorModal}
-          />
-        )}
-      </>
-      <Paper className={classes.root}>
-        <div className={classes.containerTitle}>
-          <Typography variant="overline" className={classes.title}>
-            Listado de Asignación de TAGs
-          </Typography>
-        </div>
-        <div className={classes.contentButtons}>
-          <TextField
-            className={classes.textBox}
-            variant="outlined"
-            placeholder="Search"
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            value={search}
-          />
-        </div>
-
-        <Divider />
-        <div className={classes.contenFilter}>
-          <div
-            style={{ justifyContent: "space-between" }}
-            className={classes.contentForm}
-          >
-            {/* <div> */}
-            <div>
-              <FormControl variant="filled" className={classes.formControl}>
-                <InputLabel id="idGrupoFamiliar_label">
-                  Grupo Familiar
-                </InputLabel>
-                <Select
-                  className={classes.selectFilter}
-                  labelId="idGrupoFamiliar_label"
-                  value={idGrupoFamiliarFilter}
-                  onChange={(e) =>
-                    setIdGrupoFamiliarFilter(e.target.value as number)
-                  }
-                >
-                  <MenuItem value={undefined}> - Deseleccionar - </MenuItem>
-                  {!loadingListadoGrupoFamiliar &&
-                    isNotNilOrEmpty(dataListadoGrupoFamiliar) &&
-                    dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
-                      ({ id, nombre_familiar }) => {
-                        return (
-                          <MenuItem
-                            value={id}
-                            key={"ListadoTagFilterGrupoFamiliar" + id}
-                          >
-                            {nombre_familiar}
-                          </MenuItem>
-                        );
-                      }
-                    )}
-                </Select>
-              </FormControl>
-            </div>
-
-            {/* </div> */}
-          </div>
-          <div>
-            <Button
-              startIcon={<FontAwesomeIcon icon={faFilter} />}
-              className={classes.button}
-              onClick={filtrar}
-            >
-              <Typography className={classes.labelButton} variant="button">
-                Filtrar
-              </Typography>
-            </Button>
-            <Button
-              startIcon={<FontAwesomeIcon icon={faEraser} />}
-              className={classes.button}
-              onClick={reset}
-            >
-              <Typography className={classes.labelButton} variant="button">
-                Reset
-              </Typography>
-            </Button>
-          </div>
-        </div>
-        <Divider />
-        <TableContainer>
-          <Table
-            // className={classes.table}
-            padding="normal"
-            stickyHeader
-            aria-label="sticky table"
-            {...getTableProps()}
-            id={"TableColor"}
-          >
-            <TableHeader headerGroups={headerGroups} />
-            <CardTableBody
-              getTableBodyProps={getTableBodyProps}
-              page={page}
-              prepareRow={prepareRow}
+    <>
+      <PermisoLayout
+        tipoUsuarioRecibido={[TipoUsuario.ADMIN, TipoUsuario.OPERATIVO]}
+      >
+        <>
+          {openModalMsj && (
+            <ModalAuth
+              openModal={openModalMsj}
+              setOpenModal={setOpenModalMsj}
+              title={titleModalMsj}
+              message={mensajeModalMsj}
+              error={errorModal}
             />
-          </Table>
-        </TableContainer>
-        <TablePaginations
-          lengthData={isNilOrEmpty(dataTag) ? 0 : dataTag.length}
-          onChangePage={onChangePage}
-          onChangeRowsPerPage={onChangeRowsPerPage}
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-        />
-      </Paper>
-    </AppLayout>
+          )}
+        </>
+        <Paper className={classes.paperFilter}>
+          <div className={classes.contenFilter}>
+            <div
+              style={{ justifyContent: "space-between" }}
+              className={classes.contentForm}
+            >
+              {/* <div> */}
+              <div>
+                <FormControl variant="filled" className={classes.formControl}>
+                  <InputLabel id="idGrupoFamiliar_label">
+                    Grupo Familiar
+                  </InputLabel>
+                  <Select
+                    className={classes.selectFilter}
+                    labelId="idGrupoFamiliar_label"
+                    value={idGrupoFamiliarFilter}
+                    onChange={(e) =>
+                      setIdGrupoFamiliarFilter(e.target.value as number)
+                    }
+                  >
+                    <MenuItem value={undefined}> - Todos - </MenuItem>
+                    {!loadingListadoGrupoFamiliar &&
+                      isNotNilOrEmpty(dataListadoGrupoFamiliar) &&
+                      dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
+                        ({ id, nombre_familiar }) => {
+                          return (
+                            <MenuItem
+                              value={id}
+                              key={"ListadoTagFilterGrupoFamiliar" + id}
+                            >
+                              {nombre_familiar}
+                            </MenuItem>
+                          );
+                        }
+                      )}
+                  </Select>
+                </FormControl>
+              </div>
+              <div
+                style={{
+                  // backgroundColor: "red",
+                  // minWidth: 200,
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                <Tooltip title="Filtrar" placement="top">
+                  <IconButton color="primary" onClick={filtrar}>
+                    <FilterIcon color="primary" />
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Limpiar" placement="top">
+                  <IconButton color="primary" onClick={reset}>
+                    <ReloadIcon color="primary" />
+                  </IconButton>
+                </Tooltip>
+              </div>
+              {/* </div> */}
+            </div>
+          </div>
+        </Paper>
+
+        <Paper className={classes.root}>
+          {/* <div className={classes.containerTitle}>
+            <Typography variant="overline" className={classes.title}>
+              Listado de Asignación de TAGs
+            </Typography>
+          </div> */}
+          <div className={classes.contentButtons}>
+            <TextField
+              className={classes.textBox}
+              variant="outlined"
+              placeholder="Search"
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              value={search}
+            />
+            <div>
+              <ExportTablePdf
+                classes={classes.button}
+                idTable={"#TableListodoAsignacionTags"}
+                title={"Tabla de Asignacion de Tags"}
+                columns={[
+                  "Grupo Familiar",
+                  "Tag",
+                  "Placa",
+                  "Marca",
+                  "Modelo",
+                  "Color",
+                ]}
+              />
+
+              <Tooltip title="Exportar a Excel">
+                <IconButton>
+                  <FileExcelBoxIcon
+                    fontSize="large"
+                    style={{
+                      color: colors.green[800],
+                    }}
+                    //   onClick={ExportExcel}
+                  />
+                </IconButton>
+              </Tooltip>
+            </div>
+          </div>
+          <TableContainer>
+            <Table
+              // className={classes.table}
+              padding="normal"
+              stickyHeader
+              aria-label="sticky table"
+              {...getTableProps()}
+              id={"TableListodoAsignacionTags"}
+            >
+              <TableHeader headerGroups={headerGroups} />
+              <CardTableBody
+                getTableBodyProps={getTableBodyProps}
+                page={page}
+                prepareRow={prepareRow}
+              />
+            </Table>
+          </TableContainer>
+          <TablePaginations
+            lengthData={isNilOrEmpty(dataTag) ? 0 : dataTag.length}
+            onChangePage={onChangePage}
+            onChangeRowsPerPage={onChangeRowsPerPage}
+            pageIndex={pageIndex}
+            pageSize={pageSize}
+          />
+        </Paper>
+      </PermisoLayout>
+    </>
+  );
+};
+
+MantenimientoParentescoListado.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Tags - Listado de Asignación de TAGs">
+        {page}
+      </AppLayout>
+      ;
+    </>
   );
 };
 

@@ -16,11 +16,11 @@ export const headIntegranteTable = Object.freeze([
     accessor: "apellido",
   },
   {
-    Header: "Tipo de identificacion",
+    Header: "Tipo de identificación",
     accessor: "tipo_doc_identidad",
   },
   {
-    Header: "Numero de Identificacion",
+    Header: "Numero de Identificación",
     accessor: "num_doc_identidad",
   },
 

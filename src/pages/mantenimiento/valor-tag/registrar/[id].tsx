@@ -12,6 +12,7 @@ import {
   useGetValorTag,
 } from "../../../../components/mantenimento/valor-tag/use-valor-tag";
 import { IngresarValorTagForm } from "../../../../components/mantenimento/valor-tag/valor-tag-form";
+import NavBar from "../../../../components/layout/app-bar";
 
 const MantenimientoValorTagEditar = () => {
   const router = useRouter();
@@ -32,15 +33,27 @@ const MantenimientoValorTagEditar = () => {
   //   }, [loading, error, data]);
 
   return (
-    <AppLayout>
+    <>
       {!loading &&
         isNotNilOrEmpty(data) &&
         isNotNilOrEmpty(data?.GetValorTag) &&
         isNotNilOrEmpty(id) && (
           <IngresarValorTagForm valorTagObj={data?.GetValorTag} id={id} />
         )}
-    </AppLayout>
+    </>
   );
 };
+
+MantenimientoValorTagEditar.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Actualización de valor del tag">{page}</AppLayout>;
+    </>
+  );
+};
+
 
 export default MantenimientoValorTagEditar;

@@ -1,6 +1,9 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
+import { TipoUsuario } from "../../../components/core/input/dateSelect";
+import NavBar from "../../../components/layout/app-bar";
 import AppLayout from "../../../components/layout/app-layout";
+import PermisoLayout from "../../../components/layout/auth-layout/permiso-layout";
 import { IngresarTagForm } from "../../../components/tag/tag-form-ingresar";
 import { IResultQueryTag, useGetTag } from "../../../components/tag/use-tag";
 import { isNotNilOrEmpty } from "../../../utils/is-nil-empty";
@@ -24,11 +27,22 @@ const MantenimientoMarcaEditar = () => {
   }, [loading, error, data]);
 
   return (
-    <AppLayout>
+    <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
       {!loading && isNotNilOrEmpty(dataTag) && isNotNilOrEmpty(id) && (
         <IngresarTagForm tag={dataTag} id={id} />
       )}
-    </AppLayout>
+    </PermisoLayout>
+  );
+};
+
+MantenimientoMarcaEditar.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Tags - Actualización">{page}</AppLayout>;
+    </>
   );
 };
 

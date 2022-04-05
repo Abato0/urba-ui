@@ -22,6 +22,7 @@ import {
 } from "./use-parentesco";
 import { LoadingButton } from "@mui/lab";
 import SaveIcon from "@material-ui/icons/Save";
+import { useListadoUsuario } from "../../usuarios/use-usuario";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -114,6 +115,8 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
   const [boolPut, setBoolPut] = useState<boolean>(false);
   const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
+
+
   useEffect(() => {
     // setTimeout(() => {
     if (!openModalMsj && boolPut) {
@@ -159,7 +162,6 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
             setLoadingMutate(false);
             setTitleModalMsj(message);
 
-            
             if (isNotNilOrEmpty(data.PutParentesco)) {
               setBoolPut(true);
             }
@@ -216,7 +218,11 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
         />
       )}
       <div className={classes.title}>
-        <Typography variant="overline">Registro de Parentesco</Typography>
+        <Typography variant="overline">
+          {parentescoObj
+            ? `Actualización de parentesco : ${parentescoObj.parentesco}`
+            : "Registro de Parentesco"}
+        </Typography>
       </div>
 
       <form

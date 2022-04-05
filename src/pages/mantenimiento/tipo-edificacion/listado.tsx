@@ -29,6 +29,8 @@ import {
   useListaTipoEdificacionQuery,
 } from "../../../components/mantenimento/tipo-edificacion/use-tipo-edificacion";
 import { columnsTipoEdificacion } from "../../../components/mantenimento/tipo-edificacion/tipo-edificacion-dataTable";
+import { TipoUsuario } from "../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../components/layout/auth-layout/permiso-layout";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -226,56 +228,58 @@ const MantenimientoTipoEdificacionListado = () => {
 
   return (
     <AppLayout>
-      <>
-        {openModalMsj && (
-          <ModalAuth
-            openModal={openModalMsj}
-            setOpenModal={setOpenModalMsj}
-            title={titleModalMsj}
-            message={mensajeModalMsj}
-            error={errorModal}
-          />
-        )}
-      </>
-      <Paper className={classes.root}>
-        <div className={classes.contentButtons}>
-          <TextField
-            className={classes.textBox}
-            variant="outlined"
-            placeholder="Search"
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            value={search}
-          />
-        </div>
-        <TableContainer>
-          <Table
-            // className={classes.table}
-            padding="normal"
-            stickyHeader
-            aria-label="sticky table"
-            {...getTableProps()}
-            id={"TableColor"}
-          >
-            <TableHeader headerGroups={headerGroups} />
-            <CardTableBody
-              getTableBodyProps={getTableBodyProps}
-              page={page}
-              prepareRow={prepareRow}
+      <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+        <>
+          {openModalMsj && (
+            <ModalAuth
+              openModal={openModalMsj}
+              setOpenModal={setOpenModalMsj}
+              title={titleModalMsj}
+              message={mensajeModalMsj}
+              error={errorModal}
             />
-          </Table>
-        </TableContainer>
-        <TablePaginations
-          lengthData={
-            isNilOrEmpty(dataTipoEdificacion) ? 0 : dataTipoEdificacion.length
-          }
-          onChangePage={onChangePage}
-          onChangeRowsPerPage={onChangeRowsPerPage}
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-        />
-      </Paper>
+          )}
+        </>
+        <Paper className={classes.root}>
+          <div className={classes.contentButtons}>
+            <TextField
+              className={classes.textBox}
+              variant="outlined"
+              placeholder="Search"
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              value={search}
+            />
+          </div>
+          <TableContainer>
+            <Table
+              // className={classes.table}
+              padding="normal"
+              stickyHeader
+              aria-label="sticky table"
+              {...getTableProps()}
+              id={"TableColor"}
+            >
+              <TableHeader headerGroups={headerGroups} />
+              <CardTableBody
+                getTableBodyProps={getTableBodyProps}
+                page={page}
+                prepareRow={prepareRow}
+              />
+            </Table>
+          </TableContainer>
+          <TablePaginations
+            lengthData={
+              isNilOrEmpty(dataTipoEdificacion) ? 0 : dataTipoEdificacion.length
+            }
+            onChangePage={onChangePage}
+            onChangeRowsPerPage={onChangeRowsPerPage}
+            pageIndex={pageIndex}
+            pageSize={pageSize}
+          />
+        </Paper>
+      </PermisoLayout>
     </AppLayout>
   );
 };

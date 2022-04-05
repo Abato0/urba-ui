@@ -8,8 +8,11 @@ import {
 } from "../../../components/vehiculo/use-vehiculo";
 import { isNilOrEmpty, isNotNilOrEmpty } from "../../../utils/is-nil-empty";
 import { GetGrupoFamiliar } from "../../../components/grupo-familiar/grupo-familiar-typeDefs";
-import FormIngresarVehiculos, { IVehiculoInputRegistro } from "../../../components/vehiculo/vehiculo-form";
+import FormIngresarVehiculos, {
+  IVehiculoInputRegistro,
+} from "../../../components/vehiculo/vehiculo-form";
 import { isNil } from "ramda";
+import NavBar from "../../../components/layout/app-bar";
 
 export interface IVehiculoNormalizeRegistro {
   idGrupoFamiliar: number;
@@ -37,6 +40,7 @@ const extractData = (
         matriculaReverso: undefined,
         cedulaFrontal: undefined,
         cedulaReverso: undefined,
+        num_doc_identidad: data.GetVehiculos.num_doc_identidad ?? "",
         // matriculaPdf: String(data.GetVehiculos.cedulaFrontal),
       }
     : undefined;
@@ -60,9 +64,16 @@ const EditarVehiculo = () => {
   }, [data, loading, error]);
 
   return (
-    <AppLayout>
-      {!loading && vehiculo && <FormIngresarVehiculos vehiculo={vehiculo} />}
-    </AppLayout>
+    <>{!loading && vehiculo && <FormIngresarVehiculos vehiculo={vehiculo} />}</>
+  );
+};
+
+EditarVehiculo.getLayout = function getLayout(page: React.ReactElement) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Vehiculo - Actualización">{page}</AppLayout>;
+    </>
   );
 };
 

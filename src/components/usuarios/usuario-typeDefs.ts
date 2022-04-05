@@ -1,5 +1,26 @@
 import { gql } from "@apollo/client";
 
+export const envioCorreos = gql`
+  mutation (
+    $emails: [String]
+    $titulo: String
+    $asunto: String
+    $mensaje: String
+  ) {
+    EnvioCorreo(
+      input: {
+        emails: $emails
+        titulo: $titulo
+        asunto: $asunto
+        mensaje: $mensaje
+      }
+    ) {
+      code
+      message
+    }
+  }
+`;
+
 export const saveUsuario = gql`
   mutation (
     $tipo_usuario: String
@@ -133,7 +154,9 @@ export const getUsuarioQuery = gql`
 
 export const cambioContrasena = gql`
   mutation ($password: String, $newPassword: String) {
-    CambioContrasena(input: { password: $password, newPassword: $newPassword }) {
+    CambioContrasena(
+      input: { password: $password, newPassword: $newPassword }
+    ) {
       code
       message
     }

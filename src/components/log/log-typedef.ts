@@ -9,7 +9,7 @@ export const listadoLogs = gql`
       tipoUsuario
       fecha
       accion
-      nombre_familiar
+      # nombre_familiar
     }
   }
 `;

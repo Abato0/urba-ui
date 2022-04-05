@@ -177,8 +177,8 @@ const validationSchema = yup.object().shape({
     .string()
     .matches(/^[0-9]+$/, "Solo números")
     .required("Campo requerido"),
-  usuario: yup.string().required("Required"),
-  newPassword: yup.string().required("Required"),
+  // usuario: yup.string().required("Required"),
+  // newPassword: yup.string().required("Required"),
 });
 
 const RecordarPasswordScreen = () => {
@@ -203,22 +203,22 @@ const RecordarPasswordScreen = () => {
   }, [boolPut, openModalMsj, router]);
 
   const onSubmit = useCallback(
-    async ({ num_identificacion, usuario, newPassword }, { setSubmitting }) => {
+    async ({ num_identificacion }, { setSubmitting }) => {
       try {
         // return router.push("home/user");
-        console.log("user: ", usuario, "password", newPassword);
+        //   console.log("user: ", usuario, "password", newPassword);
         // console.log(login)
         if (
-          isNotNilOrEmpty(usuario) &&
-          isNotNilOrEmpty(newPassword) &&
+          // isNotNilOrEmpty(usuario) &&
+          // isNotNilOrEmpty(newPassword) &&
           isNotNilOrEmpty(num_identificacion)
         ) {
           //   const hash =btoa(password)
           // console.log("hash ",hash)
           setLoading(true);
           const data = await recordarContrasena(
-            usuario,
-            newPassword,
+            // usuario,
+            // newPassword,
             num_identificacion
           );
           if (data) {
@@ -231,7 +231,7 @@ const RecordarPasswordScreen = () => {
               setBoolPut(true);
             }
             setLoading(false);
-          
+
             // return await router.push(EnlacesSidebar.home.route);
           } else {
             setLoading(false);
@@ -302,68 +302,67 @@ const RecordarPasswordScreen = () => {
 
   const classes = useStyles();
   return (
-    <AppLayoutLogin>
-      <>
-        {openModalMsj && (
-          <ModalAuth
-            openModal={openModalMsj}
-            setOpenModal={setOpenModalMsj}
-            title={titleModalMsj}
-            message={mensajeModalMsj}
-            error={errorModal}
-          />
-        )}
-        <Head>
-          <title>Recordar Contraseña</title>
-        </Head>
-        <Box className={classes.root}>
-          <Container className={classes.container}>
-            {openErrorLogin && (
-              <ModalAuth
-                openModal={openErrorLogin}
-                setOpenModal={setOpenErrorLogin}
-                title={"Error login"}
-                message={messageError}
-              />
-            )}
-            <Box className={classes.cardLogin}>
-              <Box className={classes.cardLoginColumn}>
-                <div className={classes.cardTituloLogin}>
-                  <Typography variant="h5" className={classes.titulo}>
-                    {" "}
-                    Recordar Contraseña
-                  </Typography>
-                </div>
-                <form
-                  action="#"
-                  onSubmit={handleSubmit}
-                  onReset={handleReset}
-                  noValidate
-                  className={classes.formLogin}
-                >
-                  <div className={classes.contentTextBox}>
-                    <TextField
-                      className={classes.textBoox}
-                      variant="outlined"
-                      id="num_identificacion"
-                      value={values.num_identificacion}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      margin="normal"
-                      label="Numero de identificación"
-                      error={
-                        touched.num_identificacion &&
-                        isNotNilOrEmpty(errors.num_identificacion)
-                      }
-                      helperText={
-                        touched.num_identificacion
-                          ? errors.num_identificacion
-                          : undefined
-                      }
-                      required
-                      // fullWidth
-                    />
-                    <TextField
+    <>
+      {openModalMsj && (
+        <ModalAuth
+          openModal={openModalMsj}
+          setOpenModal={setOpenModalMsj}
+          title={titleModalMsj}
+          message={mensajeModalMsj}
+          error={errorModal}
+        />
+      )}
+      <Head>
+        <title>Recordar Contraseña</title>
+      </Head>
+      <Box className={classes.root}>
+        <Container className={classes.container}>
+          {openErrorLogin && (
+            <ModalAuth
+              openModal={openErrorLogin}
+              setOpenModal={setOpenErrorLogin}
+              title={"Error login"}
+              message={messageError}
+            />
+          )}
+          <Box className={classes.cardLogin}>
+            <Box className={classes.cardLoginColumn}>
+              <div className={classes.cardTituloLogin}>
+                <Typography variant="h5" className={classes.titulo}>
+                  {" "}
+                  Recordar Contraseña
+                </Typography>
+              </div>
+              <form
+                action="#"
+                onSubmit={handleSubmit}
+                onReset={handleReset}
+                noValidate
+                className={classes.formLogin}
+              >
+                <div className={classes.contentTextBox}>
+                  <TextField
+                    className={classes.textBoox}
+                    variant="outlined"
+                    id="num_identificacion"
+                    value={values.num_identificacion}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    margin="normal"
+                    label="Numero de identificación"
+                    error={
+                      touched.num_identificacion &&
+                      isNotNilOrEmpty(errors.num_identificacion)
+                    }
+                    helperText={
+                      touched.num_identificacion
+                        ? errors.num_identificacion
+                        : undefined
+                    }
+                    required
+                    // fullWidth
+                  />
+                  {/* <TextField
                       className={classes.textBoox}
                       variant="outlined"
                       id="usuario"
@@ -399,71 +398,80 @@ const RecordarPasswordScreen = () => {
                       }
                       required
                       // fullWidth
-                    />
-                  </div>
+                    />*/}
+                </div>
 
-                  <div className={classes.contentButtons}>
-                    <div></div>
+                <div className={classes.contentButtons}>
+                  <div></div>
 
-                    <LoadingButton
-                      loading={loading}
-                      loadingPosition="start"
-                      type="submit"
-                      variant="text"
-                      startIcon={<SaveIcon />}
-                    >
-                      Ingresar
-                    </LoadingButton>
-                  </div>
-                </form>
-              </Box>
-              <Hidden smDown>
-                <Box className={classes.cardLoginImg}>
-                  <div className={classes.imgContainer}>
-                    <Carousel
-                      showIndicators={true}
-                      showStatus={false}
-                      showArrows={false}
-                      autoPlay={true}
-                      infiniteLoop={true}
-                      className={classes.carrusel}
-                    >
-                      <div>
-                        <Image
-                          width={450}
-                          height={570}
-                          className={classes.img}
-                          src={"/img/login/iowa-city.jpg"}
-                          alt="img-1"
-                        />
-                      </div>
-                      <div>
-                        <Image
-                          width={450}
-                          height={570}
-                          className={classes.img}
-                          src={"/img/login/los-angeles.webp"}
-                          alt="img-2"
-                        />
-                      </div>
-                      <div>
-                        <Image
-                          width={450}
-                          height={570}
-                          className={classes.img}
-                          src={"/img/login/rascacielo.jpg"}
-                          alt="img-3"
-                        />
-                      </div>
-                    </Carousel>
-                  </div>
-                </Box>
-              </Hidden>
+                  <LoadingButton
+                    loading={loading}
+                    loadingPosition="start"
+                    type="submit"
+                    variant="text"
+                    startIcon={<SaveIcon />}
+                  >
+                    Ingresar
+                  </LoadingButton>
+                </div>
+              </form>
             </Box>
-          </Container>
-        </Box>
-      </>
-    </AppLayoutLogin>
+            <Hidden smDown>
+              <Box className={classes.cardLoginImg}>
+                <div className={classes.imgContainer}>
+                  <Carousel
+                    showIndicators={true}
+                    showStatus={false}
+                    showArrows={false}
+                    autoPlay={true}
+                    infiniteLoop={true}
+                    className={classes.carrusel}
+                  >
+                    <div>
+                      <Image
+                        width={450}
+                        height={570}
+                        className={classes.img}
+                        src={"/img/login/iowa-city.jpg"}
+                        alt="img-1"
+                      />
+                    </div>
+                    <div>
+                      <Image
+                        width={450}
+                        height={570}
+                        className={classes.img}
+                        src={"/img/login/los-angeles.webp"}
+                        alt="img-2"
+                      />
+                    </div>
+                    <div>
+                      <Image
+                        width={450}
+                        height={570}
+                        className={classes.img}
+                        src={"/img/login/rascacielo.jpg"}
+                        alt="img-3"
+                      />
+                    </div>
+                  </Carousel>
+                </div>
+              </Box>
+            </Hidden>
+          </Box>
+        </Container>
+      </Box>
+    </>
+  );
+};
+
+RecordarPasswordScreen.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <div>
+      <AppLayoutLogin>{page}</AppLayoutLogin>;
+    </div>
   );
 };
 

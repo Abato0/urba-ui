@@ -223,7 +223,11 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
         />
       )}
       <div className={classes.title}>
-        <Typography variant="overline">Registro de Colores</Typography>
+        <Typography variant="overline">
+          {colorObj
+            ? `Actualización de color : ${colorObj.color}`
+            : "Registro de Colores"}
+        </Typography>
       </div>
       <form
         action="#"

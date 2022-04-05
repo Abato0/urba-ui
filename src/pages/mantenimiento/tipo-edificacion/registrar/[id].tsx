@@ -7,8 +7,8 @@ import {
   IResultQueryTipoEdificacion,
   useGetTipoEdificacionQuery,
 } from "../../../../components/mantenimento/tipo-edificacion/use-tipo-edificacion";
-
-
+import { TipoUsuario } from "../../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../../components/layout/auth-layout/permiso-layout";
 
 const MantenimientoTipoEdificacionEditar = () => {
   const router = useRouter();
@@ -31,14 +31,16 @@ const MantenimientoTipoEdificacionEditar = () => {
 
   return (
     <AppLayout>
-      {!loading &&
-        isNotNilOrEmpty(dataTipoEdificacion) &&
-        isNotNilOrEmpty(id) && (
-          <IngresarTipoEdificacionForm
-            tipoEdificacionObj={dataTipoEdificacion}
-            id={id}
-          />
-        )}
+      <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+        {!loading &&
+          isNotNilOrEmpty(dataTipoEdificacion) &&
+          isNotNilOrEmpty(id) && (
+            <IngresarTipoEdificacionForm
+              tipoEdificacionObj={dataTipoEdificacion}
+              id={id}
+            />
+          )}
+      </PermisoLayout>
     </AppLayout>
   );
 };

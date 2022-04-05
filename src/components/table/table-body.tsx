@@ -1,6 +1,14 @@
 import { FC } from "react";
 import { Row, TableBodyPropGetter, TableBodyProps } from "react-table";
-import { Checkbox, TableBody, TableCell, TableRow } from "@material-ui/core";
+import {
+  Checkbox,
+  colors,
+  TableBody,
+  TableCell,
+  TableRow,
+  createStyles,
+  makeStyles,
+} from "@material-ui/core";
 
 interface IProps {
   getTableBodyProps: (
@@ -10,22 +18,40 @@ interface IProps {
   prepareRow: (row: Row<any>) => void;
 }
 
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      "&:hover": {
+        background: colors.deepPurple[100],
+        color: "white",
+      },
+    },
+  })
+);
+
 const CardTableBody: FC<IProps> = ({ getTableBodyProps, prepareRow, page }) => {
+  const classes = useStyles();
   return (
     <TableBody {...getTableBodyProps()}>
-      {page.map((row: Row<any>) => {
+      {page.map((row: any, index: number) => {
         prepareRow(row);
         return (
-          <TableRow {...row.getRowProps()}>
+          <TableRow {...row.getRowProps()} key={index} className={classes.root}>
             {/* <TableCell padding="checkbox">
               <Checkbox
                 checked={true}
                 inputProps={{ "aria-labelledby": "labelId" }}
               />
             </TableCell> */}
-            {row.cells.map((cell) => {
+            {row.cells.map((cell: any, index: number) => {
               return (
-                <TableCell align="center" {...cell.getCellProps()}>
+                <TableCell
+                {...cell.getCellProps()}
+                  size="small"
+                  align="center"
+                  
+                  key={index}
+                >
                   {cell.render("Cell")}
                 </TableCell>
               );

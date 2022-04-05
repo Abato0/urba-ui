@@ -10,7 +10,7 @@ import AppLayout from "../../components/layout/app-layout";
 //import { head, rows } from "../../components/core/input/data";
 // import DataTable from "../../components/table/dataTable";
 import { head } from "../../components/grupo-familiar/grupo-familiar-dataTable";
-// import { Fade, LinearProgress } from "@material-ui/core";
+// import { Fade, LinearProgress, Tooltip } from '@material-ui/core';
 import { isNil, isEmpty, prop, pluck, omit, map, equals } from "ramda";
 
 import { IGrupoFamiliar } from "../../interface/grupo-familiar.interface";
@@ -33,16 +33,17 @@ import {
   Select,
   Button,
   Typography,
+  Paper,
+  Tooltip,
 } from "@material-ui/core";
-import {
-  calleInterseccion,
-  CallesPrincipales,
-  manzanas,
-} from "../../components/core/input/dateSelect";
+
 import { useListaCallesQuery } from "../../components/mantenimento/calle/use-calle";
 import { useListaManzanaQuery } from "../../components/mantenimento/manzana/use-manzana";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter, faEraser } from "@fortawesome/free-solid-svg-icons";
+import IconButton from "@material-ui/core/IconButton";
+import { Filter as FilterIcon, Reload as ReloadIcon } from "mdi-material-ui";
+import NavBar from "../../components/layout/app-bar";
 
 const getRowId = prop("nombre_familiar");
 
@@ -155,7 +156,7 @@ const useStyles = makeStyles((theme) =>
       paddingTop: theme.spacing(3),
     },
     contenFilter: {
-      backgroundColor: colors.grey[50],
+      // backgroundColor: colors.grey[50],
       marginBottom: theme.spacing(2),
       marginTop: theme.spacing(2),
       // display: "flex",
@@ -169,13 +170,14 @@ const useStyles = makeStyles((theme) =>
       fontSize: theme.typography.pxToRem(11),
       fontFamily: "Roboto",
     },
-    // table: {
-    //   backgroundColor: colors.grey[700],
-    // },
+    paperFilter: {
+      width: "80%",
+      borderRadius: 8,
+    },
   })
 );
 
-const ListadoUsuario = () => {
+const ListadoGrupoFamiliar = () => {
   const classes = useStyles();
 
   const [dataTable, setDataTable] = React.useState<IGrupoFamiliarNormalize[]>(
@@ -234,7 +236,7 @@ const ListadoUsuario = () => {
         setDataTable([]);
       }
     }
-  }, [debounceSearch]);
+  }, [data, debounceSearch, fuse]);
 
   React.useEffect(() => {
     if (!loading && !isNil(data) && isNil(error)) {
@@ -277,47 +279,54 @@ const ListadoUsuario = () => {
 
   const ExportExcel = () => {
     if (isNotNilOrEmpty(dataTable)) {
-      const workSheet = XLSX.utils.json_to_sheet(dataTable);
+      const newCampos = dataTable.map(
+        ({
+          nombre_familiar,
+          calle_interseccion,
+          calle_principal,
+          manzana,
+          villa,
+        }) => {
+          return {
+            GrupoFamiliar: nombre_familiar,
+            CallePrincipal: calle_principal,
+            CalleInterseccion: calle_interseccion,
+            Manzana: manzana,
+            Villa: villa,
+          };
+        }
+      );
+
+      const workSheet = XLSX.utils.json_to_sheet(newCampos);
+      workSheet.A1.v = "Grupo Familiar";
+      workSheet.B1.v = "Calle Principal";
+      workSheet.C1.v = "Calle Intersección";
+
       const workBook = XLSX.utils.book_new();
+
       XLSX.utils.book_append_sheet(workBook, workSheet, "Grupos Familiares");
       XLSX.write(workBook, { bookType: "xlsx", type: "binary" });
-      XLSX.writeFile(workBook, "GruposFamiliaresData.xlsx");
+      XLSX.writeFile(workBook, "Listado de Grupos Familiares.xlsx");
     }
   };
 
   const filtrar = useCallback(() => {
     setInputFilter({
-      // idGrupoFamiliar:
-      //   equals(idGrupoFamiliarFilter, 0) || isNil(idGrupoFamiliarFilter)
-      //     ? undefined
-      //     : idGrupoFamiliarFilter,
-      // calle_interseccion: isEmpty(cllInterseccionFilter)
-      //   ? undefined
-      //   : cllInterseccionFilter,
-
       calle_principal: isEmpty(callePrincipalFilter)
         ? undefined
         : callePrincipalFilter,
       manzana: isEmpty(manzanaFilter) ? undefined : manzanaFilter,
     });
-  }, [
-    // idGrupoFamiliarFilter,
-    // cllInterseccionFilter,
-    callePrincipalFilter,
-    callePrincipalFilter,
-    manzanaFilter,
-  ]);
+  }, [callePrincipalFilter, manzanaFilter]);
 
   const reset = useCallback(() => {
-    // setIdGrupoFamiliarFilter(undefined);
     setCallePrincipalFilter("");
-    // setClleInterseccionFilter("");
     setManzanaFilter("");
     setInputFilter({});
   }, []);
 
   return (
-    <AppLayout>
+    <>
       {!loading && (
         <>
           {openModalMsj && (
@@ -328,37 +337,7 @@ const ListadoUsuario = () => {
               message={mensajeModalMsj}
             />
           )}
-
-          <CardTable
-            columns={head}
-            dataTable={dataTable}
-            ExportExcel={ExportExcel}
-            // data={data}
-
-            getRowId={getRowId}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            idTable={"listadoGrupoFamiliarTable"}
-            titlePdf={"Listado Grupo Familiar"}
-            columnsPdf={[
-              "Nombre Familiar",
-              "Tipo de edificacion",
-              "Color",
-              "Calle Principal",
-              "Calle Interseccion",
-              "Manzana",
-              "Villa",
-            ]}
-            search={search}
-            setSearch={setSearch}
-            lengthData={
-              !isNil(data)
-                ? extractData(data.ListaGruposFamiliaresFilter).length
-                : 0
-            }
-          >
-            <Divider />
-
+          <Paper className={classes.paperFilter}>
             <div className={classes.contenFilter}>
               <div className={classes.contentButtons}>
                 <div className={classes.contentForm}>
@@ -374,7 +353,7 @@ const ListadoUsuario = () => {
                         setCallePrincipalFilter(e.target.value as string)
                       }
                     >
-                      <MenuItem value={""}> - Deseleccionar - </MenuItem>
+                      <MenuItem value={""}> - Todos - </MenuItem>
                       {!loadingListadoCalles &&
                         !isNil(dataListadoCalles) &&
                         dataListadoCalles.ListaCalle.map(({ id, calle }) => {
@@ -400,7 +379,7 @@ const ListadoUsuario = () => {
                         setManzanaFilter(e.target.value as string)
                       }
                     >
-                      <MenuItem value={""}> - Deseleccionar - </MenuItem>
+                      <MenuItem value={""}> - Todos - </MenuItem>
                       {!loadingListadoManzana &&
                         !isNil(dataListadoManzana) &&
                         dataListadoManzana.ListaManzana.map(({ manzana }) => {
@@ -419,45 +398,65 @@ const ListadoUsuario = () => {
 
                 <div
                   style={{
-                    // backgroundColor: "red",
-                    // minWidth: 200,
                     display: "flex",
-                    flexDirection: "column",
+                    flexDirection: "row",
                   }}
                 >
-                  <Button
-                    startIcon={<FontAwesomeIcon icon={faFilter} />}
-                    className={classes.button}
-                    onClick={filtrar}
-                  >
-                    <Typography
-                      className={classes.labelButton}
-                      variant="button"
-                    >
-                      Filtrar
-                    </Typography>
-                  </Button>
-                  <Button
-                    startIcon={<FontAwesomeIcon icon={faEraser} />}
-                    className={classes.button}
-                    onClick={reset}
-                  >
-                    <Typography
-                      className={classes.labelButton}
-                      variant="button"
-                    >
-                      Reset
-                    </Typography>
-                  </Button>
+                  <Tooltip title="Filtrar" placement="top">
+                    <IconButton color="primary" onClick={filtrar}>
+                      <FilterIcon color="primary" />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Limpiar" placement="top">
+                    <IconButton color="primary" onClick={reset}>
+                      <ReloadIcon color="primary" />
+                    </IconButton>
+                  </Tooltip>
                 </div>
               </div>
             </div>
-            <Divider />
-          </CardTable>
+          </Paper>
+
+          <CardTable
+            columns={head}
+            dataTable={dataTable}
+            ExportExcel={ExportExcel}
+            getRowId={getRowId}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            idTable={"listadoGrupoFamiliarTable"}
+            titlePdf={"Listado de Grupos Familiares"}
+            columnsPdf={[
+              "Nombre Familiar",
+              "Tipo de edificacion",
+              "Color",
+              "Calle Principal",
+              "Calle Interseccion",
+              "Manzana",
+              "Villa",
+            ]}
+            search={search}
+            setSearch={setSearch}
+            lengthData={
+              !isNil(data)
+                ? extractData(data.ListaGruposFamiliaresFilter).length
+                : 0
+            }
+          ></CardTable>
         </>
       )}
-    </AppLayout>
+    </>
   );
 };
 
-export default ListadoUsuario;
+ListadoGrupoFamiliar.getLayout = function getLayout(page: React.ReactElement) {
+  return (
+    <div>
+      <NavBar />
+      <AppLayout titulo="Grupos Familiares - Listado">{page}</AppLayout>;
+    </div>
+  );
+};
+
+export default ListadoGrupoFamiliar;

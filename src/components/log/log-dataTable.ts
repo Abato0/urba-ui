@@ -1,10 +1,10 @@
 import { Column } from "react-table";
 
 export const columnsLog = Object.freeze([
-  {
-    Header: "Grupo Familiar",
-    accessor: "nombre_familiar",
-  },
+  // {
+  //   Header: "Grupo Familiar",
+  //   accessor: "nombre_familiar",
+  // },
   {
     Header: "Usuario",
     accessor: "usuario",

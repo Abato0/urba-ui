@@ -25,18 +25,15 @@ import Fuse from "fuse.js";
 import useDebounce from "../../../utils/useDebounce";
 import { useRouter } from "next/router";
 import {
-  IResultQueryParentesco,
-  useDeleteParentescoMutation,
-  useListaParentescoQuery,
-} from "../../../components/mantenimento/parentesco/use-parentesco";
-import { columnsParentesco } from "../../../components/mantenimento/parentesco/parentesco-dataTable";
-import {
   IResultQueryValorTag,
   useDeleteValorTag,
   useListadoValorTag,
 } from "../../../components/mantenimento/valor-tag/use-valor-tag";
 import { columnsValorTag } from "../../../components/mantenimento/valor-tag/valor-tag-dataTable";
 import { IngresarValorTagForm } from "../../../components/mantenimento/valor-tag/valor-tag-form";
+import { TipoUsuario } from "../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../components/layout/auth-layout/permiso-layout";
+import NavBar from "../../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -243,7 +240,7 @@ const MantenimientoParentescoListado = () => {
     } else {
       setDataValorTag(extractData(data?.ListaValorTag!));
     }
-  }, [debounceSearch]);
+  }, [data?.ListaValorTag, debounceSearch, fuse]);
 
   const onChangePage = useCallback((event, page) => gotoPage(page), [gotoPage]);
 
@@ -253,71 +250,85 @@ const MantenimientoParentescoListado = () => {
   );
 
   return (
-    <AppLayout>
-      <>
-        {openModalMsj && (
-          <ModalAuth
-            openModal={openModalMsj}
-            setOpenModal={setOpenModalMsj}
-            title={titleModalMsj}
-            message={mensajeModalMsj}
-            error={errorModal}
-          />
-        )}
-      </>
-      <div
-        style={{ justifyContent: "space-around" }}
-        className={classes.containerRoot}
-      >
-        <div>
-          <IngresarValorTagForm />
-        </div>
-
-        <Paper className={classes.root}>
-          <div className={classes.containerTitle}>
-            <Typography variant="overline" className={classes.title}>
-              Listado de Valores de Tag
-            </Typography>
-          </div>
-          <div className={classes.contentButtons}>
-            <TextField
-              className={classes.textBox}
-              variant="outlined"
-              placeholder="Search"
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              value={search}
+    <>
+      <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+        <>
+          {openModalMsj && (
+            <ModalAuth
+              openModal={openModalMsj}
+              setOpenModal={setOpenModalMsj}
+              title={titleModalMsj}
+              message={mensajeModalMsj}
+              error={errorModal}
             />
+          )}
+        </>
+        <div
+          style={{ justifyContent: "space-around" }}
+          className={classes.containerRoot}
+        >
+          <div>
+            <IngresarValorTagForm />
           </div>
-          <TableContainer>
-            <Table
-              // className={classes.table}
-              padding="normal"
-              stickyHeader
-              aria-label="sticky table"
-              {...getTableProps()}
-              id={"TableColor"}
-            >
-              <TableHeader headerGroups={headerGroups} />
-              <CardTableBody
-                getTableBodyProps={getTableBodyProps}
-                page={page}
-                prepareRow={prepareRow}
+
+          <Paper className={classes.root}>
+            <div className={classes.containerTitle}>
+              <Typography variant="overline" className={classes.title}>
+                Listado de Valores de Tag
+              </Typography>
+            </div>
+            <div className={classes.contentButtons}>
+              <TextField
+                className={classes.textBox}
+                variant="outlined"
+                placeholder="Search"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                value={search}
               />
-            </Table>
-          </TableContainer>
-          <TablePaginations
-            lengthData={isNilOrEmpty(dataValorTag) ? 0 : dataValorTag.length}
-            onChangePage={onChangePage}
-            onChangeRowsPerPage={onChangeRowsPerPage}
-            pageIndex={pageIndex}
-            pageSize={pageSize}
-          />
-        </Paper>
-      </div>
-    </AppLayout>
+            </div>
+            <TableContainer>
+              <Table
+                // className={classes.table}
+                padding="normal"
+                stickyHeader
+                aria-label="sticky table"
+                {...getTableProps()}
+                id={"TableColor"}
+              >
+                <TableHeader headerGroups={headerGroups} />
+                <CardTableBody
+                  getTableBodyProps={getTableBodyProps}
+                  page={page}
+                  prepareRow={prepareRow}
+                />
+              </Table>
+            </TableContainer>
+            <TablePaginations
+              lengthData={isNilOrEmpty(dataValorTag) ? 0 : dataValorTag.length}
+              onChangePage={onChangePage}
+              onChangeRowsPerPage={onChangeRowsPerPage}
+              pageIndex={pageIndex}
+              pageSize={pageSize}
+            />
+          </Paper>
+        </div>
+      </PermisoLayout>
+    </>
   );
 };
+
+MantenimientoParentescoListado.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Valores de los Tags">{page}</AppLayout>;
+    </>
+  );
+};
+
 
 export default MantenimientoParentescoListado;

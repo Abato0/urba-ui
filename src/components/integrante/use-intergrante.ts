@@ -10,6 +10,7 @@ import {
 } from "./integrante-typedefs";
 import { equals } from "ramda";
 import { IResultQueryParentesco } from "../mantenimento/parentesco/use-parentesco";
+import { IResultQueryTipoIdentificacion } from "../mantenimento/tipo-identificacion/use-tipo-identificacion";
 
 export const usePostIntegranteMutation = () => {
   const [mutate, { data, loading, error }] = useMutation<any, any>(
@@ -37,7 +38,7 @@ export const useUpdateIntegranteMutation = () => {
 
 export interface IIntegranteVariables {
   id: number;
-  tipo_doc_identidad: string;
+  tipoIdentificacion: IResultQueryTipoIdentificacion;
   num_doc_identidad: string;
   nombre: string;
   apellido: string;

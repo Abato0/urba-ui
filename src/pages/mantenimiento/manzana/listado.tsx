@@ -31,6 +31,9 @@ import {
 } from "../../../components/mantenimento/manzana/use-manzana";
 import { columnsManzana } from "../../../components/mantenimento/manzana/manzana.dataTable";
 import { IngresarManzanaForm } from "../../../components/mantenimento/manzana/manzana-form";
+import { TipoUsuario } from "../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../components/layout/auth-layout/permiso-layout";
+import NavBar from "../../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -246,71 +249,84 @@ const MantenimientoManzanaListado = () => {
   );
 
   return (
-    <AppLayout>
-      <>
-        {openModalMsj && (
-          <ModalAuth
-            openModal={openModalMsj}
-            setOpenModal={setOpenModalMsj}
-            title={titleModalMsj}
-            message={mensajeModalMsj}
-            error={errorModal}
-          />
-        )}
-      </>
-      <div
-        style={{ justifyContent: "space-around" }}
-        className={classes.containerRoot}
-      >
-        <div>
-          <IngresarManzanaForm />
-        </div>
-
-        <Paper className={classes.root}>
-          <div className={classes.containerTitle}>
-            <Typography variant="overline" className={classes.title}>
-              Listado de Manzanas
-            </Typography>
-          </div>
-
-          <div className={classes.contentButtons}>
-            <TextField
-              className={classes.textBox}
-              variant="outlined"
-              placeholder="Search"
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              value={search}
+    <>
+      <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+        <>
+          {openModalMsj && (
+            <ModalAuth
+              openModal={openModalMsj}
+              setOpenModal={setOpenModalMsj}
+              title={titleModalMsj}
+              message={mensajeModalMsj}
+              error={errorModal}
             />
+          )}
+        </>
+        <div
+          style={{ justifyContent: "space-around" }}
+          className={classes.containerRoot}
+        >
+          <div>
+            <IngresarManzanaForm />
           </div>
-          <TableContainer>
-            <Table
-              // className={classes.table}
-              padding="normal"
-              stickyHeader
-              aria-label="sticky table"
-              {...getTableProps()}
-              id={"TableColor"}
-            >
-              <TableHeader headerGroups={headerGroups} />
-              <CardTableBody
-                getTableBodyProps={getTableBodyProps}
-                page={page}
-                prepareRow={prepareRow}
+
+          <Paper className={classes.root}>
+            <div className={classes.containerTitle}>
+              <Typography variant="overline" className={classes.title}>
+                Listado de Manzanas
+              </Typography>
+            </div>
+
+            <div className={classes.contentButtons}>
+              <TextField
+                className={classes.textBox}
+                variant="outlined"
+                placeholder="Search"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                value={search}
               />
-            </Table>
-          </TableContainer>
-          <TablePaginations
-            lengthData={isNilOrEmpty(dataManzana) ? 0 : dataManzana.length}
-            onChangePage={onChangePage}
-            onChangeRowsPerPage={onChangeRowsPerPage}
-            pageIndex={pageIndex}
-            pageSize={pageSize}
-          />
-        </Paper>
-      </div>
-    </AppLayout>
+            </div>
+            <TableContainer>
+              <Table
+                // className={classes.table}
+                padding="normal"
+                stickyHeader
+                aria-label="sticky table"
+                {...getTableProps()}
+                id={"TableColor"}
+              >
+                <TableHeader headerGroups={headerGroups} />
+                <CardTableBody
+                  getTableBodyProps={getTableBodyProps}
+                  page={page}
+                  prepareRow={prepareRow}
+                />
+              </Table>
+            </TableContainer>
+            <TablePaginations
+              lengthData={isNilOrEmpty(dataManzana) ? 0 : dataManzana.length}
+              onChangePage={onChangePage}
+              onChangeRowsPerPage={onChangeRowsPerPage}
+              pageIndex={pageIndex}
+              pageSize={pageSize}
+            />
+          </Paper>
+        </div>
+      </PermisoLayout>
+    </>
+  );
+};
+
+MantenimientoManzanaListado.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Manzanas">{page}</AppLayout>;
+    </>
   );
 };
 

@@ -9,6 +9,7 @@ import {
   updateGrupoFamiliarMutation,
 } from "../../../components/grupo-familiar/grupo-familiar-typeDefs";
 import { useGetGrupoFamiliar } from "../../../components/grupo-familiar/use-grupo-familia";
+import NavBar from "../../../components/layout/app-bar";
 import AppLayout from "../../../components/layout/app-layout";
 import {
   IGrupoFamiliar,
@@ -33,10 +34,10 @@ const UpdateGrupoFamiliar = () => {
       setGrupoFamiliarData(extractData(data.GetGrupoFamiliar));
       console.log("data: ", data, id);
     }
-  }, [loading, id]);
+  }, [loading, id, data]);
 
   return !isNil(grupoFamiliarData) && isNotNilOrEmpty(id) ? (
-    <AppLayout>
+    <>
       {!loading && !isNilOrEmpty(Number(id)) && (
         <GrupoFamiliarFormRegistro
           mutation={updateGrupoFamiliarMutation}
@@ -46,10 +47,8 @@ const UpdateGrupoFamiliar = () => {
           idGrupoFamiliar={Number(id)}
         />
       )}
-    </AppLayout>
-  ) : (
-    <></>
-  );
+    </>
+  ) : null;
 };
 
 const extractData = (data: IGrupoFamiliar): IGrupoFamiliarInput | undefined => {
@@ -66,6 +65,15 @@ const extractData = (data: IGrupoFamiliar): IGrupoFamiliarInput | undefined => {
         // id_calle_interseccion: calle_interseccion
       }
     : undefined;
+};
+
+UpdateGrupoFamiliar.getLayout = function getLayout(page: React.ReactElement) {
+  return (
+    <div>
+      <NavBar />
+      <AppLayout titulo="Grupo Familiar - Actualización">{page}</AppLayout>;
+    </div>
+  );
 };
 
 export default UpdateGrupoFamiliar;

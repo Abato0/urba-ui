@@ -124,10 +124,10 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
   }, [boolPut, openModalMsj, router]);
 
   const [mutate] = isNil(marcaObj)
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    ? usePostMarcaMutation()
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    : usePutMarcaMutation();
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      usePostMarcaMutation()
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      usePutMarcaMutation();
 
   const init = useMemo(() => {
     return isNotNilOrEmpty(marcaObj)
@@ -137,52 +137,55 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
       : initialValues;
   }, [marcaObj]);
 
-  const onSubmit = useCallback(async ({ marca }) => {
-    try {
-      if (isNotNilOrEmpty(marca)) {
-        setLoadingMutate(true);
-        const { data } = isNil(marcaObj)
-          ? await mutate({
-              variables: {
-                marca,
-              },
-            })
-          : await mutate({
-              variables: {
-                id,
-                marca,
-              },
-            });
+  const onSubmit = useCallback(
+    async ({ marca }) => {
+      try {
+        if (isNotNilOrEmpty(marca)) {
+          setLoadingMutate(true);
+          const { data } = isNil(marcaObj)
+            ? await mutate({
+                variables: {
+                  marca,
+                },
+              })
+            : await mutate({
+                variables: {
+                  id,
+                  marca,
+                },
+              });
 
-        if (isNotNilOrEmpty(data)) {
-          const { message } = isNotNilOrEmpty(data.PutMarca)
-            ? data.PutMarca
-            : data.PostMarca;
+          if (isNotNilOrEmpty(data)) {
+            const { message } = isNotNilOrEmpty(data.PutMarca)
+              ? data.PutMarca
+              : data.PostMarca;
             setLoadingMutate(false);
-          setTitleModalMsj(message);;
+            setTitleModalMsj(message);
 
-          setErrorModal(false);
-          setOpenModalMsj(true);
-          if (isNotNilOrEmpty(data.PutMarca)) {
-            setBoolPut(true);
+            setErrorModal(false);
+            setOpenModalMsj(true);
+            if (isNotNilOrEmpty(data.PutMarca)) {
+              setBoolPut(true);
+            }
+            resetForm();
+          } else {
+            setLoadingMutate(false);
+            setOpenModalMsj(true);
+            setErrorModal(false);
+            setTitleModalMsj("Usuario no autorizado");
           }
-          resetForm();
-        } else {
-          setLoadingMutate(false);
-          setOpenModalMsj(true);
-          setErrorModal(false);
-          setTitleModalMsj("Usuario no autorizado");
         }
+      } catch (error: any) {
+        setLoadingMutate(false);
+        console.log("error.;", error);
+        setTitleModalMsj("Envio Fallido");
+        setErrorModal(true);
+        setMensajeModalMsj("La marca no ha sido guardado: " + error.message);
+        setOpenModalMsj(true);
       }
-    } catch (error: any) {
-      setLoadingMutate(false);
-      console.log("error.;", error);
-      setTitleModalMsj("Envio Fallido");
-      setErrorModal(true);
-      setMensajeModalMsj("La marca no ha sido guardado: " + error.message);
-      setOpenModalMsj(true);
-    }
-  }, [id, marcaObj]);
+    },
+    [id, marcaObj]
+  );
 
   const {
     errors,
@@ -213,7 +216,9 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
       )}
       <div className={classes.title}>
         <Typography variant="overline">
-          Registro de Marcas de los Vehiculos
+          {marcaObj
+            ? `Actualización de marca: ${marcaObj.marca}`
+            : "Registro de Marcas de los Vehiculos"}
         </Typography>
       </div>
       <form

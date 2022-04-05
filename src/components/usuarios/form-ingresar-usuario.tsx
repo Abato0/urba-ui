@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) =>
       justifyContent: "center",
       alignContent: "center",
       alignItems: "center",
-      marginTop: theme.spacing(6),
+      marginTop: theme.spacing(2),
     },
     textbox: {
       margin: theme.spacing(1),
@@ -245,9 +245,9 @@ export const FormIngresarUsuario = () => {
           error={errorModal}
         />
       )}
-      <div className={classes.title}>
+      {/* <div className={classes.title}>
         <Typography variant="overline">Creación de Usuario</Typography>
-      </div>
+      </div> */}
 
       <form
         action="#"

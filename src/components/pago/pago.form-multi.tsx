@@ -35,13 +35,23 @@ import { Remove, RemoveCircle } from "@material-ui/icons";
 import { useDropzone } from "react-dropzone";
 import { isNilOrEmpty, isNotNilOrEmpty } from "../../utils/is-nil-empty";
 import ImageIcon from "@material-ui/icons/Image";
-import { equals, filter, isNil } from "ramda";
-import { useGetValorTagQuery } from "../mantenimento/tag/tag-valor/use-tag-valor";
+import { equals, filter, isNil, props } from "ramda";
 import { usePostPago } from "./use-pago";
 import { useListarGrupoFamiliar } from "../grupo-familiar/use-grupo-familia";
 import { useListadoVehiculoFilterQuery } from "../vehiculo/use-vehiculo";
 import { SelectHeader } from "../core/input/select/select-header";
 import { useListadoValorTag } from "../mantenimento/valor-tag/use-valor-tag";
+import { SelectFecha } from "../core/input/select/select-fecha";
+import { lightFormat } from "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
+import { es } from "date-fns/locale";
+import { LoadingButton } from "@mui/lab";
+import SaveIcon from "@material-ui/icons/Save";
+import { Send as SendIcon } from "mdi-material-ui";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -67,6 +77,7 @@ const useStyles = makeStyles((theme) =>
       width: "100%",
       justifyContent: "space-evenly",
       color: colors.grey[600],
+      marginBottom: theme.spacing(2),
     },
     formControl: {
       // margin: theme.spacing(1),
@@ -77,7 +88,13 @@ const useStyles = makeStyles((theme) =>
       width: theme.spacing(29),
     },
     textBox: {
+      borderWidth: "1px",
       margin: theme.spacing(1),
+      "&$cssFocused $notchedOutline": {
+        borderWidth: "1px",
+        borderColor: `${colors.deepPurple[400]} !important`,
+      },
+
       //   backgroundColor: "reed"
     },
     columnsTipoPagoMantenimiento: {
@@ -100,7 +117,7 @@ const useStyles = makeStyles((theme) =>
       justifyContent: "center",
       alignContent: "center",
       alignItems: "center",
-      marginTop: theme.spacing(6),
+      // marginTop: theme.spacing(6),
     },
     tipoPagoContainer: {
       //   backgroundColor: colors.indigo[200],
@@ -148,7 +165,7 @@ const useStyles = makeStyles((theme) =>
     itemListPago: {
       //   padding: theme.spacing(1),
       //   width: 100,
-      backgroundColor: colors.green[700],
+      backgroundColor: colors.deepPurple[400],
       height: "100%",
       width: "100%",
     },
@@ -187,25 +204,35 @@ const useStyles = makeStyles((theme) =>
     },
 
     title: {
-      fontSize: theme.typography.pxToRem(12),
+      fontSize: theme.typography.pxToRem(14),
       backgroundColor: colors.grey[200],
       paddingTop: theme.spacing(1),
       paddingBottom: theme.spacing(1),
       paddingLeft: theme.spacing(4),
       paddingRight: theme.spacing(4),
       borderRadius: 5,
+      fontWeight: 600,
+      color: colors.grey[700],
     },
 
     totalContainer: {
       // border: "solid",
       display: "flex",
       justifyContent: "end",
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
       // width: 100,
     },
     containerLabelTotal: {
       backgroundColor: colors.grey[300],
       padding: theme.spacing(1),
       borderRadius: theme.spacing(1),
+    },
+    selectFecha: {
+      display: "flex",
+      //   width: theme.spacing(10),
+      margin: theme.spacing(1),
+      flexDirection: "column",
     },
   })
 );
@@ -228,6 +255,7 @@ const validationSchema = yup.object().shape({
   descripcion: yup.string(),
   cod_recibo: yup.string().nullable(),
   fecha_recibo: yup.date().required(),
+
   // imagen_recibo: yup
   //   .mixed()
   //   .test("fileSize", "The file is too large", (value) => {
@@ -268,6 +296,7 @@ export const PagoFormMulti = () => {
   const [titleModalMsj, setTitleModalMsj] = useState<string>("");
   const [mensajeModalMsj, setMensajeModalMsj] = useState<string>("");
   const [errorModal, setErrorModal] = useState<boolean>(false);
+  const [loadingMutate, setLoadingMutate] = useState<boolean>(false);
 
   const [pagoMantenimiento, setPagoMantenimiento] = React.useState<IPagoMes[]>(
     []
@@ -398,7 +427,8 @@ export const PagoFormMulti = () => {
         ]);
       }
     }
-  }, [idValorTag, idVehiculoSeleccionado]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gridPropsValorTag, idValorTag, idVehiculoSeleccionado, pagoTag]);
 
   const eliminarPagoMantenimiento = useCallback(
     (mes: string, anio: number, monto: number) => {
@@ -452,16 +482,17 @@ export const PagoFormMulti = () => {
       fecha_recibo,
       descripcion,
       implementacion,
-      tag,
+      // tag,
       otro,
     }) => {
       try {
+        console.log("dataFecha: ", fecha_recibo);
         if (isNotNilOrEmpty(idGrupoFamiliar) && isNotNilOrEmpty(fecha_recibo)) {
           const pago = {
             idGrupoFamiliar: idGrupoFamiliar,
             cod_recibo: cod_recibo,
             // descripcion: descripcion,
-            fecha_recibo: fecha_recibo,
+            fecha_recibo: lightFormat(fecha_recibo, "yyyy-MM-dd"),
             fecha_subida: new Date(),
             imagen_recibo: file!,
             implementacion: implementacion,
@@ -498,6 +529,7 @@ export const PagoFormMulti = () => {
         setErrorModal(true);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [file, pagoMantenimiento, pagoTag]
   );
 
@@ -565,9 +597,9 @@ export const PagoFormMulti = () => {
         />
       )}
       <div className={classes.columns}>
-        <div className={classes.title}>
+        {/* <div className={classes.title}>
           <Typography variant="overline">Registro de Pagos</Typography>
-        </div>
+        </div> */}
         <form
           action="#"
           onSubmit={handleSubmit}
@@ -579,6 +611,7 @@ export const PagoFormMulti = () => {
               <FormControlLabel
                 control={
                   <Checkbox
+                    style={{ color: colors.deepPurple[400] }}
                     onChange={(e) => setCheckImplementacion(e.target.checked)}
                   />
                 }
@@ -589,6 +622,7 @@ export const PagoFormMulti = () => {
               <FormControlLabel
                 control={
                   <Checkbox
+                    style={{ color: colors.deepPurple[400] }}
                     onChange={(e) => setCheckMantenimiento(e.target.checked)}
                   />
                 }
@@ -598,13 +632,19 @@ export const PagoFormMulti = () => {
               />
               <FormControlLabel
                 control={
-                  <Checkbox onChange={(e) => setCheckTag(e.target.checked)} />
+                  <Checkbox
+                    style={{ color: colors.deepPurple[400] }}
+                    onChange={(e) => setCheckTag(e.target.checked)}
+                  />
                 }
                 label={<Typography variant="overline">TAG</Typography>}
               />
               <FormControlLabel
                 control={
-                  <Checkbox onChange={(e) => setChecOtros(e.target.checked)} />
+                  <Checkbox
+                    style={{ color: colors.deepPurple[400] }}
+                    onChange={(e) => setChecOtros(e.target.checked)}
+                  />
                 }
                 label={<Typography variant="overline">Otro</Typography>}
               />
@@ -644,6 +684,34 @@ export const PagoFormMulti = () => {
                 //   multiline={true}
               />
             </div>
+            <div>
+              {/* <SelectFecha
+                // className={classes.selectFilter}
+                id={"fecha_recibo"}
+                label={"Fecha del recibo"}
+                value={values.fecha_recibo}
+                handleChange={handleChange}
+                format="dd MMM yyyy"
+                // handleChange={(e: MaterialUiPickersDate) => setFecha(e)}
+              /> */}
+              <MuiPickersUtilsProvider locale={es} utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  id={"fecha_recibo"}
+                  label={"Fecha del recibo"}
+                  value={values.fecha_recibo}
+                  name={"fecha_recibo"}
+                  // onChange={handleChange}
+                  onChange={(e) => setFieldValue("fecha_recibo", e)}
+                  format="dd MMM yyyy"
+                  error={
+                    touched.fecha_recibo && isNotNilOrEmpty(errors.fecha_recibo)
+                  }
+                  helperText={
+                    touched.fecha_recibo ? errors.fecha_recibo : undefined
+                  }
+                />
+              </MuiPickersUtilsProvider>
+            </div>
 
             <Paper {...getRootProps()} className={classes.dropzone}>
               <input {...getInputProps()} />
@@ -662,10 +730,7 @@ export const PagoFormMulti = () => {
             {/* <div> */}
             <Fade in={checkImplementacion} unmountOnExit>
               <div className={classes.tipoPagoContainer}>
-                <Typography
-                  variant="overline"
-                  className={classes.titleTipoPago}
-                >
+                <Typography variant="overline" className={classes.title}>
                   Implementacion
                 </Typography>
                 <div className={classes.contentCardTipoPago}>
@@ -677,6 +742,7 @@ export const PagoFormMulti = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.implementacion}
+
                     error={
                       touched.implementacion &&
                       isNotNilOrEmpty(errors.implementacion)
@@ -692,10 +758,7 @@ export const PagoFormMulti = () => {
 
             <Fade in={checkMantenimiento} unmountOnExit>
               <div className={classes.tipoPagoContainer}>
-                <Typography
-                  variant="overline"
-                  className={classes.titleTipoPago}
-                >
+                <Typography variant="overline" className={classes.title}>
                   Mantenimiento
                 </Typography>
                 <div className={classes.totalContainer}>
@@ -751,12 +814,14 @@ export const PagoFormMulti = () => {
                   >
                     <Fab
                       size="small"
-                      color="primary"
                       aria-label="add"
-                      style={{ marginTop: "-14px" }}
+                      style={{
+                        marginTop: "-14px",
+                        backgroundColor: colors.deepPurple[400],
+                      }}
                       onClick={agregarPagoMantenimiento}
                     >
-                      <AddIcon />
+                      <AddIcon style={{ color: "white" }} />
                     </Fab>
                   </div>
                 </div>
@@ -847,10 +912,7 @@ export const PagoFormMulti = () => {
 
             <Fade in={checkTag} unmountOnExit>
               <div className={classes.tipoPagoContainer}>
-                <Typography
-                  variant="overline"
-                  className={classes.titleTipoPago}
-                >
+                <Typography variant="overline" className={classes.title}>
                   TAG
                 </Typography>
                 <div style={{ margin: 20 }} className={classes.totalContainer}>
@@ -915,14 +977,16 @@ export const PagoFormMulti = () => {
 
                   <Fab
                     size="small"
-                    color="primary"
                     aria-label="add"
-                    style={{ marginTop: "18px" }}
+                    style={{
+                      marginTop: "18px",
+                      backgroundColor: colors.deepPurple[400],
+                    }}
                     onClick={() => {
                       agregarPagoTag();
                     }}
                   >
-                    <AddIcon />
+                    <AddIcon style={{ color: "white" }} />
                   </Fab>
                 </div>
 
@@ -936,62 +1000,67 @@ export const PagoFormMulti = () => {
                           padding: 15,
                         }}
                       >
-                        {gridPropsValorTag.map(({ valorTag, vehiculo }) => {
-                          return (
-                            <Grid item xs={4}>
-                              <Paper
-                                className={classes.itemListPago}
-                                elevation={1}
-                              >
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyItems: "center",
-                                    alignItems: "center",
-                                    padding: 5,
-                                    justifyContent: "space-around",
-                                    // backgroundColor: "red",
-                                    height: "100%",
-                                  }}
+                        {gridPropsValorTag.map(
+                          ({ valorTag, vehiculo }, index) => {
+                            return (
+                              <Grid key={index} item xs={4}>
+                                <Paper
+                                  key={index}
+                                  className={classes.itemListPago}
+                                  elevation={1}
                                 >
                                   <div
                                     style={{
                                       display: "flex",
-                                      flexDirection: "column",
+                                      flexDirection: "row",
                                       justifyItems: "center",
                                       alignItems: "center",
-
-                                      // width: "100%",
-                                      // height:"100%"
                                       padding: 5,
+                                      justifyContent: "space-around",
+                                      // backgroundColor: "red",
+                                      height: "100%",
                                     }}
                                   >
-                                    <Typography
-                                      className={classes.itemLabel}
-                                      variant="overline"
-                                    >{`Vehiculo: ${vehiculo.placa}  `}</Typography>
-                                    <Typography
-                                      className={classes.itemLabel}
-                                      variant="overline"
-                                    >{`Tag: ${valorTag.tipo_valor}`}</Typography>
-                                  </div>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        justifyItems: "center",
+                                        alignItems: "center",
 
-                                  <Fab
-                                    size="small"
-                                    color="primary"
-                                    aria-label="add"
-                                    style={{ padding: 12, marginRight: 10 }}
-                                    onClick={() => eliminarPagoTag(vehiculo.id)}
-                                    // onClick={agregarPagoMantenimiento}
-                                  >
-                                    <DeleteIcon />
-                                  </Fab>
-                                </div>
-                              </Paper>
-                            </Grid>
-                          );
-                        })}
+                                        // width: "100%",
+                                        // height:"100%"
+                                        padding: 5,
+                                      }}
+                                    >
+                                      <Typography
+                                        className={classes.itemLabel}
+                                        variant="overline"
+                                      >{`Vehiculo: ${vehiculo.placa}  `}</Typography>
+                                      <Typography
+                                        className={classes.itemLabel}
+                                        variant="overline"
+                                      >{`Tag: ${valorTag.tipo_valor}`}</Typography>
+                                    </div>
+
+                                    <Fab
+                                      size="small"
+                                      color="primary"
+                                      aria-label="add"
+                                      style={{ padding: 12, marginRight: 10 }}
+                                      onClick={() =>
+                                        eliminarPagoTag(vehiculo.id)
+                                      }
+                                      // onClick={agregarPagoMantenimiento}
+                                    >
+                                      <DeleteIcon />
+                                    </Fab>
+                                  </div>
+                                </Paper>
+                              </Grid>
+                            );
+                          }
+                        )}
                       </Grid>
                     </Paper>
                   )}
@@ -1002,10 +1071,7 @@ export const PagoFormMulti = () => {
             {/* <div className={classes.formOtros}> */}
             <Fade in={checkOtros} unmountOnExit>
               <div className={classes.tipoPagoContainer}>
-                <Typography
-                  variant="overline"
-                  className={classes.titleTipoPago}
-                >
+                <Typography variant="overline" className={classes.title}>
                   Otro
                 </Typography>
                 <div className={classes.contentCardTipoPago}>
@@ -1053,10 +1119,15 @@ export const PagoFormMulti = () => {
                 </div>
               </div>
 
-              <Button type="submit" variant="outlined">
-                {" "}
+              <LoadingButton
+                loading={loadingMutate}
+                loadingPosition="start"
+                type="submit"
+                variant="text"
+                endIcon={<SendIcon />}
+              >
                 Enviar
-              </Button>
+              </LoadingButton>
             </div>
           </div>
         </form>

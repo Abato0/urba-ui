@@ -143,54 +143,55 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
       : initialValues;
   }, [statusVehiculoObj]);
 
-  const onSubmit = useCallback(async ({ statusVehiculo }) => {
-    try {
-      if (isNotNilOrEmpty(statusVehiculo)) {
-        setLoadingMutate(true);
-        const { data } = isNil(statusVehiculoObj)
-          ? await mutate({
-              variables: {
-                statusVehiculo,
-              },
-            })
-          : await mutate({
-              variables: {
-                id,
-                statusVehiculo,
-              },
-            });
+  const onSubmit = useCallback(
+    async ({ statusVehiculo }) => {
+      try {
+        if (isNotNilOrEmpty(statusVehiculo)) {
+          setLoadingMutate(true);
+          const { data } = isNil(statusVehiculoObj)
+            ? await mutate({
+                variables: {
+                  statusVehiculo,
+                },
+              })
+            : await mutate({
+                variables: {
+                  id,
+                  statusVehiculo,
+                },
+              });
 
-        if (isNotNilOrEmpty(data)) {
-          const { code, message } = isNotNilOrEmpty(data.PutStatusVehiculo)
-            ? data.PutStatusVehiculo
-            : data.PostStatusVehiculo;
+          if (isNotNilOrEmpty(data)) {
+            const { code, message } = isNotNilOrEmpty(data.PutStatusVehiculo)
+              ? data.PutStatusVehiculo
+              : data.PostStatusVehiculo;
             setOpenModalMsj(true);
             if (code === 200 && isNotNilOrEmpty(data.PutStatusVehiculo)) {
               setBoolPut(true);
               setErrorModal(false);
             }
-          setLoadingMutate(false);
-          setTitleModalMsj(message);
+            setLoadingMutate(false);
+            setTitleModalMsj(message);
 
-       
-          
-          resetForm();
-        } else {
-          setLoadingMutate(false);
-          setOpenModalMsj(true);
-          setErrorModal(false);
-          setTitleModalMsj("Usuario no autorizado");
+            resetForm();
+          } else {
+            setLoadingMutate(false);
+            setOpenModalMsj(true);
+            setErrorModal(false);
+            setTitleModalMsj("Usuario no autorizado");
+          }
         }
+      } catch (error: any) {
+        setLoadingMutate(false);
+        console.log("error.;", error);
+        setTitleModalMsj("Envio Fallido");
+        setErrorModal(true);
+        setMensajeModalMsj("El status no ha sido guardado: " + error.message);
+        setOpenModalMsj(true);
       }
-    } catch (error: any) {
-      setLoadingMutate(false);
-      console.log("error.;", error);
-      setTitleModalMsj("Envio Fallido");
-      setErrorModal(true);
-      setMensajeModalMsj("El status no ha sido guardado: " + error.message);
-      setOpenModalMsj(true);
-    }
-  }, [id, statusVehiculoObj]);
+    },
+    [id, statusVehiculoObj]
+  );
 
   const {
     errors,
@@ -221,7 +222,9 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
       )}
       <div className={classes.title}>
         <Typography variant="overline">
-          Registro de los estados de los Vehiculos
+          {statusVehiculoObj
+            ? `Actualización de status: ${statusVehiculoObj.statusVehiculo}`
+            : "Registro de los estados de los Vehiculos"}
         </Typography>
       </div>
 

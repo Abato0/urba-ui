@@ -12,6 +12,7 @@ export const saveVehiculo = gql`
     $id_modelo: Int
     $id_status: Int
     $placa: String
+    $num_doc_identidad: String
   ) {
     PostVehiculo(
       idGrupoFamiliar: $idGrupoFamiliar
@@ -25,6 +26,7 @@ export const saveVehiculo = gql`
         matriculaReverso: $matriculaReverso
         cedulaFrontal: $cedulaFrontal
         cedulaReverso: $cedulaReverso
+        num_doc_identidad: $num_doc_identidad
       }
     ) {
       code
@@ -66,6 +68,7 @@ export const listadoVehiculoFilter = gql`
         statusVehiculo
       }
       placa
+      num_doc_identidad
       # matriculaPdf
     }
   }
@@ -92,6 +95,7 @@ export const listadoVehiculo = gql`
         statusVehiculo
       }
       placa
+      num_doc_identidad
       # matriculaPdf
     }
   }
@@ -118,6 +122,7 @@ export const listadoVehiculoInactivos = gql`
         statusVehiculo
       }
       placa
+      num_doc_identidad
       # matriculaPdf
     }
   }
@@ -151,6 +156,7 @@ export const getVehiculo = gql`
       matriculaFrontal
       matriculaReverso
       cedulaFrontal
+      num_doc_identidad
       cedulaReverso
     }
   }
@@ -165,6 +171,7 @@ export const updateVehiculo = gql`
     $id_modelo: Int
     $id_status: Int
     $placa: String # $tipo_vehiculo: String
+    $num_doc_identidad: String
   ) {
     UpdateVehiculo(
       id: $id
@@ -179,6 +186,7 @@ export const updateVehiculo = gql`
         matriculaReverso: $matriculaReverso
         cedulaFrontal: $cedulaFrontal
         cedulaReverso: $cedulaReverso
+        num_doc_identidad: $num_doc_identidad
       }
     ) {
       code

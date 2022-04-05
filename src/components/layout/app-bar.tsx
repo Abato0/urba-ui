@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  alpha,
+  fade,
   makeStyles,
   Theme,
   createStyles,
@@ -34,6 +34,8 @@ import { EnlacesSidebar } from "./app-sidebar";
 import Cookies from "js-cookie";
 import getAuthToken from "../../auth/auth-token";
 import { authMe } from "../../auth/auth-service";
+// import Logo  from "../../icons/logo-28.svg"
+import Image from "next/image";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,6 +47,11 @@ const useStyles = makeStyles((theme: Theme) =>
     menuButton: {
       marginRight: theme.spacing(2),
       color: "white",
+      backgroundColor: "#4e54c8",
+
+      "&:hover": {
+        backgroundColor: "#8f94fb",
+      },
     },
     title: {
       display: "none",
@@ -56,9 +63,9 @@ const useStyles = makeStyles((theme: Theme) =>
     search: {
       position: "relative",
       borderRadius: theme.shape.borderRadius,
-      backgroundColor: alpha(theme.palette.common.white, 0.15),
+      backgroundColor: fade(theme.palette.common.white, 0.15),
       "&:hover": {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
+        backgroundColor: fade(theme.palette.common.white, 0.25),
       },
       marginRight: theme.spacing(2),
       marginLeft: 0,
@@ -104,7 +111,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     toolbar: {
       // backgroundColor: colors.green[700],
-      background: "linear-gradient(to right, #4e54c8, #8f94fb)",
+      // background: "linear-gradient(to right, #4e54c8, #8f94fb)",
+      backgroundColor: "#4e54c8",
       minWidth: theme.spacing(126),
     },
 
@@ -115,7 +123,11 @@ const useStyles = makeStyles((theme: Theme) =>
       // width: "100%",
     },
 
-    icons: {},
+    imageLogo: {
+      color: "white",
+
+   
+    },
   })
 );
 
@@ -258,14 +270,21 @@ const NavBar: React.FC = ({ children }) => {
             className={classes.menuButton}
             color="primary"
             // color={colors.blueGrey[400]}
-            aria-label="open drawer"
             onClick={() =>
               router.push({
                 pathname: String(EnlacesSidebar.home.route),
               })
             }
+            aria-label="open drawer"
+            style={{ borderRadius: 0 }}
           >
-            <HomeIcon />
+            <Image
+              src="/icons/logo-28.svg"
+              alt="logo"
+              height={50}
+              width={210}
+              className={classes.imageLogo}
+            />
           </IconButton>
 
           {/* <Typography className={classes.title} variant="h6" noWrap>
@@ -274,21 +293,6 @@ const NavBar: React.FC = ({ children }) => {
 
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton>
-              <Avatar alt="Remy Sharp" src="/img/home/img_avatar2.png">
-                {/* <FontAwesomeIcon  icon={faUser} /> */}
-              </Avatar>
-            </IconButton>
-            <IconButton
-              className={classes.menuButton}
-              aria-label="show 4 new mails"
-
-              //  color="black"
-            >
-              <Badge badgeContent={4} color="error">
-                <MailIcon />
-              </Badge>
-            </IconButton>
             <IconButton
               aria-label="show 17 new notifications"
               // color="primary"

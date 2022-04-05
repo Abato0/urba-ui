@@ -38,7 +38,10 @@ import { columnsTipoIdentificacion } from "../../../../components/mantenimento/t
 import useDebounce from "../../../../utils/useDebounce";
 import { useDeleteParentescoMutation } from "../../../../components/mantenimento/parentesco/use-parentesco";
 import { LoadingButton } from "@mui/lab";
-import SaveIcon from '@mui/icons-material/Save';
+import SaveIcon from "@mui/icons-material/Save";
+import { TipoUsuario } from "../../../../components/core/input/dateSelect";
+import PermisoLayout from "../../../../components/layout/auth-layout/permiso-layout";
+import NavBar from "../../../../components/layout/app-bar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -209,7 +212,9 @@ const MantenimientoTipoIdentificacionIngresar = () => {
       if (!isNil(id)) {
         router.push(
           { pathname: "/mantenimiento/tipo-identificacion/registrar/[id]" },
-          `/mantenimiento/tipo-identificacion/registrar/${encodeURIComponent(id)}`
+          `/mantenimiento/tipo-identificacion/registrar/${encodeURIComponent(
+            id
+          )}`
         );
       }
     },
@@ -273,8 +278,6 @@ const MantenimientoTipoIdentificacionIngresar = () => {
     }
   }, [data?.ListaTipoIdentificacion, debounceSearch, fuse]);
 
-
-
   const {
     errors,
     handleBlur,
@@ -319,7 +322,7 @@ const MantenimientoTipoIdentificacionIngresar = () => {
   );
 
   return (
-    <AppLayout>
+    <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
       {openModalMsj && (
         <ModalAuth
           openModal={openModalMsj}
@@ -378,7 +381,6 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                   variant="outlined"
                   startIcon={<SaveIcon />}
                 >
-                  
                   Guardar
                 </LoadingButton>
               </div>
@@ -404,7 +406,7 @@ const MantenimientoTipoIdentificacionIngresar = () => {
             />
           </div>
           <TableContainer>
-            <Table
+            <TableContainer
               // className={classes.table}
               padding="normal"
               stickyHeader
@@ -429,7 +431,21 @@ const MantenimientoTipoIdentificacionIngresar = () => {
           />
         </Box>
       </div>
-    </AppLayout>
+    </PermisoLayout>
+  );
+};
+
+MantenimientoTipoIdentificacionIngresar.getLayout = function getLayout(
+  page: React.ReactElement
+) {
+  return (
+    <>
+      <NavBar />
+      <AppLayout titulo="Mantenimiento - Tipos de Identificaciones">
+        {page}
+      </AppLayout>
+      ;
+    </>
   );
 };
 
