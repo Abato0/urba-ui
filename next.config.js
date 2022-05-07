@@ -1,35 +1,35 @@
 /** @type {import('next').NextConfig} */
-const withReactSvg = require("next-react-svg");
-const path = require("path");
+const withReactSvg = require('next-react-svg')
+const path = require('path')
 
 module.exports = withReactSvg({
-  webpack5: true,
-  include: path.resolve(__dirname, "public/icons"),
-  images: {
-    domains: [
-      "urbanizacion.s3.amazonaws.com",
-      "urbanizacion.s3.sa-east-1.amazonaws.com",
-    ],
-  },
-  async redirects() {
-    return [
-      {
-        source: "/",
-        destination: "/login",
-        permanent: false,
-      },
-    ];
-  },
-  webpack: (config) => {
-    config.resolve.fallback = { fs: false };
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ["@svgr/webpack"],
-    });
+    webpack5: true,
+    include: path.resolve(__dirname, 'public/icons'),
+    images: {
+        domains: [
+            'urbanizacion.s3.amazonaws.com',
+            'urbanizacion.s3.sa-east-1.amazonaws.com',
+        ],
+    },
+    async redirects() {
+        return [
+            {
+                source: '/',
+                destination: '/login',
+                permanent: false,
+            },
+        ]
+    },
+    webpack: (config) => {
+        config.resolve.fallback = { fs: false }
+        config.module.rules.push({
+            test: /\.svg$/,
+            use: ['@svgr/webpack'],
+        })
 
-    return config;
-  },
-});
+        return config
+    },
+})
 
 // /** @type {import('next').NextConfig} */
 

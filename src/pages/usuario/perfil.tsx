@@ -1,7 +1,8 @@
-import AppLayout from "../../components/layout/app-layout";
+import AppLayout from '../../components/layout/app-layout'
+import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
 
 const PerfilUsuario = () => {
-  return <AppLayout></AppLayout>;
-};
+    return <LayoutTituloPagina></LayoutTituloPagina>
+}
 
-export default PerfilUsuario;
+export default PerfilUsuario

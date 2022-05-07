@@ -1,46 +1,46 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client'
 
 export const listadoModelo = gql`
-  query {
-    ListaModelo {
-      id
-      modelo
+    query {
+        ListaModelo {
+            id
+            modelo
+        }
     }
-  }
-`;
+`
 
 export const getModelo = gql`
-  query ($id: Int!) {
-    GetModelo(id: $id) {
-      id
-      modelo
+    query ($id: Int!) {
+        GetModelo(id: $id) {
+            id
+            modelo
+        }
     }
-  }
-`;
+`
 
 export const postModelo = gql`
-  mutation ($modelo: String) {
-    PostModelo(modelo: $modelo) {
-      code
-      message
+    mutation ($modelo: String) {
+        PostModelo(modelo: $modelo) {
+            code
+            message
+        }
     }
-  }
-`;
+`
 
 export const updateModelo = gql`
-  mutation ($id: Int!, $modelo: String) {
-    PutModelo(id: $id, modelo: $modelo) {
-      code
-      message
+    mutation ($id: Int!, $modelo: String) {
+        PutModelo(id: $id, modelo: $modelo) {
+            code
+            message
+        }
     }
-  }
-`;
+`
 
 export const deleteModelo = gql`
-  mutation ($id: Int!) {
-    DeleteModelo(id: $id) {
-      code
-      message
+    mutation ($id: Int!) {
+        DeleteModelo(id: $id) {
+            code
+            message
+        }
     }
-  }
-`;
+`

@@ -1,4 +1,4 @@
-import { complement, either, isEmpty, isNil } from 'ramda';
+import { complement, either, isEmpty, isNil } from 'ramda'
 
 /**
  * Checks whether the given `value` is `null`, `undefined` or empty (definition of
@@ -17,7 +17,7 @@ import { complement, either, isEmpty, isNil } from 'ramda';
  * @returns {boolean} `true` if `value` is either `null`, `undefined` or empty
  *  (such as `""` for strings, `{}` for objects and `[]` for arrays); `false`, otherwise.
  */
-export const isNilOrEmpty = either(isEmpty, isNil);
+export const isNilOrEmpty = either(isEmpty, isNil)
 
 /**
  * Checks whether the given `value` is NOT `null`, `undefined` or empty (definition of
@@ -36,7 +36,7 @@ export const isNilOrEmpty = either(isEmpty, isNil);
  * @returns {boolean} `false` if `value` is either `null`, `undefined` or empty
  *  (such as `""` for strings, `{}` for objects and `[]` for arrays); `true`, otherwise.
  */
-export const isNotNilOrEmpty = complement(isNilOrEmpty);
+export const isNotNilOrEmpty = complement(isNilOrEmpty)
 
 /**
  * Checks whether the given `value` is neither `null` nor `undefined`.
@@ -53,7 +53,7 @@ export const isNotNilOrEmpty = complement(isNilOrEmpty);
  * @param {*} value The value to check.
  * @returns {boolean} `true` if `value` is either `null`, `undefined`; `false`, otherwise.
  */
-export const isNotNil = complement(isNil);
+export const isNotNil = complement(isNil)
 
 /**
  * Checks whether the given `value` is NOT  or empty (definition of
@@ -72,4 +72,4 @@ export const isNotNil = complement(isNil);
  * @returns {boolean} `false` if `value` is empty.
  *  (such as `""` for strings, `{}` for objects and `[]` for arrays); `true`, otherwise.
  */
-export const isNotEmpty = complement(isEmpty);
+export const isNotEmpty = complement(isEmpty)

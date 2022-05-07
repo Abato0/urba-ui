@@ -1,57 +1,63 @@
-import { useMutation, useQuery } from "@apollo/client";
-import { isNilOrEmpty } from "../../../utils/is-nil-empty";
+import { useMutation, useQuery } from '@apollo/client'
+import { isNilOrEmpty } from '../../../utils/is-nil-empty'
 import {
-  postStatusVehiculo,
-  listadoStatusVehiculo,
-  getStatusVehiculo,
-  updateStatusVehiculo,
-  deleteStatusVehiculo,
-} from "./status-vehiculo-typedef";
+    postStatusVehiculo,
+    listadoStatusVehiculo,
+    getStatusVehiculo,
+    updateStatusVehiculo,
+    deleteStatusVehiculo,
+} from './status-vehiculo-typedef'
 
 export const usePostStatusVehiculoMutation = () => {
-  const [mutate, { data, loading, error }] = useMutation(postStatusVehiculo, {
-    refetchQueries: [{ query: listadoStatusVehiculo }],
-    notifyOnNetworkStatusChange: true,
-  });
-  return [mutate, data, loading, error];
-};
+    const [mutate, { data, loading, error }] = useMutation(postStatusVehiculo, {
+        refetchQueries: [{ query: listadoStatusVehiculo }],
+        notifyOnNetworkStatusChange: true,
+    })
+    return [mutate, data, loading, error]
+}
 
 export interface IResultQueryStatusVehiculo {
-  id: string;
-  statusVehiculo: string;
+    id: string
+    statusVehiculo: string
 }
 
 export interface IListadoStatusVehiculo {
-  ListaStatusVehiculo: IResultQueryStatusVehiculo[];
+    ListaStatusVehiculo: IResultQueryStatusVehiculo[]
 }
 
 export const useListaStatusVehiculoQuery = () => {
-  return useQuery<IListadoStatusVehiculo>(listadoStatusVehiculo);
-};
+    return useQuery<IListadoStatusVehiculo>(listadoStatusVehiculo)
+}
 
 export interface IGetStatusVehiculo {
-  GetStatusVehiculo: IResultQueryStatusVehiculo;
+    GetStatusVehiculo: IResultQueryStatusVehiculo
 }
 
 export const useGetStatusVehiculoQuery = (id?: number) => {
-  return useQuery<IGetStatusVehiculo>(getStatusVehiculo, {
-    variables: { id },
-    skip: isNilOrEmpty(id),
-  });
-};
+    return useQuery<IGetStatusVehiculo>(getStatusVehiculo, {
+        variables: { id },
+        skip: isNilOrEmpty(id),
+    })
+}
 
 export const usePutStatusVehiculoMutation = () => {
-  const [mutate, { data, loading, error }] = useMutation(updateStatusVehiculo, {
-    refetchQueries: [{ query: listadoStatusVehiculo }],
-    notifyOnNetworkStatusChange: true,
-  });
-  return [mutate, data, loading, error];
-};
+    const [mutate, { data, loading, error }] = useMutation(
+        updateStatusVehiculo,
+        {
+            refetchQueries: [{ query: listadoStatusVehiculo }],
+            notifyOnNetworkStatusChange: true,
+        }
+    )
+    return [mutate, data, loading, error]
+}
 
 export const useDeleteStatusVehiculoMutation = () => {
-  const [mutate, { data, loading, error }] = useMutation(deleteStatusVehiculo, {
-    refetchQueries: [{ query: listadoStatusVehiculo }],
-    notifyOnNetworkStatusChange: true,
-  });
-  return [mutate, data, loading, error];
-};
+    const [mutate, { data, loading, error }] = useMutation(
+        deleteStatusVehiculo,
+        {
+            refetchQueries: [{ query: listadoStatusVehiculo }],
+            notifyOnNetworkStatusChange: true,
+        }
+    )
+    return [mutate, data, loading, error]
+}

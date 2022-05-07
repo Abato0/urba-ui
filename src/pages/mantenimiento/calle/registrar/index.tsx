@@ -1,30 +1,16 @@
-import {} from "react";
-import { IngresarCalleForm } from "../../../../components/mantenimento/calle/calle-form";
-
-import AppLayout from "../../../../components/layout/app-layout";
-import { TipoUsuario } from "../../../../components/core/input/dateSelect";
-import PermisoLayout from "../../../../components/layout/auth-layout/permiso-layout";
-import NavBar from "../../../../components/layout/app-bar";
+import { IngresarCalleForm } from '../../../../components/mantenimento/calle/calle-form'
+import { TipoUsuario } from '../../../../components/core/input/dateSelect'
+import PermisoLayout from '../../../../components/layout/auth-layout/permiso-layout'
+import LayoutTituloPagina from '../../../../components/layout/tituloPagina-layout'
 
 const MantenimientoCalleIngresar = () => {
-  return (
-    <>
-      <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
-        <IngresarCalleForm />
-      </PermisoLayout>
-    </>
-  );
-};
+    return (
+        <LayoutTituloPagina>
+            <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+                <IngresarCalleForm />
+            </PermisoLayout>
+        </LayoutTituloPagina>
+    )
+}
 
-MantenimientoCalleIngresar.getLayout = function getLayout(
-  page: React.ReactElement
-) {
-  return (
-    <>
-      <NavBar />
-      <AppLayout>{page}</AppLayout>;
-    </>
-  );
-};
-
-export default MantenimientoCalleIngresar;
+export default MantenimientoCalleIngresar

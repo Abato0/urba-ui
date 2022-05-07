@@ -1,20 +1,20 @@
-import { useQuery } from "@apollo/client";
-import { listadoLogs } from "./log-typedef";
+import { useQuery } from '@apollo/client'
+import { listadoLogs } from './log-typedef'
 
 export interface IResultQueryLog {
-  id: number;
-  modulo: string;
-  usuario: string;
-  tipoUsuario: string;
-  fecha: string;
-  accion: string;
-  // nombre_familiar: string;
+    id: number
+    modulo: string
+    usuario: string
+    tipoUsuario: string
+    fecha: string
+    accion: string
+    // nombre_familiar: string;
 }
 
 export interface IListaLog {
-  ListaLog: IResultQueryLog[];
+    ListaLog: IResultQueryLog[]
 }
 
 export const useListadoLogQuery = () => {
-  return useQuery<IListaLog>(listadoLogs);
-};
+    return useQuery<IListaLog>(listadoLogs)
+}

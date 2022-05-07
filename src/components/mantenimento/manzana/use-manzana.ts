@@ -1,90 +1,90 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from '@apollo/client'
 
-import { isNilOrEmpty } from "../../../utils/is-nil-empty";
+import { isNilOrEmpty } from '../../../utils/is-nil-empty'
 import {
-  postManzana,
-  listadoMazanas,
-  getManzana,
-  updateManzana,
-  deleteManzana,
-} from "./manzana-typeDef";
+    postManzana,
+    listadoMazanas,
+    getManzana,
+    updateManzana,
+    deleteManzana,
+} from './manzana-typeDef'
 
 export interface IOutput {
-  code: string;
-  message: string;
+    code: string
+    message: string
 }
 
 export interface IPostManzana {
-  PostCalle: IOutput;
+    PostCalle: IOutput
 }
 
 export interface IPostManzanaVariables {
-  manzana: string;
+    manzana: string
 }
 
 export const usePostManzanaMutation = () => {
-  //   const [mutate, { data, loading, error }] =
+    //   const [mutate, { data, loading, error }] =
 
-  //   return [mutate, data, loading, error];
-  const [mutate, { data, loading, error }] = useMutation(postManzana, {
-    refetchQueries: [{ query: listadoMazanas }],
-    awaitRefetchQueries: true,
-  });
-  return [mutate, data, loading, error];
-};
+    //   return [mutate, data, loading, error];
+    const [mutate, { data, loading, error }] = useMutation(postManzana, {
+        refetchQueries: [{ query: listadoMazanas }],
+        awaitRefetchQueries: true,
+    })
+    return [mutate, data, loading, error]
+}
 
 export interface IResultQueryManzana {
-  id: string;
-  manzana: string;
+    id: string
+    manzana: string
 }
 
 export interface IListadoManzana {
-  ListaManzana: IResultQueryManzana[];
+    ListaManzana: IResultQueryManzana[]
 }
 
 export const useListaManzanaQuery = () => {
-  return useQuery<IListadoManzana>(listadoMazanas);
-};
+    return useQuery<IListadoManzana>(listadoMazanas)
+}
 
 export interface IGetManzana {
-  GetManzana: IResultQueryManzana;
+    GetManzana: IResultQueryManzana
 }
 
 export const useGetManzanaQuery = (id?: number) => {
-  return useQuery<IGetManzana>(getManzana, {
-    variables: { id },
-    skip: isNilOrEmpty(id),
-  });
-};
+    return useQuery<IGetManzana>(getManzana, {
+        variables: { id },
+        skip: isNilOrEmpty(id),
+    })
+}
 
 export interface IPutManzanaVariables {
-  id: number;
-  calle: string;
+    id: number
+    calle: string
 }
 
 export interface IPutManzana {
-  PutManzana: IOutput;
+    PutManzana: IOutput
 }
 
 export const usePutManzanaMutation = () => {
-  const [mutate, { data, loading, error }] = useMutation(updateManzana, {
-    refetchQueries: [{ query: listadoMazanas }],
-    awaitRefetchQueries: true,
-  });
-  return [mutate, data, loading, error];
-};
+    const [mutate, { data, loading, error }] = useMutation(updateManzana, {
+        refetchQueries: [{ query: listadoMazanas }],
+        awaitRefetchQueries: true,
+    })
+    return [mutate, data, loading, error]
+}
 
 export interface IDeleteVariable {
-  id: number;
+    id: number
 }
 export interface IDeleteCalle {
-  DeleteManzana: IOutput;
+    DeleteManzana: IOutput
 }
 
 export const useDeleteManzanaMutation = () => {
-  const [mutate, { data, loading, error }] = useMutation(deleteManzana, {
-    refetchQueries: [{ query: listadoMazanas }],
-    awaitRefetchQueries: true,
-  });
-  return [mutate, data, loading, error];
-};
+    const [mutate, { data, loading, error }] = useMutation(deleteManzana, {
+        refetchQueries: [{ query: listadoMazanas }],
+        awaitRefetchQueries: true,
+    })
+    return [mutate, data, loading, error]
+}

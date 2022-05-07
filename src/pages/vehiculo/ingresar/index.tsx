@@ -1,19 +1,13 @@
-import React from "react";
-import NavBar from "../../../components/layout/app-bar";
-import AppLayout from "../../../components/layout/app-layout";
-import FormIngresarVehiculos from "../../../components/vehiculo/vehiculo-form";
+import React from 'react'
+import LayoutTituloPagina from '../../../components/layout/tituloPagina-layout'
+import FormIngresarVehiculos from '../../../components/vehiculo/vehiculo-form'
 
 const IngresarVehiculo = () => {
-  return <FormIngresarVehiculos />;
-};
+    return (
+        <LayoutTituloPagina titulo="Registro de Vehiculo">
+            <FormIngresarVehiculos />
+        </LayoutTituloPagina>
+    )
+}
 
-IngresarVehiculo.getLayout = function getLayout(page: React.ReactElement) {
-  return (
-    <>
-      <NavBar />
-      <AppLayout titulo="Vehiculo - Registro ">{page}</AppLayout>;
-    </>
-  );
-};
-
-export default IngresarVehiculo;
+export default IngresarVehiculo

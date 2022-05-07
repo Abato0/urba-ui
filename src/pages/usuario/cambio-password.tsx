@@ -1,20 +1,14 @@
-import NavBar from "../../components/layout/app-bar";
-import AppLayout from "../../components/layout/app-layout";
-import { CambiarContrasenaUsuarioForm } from "../../components/usuarios/cambiar-contrasena-form";
+import NavBar from '../../components/layout/app-bar'
+import AppLayout from '../../components/layout/app-layout'
+import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
+import { CambiarContrasenaUsuarioForm } from '../../components/usuarios/cambiar-contrasena-form'
 
 const CambioContreasenaUsuario = () => {
-  return <CambiarContrasenaUsuarioForm />;
-};
+    return (
+        <LayoutTituloPagina titulo="Cambio de Contraseña">
+            <CambiarContrasenaUsuarioForm />
+        </LayoutTituloPagina>
+    )
+}
 
-CambioContreasenaUsuario.getLayout = function getLayout(
-  page: React.ReactElement
-) {
-  return (
-    <>
-      <NavBar />
-      <AppLayout titulo="Cambio de Contraseña">{page}</AppLayout>;
-    </>
-  );
-};
-
-export default CambioContreasenaUsuario;
+export default CambioContreasenaUsuario

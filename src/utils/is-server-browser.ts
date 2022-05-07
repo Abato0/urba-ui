@@ -1,5 +1,3 @@
+export const isServer = () => typeof window === 'undefined'
 
-export const isServer = () => typeof window === 'undefined';
-
-
-export const isBrowser = () => !isServer();
+export const isBrowser = () => !isServer()
