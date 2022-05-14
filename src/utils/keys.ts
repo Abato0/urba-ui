@@ -67,7 +67,7 @@ export const ItemsListadoAdmin: IHeaderSidebar[] = [
             },
             {
                 icon: faListAlt,
-                label: 'Matriz de Operaciones',
+                label: 'Matriz de Aportaciones',
                 ruta: String(EnlacesSidebar.pago.matrizOperaciones.route),
             },
             {
@@ -145,7 +145,7 @@ export const ItemsListadoMorador: IHeaderSidebar[] = [
             },
             {
                 icon: faListAlt,
-                label: 'Matriz de Operaciones',
+                label: 'Matriz de Aporteciones',
                 ruta: String(EnlacesSidebar.pago.matrizOperaciones.route),
             },
             {

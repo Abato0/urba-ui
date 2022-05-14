@@ -175,8 +175,7 @@ const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']
 const validationSchema = yup.object().shape({
     idGrupoFamiliar: yup.number().required('Campo Requerido'),
     // tipo_vehiculo: yup.string().required("Campo Requerido"),
-    placa: yup.string().required('Campo Requerido'),
-    // .matches(/^([A-Z]{3}[0-9]{3,4})$/, "Formato Invalido. Ej: ABC1234"),
+    placa: yup.string().matches(/[aA-zZ]{2,3}[0-9]{3,4}/g, "Formato Invalido, sin guión (-). Ej: ABC1234"),
     id_marca: yup.number().required('Campo Requerido'),
     id_color: yup.number().required('Campo Requerido'),
     id_modelo: yup.number().required('Campo Requerido'),
@@ -357,45 +356,45 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                     setLoadingMutate(true)
                     const { data, loading, error } = isNotNilOrEmpty(vehiculo)
                         ? await mutate({
-                              variables: {
-                                  id,
-                                  // tipo_vehiculo,
-                                  placa,
-                                  id_marca,
-                                  id_color,
-                                  id_modelo,
-                                  id_status,
-                                  matriculaFrontal: matriculaFrontal
-                                      ? matriculaFrontal
-                                      : undefined,
-                                  matriculaReverso: matriculaReverso
-                                      ? matriculaReverso
-                                      : undefined,
-                                  cedulaFrontal: cedulaFrontal
-                                      ? cedulaFrontal
-                                      : undefined,
-                                  num_doc_identidad,
-                                  cedulaReverso: cedulaReverso
-                                      ? cedulaReverso
-                                      : undefined,
-                              },
-                          })
+                            variables: {
+                                id,
+                                // tipo_vehiculo,
+                                placa,
+                                id_marca,
+                                id_color,
+                                id_modelo,
+                                id_status,
+                                matriculaFrontal: matriculaFrontal
+                                    ? matriculaFrontal
+                                    : undefined,
+                                matriculaReverso: matriculaReverso
+                                    ? matriculaReverso
+                                    : undefined,
+                                cedulaFrontal: cedulaFrontal
+                                    ? cedulaFrontal
+                                    : undefined,
+                                num_doc_identidad,
+                                cedulaReverso: cedulaReverso
+                                    ? cedulaReverso
+                                    : undefined,
+                            },
+                        })
                         : await mutate({
-                              variables: {
-                                  idGrupoFamiliar,
-                                  // tipo_vehiculo,
-                                  placa,
-                                  id_marca,
-                                  id_color,
-                                  id_modelo,
-                                  id_status,
-                                  matriculaFrontal,
-                                  matriculaReverso,
-                                  cedulaFrontal,
-                                  num_doc_identidad,
-                                  cedulaReverso,
-                              },
-                          })
+                            variables: {
+                                idGrupoFamiliar,
+                                // tipo_vehiculo,
+                                placa,
+                                id_marca,
+                                id_color,
+                                id_modelo,
+                                id_status,
+                                matriculaFrontal,
+                                matriculaReverso,
+                                cedulaFrontal,
+                                num_doc_identidad,
+                                cedulaReverso,
+                            },
+                        })
 
                     if (!loading && isNotNilOrEmpty(data)) {
                         const { message } = isNotNilOrEmpty(data.PostVehiculo)
@@ -425,7 +424,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                 setTitleModalMsj('Registro Fallido')
                 setMensajeModalMsj(
                     'El registro del vehiculo no se ha realizado: ' +
-                        error.message
+                    error.message
                 )
                 setOpenModalMsj(true)
                 setErrorModal(true)

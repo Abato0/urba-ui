@@ -206,12 +206,12 @@ export const ListadoMatrizOperaciones = () => {
                 'Matriz de Operacione'
             )
             XLSX.write(workBook, { bookType: 'xlsx', type: 'binary' })
-            XLSX.writeFile(workBook, 'Matriz de Operaciones.xlsx')
+            XLSX.writeFile(workBook, 'Matriz de Aportaciones.xlsx')
         }
     }
 
     return (
-        <LayoutTituloPagina titulo="Pagos - Matriz de Operaciones">
+        <LayoutTituloPagina titulo="Pagos - Matriz de Aportaciones">
             <Paper className={classes.root}>
                 <div className={classes.contenFilter}>
                     <div className={classes.contentButtons}>

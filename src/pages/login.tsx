@@ -218,7 +218,7 @@ const LoginScreen = () => {
             } catch (err) {
                 setLoading(false)
                 setOpenErrorLogin(true)
-                setMessageError(String((err as Error).message))
+                setMessageError("Usuario / Contraseña incorrecta")
                 // console.log("eerr: ",err.message)
                 //   const failedLoginError = isBadRequestError(err)
                 //     ? 'Missing username or password'
@@ -265,7 +265,7 @@ const LoginScreen = () => {
                         <ModalAuth
                             openModal={openErrorLogin}
                             setOpenModal={setOpenErrorLogin}
-                            title={'Error login'}
+                            title={messageError}
                             message={messageError}
                         />
                     )}
@@ -307,7 +307,7 @@ const LoginScreen = () => {
                                                 : undefined
                                         }
                                         required
-                                        // fullWidth
+                                    // fullWidth
                                     />
                                     <TextField
                                         className={classes.textBoox}
@@ -331,7 +331,7 @@ const LoginScreen = () => {
                                                 : undefined
                                         }
                                         required
-                                        // fullWidth
+                                    // fullWidth
                                     />
                                 </div>
 
