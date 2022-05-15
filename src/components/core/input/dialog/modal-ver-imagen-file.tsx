@@ -113,15 +113,19 @@ const ModalImagenFile: FC<IProps> = ({ open, handleClose, file }) => {
                             position: 'absolute',
                             top: '50%',
                             left: '50%',
-                            transform: 'translate(-50%, -50%)',
+                            //   transform: 'translate(-50%, -50%)',
                             width: 600,
                             height: 600,
                             // bgcolor: "background.paper",
-                            background:
-                                'linear-gradient(to right, #e0eafc, #cfdef3)',
+
                             boxShadow: 24,
                             // p: 4,
                             borderRadius: 5,
+                        }}
+                        style={{
+                            transform: 'translate(-50%, -50%)',
+                            background:
+                                'linear-gradient(to right, #e0eafc, #cfdef3)',
                         }}
                     >
                         <div
@@ -195,9 +199,9 @@ const ModalImagenFile: FC<IProps> = ({ open, handleClose, file }) => {
                                                     height={400}
                                                     // blurDataURL={"/img/loading.png"}
                                                     placeholder="blur"
-                                                    // onError={() =>
-                                                    //   setFileImage("/img/image-not-found.png")
-                                                    // }
+                                                // onError={() =>
+                                                //   setFileImage("/img/image-not-found.png")
+                                                // }
                                                 />
                                             </Box>
                                         </TransformComponent>

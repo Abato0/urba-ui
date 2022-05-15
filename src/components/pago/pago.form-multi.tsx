@@ -163,7 +163,7 @@ const useStyles = makeStyles((theme) =>
         },
         itemLabel: {
             // fontWeight: theme.typography.pxToRem(60),
-            // fontFamily: theme.typography.fontWeightBold,
+            // fontFamily:"bold",
             color: 'white',
             fontSize: theme.typography.pxToRem(11),
         },
@@ -318,7 +318,7 @@ export const PagoFormMulti = () => {
     const [checkMantenimiento, setCheckMantenimiento] = useState<boolean>(false)
     const [checkTag, setCheckTag] = useState<boolean>(false)
     const [checkOtros, setChecOtros] = useState<boolean>(false)
-    const [file, setFile] = React.useState<File>()
+    const [file, setFile] = React.useState<File | any>()
 
     const [gridPropsValorTag, setGridValorTag] = useState<IGridPropsPagoTag[]>(
         []
@@ -382,8 +382,8 @@ export const PagoFormMulti = () => {
         return !isNil(dataListadoVehiculo) &&
             !isNil(dataListadoVehiculo.ListaVehiculoFilter)
             ? dataListadoVehiculo.ListaVehiculoFilter.find(
-                  (vehiculo) => vehiculo.id === id
-              )
+                (vehiculo) => vehiculo.id === id
+            )
             : null
     }
 
@@ -467,7 +467,7 @@ export const PagoFormMulti = () => {
         accept: 'image/jpeg , image/png',
         noKeyboard: true,
         multiple: false,
-        onDrop,
+        onDrop: onDrop as any,
     })
 
     const onSubmit = useCallback(
@@ -497,11 +497,11 @@ export const PagoFormMulti = () => {
                         mantenimiento: pagoMantenimiento,
                         otros:
                             isNotNilOrEmpty(descripcion) &&
-                            isNotNilOrEmpty(otro)
+                                isNotNilOrEmpty(otro)
                                 ? {
-                                      descripcion: descripcion,
-                                      monto: otro,
-                                  }
+                                    descripcion: descripcion,
+                                    monto: otro,
+                                }
                                 : undefined,
                         tag: [...pagoTag],
                     }
@@ -529,7 +529,7 @@ export const PagoFormMulti = () => {
                 console.log('error : ', error)
                 setTitleModalMsj('Pago Fallido')
                 setMensajeModalMsj(
-                    'Pago no se ha realizado el pago: ' + error.message
+                    'Pago no se ha realizado el pago: ' + (error as Error).message
                 )
                 setOpenModalMsj(true)
                 setErrorModal(true)
@@ -734,7 +734,7 @@ export const PagoFormMulti = () => {
                                         ? errors.cod_recibo
                                         : undefined
                                 }
-                                //   multiline={true}
+                            //   multiline={true}
                             />
                         </div>
                         <div>
@@ -1015,7 +1015,7 @@ export const PagoFormMulti = () => {
                                                                                     monto
                                                                                 )
                                                                             }
-                                                                            // onClick={agregarPagoMantenimiento}
+                                                                        // onClick={agregarPagoMantenimiento}
                                                                         >
                                                                             <DeleteIcon />
                                                                         </Fab>
@@ -1226,7 +1226,7 @@ export const PagoFormMulti = () => {
                                                                                     vehiculo.id
                                                                                 )
                                                                             }
-                                                                            // onClick={agregarPagoMantenimiento}
+                                                                        // onClick={agregarPagoMantenimiento}
                                                                         >
                                                                             <DeleteIcon />
                                                                         </Fab>

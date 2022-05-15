@@ -125,15 +125,15 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
 
     const [mutate] = isNil(marcaObj)
         ? // eslint-disable-next-line react-hooks/rules-of-hooks
-          usePostMarcaMutation()
+        usePostMarcaMutation()
         : // eslint-disable-next-line react-hooks/rules-of-hooks
-          usePutMarcaMutation()
+        usePutMarcaMutation()
 
     const init = useMemo(() => {
         return isNotNilOrEmpty(marcaObj)
             ? {
-                  marca: marcaObj?.marca,
-              }
+                marca: marcaObj?.marca,
+            }
             : initialValues
     }, [marcaObj])
 
@@ -144,16 +144,16 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(marcaObj)
                         ? await mutate({
-                              variables: {
-                                  marca,
-                              },
-                          })
+                            variables: {
+                                marca,
+                            },
+                        })
                         : await mutate({
-                              variables: {
-                                  id,
-                                  marca,
-                              },
-                          })
+                            variables: {
+                                id,
+                                marca,
+                            },
+                        })
 
                     if (isNotNilOrEmpty(data)) {
                         const { message } = isNotNilOrEmpty(data.PutMarca)
@@ -186,6 +186,7 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
                 setOpenModalMsj(true)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [id, marcaObj]
     )
 

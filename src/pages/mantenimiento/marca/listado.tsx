@@ -44,7 +44,7 @@ interface IMarcaNormalize {
     marca: string
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const MantenimientoManzanaListado = () => {
     const classes = useStylesMantenimientoListado()
@@ -151,8 +151,7 @@ const MantenimientoManzanaListado = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
-        [setPageSize]
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value), [setPageSize]
     )
 
     return (

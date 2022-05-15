@@ -176,6 +176,7 @@ const NavBar: React.FC = ({ children }) => {
         Cookies.remove('token')
         handleMenuClose()
         return router.push('/login')
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const menuId = 'primary-search-account-menu'
@@ -323,7 +324,7 @@ const NavBar: React.FC = ({ children }) => {
                                         aria-haspopup="true"
                                         onClick={handleProfileMenuOpen}
                                         className={classes.menuButton}
-                                        // color="black"
+                                    // color="black"
                                     >
                                         <AccountCircle />
                                     </IconButton>
@@ -335,7 +336,7 @@ const NavBar: React.FC = ({ children }) => {
                                         aria-haspopup="true"
                                         onClick={handleMobileMenuOpen}
                                         color="primary"
-                                        // color="black"
+                                    // color="black"
                                     >
                                         <MoreIcon />
                                     </IconButton>
@@ -352,8 +353,8 @@ const NavBar: React.FC = ({ children }) => {
                                 vertical: 'top',
                                 horizontal: 'center',
                             }}
-                            // style={{ maxHeight: 0, overflow: "auto" }}
-                            // onScroll={}
+                        // style={{ maxHeight: 0, overflow: "auto" }}
+                        // onScroll={}
                         >
                             <Notificaciones />
                         </Popover>

@@ -45,7 +45,7 @@ interface IColorNormalize {
     calle: string
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const MantenimientoCalleListado = () => {
     const classes = useStylesMantenimientoListado()
@@ -154,7 +154,7 @@ const MantenimientoCalleListado = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value, event),
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
         [setPageSize]
     )
 

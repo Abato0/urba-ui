@@ -134,7 +134,7 @@ const validationSchema = yup.object().shape({
     tipo_identificacion: yup.string().required('Campo requerido'),
 })
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const MantenimientoTipoIdentificacionIngresar = () => {
     const classes = useStyles()
@@ -199,7 +199,7 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                 setErrorModal(true)
                 setMensajeModalMsj(
                     'El Tipo de identificacion no ha sido guardado: ' +
-                        (error as Error).message
+                    (error as Error).message
                 )
                 setOpenModalMsj(true)
                 setLoadingMutate(false)
@@ -324,7 +324,7 @@ const MantenimientoTipoIdentificacionIngresar = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value, event),
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
         [setPageSize]
     )
 

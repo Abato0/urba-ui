@@ -204,7 +204,7 @@ export const IngresarTagVehiculoForm: FC = () => {
             setMensajeModalMsj('El tag no ha sido guardado: ' + error.message)
             setOpenModalMsj(true)
         }
-    }, [])
+    }, [mutate, refetch])
 
     const {
         errors,

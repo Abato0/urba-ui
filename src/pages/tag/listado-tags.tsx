@@ -147,7 +147,7 @@ interface ITagNormalize {
     estado: string
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const MantenimientoColorListado = () => {
     const classes = useStyles()
@@ -258,7 +258,7 @@ const MantenimientoColorListado = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value, event),
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
         [setPageSize]
     )
 

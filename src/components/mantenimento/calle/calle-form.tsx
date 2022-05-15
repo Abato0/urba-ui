@@ -121,6 +121,7 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
             router.push({ pathname: '/mantenimiento/calle/listado' })
         }
         // }, 2000);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [boolPut, openModalMsj])
 
     const [mutate] = isNil(calleObj)
@@ -130,8 +131,8 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
     const init = useMemo(() => {
         return isNotNilOrEmpty(calleObj)
             ? {
-                  calle: calleObj?.calle,
-              }
+                calle: calleObj?.calle,
+            }
             : initialValues
     }, [calleObj])
 
@@ -142,16 +143,16 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(calleObj)
                         ? await mutate({
-                              variables: {
-                                  calle,
-                              },
-                          })
+                            variables: {
+                                calle,
+                            },
+                        })
                         : await mutate({
-                              variables: {
-                                  id,
-                                  calle,
-                              },
-                          })
+                            variables: {
+                                id,
+                                calle,
+                            },
+                        })
 
                     if (isNotNilOrEmpty(data)) {
                         const { message } = isNotNilOrEmpty(data.PutCalle)
@@ -189,6 +190,7 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
             }
             // eslint-disable-next-line react-hooks/exhaustive-deps
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [calleObj, id]
     )
 

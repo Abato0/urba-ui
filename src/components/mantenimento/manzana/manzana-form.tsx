@@ -131,8 +131,8 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
     const init = useMemo(() => {
         return isNotNilOrEmpty(manzanaObj)
             ? {
-                  manzana: manzanaObj?.manzana,
-              }
+                manzana: manzanaObj?.manzana,
+            }
             : initialValues
     }, [manzanaObj])
 
@@ -143,16 +143,16 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(manzanaObj)
                         ? await mutate({
-                              variables: {
-                                  manzana,
-                              },
-                          })
+                            variables: {
+                                manzana,
+                            },
+                        })
                         : await mutate({
-                              variables: {
-                                  id,
-                                  manzana,
-                              },
-                          })
+                            variables: {
+                                id,
+                                manzana,
+                            },
+                        })
 
                     if (isNotNilOrEmpty(data)) {
                         const { message } = isNotNilOrEmpty(data.PutManzana)
@@ -183,6 +183,7 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
                 setOpenModalMsj(true)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [id, manzanaObj]
     )
 

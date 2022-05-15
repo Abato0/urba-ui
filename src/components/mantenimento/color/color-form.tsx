@@ -125,6 +125,7 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
             })
         }
         // }, 2000);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [boolPutColor, openModalMsj, router])
 
     const [mutate] = isNil(colorObj)
@@ -134,8 +135,8 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
     const init = useMemo(() => {
         return isNotNilOrEmpty(colorObj)
             ? {
-                  color: colorObj?.color,
-              }
+                color: colorObj?.color,
+            }
             : initialValues
     }, [colorObj])
 
@@ -146,16 +147,16 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(colorObj)
                         ? await mutate({
-                              variables: {
-                                  color,
-                              },
-                          })
+                            variables: {
+                                color,
+                            },
+                        })
                         : await mutate({
-                              variables: {
-                                  id,
-                                  color,
-                              },
-                          })
+                            variables: {
+                                id,
+                                color,
+                            },
+                        })
 
                     if (isNotNilOrEmpty(data)) {
                         const { message } = isNotNilOrEmpty(data.PutColor)
@@ -194,6 +195,7 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
                 setOpenModalMsj(true)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [colorObj, id]
     )
 

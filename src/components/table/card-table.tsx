@@ -142,7 +142,7 @@ const CardTable: FC<IProps> = ({
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value, event),
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
         [setPageSize]
     )
 

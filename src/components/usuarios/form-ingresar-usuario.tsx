@@ -153,7 +153,7 @@ export const FormIngresarUsuario = () => {
                 telefono,
                 idTipoIdentificacion,
             },
-            {}
+            { }
         ) => {
             console.log('dasdasdasdf')
             if (
@@ -216,6 +216,7 @@ export const FormIngresarUsuario = () => {
                 setOpenModalMsj(true)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         []
     )
 

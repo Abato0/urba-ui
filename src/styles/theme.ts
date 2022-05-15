@@ -63,7 +63,7 @@ export default createTheme(
             MuiButton: {
                 root: {
                     boxShadow: 'none',
-                    FontWeight: theme.typography.fontWeightBold,
+                    FontWeight: 'bold',
                     borderRadius: '12px',
                     fontSize: theme.typography.caption.fontSize,
                     '&$disabled': {

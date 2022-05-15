@@ -45,7 +45,7 @@ interface IValorTagNormalize {
     valor: number
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const MantenimientoParentescoListado = () => {
     const classes = useStylesMantenimientoListado()
@@ -153,8 +153,7 @@ const MantenimientoParentescoListado = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
-        [setPageSize]
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value), [setPageSize]
     )
 
     return (

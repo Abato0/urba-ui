@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
     makeStyles,
     createStyles,
@@ -111,6 +112,7 @@ export const IngresarTipoEdificacionForm: FC<IProps> = ({
             router.push({ pathname: '/mantenimiento/tipo-edificacion/listado' })
         }
         // }, 2000);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [boolPut, openModalMsj])
 
     const [mutate] = isNil(tipoEdificacionObj)
@@ -120,8 +122,8 @@ export const IngresarTipoEdificacionForm: FC<IProps> = ({
     const init = useMemo(() => {
         return isNotNilOrEmpty(tipoEdificacionObj)
             ? {
-                  tipo_edificacion: tipoEdificacionObj?.tipo_edificacion,
-              }
+                tipo_edificacion: tipoEdificacionObj?.tipo_edificacion,
+            }
             : initialValues
     }, [tipoEdificacionObj])
 
@@ -130,16 +132,16 @@ export const IngresarTipoEdificacionForm: FC<IProps> = ({
             if (isNotNilOrEmpty(tipo_edificacion)) {
                 const { data } = isNil(tipoEdificacionObj)
                     ? await mutate({
-                          variables: {
-                              tipo_edificacion,
-                          },
-                      })
+                        variables: {
+                            tipo_edificacion,
+                        },
+                    })
                     : await mutate({
-                          variables: {
-                              id,
-                              tipo_edificacion,
-                          },
-                      })
+                        variables: {
+                            id,
+                            tipo_edificacion,
+                        },
+                    })
 
                 if (isNotNilOrEmpty(data)) {
                     const { message } = isNotNilOrEmpty(data.PutTipoEdificacion)
@@ -172,6 +174,7 @@ export const IngresarTipoEdificacionForm: FC<IProps> = ({
             )
             setOpenModalMsj(true)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const {

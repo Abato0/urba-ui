@@ -114,7 +114,7 @@ const useStyles = makeStyles((theme) =>
         },
         itemLabel: {
             // fontWeight: theme.typography.pxToRem(60),
-            // fontFamily: theme.typography.fontWeightBold,
+            // fontFamily:"bold",
             color: 'white',
             fontSize: theme.typography.pxToRem(9),
             fontWeight: 600,
@@ -306,7 +306,7 @@ const EnvioCorreo = () => {
                                 }
                                 label="Usuarios"
                                 value={idUsuarioSeleccionado}
-                                // value={values.id_parentesco}
+                            // value={values.id_parentesco}
                             >
                                 {!loadingUsuario &&
                                     dataUsuario &&
@@ -342,7 +342,7 @@ const EnvioCorreo = () => {
                                     backgroundColor: colors.deepPurple[400],
                                 }}
                                 onClick={addUsuario}
-                                // onClick={agregarPagoMantenimiento}
+                            // onClick={agregarPagoMantenimiento}
                             >
                                 <AddIcon style={{ color: 'white' }} />
                             </Fab>

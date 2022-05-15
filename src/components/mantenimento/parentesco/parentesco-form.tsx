@@ -130,8 +130,8 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
     const init = useMemo(() => {
         return isNotNilOrEmpty(parentescoObj)
             ? {
-                  parentesco: parentescoObj?.parentesco,
-              }
+                parentesco: parentescoObj?.parentesco,
+            }
             : initialValues
     }, [parentescoObj])
 
@@ -142,16 +142,16 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(parentescoObj)
                         ? await mutate({
-                              variables: {
-                                  parentesco,
-                              },
-                          })
+                            variables: {
+                                parentesco,
+                            },
+                        })
                         : await mutate({
-                              variables: {
-                                  id,
-                                  parentesco,
-                              },
-                          })
+                            variables: {
+                                id,
+                                parentesco,
+                            },
+                        })
 
                     if (isNotNilOrEmpty(data)) {
                         const { code, message } = isNotNilOrEmpty(
@@ -187,6 +187,7 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
                 setOpenModalMsj(true)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [id, parentescoObj]
     )
 

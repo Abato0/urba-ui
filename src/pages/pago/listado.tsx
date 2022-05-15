@@ -187,7 +187,7 @@ export const calcularMonto = (data: AllPagoTable[]) => {
     return acum
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const ListadoPago = () => {
     const classes = useStyles()
@@ -348,7 +348,7 @@ const ListadoPago = () => {
     )
 
     const onChangeRowsPerPage = React.useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value, event),
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
         [setPageSize]
     )
 
@@ -537,7 +537,7 @@ const ListadoPago = () => {
                         {...getTableProps()}
                         id={idTable}
 
-                        // className={classes.table}
+                    // className={classes.table}
                     >
                         <TableHeader headerGroups={headerGroups} />
                         <CardTableBody

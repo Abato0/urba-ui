@@ -39,12 +39,12 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         titleInfo: {
             fontSize: theme.typography.pxToRem(23),
-            fontWeight: theme.typography.fontWeightBold,
+            fontWeight: "bold",
             color: theme.palette.info.dark,
         },
         titleError: {
             fontSize: theme.typography.pxToRem(23),
-            fontWeight: theme.typography.fontWeightBold,
+            fontWeight: "bold",
             color: theme.palette.error.dark,
         },
         contentButton: {

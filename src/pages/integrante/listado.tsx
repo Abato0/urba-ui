@@ -113,20 +113,20 @@ const extractData = (
 const VariablesNormalizeIntegrantes = (data: IIntegranteVariables[]) => {
     return isNotNilOrEmpty(data)
         ? data.map(
-              ({ grupoFamiliar, parentesco, tipoIdentificacion, ...input }) => {
-                  return omit(['__typename'], {
-                      ...input,
-                      nombre_familiar: grupoFamiliar.nombre_familiar,
-                      parentesco: parentesco.parentesco,
-                      tipo_doc_identidad:
-                          tipoIdentificacion.tipo_identificacion ?? '',
-                      // manzana: grupoFamiliar.manzana,
-                      // calle_principal: grupoFamiliar.calle_principal,
-                      // calle_interseccion: grupoFamiliar.calle_interseccion,
-                      // villa: grupoFamiliar.villa,
-                  })
-              }
-          )
+            ({ grupoFamiliar, parentesco, tipoIdentificacion, ...input }) => {
+                return omit(['__typename'], {
+                    ...input,
+                    nombre_familiar: grupoFamiliar.nombre_familiar,
+                    parentesco: parentesco.parentesco,
+                    tipo_doc_identidad:
+                        tipoIdentificacion.tipo_identificacion ?? '',
+                    // manzana: grupoFamiliar.manzana,
+                    // calle_principal: grupoFamiliar.calle_principal,
+                    // calle_interseccion: grupoFamiliar.calle_interseccion,
+                    // villa: grupoFamiliar.villa,
+                })
+            }
+        )
         : []
 }
 
@@ -155,7 +155,7 @@ export interface IIntegranteVariablesNormalize {
 const optionsFuse: Fuse.IFuseOptions<any> = {
     keys: ['cedula', 'nombre', 'apellido'],
 }
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const ListadoIntegrante = () => {
     const classes = useStyles()
@@ -222,7 +222,7 @@ const ListadoIntegrante = () => {
         }
     }
 
-    const onDelete = async ({ id }: any) => {}
+    const onDelete = async ({ id }: any) => { }
 
     const ExportExcel = useCallback(() => {
         if (isNotNilOrEmpty(dataTable)) {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { isEmpty, isNil, pluck, prop } from 'ramda'
 import { useEffect, useMemo, useState } from 'react'
 import {
@@ -22,7 +23,7 @@ const optionsFuse: Fuse.IFuseOptions<any> = {
     keys: ['nombre_familiar'],
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const ListadoAporte = () => {
     const { data, loading, error } = useListarAporteQuery()

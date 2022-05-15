@@ -125,21 +125,21 @@ const useStyles = makeStyles((theme) =>
 const extractData = (data: IListarFilter): IVehiculoVariableNormalize[] => {
     return isNotNilOrEmpty(data)
         ? data.ListaVehiculoFilter.map(
-              ({ grupoFamiliar, color, marca, modelo, status, ...props }) => {
-                  return {
-                      nombre_familiar: grupoFamiliar.nombre_familiar,
-                      marca: marca.marca,
-                      color: color.color,
-                      modelo: modelo.modelo,
-                      status: status.statusVehiculo,
-                      ...props,
-                  }
-              }
-          )
+            ({ grupoFamiliar, color, marca, modelo, status, ...props }) => {
+                return {
+                    nombre_familiar: grupoFamiliar.nombre_familiar,
+                    marca: marca.marca,
+                    color: color.color,
+                    modelo: modelo.modelo,
+                    status: status.statusVehiculo,
+                    ...props,
+                }
+            }
+        )
         : []
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 const idTable = 'idListadoIntegranteTable'
 const titlePdf = 'Listado de Vehiculos por Familia'
 const columnsPdf = [
@@ -236,7 +236,7 @@ const ListadoVehiculo = () => {
                 `/vehiculo/ingresar/${encodeURIComponent(id)}`
             )
         }
-    }, [])
+    }, [router])
 
     const onDelete = () => {
         console.log('dasd')
@@ -322,8 +322,7 @@ const ListadoVehiculo = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
-        [setPageSize]
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value), [setPageSize]
     )
 
     return (
@@ -560,7 +559,7 @@ const ListadoVehiculo = () => {
                                 ExportExcel={ExportExcel}
                                 columnsPdf={columnsPdf}
                                 idTable={idTable}
-                                orientacion={orientacion}
+                                orientacion={"landscape"}
                                 titlePdf={titlePdf}
                             />
                         </div>

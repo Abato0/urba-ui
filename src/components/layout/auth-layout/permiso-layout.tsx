@@ -56,6 +56,7 @@ const PermisoLayout: React.FC<IProps> = ({ children, tipoUsuarioRecibido }) => {
 
     useEffect(() => {
         autho()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     return (
         <>

@@ -133,7 +133,7 @@ const optionsFuse: Fuse.IFuseOptions<any> = {
     keys: ['id', 'user'],
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 interface IUsuarioNormalize {
     tipo_usuario: string
@@ -255,7 +255,7 @@ const IngresarUsuario = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value, event),
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
         [setPageSize]
     )
 

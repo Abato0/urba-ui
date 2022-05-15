@@ -123,8 +123,8 @@ const useStyles = makeStyles((theme) =>
             background: colors.green[800],
         },
         labelMonto: {
-            fontWeight: theme.typography.pxToRem(60),
-            fontFamily: theme.typography.fontWeightBold,
+            fontWeight: "lighter",
+            fontFamily: "bold",
         },
     })
 )
@@ -151,7 +151,7 @@ interface IPagoMes {
 }
 
 export const PagoFormIngresar = () => {
-    const [file, setFile] = React.useState<File>()
+    const [file, setFile] = React.useState<File | any>()
 
     const [pagoMensual, setPagoMensual] = React.useState<IPagoMes[]>([])
     const [addFechaPago, setAddFechaPago] = React.useState<string | undefined>(
@@ -222,13 +222,14 @@ export const PagoFormIngresar = () => {
                 console.log('error : ', err)
                 setTitleModalMsj('Pago Fallido')
                 setMensajeModalMsj(
-                    'Pago no se ha realizado el pago: ' + err.message
+                    'Pago no se ha realizado el pago: ' + (err as Error).message
                 )
                 setOpenModalMsj(true)
                 setErrorModal(true)
             }
             // eslint-disable-next-line react-hooks/exhaustive-deps
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [file]
     )
     const {
@@ -281,7 +282,7 @@ export const PagoFormIngresar = () => {
         accept: 'image/jpeg , image/png',
         noKeyboard: true,
         multiple: false,
-        onDrop,
+        onDrop: onDrop as any,
     })
 
     React.useEffect(() => {
@@ -309,7 +310,8 @@ export const PagoFormIngresar = () => {
             setFieldValue('monto', result?.valor_mensual)
             setAporteSeleccionado(result)
         }
-    }, [values.id_aporte])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dataListaAporte, values.id_aporte])
 
     const MenuItemArrFecha = (arrString: string[]) => {
         const acum: any[] = []
@@ -352,6 +354,7 @@ export const PagoFormIngresar = () => {
             // setAddFechaPago(undefined);
             // setAddMonto(0);
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [pagoMensual, addMonto, addFechaPago]
     )
 
@@ -400,7 +403,7 @@ export const PagoFormIngresar = () => {
                             dataGrupoFamiliar &&
                             dataGrupoFamiliar.map(({ id, nombre_familiar }) => {
                                 return (
-                                    <MenuItem value={id}>
+                                    <MenuItem key={id} value={id}>
                                         {nombre_familiar}
                                     </MenuItem>
                                 )

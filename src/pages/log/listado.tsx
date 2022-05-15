@@ -143,7 +143,7 @@ const optionsFuse: Fuse.IFuseOptions<any> = {
     keys: ['modulo', 'accion'],
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const LogListado = () => {
     const classes = useStyles()

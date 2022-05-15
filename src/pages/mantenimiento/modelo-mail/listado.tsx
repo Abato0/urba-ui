@@ -23,7 +23,7 @@ import { useStylesMantenimientoListado } from '../../../utils/styles'
 const optionsFuse: Fuse.IFuseOptions<any> = {
     keys: ['categoria'],
 }
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const MantenimientoModeloMailListado = () => {
     const classes = useStylesMantenimientoListado()
@@ -108,8 +108,7 @@ const MantenimientoModeloMailListado = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
-        [setPageSize]
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value), [setPageSize]
     )
 
     return (

@@ -138,8 +138,8 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
     const init = useMemo(() => {
         return isNotNilOrEmpty(statusVehiculoObj)
             ? {
-                  statusVehiculo: statusVehiculoObj?.statusVehiculo,
-              }
+                statusVehiculo: statusVehiculoObj?.statusVehiculo,
+            }
             : initialValues
     }, [statusVehiculoObj])
 
@@ -150,16 +150,16 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
                     setLoadingMutate(true)
                     const { data } = isNil(statusVehiculoObj)
                         ? await mutate({
-                              variables: {
-                                  statusVehiculo,
-                              },
-                          })
+                            variables: {
+                                statusVehiculo,
+                            },
+                        })
                         : await mutate({
-                              variables: {
-                                  id,
-                                  statusVehiculo,
-                              },
-                          })
+                            variables: {
+                                id,
+                                statusVehiculo,
+                            },
+                        })
 
                     if (isNotNilOrEmpty(data)) {
                         const { code, message } = isNotNilOrEmpty(
@@ -197,6 +197,7 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
                 setOpenModalMsj(true)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [id, statusVehiculoObj]
     )
 

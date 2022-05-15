@@ -46,7 +46,7 @@ interface IModeloNormalize {
     modelo: string
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const MantenimientoModeloListado = () => {
     const classes = useStylesMantenimientoListado()
@@ -153,8 +153,7 @@ const MantenimientoModeloListado = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
-        [setPageSize]
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value), [setPageSize]
     )
 
     return (

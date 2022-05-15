@@ -82,17 +82,19 @@ const useStyles = makeStyles((theme) =>
 const extractData = (
     data: IListadoVehiculoInactivos
 ): IVehiculoVariableNormalize[] => {
-    return isNotNilOrEmpty(data)
-        ? data.ListaVehiculosInactivos.map(({ grupoFamiliar, ...props }) => {
-              return omit(['__typename', 'matriculaPdf'], {
-                  nombre_familiar: grupoFamiliar.nombre_familiar,
-                  ...props,
-              })
-          })
-        : []
+    // return isNotNilOrEmpty(data)
+    //     ? data.ListaVehiculosInactivos.map(({ grupoFamiliar, ...props }) => {
+    //         return omit(['__typename', 'matriculaPdf'], {
+    //             nombre_familiar: grupoFamiliar.nombre_familiar,
+    //             ...props,
+    //         })
+    //     })
+    //     : []
+
+    return []
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 const idTable = 'idListadoIntegranteTable'
 const titlePdf = 'Listado de Vehiculos por Familia'
 const columnsPdf = [
@@ -158,7 +160,7 @@ const ListadoInactivos = () => {
                     ),
                     // The cell can use the individual row's getToggleRowSelectedProps method
                     // to the render a checkbox
-                    Cell: ({ row }) => (
+                    Cell: ({ row }: any) => (
                         <div>
                             <IndeterminateCheckbox
                                 {...row.getToggleRowSelectedProps()}
@@ -189,7 +191,7 @@ const ListadoInactivos = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value, event),
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
         [setPageSize]
     )
 

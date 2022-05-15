@@ -133,8 +133,9 @@ const useStyles = makeStyles((theme) =>
             background: colors.green[800],
         },
         labelMonto: {
-            fontWeight: theme.typography.pxToRem(60),
-            fontFamily: theme.typography.fontWeightBold,
+            // fontWeight: theme.typography.pxToRem(60),
+            fontWeight: "bold",
+            fontFamily: "bold",
         },
         buttonCargarFile: {
             display: 'flex',

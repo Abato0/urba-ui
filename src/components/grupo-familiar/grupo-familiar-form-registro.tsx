@@ -186,6 +186,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
             })
         }
         // }, 2000);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [boolPut, openModalMsj])
 
     const onSubmit = useCallback(
@@ -221,30 +222,30 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                     setLoadingMutate(true)
                     const { data: dataMutate } = isNil(grupoFam)
                         ? await mutate({
-                              variables: {
-                                  nombre_familiar,
-                                  id_calle_principal,
-                                  calle_interseccion,
-                                  id_manzana,
-                                  id_usuario,
-                                  villa,
-                                  // id_tipo_edificacion,
-                                  // id_color_fachada,
-                              },
-                          })
+                            variables: {
+                                nombre_familiar,
+                                id_calle_principal,
+                                calle_interseccion,
+                                id_manzana,
+                                id_usuario,
+                                villa,
+                                // id_tipo_edificacion,
+                                // id_color_fachada,
+                            },
+                        })
                         : await mutate({
-                              variables: {
-                                  id: idGrupoFamiliar,
-                                  nombre_familiar,
-                                  id_calle_principal,
-                                  calle_interseccion,
-                                  id_manzana,
-                                  id_usuario,
-                                  villa,
-                                  // id_tipo_edificacion,
-                                  // id_color_fachada,
-                              },
-                          })
+                            variables: {
+                                id: idGrupoFamiliar,
+                                nombre_familiar,
+                                id_calle_principal,
+                                calle_interseccion,
+                                id_manzana,
+                                id_usuario,
+                                villa,
+                                // id_tipo_edificacion,
+                                // id_color_fachada,
+                            },
+                        })
                     if (
                         (isNotNilOrEmpty(dataMutate) &&
                             isNotNilOrEmpty(dataMutate.PostGrupoFamiliar)) ||

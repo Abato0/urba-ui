@@ -98,7 +98,7 @@ const DataTable: React.FC<IProps> = ({
             const myIndex = Fuse.createIndex(optionsFuse.keys!, data)
             return new Fuse(data, optionsFuse, myIndex)
         }
-    }, [data])
+    }, [data, optionsFuse])
 
     const debounceSearch = useDebounce(search, 300)
 
@@ -113,7 +113,7 @@ const DataTable: React.FC<IProps> = ({
         } else {
             setDataTable(data)
         }
-    }, [debounceSearch])
+    }, [data, debounceSearch, fuse])
 
     const onEdit = ({ id }: any) => {
         // Navigate to corresponding filing wizard page to resume filing draft

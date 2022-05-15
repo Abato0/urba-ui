@@ -115,7 +115,7 @@ interface ITipoEdificacionNormalize {
     tipo_edificacion: string
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const MantenimientoTipoEdificacionListado = () => {
     const classes = useStyles()
@@ -228,7 +228,7 @@ const MantenimientoTipoEdificacionListado = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value, event),
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
         [setPageSize]
     )
 

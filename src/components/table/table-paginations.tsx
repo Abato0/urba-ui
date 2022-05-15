@@ -6,7 +6,8 @@ interface IProps {
     pageSize: any
     pageIndex: any
     onChangePage: (event: any, page: any) => any
-    onChangeRowsPerPage: (event: any, rowsPerPage: any) => any
+    // onChangeRowsPerPage: (event: any, rowsPerPage: any) => any
+    onChangeRowsPerPage: any
 }
 
 const TablePaginations: FC<IProps> = ({

@@ -157,7 +157,7 @@ export const CambiarContrasenaUsuarioForm = () => {
             setErrorModal(true)
             setOpenModalMsj(true)
         }
-    }, [])
+    }, [mutate])
 
     const {
         errors,

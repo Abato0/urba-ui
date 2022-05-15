@@ -142,6 +142,7 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
             })
         }
         // }, 2000);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [boolPut, openModalMsj, router])
 
     const id = useMemo(() => {
@@ -199,12 +200,13 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
                 setErrorModal(true)
                 setMensajeModalMsj(
                     'El Tipo de identificacion no ha sido guardado: ' +
-                        (error as Error).message
+                    (error as Error).message
                 )
                 setOpenModalMsj(true)
                 setLoadingMutate(false)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [mutate, refetch]
     )
 

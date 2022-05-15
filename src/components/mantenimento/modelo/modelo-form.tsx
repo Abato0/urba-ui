@@ -122,19 +122,20 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
             })
         }
         // }, 2000);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [boolPut, openModalMsj, router])
 
     const [mutate] = isNil(modeloObj)
         ? // eslint-disable-next-line react-hooks/rules-of-hooks
-          usePostModeloMutation()
+        usePostModeloMutation()
         : // eslint-disable-next-line react-hooks/rules-of-hooks
-          usePutModeloMutation()
+        usePutModeloMutation()
 
     const init = useMemo(() => {
         return isNotNilOrEmpty(modeloObj)
             ? {
-                  modelo: modeloObj?.modelo,
-              }
+                modelo: modeloObj?.modelo,
+            }
             : initialValues
     }, [modeloObj])
 
@@ -145,16 +146,16 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(modeloObj)
                         ? await mutate({
-                              variables: {
-                                  modelo,
-                              },
-                          })
+                            variables: {
+                                modelo,
+                            },
+                        })
                         : await mutate({
-                              variables: {
-                                  id,
-                                  modelo,
-                              },
-                          })
+                            variables: {
+                                id,
+                                modelo,
+                            },
+                        })
 
                     if (isNotNilOrEmpty(data)) {
                         const { message } = isNotNilOrEmpty(data.PutModelo)
@@ -193,6 +194,7 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
                 setOpenModalMsj(true)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [id, modeloObj]
     )
 

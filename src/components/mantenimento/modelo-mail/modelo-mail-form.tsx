@@ -132,6 +132,7 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
             })
         }
         // }, 2000);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [boolPut, openModalMsj, router])
 
     const [mutate] = usePutModeloMailMutation()
@@ -139,12 +140,12 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
     const init = useMemo(() => {
         return isNotNilOrEmpty(modeloObj)
             ? {
-                  categoria: modeloObj?.categoria,
-                  titulo: modeloObj?.titulo,
-                  asunto: modeloObj?.asunto,
-                  textoSuperior: modeloObj?.textoSuperior,
-                  textoInferior: modeloObj?.textoInferior,
-              }
+                categoria: modeloObj?.categoria,
+                titulo: modeloObj?.titulo,
+                asunto: modeloObj?.asunto,
+                textoSuperior: modeloObj?.textoSuperior,
+                textoInferior: modeloObj?.textoInferior,
+            }
             : initialValues
     }, [modeloObj])
 
@@ -206,6 +207,7 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
                 setOpenModalMsj(true)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [id, modeloObj]
     )
 

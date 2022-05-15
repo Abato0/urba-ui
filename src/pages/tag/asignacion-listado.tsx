@@ -160,17 +160,17 @@ const extractData = (
 ): ITagsVariablesNormalize[] => {
     return isNotNilOrEmpty(data)
         ? data.map(({ id, vehiculo, tag }) => {
-              return {
-                  id,
-                  idGrupoFamiliar: vehiculo.grupoFamiliar.id!,
-                  nombre_familiar: vehiculo.grupoFamiliar.nombre_familiar,
-                  placa: vehiculo.placa,
-                  code: tag.code,
-                  color: vehiculo.color.color ?? '',
-                  marca: vehiculo.marca.marca ?? '',
-                  modelo: vehiculo.modelo.modelo ?? '',
-              }
-          })
+            return {
+                id,
+                idGrupoFamiliar: vehiculo.grupoFamiliar.id!,
+                nombre_familiar: vehiculo.grupoFamiliar.nombre_familiar,
+                placa: vehiculo.placa,
+                code: tag.code,
+                color: vehiculo.color.color ?? '',
+                marca: vehiculo.marca.marca ?? '',
+                modelo: vehiculo.modelo.modelo ?? '',
+            }
+        })
         : []
 }
 
@@ -178,7 +178,7 @@ const optionsFuse: Fuse.IFuseOptions<any> = {
     keys: ['nombre_familiar', 'placa'],
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 
 const MantenimientoParentescoListado = () => {
     const classes = useStyles()
@@ -266,7 +266,7 @@ const MantenimientoParentescoListado = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value, event),
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
         [setPageSize]
     )
 

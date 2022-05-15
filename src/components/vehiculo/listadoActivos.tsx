@@ -79,17 +79,19 @@ const useStyles = makeStyles((theme) =>
 )
 
 const extractData = (data: IListadoVehiculo): IVehiculoVariableNormalize[] => {
-    return isNotNilOrEmpty(data)
-        ? data.ListaVehiculos.map(({ grupoFamiliar, ...props }) => {
-              return omit(['__typename', 'matriculaPdf'], {
-                  nombre_familiar: grupoFamiliar.nombre_familiar,
-                  ...props,
-              })
-          })
-        : []
+    // return isNotNilOrEmpty(data)
+    //     ? data.ListaVehiculos.map(({ grupoFamiliar, ...props }) => {
+    //         return omit(['__typename', 'matriculaPdf'], {
+    //             nombre_familiar: grupoFamiliar.nombre_familiar,
+    //             ...props,
+    //         })
+    //     })
+    //     : []
+
+    return []
 }
 
-const getRowId = prop('id')
+const getRowId: any = prop('id')
 const idTable = 'idListadoIntegranteTable'
 const titlePdf = 'Listado de Vehiculos por Familia'
 const columnsPdf = [
@@ -155,7 +157,7 @@ const ListadoActivos = () => {
                     ),
                     // The cell can use the individual row's getToggleRowSelectedProps method
                     // to the render a checkbox
-                    Cell: ({ row }) => (
+                    Cell: ({ row }: any) => (
                         <div>
                             <IndeterminateCheckbox
                                 {...row.getToggleRowSelectedProps()}
@@ -186,7 +188,7 @@ const ListadoActivos = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value, event),
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
         [setPageSize]
     )
 
@@ -242,7 +244,7 @@ const ListadoActivos = () => {
                         ExportExcel={ExportExcel}
                         columnsPdf={columnsPdf}
                         idTable={idTable}
-                        orientacion={orientacion}
+                        orientacion={"landscape"}
                         titlePdf={titlePdf}
                     />
                 </div>

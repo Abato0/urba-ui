@@ -37,7 +37,7 @@ import { useListaManzanaQuery } from '../../components/mantenimento/manzana/use-
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
 import { ActionsButtonsFilterReset } from '../../components/core/actions/actionsButtonsFilterReset'
 
-const getRowId = prop('nombre_familiar')
+const getRowId: any = prop('nombre_familiar')
 
 const optionsFuse: Fuse.IFuseOptions<IGrupoFamiliarNormalize> = {
     keys: ['nombre_familiar', 'calle_principal', 'calle_interseccion'],
@@ -57,36 +57,36 @@ interface IGrupoFamiliarNormalize {
 const extractData = (data: IGrupoFamiliar[]): IGrupoFamiliarNormalize[] => {
     return !isNil(data)
         ? data.map(
-              ({
-                  calle_interseccion,
-                  calle_principal,
-                  // color_fachada,
-                  manzana,
-                  // tipo_edificacion,
-                  nombre_familiar,
-                  villa,
-                  id,
-              }) => {
-                  return {
-                      id,
-                      calle_interseccion: isNil(calle_interseccion)
-                          ? ''
-                          : calle_interseccion,
-                      calle_principal: isNil(calle_principal)
-                          ? ''
-                          : calle_principal.calle,
-                      // color_fachada: isNil(color_fachada) ? "" : color_fachada.color,
-                      manzana: isNil(manzana) ? '' : manzana.manzana,
-                      // tipo_edificacion: isNil(tipo_edificacion)
-                      //   ? ""
-                      //   : tipo_edificacion.tipo_edificacion ?? "",
-                      villa: isNil(villa) ? '' : villa,
-                      nombre_familiar: isNil(nombre_familiar)
-                          ? ''
-                          : nombre_familiar,
-                  }
-              }
-          )
+            ({
+                calle_interseccion,
+                calle_principal,
+                // color_fachada,
+                manzana,
+                // tipo_edificacion,
+                nombre_familiar,
+                villa,
+                id,
+            }) => {
+                return {
+                    id,
+                    calle_interseccion: isNil(calle_interseccion)
+                        ? ''
+                        : calle_interseccion,
+                    calle_principal: isNil(calle_principal)
+                        ? ''
+                        : calle_principal.calle,
+                    // color_fachada: isNil(color_fachada) ? "" : color_fachada.color,
+                    manzana: isNil(manzana) ? '' : manzana.manzana,
+                    // tipo_edificacion: isNil(tipo_edificacion)
+                    //   ? ""
+                    //   : tipo_edificacion.tipo_edificacion ?? "",
+                    villa: isNil(villa) ? '' : villa,
+                    nombre_familiar: isNil(nombre_familiar)
+                        ? ''
+                        : nombre_familiar,
+                }
+            }
+        )
         : []
 }
 
@@ -459,7 +459,7 @@ const ListadoGrupoFamiliar = () => {
                         lengthData={
                             !isNil(data)
                                 ? extractData(data.ListaGruposFamiliaresFilter)
-                                      .length
+                                    .length
                                 : 0
                         }
                     ></CardTable>

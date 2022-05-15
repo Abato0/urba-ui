@@ -162,10 +162,11 @@ export const AporteFormIngresar: FC = () => {
                 setErrorModal(true)
                 setOpenModalMsj(true)
                 setTitleModalMsj('Error al Ingresar Aporte')
-                setMensajeModalMsj(err.message)
+                setMensajeModalMsj((err as Error).message)
             }
             // eslint-disable-next-line react-hooks/exhaustive-deps
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         []
     )
 
