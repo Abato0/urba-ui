@@ -10,6 +10,8 @@ module.exports = withReactSvg({
             'urbanizacion.s3.amazonaws.com',
             'urbanizacion.s3.sa-east-1.amazonaws.com',
         ],
+        loader: 'akamai',
+        path: '',
     },
     async redirects() {
         return [
