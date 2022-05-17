@@ -3,7 +3,7 @@ import { concat } from 'ramda'
 import { IOutput } from '../components/mantenimento/calle/use-calle'
 import { IUserInfo } from '../utils/states'
 // import { URL_BASE_API } from '../utils/keys'
-const URL_BASE_API = 'http://18.231.175.221:8888'
+const URL_BASE_API = 'http://15.228.48.189:8888'
 
 export const login = async (
     user: string,
@@ -18,7 +18,7 @@ export const login = async (
             password,
         },
         headers: {
-            'Access-Control-Allow-Origin': 'http://18.231.175.221:8888',
+            'Access-Control-Allow-Origin': 'http://15.228.48.189:8888',
         },
     })
     return resultado.data
