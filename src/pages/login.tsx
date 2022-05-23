@@ -28,6 +28,7 @@ import SaveIcon from '@material-ui/icons/Save'
 import { MeetingRoom as MettingRoomIcon } from '@material-ui/icons'
 import { CarruselImagenesLogin } from '../components/login/carruselImagenesLogin'
 import { EnlacesSidebar } from '../utils/routes'
+import Cookies from 'js-cookie'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -193,6 +194,7 @@ const LoginScreen = () => {
                     const data = await login(usuario, password)
                     console.log('data: ', data)
                     setLoading(false)
+                    Cookies.set('token', "Bearer " + data.token!)
                     // localStorage.setItem("token.sig",data.token!);
                     // setUserInfo(data)
                     return router.push(EnlacesSidebar.home.route)
