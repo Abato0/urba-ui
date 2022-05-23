@@ -3,7 +3,7 @@ import { concat } from 'ramda'
 import { IOutput } from '../components/mantenimento/calle/use-calle'
 import { IUserInfo } from '../utils/states'
 // import { URL_BASE_API } from '../utils/keys'
-const URL_BASE_API = 'https://urbaapi.nodedatatest.com/'
+const URL_BASE_API = 'https://urbaapi.nodedatatest.com'
 
 export const login = async (
     user: string,
