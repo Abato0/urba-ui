@@ -17,9 +17,9 @@ export const login = async (
             user,
             password,
         },
-        // headers: {
-        //     'Access-Control-Allow-Origin': 'http://15.228.48.189:8888',
-        // },
+        headers: {
+            'Access-Control-Allow-Origin': URL_BASE_API,
+        },
     })
     return resultado.data
 }
