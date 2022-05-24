@@ -3,6 +3,7 @@ import { atom } from 'recoil'
 export interface IUserInfo {
     user: string
     tipo_usuario: string
+    token?: string
 }
 
 export const userInfo = atom<IUserInfo | null>({

@@ -28,6 +28,7 @@ import SaveIcon from '@material-ui/icons/Save'
 import { MeetingRoom as MettingRoomIcon } from '@material-ui/icons'
 import { CarruselImagenesLogin } from '../components/login/carruselImagenesLogin'
 import { EnlacesSidebar } from '../utils/routes'
+import Cookies from 'js-cookie'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -192,6 +193,14 @@ const LoginScreen = () => {
                     // console.log("hash ",hash)
                     const data = await login(usuario, password)
                     console.log('data: ', data)
+
+                    if (data.token) {
+                        const date = new Date();
+                        date.setDate(date.getDate() + 1);
+                        Cookies.set("token", "Bearer " + data.token, {
+                            expires: date
+                        })
+                    }
                     setLoading(false)
                     // localStorage.setItem("token.sig",data.token!);
                     // setUserInfo(data)
