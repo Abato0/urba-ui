@@ -80,9 +80,9 @@ const useStyles = makeStyles((theme) =>
             color: 'white',
         },
         contentLastTextBox: {
-            display: 'flex',
-            flexDirection: 'row',
-            alignContent: 'center',
+            // display: 'flex',
+            // flexDirection: 'row',
+            // alignContent: 'center',
         },
         textbox: {
             margin: theme.spacing(1),

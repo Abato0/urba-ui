@@ -35,9 +35,9 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         icon: {
             // // marginTop: 8,
-            marginRight: 10,
-            marginLeft: 8,
-            maxHeight: 16,
+            // marginRight: 10,
+            // marginLeft: 8,
+            // maxHeight: 16,
             color: colors.deepPurple[900],
         },
     })
@@ -94,6 +94,7 @@ const AcordionHeader: React.FC<IProps> = ({
                                 color: selected
                                     ? 'white'
                                     : colors.deepPurple[900],
+                                overflow: "clip"
                             }}
                         >
                             {label}

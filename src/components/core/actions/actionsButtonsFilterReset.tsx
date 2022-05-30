@@ -12,7 +12,7 @@ export const ActionsButtonsFilterReset: FC<IProps> = ({ filtrar, reset }) => {
         <div
             style={{
                 display: 'flex',
-                flexDirection: 'row',
+                flexDirection: 'column',
             }}
         >
             <Tooltip title="Filtrar" placement="top">

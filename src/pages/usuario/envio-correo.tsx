@@ -40,16 +40,22 @@ const useStyles = makeStyles((theme) =>
             // marginBottom: theme.spacing(10),
             // marginLeft: theme.spacing(20),
             // marginRight: theme.spacing(20),
-            padding: '60px',
+            // padding: '60px',
             // minWidth: "820px",
             borderRadius: '10px',
             textAlign: 'center',
             backgroundColor: 'white',
             // width:"100px"
+            // backgroundColor: "red",
+            // width: "90%"
+            margin: theme.spacing(2),
+            paddingTop: theme.spacing(1),
+            paddingBottom: theme.spacing(1)
+            // padding: '60px',
         },
         formControl: {
             // margin: theme.spacing(1),
-            minWidth: 220,
+            // minWidth: 220,
         },
         form: {
             display: 'flex',
@@ -58,6 +64,7 @@ const useStyles = makeStyles((theme) =>
             alignContent: 'center',
             alignItems: 'center',
             marginTop: theme.spacing(2),
+
             // width: "100%",
         },
         textbox: {
@@ -117,7 +124,8 @@ const useStyles = makeStyles((theme) =>
             // fontFamily:"bold",
             color: 'white',
             fontSize: theme.typography.pxToRem(9),
-            fontWeight: 600,
+            overflow: "hidden"
+
         },
         containerTitle: {
             margin: theme.spacing(2),
@@ -291,11 +299,15 @@ const EnvioCorreo = () => {
                         </div>
                         <div
                             style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'space-evenly',
-                                width: '100%',
+                                marginBottom: "20px"
                             }}
+                        // style={{
+                        //     display: 'flex',
+                        //     flexDirection: 'column',
+                        //     justifyContent: 'space-evenly',
+                        //     width: '100%',
+                        //     alignItems: "center"
+                        // }}
                         >
                             <SelectHeader
                                 id="id_usuario"
@@ -350,9 +362,9 @@ const EnvioCorreo = () => {
                         {arrUsuarios.length > 0 && (
                             <div
                                 style={{
-                                    width: '100%',
-                                    maxWidth: '540px',
-                                    maxHeight: '200px',
+                                    width: '90%',
+                                    // maxWidth: '540px',
+                                    // maxHeight: '200px',
                                     overflow: 'auto',
                                     borderRadius: 5,
                                 }}
@@ -421,6 +433,7 @@ const EnvioCorreo = () => {
                                                                         width: '100%',
                                                                         height: '100%',
                                                                         padding: 5,
+                                                                        overflow: "auto"
                                                                     }}
                                                                 >
                                                                     <Typography
@@ -428,13 +441,15 @@ const EnvioCorreo = () => {
                                                                             classes.itemLabel
                                                                         }
                                                                         variant="overline"
-                                                                    >{`${user}  `}</Typography>
-                                                                    <Typography
+
+
+                                                                    >{`${user} ${tipo_usuario} `}</Typography>
+                                                                    {/* <Typography
                                                                         className={
                                                                             classes.itemLabel
                                                                         }
                                                                         variant="overline"
-                                                                    >{`${tipo_usuario}`}</Typography>
+                                                                    >{`}`}</Typography> */}
                                                                 </div>
 
                                                                 <Fab
@@ -511,9 +526,9 @@ const EnvioCorreo = () => {
                         <div>
                             <TextField
                                 className={classes.textbox}
-                                style={{
-                                    width: '450px',
-                                }}
+                                // style={{
+                                //     width: '450px',
+                                // }}
                                 id="mensaje"
                                 name="mensaje"
                                 label="Mensaje"

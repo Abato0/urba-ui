@@ -77,6 +77,7 @@ const LayoutTituloPagina: FC<{ titulo?: string }> = ({ titulo, children }) => {
                             <Typography
                                 variant="overline"
                                 className={classes.title}
+                                align="center"
                             >
                                 {titulo}
                             </Typography>

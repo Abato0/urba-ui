@@ -27,10 +27,11 @@ const useStyles = makeStyles((theme) =>
         root: {
             marginTop: theme.spacing(10),
             marginBottom: theme.spacing(10),
-            marginLeft: theme.spacing(20),
-            marginRight: theme.spacing(20),
-            padding: '60px',
+            // marginLeft: theme.spacing(20),
+            // marginRight: theme.spacing(20),
+            // padding: '60px',
             // minWidth: "820px",
+            padding: theme.spacing(5),
             borderRadius: '10px',
             textAlign: 'center',
             backgroundColor: 'white',
@@ -258,7 +259,7 @@ export const FormIngresarUsuario = () => {
                 onReset={handleReset}
                 className={classes.form}
             >
-                <div className={classes.contentLastTextBox}>
+                <div>
                     <FormControlHeader
                         classes={classes}
                         handleBlur={handleBlur}

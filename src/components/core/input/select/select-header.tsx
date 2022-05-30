@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) =>
     createStyles({
         formControl: {
             margin: theme.spacing(1),
-            minWidth: 220,
+            // minWidth: 220,
         },
     })
 )

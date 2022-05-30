@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) =>
         contentButtons: {
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            justifyContent: 'space-around',
             // alignContent: "center",
             alignItems: 'center',
             width: '100%',

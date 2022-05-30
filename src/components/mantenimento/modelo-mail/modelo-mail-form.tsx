@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) =>
             textAlign: 'center',
             backgroundColor: 'white',
             width: '80%',
+            maxWidth: "750px"
             // margin: theme.spacing(2),
             // width:"100px"
         },
@@ -73,9 +74,9 @@ const useStyles = makeStyles((theme) =>
             marginTop: theme.spacing(5),
         },
         contentLastTextBox: {
-            display: 'flex',
-            flexDirection: 'row',
-            alignContent: 'center',
+            // display: 'flex',
+            // flexDirection: 'row',
+            // alignContent: 'center',
         },
         title: {
             fontSize: theme.typography.pxToRem(12),

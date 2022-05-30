@@ -36,9 +36,11 @@ import { useCallback, useState } from 'react'
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         grow: {
+            // flex: 1,
+            // backgroundColor: "red",
             flexGrow: 1,
-
-            // minWidth: 900
+            // width: "100px"
+            minWidth: 900
         },
         menuButton: {
             marginRight: theme.spacing(2),
@@ -98,9 +100,10 @@ const useStyles = makeStyles((theme: Theme) =>
             [theme.breakpoints.up('md')]: {
                 display: 'flex',
             },
+
         },
         sectionMobile: {
-            display: 'flex',
+
             [theme.breakpoints.up('md')]: {
                 display: 'none',
             },
@@ -109,12 +112,13 @@ const useStyles = makeStyles((theme: Theme) =>
             // backgroundColor: colors.green[700],
             // background: "linear-gradient(to right, #4e54c8, #8f94fb)",
             backgroundColor: COLOR_PRIMARIO,
-            minWidth: theme.spacing(126),
+            width: "100%"
+            // minWidth: theme.spacing(126),
         },
 
         appbar: {
             borderColor: 'white',
-            minWidth: '660px',
+            //minWidth: '660px',
 
             // width: "100%",
         },
@@ -254,11 +258,11 @@ const NavBar: React.FC = ({ children }) => {
                 <>
                     <div className={classes.grow}>
                         <AppBar
-                            position="static"
-                            variant="outlined"
-                            style={{
-                                minWidth: openSidebar ? '660px' : '525px',
-                            }}
+                            position="fixed"
+                            // variant="outlined"
+                            // style={{
+                            //     minWidth: openSidebar ? '660px' : '525px',
+                            // }}
                             className={classes.appbar}
                         >
                             <Toolbar
@@ -291,8 +295,8 @@ const NavBar: React.FC = ({ children }) => {
                                     aria-label="open drawer"
                                     style={{ borderRadius: 0 }}
                                 >
-                                    <Image
-                                        src="/icons/logo-28.svg"
+                                    <img
+                                        src="/logo-28.svg"
                                         alt="logo"
                                         height={50}
                                         width={210}
@@ -306,17 +310,17 @@ const NavBar: React.FC = ({ children }) => {
 
                                 <div className={classes.grow} />
                                 <div className={classes.sectionDesktop}>
-                                    <IconButton
+                                    {/* <IconButton
                                         aria-label="show 17 new notifications"
                                         // color="primary"
                                         // color="black"
                                         className={classes.menuButton}
-                                        {...bindTrigger(popupState)}
+                                    // {...bindTrigger(popupState)}
                                     >
                                         <Badge badgeContent={17} color="error">
                                             <NotificationsIcon />
                                         </Badge>
-                                    </IconButton>
+                                    </IconButton> */}
                                     <IconButton
                                         edge="end"
                                         aria-label="account of current user"

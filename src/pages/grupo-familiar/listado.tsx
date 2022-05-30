@@ -6,7 +6,7 @@ import {
     IListaGruposFamiliaresFilter,
     IGrupoFamiliarFilterInput,
 } from '../../components/grupo-familiar/use-grupo-familia'
-import AppLayout from '../../components/layout/app-layout'
+// import AppLayout from '../../components/layout/app-layout'
 //import { head, rows } from "../../components/core/input/data";
 // import DataTable from "../../components/table/dataTable";
 import { head } from '../../components/grupo-familiar/grupo-familiar-dataTable'
@@ -21,7 +21,7 @@ import CardTable from '../../components/table/card-table'
 import ModalAuth from '../../components/core/input/dialog/modal-dialog'
 import XLSX from 'xlsx'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
-import { IIntegranteFilterInput } from '../../components/integrante/use-intergrante'
+// import { IIntegranteFilterInput } from '../../components/integrante/use-intergrante'
 import {
     colors,
     makeStyles,
@@ -101,7 +101,7 @@ const useStyles = makeStyles((theme) =>
         contentButtons: {
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            justifyContent: 'space-around',
             // alignContent: "center",
             alignItems: 'center',
             width: '100%',
@@ -343,7 +343,7 @@ const ListadoGrupoFamiliar = () => {
                     )}
                     <Paper className={classes.paperFilter}>
                         <div className={classes.contenFilter}>
-                            <div className={classes.contentButtons}>
+                            <div className={classes.contentButtons} >
                                 <div className={classes.contentForm}>
                                     <FormControl
                                         variant="filled"

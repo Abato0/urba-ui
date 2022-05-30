@@ -13,18 +13,15 @@ import {
     TextField,
     Typography,
 } from '@material-ui/core'
-import Image from 'next/image'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
 import { isNotNilOrEmpty, isNilOrEmpty } from '../utils/is-nil-empty'
 import { useRouter } from 'next/router'
-import { Carousel } from 'react-responsive-carousel'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import { login } from '../auth/auth-service'
 import ModalAuth from '../components/core/input/dialog/modal-dialog'
 import AppLayoutLogin from '../components/layout/auth-login'
 import { LoadingButton } from '@mui/lab'
-import SaveIcon from '@material-ui/icons/Save'
 import { MeetingRoom as MettingRoomIcon } from '@material-ui/icons'
 import { CarruselImagenesLogin } from '../components/login/carruselImagenesLogin'
 import { EnlacesSidebar } from '../utils/routes'
@@ -32,19 +29,26 @@ import Cookies from 'js-cookie'
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyItems: 'center',
-        paddingLeft: theme.spacing(8),
-        paddingRight: theme.spacing(8),
+        // display: 'flex',
+        // alignItems: 'center',
+        // justifyItems: 'center',
+        //paddingLeft: theme.spacing(8),
+        //paddingRight: theme.spacing(8),
         minHeight: '100vh',
-        minWidth: '500px',
+        // minWidth: '450px',
         backgroundColor: colors.blueGrey[100],
+        //width: "100%",
+        height: "100%"
+
+
     },
     container: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        maxWidth: "100%",
+        //      backgroundColor: "red"
+
     },
     cardLogin: {
         display: 'flex',
@@ -52,17 +56,17 @@ const useStyles = makeStyles((theme) => ({
         // minHeight: "9vh",
         backgroundColor: colors.blueGrey[50],
         borderRadius: '19px',
-        padding: '4px',
+        //padding: '4px',
         marginTop: theme.spacing(6),
         marginBottom: theme.spacing(8),
     },
     cardLoginColumn: {
         display: 'flex',
         flexDirection: 'column',
-        padding: '15px 0px',
-        margin: '40px 65px',
-        minWidth: '300px',
-        minHeight: '400px',
+        padding: '30px',
+        // margin: '30px 55px',
+        // minWidth: '300px',
+        //minHeight: '400px',
     },
     cardLoginImg: {
         display: 'flex',
@@ -104,7 +108,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: '12px',
     },
     formLogin: {
-        marginTop: theme.spacing(2),
+        // marginTop: theme.spacing(2),
         display: 'flex',
         flexDirection: 'column',
         minWidth: '300px',

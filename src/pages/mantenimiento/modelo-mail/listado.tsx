@@ -126,7 +126,10 @@ const MantenimientoModeloMailListado = () => {
                     )}
                 </>
 
-                <Paper className={classes.root}>
+                <Paper className={classes.root} style={{
+                    width: "90%",
+                    maxWidth: "700px"
+                }}>
                     {/* <div className={classes.containerTitle}>
             <Typography variant="overline" className={classes.title}>
               Modelos de correos

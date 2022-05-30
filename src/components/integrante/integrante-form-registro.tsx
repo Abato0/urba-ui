@@ -97,9 +97,9 @@ const useStyles = makeStyles((theme) =>
             marginTop: theme.spacing(5),
         },
         contentLastTextBox: {
-            display: 'flex',
-            flexDirection: 'row',
-            alignContent: 'center',
+            // display: 'flex',
+            // flexDirection: 'row',
+            // alignContent: 'center',
         },
         title: {
             fontSize: theme.typography.pxToRem(12),
@@ -166,24 +166,24 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
     const init = useMemo(() => {
         return isNotNilOrEmpty(integrante)
             ? {
-                  idGrupoFamiliar: integrante?.grupoFamiliar.id,
-                  id_tipo_doc_identidad: integrante?.tipoIdentificacion.id,
-                  num_doc_identidad: integrante?.num_doc_identidad,
-                  nombre: integrante?.nombre,
-                  apellido: integrante?.apellido,
-                  telefono: integrante?.telefono,
-                  email: integrante?.email,
-                  genero: integrante?.genero,
-                  representante: integrante?.representante,
-                  id_parentesco: integrante?.parentesco.id,
-                  // piso_ocupa: integrante?.piso_ocupa,
-                  // status: integrante?.status,
-                  fecha_nacimiento: isNotNilOrEmpty(
-                      integrante?.fecha_nacimiento
-                  )
-                      ? parseStringDate(integrante?.fecha_nacimiento!)
-                      : new Date(),
-              }
+                idGrupoFamiliar: integrante?.grupoFamiliar.id,
+                id_tipo_doc_identidad: integrante?.tipoIdentificacion.id,
+                num_doc_identidad: integrante?.num_doc_identidad,
+                nombre: integrante?.nombre,
+                apellido: integrante?.apellido,
+                telefono: integrante?.telefono,
+                email: integrante?.email,
+                genero: integrante?.genero,
+                representante: integrante?.representante,
+                id_parentesco: integrante?.parentesco.id,
+                // piso_ocupa: integrante?.piso_ocupa,
+                // status: integrante?.status,
+                fecha_nacimiento: isNotNilOrEmpty(
+                    integrante?.fecha_nacimiento
+                )
+                    ? parseStringDate(integrante?.fecha_nacimiento!)
+                    : new Date(),
+            }
             : initialValues
     }, [integrante])
     const router = useRouter()
@@ -268,36 +268,36 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                     setLoadingMutate(true)
                     const { data: dataMutate } = isNotNilOrEmpty(integrante)
                         ? await mutate({
-                              variables: {
-                                  id: integrante?.id,
-                                  idGrupoFamiliar,
-                                  nombre,
-                                  apellido,
-                                  telefono,
-                                  id_parentesco,
-                                  fecha_nacimiento,
-                                  id_tipo_doc_identidad,
-                                  num_doc_identidad,
-                                  representante,
-                                  genero,
-                                  email,
-                              },
-                          })
+                            variables: {
+                                id: integrante?.id,
+                                idGrupoFamiliar,
+                                nombre,
+                                apellido,
+                                telefono,
+                                id_parentesco,
+                                fecha_nacimiento,
+                                id_tipo_doc_identidad,
+                                num_doc_identidad,
+                                representante,
+                                genero,
+                                email,
+                            },
+                        })
                         : await mutate({
-                              variables: {
-                                  idGrupoFamiliar,
-                                  nombre,
-                                  apellido,
-                                  telefono,
-                                  id_parentesco,
-                                  fecha_nacimiento,
-                                  id_tipo_doc_identidad,
-                                  num_doc_identidad,
-                                  representante,
-                                  genero,
-                                  email,
-                              },
-                          })
+                            variables: {
+                                idGrupoFamiliar,
+                                nombre,
+                                apellido,
+                                telefono,
+                                id_parentesco,
+                                fecha_nacimiento,
+                                id_tipo_doc_identidad,
+                                num_doc_identidad,
+                                representante,
+                                genero,
+                                email,
+                            },
+                        })
                     if (
                         isNotNilOrEmpty(dataMutate) &&
                         (isNotNilOrEmpty(dataMutate.PostIntegrante) ||

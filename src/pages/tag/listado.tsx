@@ -44,12 +44,12 @@ const useStyles = makeStyles((theme) =>
             marginTop: theme.spacing(2),
             marginBottom: theme.spacing(2),
             borderRadius: '12px',
-            width: '70%',
+            width: '85%',
         },
         contentButtons: {
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            justifyContent: 'space-around',
             width: '100%',
             padding: theme.spacing(2),
             marginTop: theme.spacing(2),
@@ -88,7 +88,8 @@ const useStyles = makeStyles((theme) =>
         },
         formControl: {
             margin: theme.spacing(1),
-            minWidth: 220,
+            width: "100%",
+            minWidth: theme.spacing(12)
             // textAlign: "center"
         },
         image: {
@@ -104,17 +105,22 @@ const useStyles = makeStyles((theme) =>
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            // justifyContent: "space-between",
+
+
         },
         contentForm: {
             marginTop: theme.spacing(3),
             display: 'flex',
-            //   flexDirection: "column",
+            flexDirection: "row",
 
             width: '100%',
             height: '100%',
             paddingLeft: theme.spacing(4),
             paddingRight: theme.spacing(4),
+
+            alignItems: "center",
+            justifyContent: "space-around",
+            // padding: theme.spacing(3)
         },
 
         containerTitle: {
@@ -140,7 +146,7 @@ const useStyles = makeStyles((theme) =>
             fontFamily: 'Roboto',
         },
         paperFilter: {
-            width: '70%',
+            width: '85%',
             borderRadius: 8,
         },
     })
@@ -324,10 +330,10 @@ const MantenimientoParentescoListado = () => {
                 <Paper className={classes.paperFilter}>
                     <div className={classes.contenFilter}>
                         <div
-                            style={{ justifyContent: 'space-between' }}
+                            //style={{ justifyContent: 'space-between' }}
                             className={classes.contentForm}
                         >
-                            <div>
+                            <div style={{ display: "flex", width: "80%" }} >
                                 <FormControl
                                     variant="filled"
                                     className={classes.formControl}

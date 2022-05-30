@@ -87,9 +87,9 @@ const ScreenHome = () => {
                         ]}
                     />
                 </div>
-                <div className={classes.containerImage}>
+                {/* <div className={classes.containerImage}>
                     <DashBoardPagosRealizados />
-                </div>
+                </div> */}
             </Container>
         </LayoutTituloPagina>
     )

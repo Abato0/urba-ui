@@ -5,6 +5,7 @@ import {
     createStyles,
     LinearProgress,
     makeStyles,
+    Container
 } from '@material-ui/core'
 import NavBar from './app-bar'
 import { authMe } from '../../auth/auth-service'
@@ -28,19 +29,23 @@ import { isNotEmpty } from '../../utils/is-nil-empty'
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
-            display: 'flex',
-            flexDirection: 'row',
-            minWidth: 1000,
-            height: '100%',
+            // display: 'flex',
+            // flexDirection: 'row',
+            // minWidth: 1000,
+            // minHeight: '100vh',
+            // width: "100%",
+            //backgroundColor: "red"
+            marginTop: theme.spacing(10)
         },
         componentRoot: {
             display: 'flex',
             flexDirection: 'column',
             width: '100%',
-            minHeight: 700,
+            // minHeight: 700,
             // minHeight:"100%",
-            minWidth: '400px',
-            background: 'linear-gradient(to right, #e0eafc, #cfdef3)',
+            // minWidth: '400px',
+            // background: 'linear-gradient(to right, #e0eafc, #cfdef3)',
+            backgroundColor: "red",
             borderRadius: '10px',
             alignContent: 'center',
             alignItems: 'center',
@@ -175,18 +180,24 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
     return (
         <>
             {!loading && authFlag ? (
-                <>
+                <Container >
                     <NavBar />
                     <div className={classes.root}>
-                        <SideBar
-                            ItemsListado={itemListadoFilter}
-                            ItemsMantenimiento={itemManteniementoFilter}
-                            ItemsRegistros={itemRegistroFilter}
-                            ItemsUsuario={itemUsuarioFilter}
-                        />
-                        {children}
+                        <div style={{ display: "flex", width: "100%", height: "100%", flexDirection: "row" }}>
+                            {/* <div style={{ display: "flex", width: "20%", flexDirection: "column" }}> */}
+                            <SideBar
+                                ItemsListado={itemListadoFilter}
+                                ItemsMantenimiento={itemManteniementoFilter}
+                                ItemsRegistros={itemRegistroFilter}
+                                ItemsUsuario={itemUsuarioFilter}
+                            />
+                            {/* </div> */}
+                            {/* <div style={{ display: "flex", width: "80%", flexDirection: "column" }}> */}
+                            {children}
+                            {/* </div> */}
+                        </div>
                     </div>
-                </>
+                </Container>
             ) : loading || authFlag === undefined ? (
                 <>
                     <LinearProgress />

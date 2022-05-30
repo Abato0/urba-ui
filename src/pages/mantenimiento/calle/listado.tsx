@@ -173,14 +173,17 @@ const MantenimientoCalleListado = () => {
                     )}
                 </>
                 <div
-                    style={{ justifyContent: 'space-around' }}
+                    style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center", alignItems: "center" }}
                     className={classes.containerRoot}
                 >
-                    <div>
+                    <div style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center", alignItems: "center" }}>
                         <IngresarCalleForm />
                     </div>
 
-                    <Paper className={classes.root}>
+                    <Paper className={classes.root} style={{
+                        width: "90%",
+                        maxWidth: "500px"
+                    }}>
                         <div className={classes.containerTitle}>
                             <Typography
                                 variant="overline"

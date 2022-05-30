@@ -229,7 +229,7 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
                 <Typography variant="overline">
                     {modeloObj
                         ? `Actualización de modelo: ${modeloObj.modelo}`
-                        : ''}
+                        : 'Registro de modelo de vehiculo'}
                 </Typography>
             </div>
 

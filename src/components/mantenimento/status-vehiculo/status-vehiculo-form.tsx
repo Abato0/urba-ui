@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) =>
             // marginBottom: theme.spacing(10),
             // marginLeft: theme.spacing(20),
             // marginRight: theme.spacing(20),
-            padding: theme.spacing(5),
+            padding: theme.spacing(4),
             // minWidth: "820px",
             borderRadius: '10px',
             textAlign: 'center',

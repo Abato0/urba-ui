@@ -1,7 +1,7 @@
-import { FC, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import { Box, Slide } from '@material-ui/core'
-import { useRecoilValue } from 'recoil'
+import { Box, Slide, Modal } from '@material-ui/core'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { showSidebar } from '../../utils/states'
 import AcordionHeader from './sidebar/acordionHeader'
 import ItemSidebar from './sidebar/acordionItemClick'
@@ -13,22 +13,29 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'next/router'
 import { isNotEmpty, isNotNil } from '../../utils/is-nil-empty'
-
+import Image from 'next/image'
+import { COLOR_PRIMARIO } from '../../utils/keys'
+import Cookies from 'js-cookie'
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             display: 'flex',
             flexDirection: 'column',
-            height: '100%',
-            maxHeight: '120vh',
+            //height: '100%',
+            width: theme.spacing(30),
+            height: "100%",
+            backgroundColor: "white",
+            //paddingTop: theme.spacing(6)
+            // maxHeight: '100vh',
             // flexGrow: 1,
-            padding: '6px',
+            //padding: '6px',
             // background: "linear-gradient(to bootom, #b993d6, #8ca6db)",
-            minWidth: '300px',
-            maxWidth: '350px',
+            // minWidth: '300px',
+            // maxWidth: '350px',
             // marginTop: 30,
-            overflow: 'auto',
+            //   overflow: 'auto',
             // borderTop: "10px solid"
+            // backgroundColor: "red"
         },
         nodoPadre: {
             margin: '5px',
@@ -39,6 +46,14 @@ const useStyles = makeStyles((theme: Theme) =>
         slider: {
             maxWidth: 200,
         },
+        logoContainer: {
+            backgroundColor: COLOR_PRIMARIO,
+            paddingLeft: theme.spacing(1),
+            paddingRight: theme.spacing(1),
+            paddingTop: theme.spacing(2),
+            paddingBottom: theme.spacing(2),
+            // marginBottom: theme.spacing(2)
+        }
     })
 )
 
@@ -70,21 +85,45 @@ const Sidebar: FC<IProps> = ({
     const classes = useStyles()
     const router = useRouter()
 
-    const openShowSideBar = useRecoilValue(showSidebar)
+    const [openShowSideBar, setOpenShoSidebar] = useRecoilState(showSidebar)
 
     const [selectedListadoHeader, setSelectedListadoHeader] = useState(false)
     const [selectedRegistroHeader, setSelectedRegistroHeader] = useState(false)
     const [selectedMantenimientoHeader, setSelectedManteniminetoHeader] =
         useState(false)
 
+
+    const cerrarSession = useCallback(() => {
+        Cookies.remove('token')
+        return router.push('/login')
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     return (
-        <Slide
-            direction="right"
-            in={openShowSideBar}
-            mountOnEnter
-            unmountOnExit
+        <Modal
+            // direction="right"
+            open={openShowSideBar}
+            onClose={() => setOpenShoSidebar(false)}
+            style={{
+                overflow: "scroll"
+            }}
+        // mountOnEnter
+        // unmountOnExit
+        //   style={{ backgroundColor: "red" }}
         >
             <Box className={classes.root}>
+                <div className={classes.logoContainer}>
+                    <img
+                        src="/logo-28.svg"
+                        alt="logo"
+                        height={70}
+                        width={210}
+                    // sizes="10vw"
+                    //  layout="responsive"
+
+                    //   className={classes.imageLogo}
+                    />
+                </div>
                 {isNotEmpty(ItemsUsuario) && (
                     <AcordionHeader
                         icon={faUser}
@@ -270,8 +309,16 @@ const Sidebar: FC<IProps> = ({
                         })}
                     </AcordionHeader>
                 )}
+                <div style={{ marginTop: "10px", padding: "5px" }}>
+                    <ItemSidebar
+                        eventClick={cerrarSession}
+                        label={"Cerrar Sesion"}
+                        selected={false}
+                    />
+                </div>
+
             </Box>
-        </Slide>
+        </Modal>
     )
 }
 

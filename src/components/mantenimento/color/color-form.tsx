@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) =>
             textAlign: 'center',
             backgroundColor: 'white',
             margin: theme.spacing(2),
+            maxWidth: theme.spacing(60)
             // width:"100px"
         },
         formControl: {

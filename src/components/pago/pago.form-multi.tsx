@@ -55,13 +55,14 @@ const useStyles = makeStyles((theme) =>
             marginBottom: theme.spacing(10),
             marginLeft: theme.spacing(2),
             marginRight: theme.spacing(2),
-            padding: '60px',
+            padding: theme.spacing(2),
             borderRadius: '10px',
             textAlign: 'center',
             backgroundColor: 'white',
             justifyContent: 'center',
             alignItems: 'center',
-            minHeight: theme.spacing(40),
+            // width: "75%"
+            //  minHeight: theme.spacing(40),
         },
         formGroupChecks: {
             display: 'flex',
@@ -126,8 +127,8 @@ const useStyles = makeStyles((theme) =>
         columns: {
             display: 'flex',
             flexDirection: 'column',
-            minWidth: theme.spacing(30),
-            width: '100%',
+            // minWidth: theme.spacing(30),
+            // width: '100%',
         },
         contianerFlex: {
             display: 'flex',
@@ -140,7 +141,7 @@ const useStyles = makeStyles((theme) =>
             justifyContent: 'center',
             // alignItems: "center",
             padding: theme.spacing(4),
-            minWidth: 500,
+            //  minWidth: 500,
             backgroundColor: grey[700],
             color: 'white',
             maxWidth: 700,
@@ -736,17 +737,6 @@ export const PagoFormMulti = () => {
                                 }
                             //   multiline={true}
                             />
-                        </div>
-                        <div>
-                            {/* <SelectFecha
-                // className={classes.selectFilter}
-                id={"fecha_recibo"}
-                label={"Fecha del recibo"}
-                value={values.fecha_recibo}
-                handleChange={handleChange}
-                format="dd MMM yyyy"
-                // handleChange={(e: MaterialUiPickersDate) => setFecha(e)}
-              /> */}
                             <MuiPickersUtilsProvider
                                 locale={es}
                                 utils={DateFnsUtils}
@@ -773,22 +763,29 @@ export const PagoFormMulti = () => {
                                 />
                             </MuiPickersUtilsProvider>
                         </div>
+                        <div style={{
 
-                        <Paper {...getRootProps()} className={classes.dropzone}>
-                            <input {...getInputProps()} />
-                            <ImageIcon fontSize="large" />
-                            <Typography variant="overline">
-                                {
-                                    'Haga click en este Cuadro para subir su imagen del recibo'
-                                }
-                            </Typography>
-                            {!isNilOrEmpty(file) && (
-                                <Typography variant="body2">
-                                    {' '}
-                                    {' *' + String(file?.path)}
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center"
+                        }}>
+
+                            <Paper {...getRootProps()} className={classes.dropzone}>
+                                <input {...getInputProps()} />
+                                <ImageIcon fontSize="large" />
+                                <Typography variant="overline">
+                                    {
+                                        'Haga click en este Cuadro para subir su imagen del recibo'
+                                    }
                                 </Typography>
-                            )}
-                        </Paper>
+                                {!isNilOrEmpty(file) && (
+                                    <Typography variant="body2">
+                                        {' '}
+                                        {' *' + String(file?.path)}
+                                    </Typography>
+                                )}
+                            </Paper>
+                        </div>
 
                         {/* <div> */}
                         <Fade in={checkImplementacion} unmountOnExit>
@@ -849,13 +846,14 @@ export const PagoFormMulti = () => {
                                         display: 'flex',
                                         flexDirection: 'row',
                                         justifyContent: 'center',
-                                        margin: 8,
+                                        // margin: 8,
                                     }}
                                 >
                                     <div
                                         style={{
                                             display: 'flex',
                                             flexDirection: 'column',
+                                            width: "70%"
                                         }}
                                     >
                                         <SelectMeses
@@ -884,39 +882,48 @@ export const PagoFormMulti = () => {
                                             id={'anio_manteniento'}
                                         />
                                     </div>
-                                    <div className={classes.contianerFlex}>
-                                        <TextField
-                                            className={classes.textBox}
-                                            placeholder="Monto"
-                                            type={'number'}
-                                            onChange={(e) =>
-                                                setMontoMantenimiento(
-                                                    Number(e.target.value)
-                                                )
-                                            }
-                                        />
-                                    </div>
-                                    <div
-                                        className={classes.contianerFlex}
-                                        style={{
-                                            width: '10%',
-                                        }}
-                                    >
-                                        <Fab
-                                            size="small"
-                                            aria-label="add"
-                                            style={{
-                                                marginTop: '-14px',
-                                                backgroundColor:
-                                                    colors.deepPurple[400],
-                                            }}
-                                            onClick={agregarPagoMantenimiento}
-                                        >
-                                            <AddIcon
-                                                style={{ color: 'white' }}
+                                    <div style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        // width: "20%"
+                                    }}>
+                                        <div className={classes.contianerFlex}>
+                                            <TextField
+                                                className={classes.textBox}
+                                                placeholder="Monto"
+                                                type={'number'}
+                                                onChange={(e) =>
+                                                    setMontoMantenimiento(
+                                                        Number(e.target.value)
+                                                    )
+                                                }
                                             />
-                                        </Fab>
+                                        </div>
+                                        <div
+                                            className={classes.contianerFlex}
+                                            style={{
+                                                width: '10%',
+                                            }}
+                                        >
+                                            <Fab
+                                                size="small"
+                                                aria-label="add"
+                                                style={{
+                                                    marginTop: '-14px',
+                                                    backgroundColor:
+                                                        colors.deepPurple[400],
+                                                }}
+                                                onClick={agregarPagoMantenimiento}
+                                            >
+                                                <AddIcon
+                                                    style={{ color: 'white' }}
+                                                />
+                                            </Fab>
+                                        </div>
                                     </div>
+
                                 </div>
                                 <div>
                                     {isNotNilOrEmpty(pagoMantenimiento) && (
@@ -943,7 +950,8 @@ export const PagoFormMulti = () => {
                                                                     index
                                                                 }
                                                                 item
-                                                                xs={4}
+                                                                xs={6}
+                                                                md={3}
                                                             >
                                                                 <Paper
                                                                     className={
@@ -983,7 +991,8 @@ export const PagoFormMulti = () => {
 
                                                                                 // width: "100%",
                                                                                 // height:"100%"
-                                                                                padding: 5,
+                                                                                // padding: 5,
+                                                                                overflow: "auto"
                                                                             }}
                                                                         >
                                                                             <Typography
@@ -991,34 +1000,36 @@ export const PagoFormMulti = () => {
                                                                                     classes.itemLabel
                                                                                 }
                                                                                 variant="overline"
-                                                                            >{`${mes}-${anio}  `}</Typography>
-                                                                            <Typography
+                                                                            >{`${mes}-${anio} \n Monto: $${monto} `}</Typography>
+                                                                            {/* <Typography
                                                                                 className={
                                                                                     classes.itemLabel
                                                                                 }
                                                                                 variant="overline"
-                                                                            >{`Monto: $${monto}`}</Typography>
+                                                                            >{}</Typography> */}
+                                                                        </div>
+                                                                        <div>
+                                                                            <Fab
+                                                                                size="small"
+                                                                                color="primary"
+                                                                                aria-label="add"
+                                                                                // style={{
+                                                                                //     padding: 12,
+                                                                                //     marginRight: 10,
+                                                                                // }}
+                                                                                onClick={() =>
+                                                                                    eliminarPagoMantenimiento(
+                                                                                        mes,
+                                                                                        anio,
+                                                                                        monto
+                                                                                    )
+                                                                                }
+                                                                            // onClick={agregarPagoMantenimiento}
+                                                                            >
+                                                                                <DeleteIcon />
+                                                                            </Fab>
                                                                         </div>
 
-                                                                        <Fab
-                                                                            size="small"
-                                                                            color="primary"
-                                                                            aria-label="add"
-                                                                            style={{
-                                                                                padding: 12,
-                                                                                marginRight: 10,
-                                                                            }}
-                                                                            onClick={() =>
-                                                                                eliminarPagoMantenimiento(
-                                                                                    mes,
-                                                                                    anio,
-                                                                                    monto
-                                                                                )
-                                                                            }
-                                                                        // onClick={agregarPagoMantenimiento}
-                                                                        >
-                                                                            <DeleteIcon />
-                                                                        </Fab>
                                                                     </div>
                                                                 </Paper>
                                                             </Grid>
@@ -1053,84 +1064,91 @@ export const PagoFormMulti = () => {
                                     </div>
                                 </div>
 
-                                <div>
-                                    <SelectHeader
-                                        handleChange={(e: SelectChangeEvent) =>
-                                            setIdVehiculoSeleccionado(
-                                                Number(e.target.value)
-                                            )
-                                        }
-                                        value={idVehiculoSeleccionado}
-                                        id={'vehiculosSelect'}
-                                        label={'Vehiculos'}
-                                    >
-                                        {!loadingListadoVehiculo &&
-                                            !isNil(values.idGrupoFamiliar) &&
-                                            !isNil(dataListadoVehiculo) &&
-                                            isNotNilOrEmpty(
-                                                dataListadoVehiculo.ListaVehiculoFilter
-                                            ) &&
-                                            dataListadoVehiculo.ListaVehiculoFilter.map(
-                                                ({ id, placa }) => {
-                                                    return (
-                                                        <MenuItem
-                                                            value={id}
-                                                            key={
-                                                                'listadoVehiculoFormPago' +
-                                                                id
-                                                            }
-                                                        >
-                                                            {placa}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            )}
-                                    </SelectHeader>
+                                <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
+                                    <div style={{ display: "flex", flexDirection: "column", width: "75%" }}>
 
-                                    <SelectHeader
-                                        handleChange={(e: SelectChangeEvent) =>
-                                            setIdValorTag(
-                                                Number(e.target.value)
-                                            )
-                                        }
-                                        value={idValorTag}
-                                        id={'tipoTagSelect'}
-                                        label={'Tipo de Tag'}
-                                    >
-                                        {!loadingValorTag &&
-                                            !isNil(dataValorTag) &&
-                                            isNotNilOrEmpty(
-                                                dataValorTag.ListaValorTag
-                                            ) &&
-                                            dataValorTag.ListaValorTag.map(
-                                                ({ id, tipo_tag, valor }) => {
-                                                    return (
-                                                        <MenuItem
-                                                            value={id}
-                                                            key={
-                                                                'ListadoTag' +
-                                                                id
-                                                            }
-                                                        >{`${tipo_tag} - $${valor}`}</MenuItem>
-                                                    )
-                                                }
-                                            )}
-                                    </SelectHeader>
 
-                                    <Fab
-                                        size="small"
-                                        aria-label="add"
-                                        style={{
-                                            marginTop: '18px',
-                                            backgroundColor:
-                                                colors.deepPurple[400],
-                                        }}
-                                        onClick={() => {
-                                            agregarPagoTag()
-                                        }}
-                                    >
-                                        <AddIcon style={{ color: 'white' }} />
-                                    </Fab>
+                                        <SelectHeader
+                                            handleChange={(e: SelectChangeEvent) =>
+                                                setIdVehiculoSeleccionado(
+                                                    Number(e.target.value)
+                                                )
+                                            }
+                                            value={idVehiculoSeleccionado}
+                                            id={'vehiculosSelect'}
+                                            label={'Vehiculos'}
+                                        >
+                                            {!loadingListadoVehiculo &&
+                                                !isNil(values.idGrupoFamiliar) &&
+                                                !isNil(dataListadoVehiculo) &&
+                                                isNotNilOrEmpty(
+                                                    dataListadoVehiculo.ListaVehiculoFilter
+                                                ) &&
+                                                dataListadoVehiculo.ListaVehiculoFilter.map(
+                                                    ({ id, placa }) => {
+                                                        return (
+                                                            <MenuItem
+                                                                value={id}
+                                                                key={
+                                                                    'listadoVehiculoFormPago' +
+                                                                    id
+                                                                }
+                                                            >
+                                                                {placa}
+                                                            </MenuItem>
+                                                        )
+                                                    }
+                                                )}
+                                        </SelectHeader>
+
+                                        <SelectHeader
+                                            handleChange={(e: SelectChangeEvent) =>
+                                                setIdValorTag(
+                                                    Number(e.target.value)
+                                                )
+                                            }
+                                            value={idValorTag}
+                                            id={'tipoTagSelect'}
+                                            label={'Tipo de Tag'}
+                                        >
+                                            {!loadingValorTag &&
+                                                !isNil(dataValorTag) &&
+                                                isNotNilOrEmpty(
+                                                    dataValorTag.ListaValorTag
+                                                ) &&
+                                                dataValorTag.ListaValorTag.map(
+                                                    ({ id, tipo_tag, valor }) => {
+                                                        return (
+                                                            <MenuItem
+                                                                value={id}
+                                                                key={
+                                                                    'ListadoTag' +
+                                                                    id
+                                                                }
+                                                            >{`${tipo_tag} - $${valor}`}</MenuItem>
+                                                        )
+                                                    }
+                                                )}
+                                        </SelectHeader>
+                                    </div>
+                                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width: "25%" }}>
+
+
+                                        <Fab
+                                            size="small"
+                                            aria-label="add"
+                                            style={{
+                                                marginTop: '18px',
+                                                backgroundColor:
+                                                    colors.deepPurple[400],
+                                            }}
+                                            onClick={() => {
+                                                agregarPagoTag()
+                                            }}
+                                        >
+                                            <AddIcon style={{ color: 'white' }} />
+                                        </Fab>
+                                    </div>
                                 </div>
 
                                 <div>
@@ -1155,7 +1173,8 @@ export const PagoFormMulti = () => {
                                                             <Grid
                                                                 key={index}
                                                                 item
-                                                                xs={4}
+                                                                xs={6}
+                                                                md={3}
                                                             >
                                                                 <Paper
                                                                     key={index}
@@ -1176,7 +1195,7 @@ export const PagoFormMulti = () => {
                                                                                 'center',
                                                                             alignItems:
                                                                                 'center',
-                                                                            padding: 5,
+                                                                            // padding: 5,
                                                                             justifyContent:
                                                                                 'space-around',
                                                                             // backgroundColor: "red",
@@ -1197,6 +1216,7 @@ export const PagoFormMulti = () => {
                                                                                 // width: "100%",
                                                                                 // height:"100%"
                                                                                 padding: 5,
+                                                                                overflow: "auto"
                                                                             }}
                                                                         >
                                                                             <Typography
@@ -1204,32 +1224,30 @@ export const PagoFormMulti = () => {
                                                                                     classes.itemLabel
                                                                                 }
                                                                                 variant="overline"
-                                                                            >{`Vehiculo: ${vehiculo.placa}  `}</Typography>
-                                                                            <Typography
-                                                                                className={
-                                                                                    classes.itemLabel
-                                                                                }
-                                                                                variant="overline"
-                                                                            >{`Tag: ${valorTag.tipo_valor}`}</Typography>
+                                                                            >{`Vehiculo: ${vehiculo.placa}  \n Tag: ${valorTag.tipo_valor}`}</Typography>
+
                                                                         </div>
 
-                                                                        <Fab
-                                                                            size="small"
-                                                                            color="primary"
-                                                                            aria-label="add"
-                                                                            style={{
-                                                                                padding: 12,
-                                                                                marginRight: 10,
-                                                                            }}
-                                                                            onClick={() =>
-                                                                                eliminarPagoTag(
-                                                                                    vehiculo.id
-                                                                                )
-                                                                            }
-                                                                        // onClick={agregarPagoMantenimiento}
-                                                                        >
-                                                                            <DeleteIcon />
-                                                                        </Fab>
+                                                                        <div>
+
+                                                                            <Fab
+                                                                                size="small"
+                                                                                color="primary"
+                                                                                aria-label="add"
+                                                                                style={{
+                                                                                    padding: 12,
+                                                                                    marginRight: 10,
+                                                                                }}
+                                                                                onClick={() =>
+                                                                                    eliminarPagoTag(
+                                                                                        vehiculo.id
+                                                                                    )
+                                                                                }
+                                                                            // onClick={agregarPagoMantenimiento}
+                                                                            >
+                                                                                <DeleteIcon />
+                                                                            </Fab>
+                                                                        </div>
                                                                     </div>
                                                                 </Paper>
                                                             </Grid>
@@ -1297,7 +1315,7 @@ export const PagoFormMulti = () => {
                         </Fade>
                         <div className={classes.contentButtons}>
                             <div
-                                style={{ marginLeft: 20 }}
+                                style={{ margin: "0px 20px" }}
                                 className={classes.totalContainer}
                             >
                                 <div className={classes.containerLabelTotal}>

@@ -31,6 +31,7 @@ import {
 } from 'mdi-material-ui'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
+import { COLOR_PRIMARIO } from '../../utils/keys';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -130,7 +131,7 @@ const useStyles = makeStyles((theme) =>
             },
         },
         tableHead: {
-            background: colors.deepPurple[400],
+            background: COLOR_PRIMARIO,
             color: 'white',
             fontSize: 14,
             fontWeight: 'unset',

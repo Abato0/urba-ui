@@ -179,61 +179,66 @@ const MantenimientoParentescoListado = () => {
                     )}
                 </>
                 <div
-                    style={{ justifyContent: 'space-around' }}
+                    style={{ display: "flex", flexDirection: "column", width: "100%" }}
                     className={classes.containerRoot}
                 >
-                    <div>
+                    <div style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center", alignItems: "center" }}>
                         <IngresarParentescoForm />
                     </div>
-                    <Paper className={classes.root}>
-                        <div className={classes.containerTitle}>
-                            <Typography
-                                variant="overline"
-                                className={classes.title}
-                            >
-                                Listado de Parentescos
-                            </Typography>
-                        </div>
-                        <div className={classes.contentButtons}>
-                            <TextField
-                                className={classes.textBox}
-                                variant="outlined"
-                                placeholder="Search"
-                                onChange={(e) => {
-                                    setSearch(e.target.value)
-                                }}
-                                value={search}
-                            />
-                        </div>
-                        <TableContainer>
-                            <Table
-                                // className={classes.table}
-                                padding="normal"
-                                stickyHeader
-                                aria-label="sticky table"
-                                {...getTableProps()}
-                                id={'TableColor'}
-                            >
-                                <TableHeader headerGroups={headerGroups} />
-                                <CardTableBody
-                                    getTableBodyProps={getTableBodyProps}
-                                    page={page}
-                                    prepareRow={prepareRow}
+                    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                        <Paper className={classes.root} style={{
+                            width: "100%",
+                            maxWidth: "500px"
+                        }}>
+                            <div className={classes.containerTitle}>
+                                <Typography
+                                    variant="overline"
+                                    className={classes.title}
+                                >
+                                    Listado de Parentescos
+                                </Typography>
+                            </div>
+                            <div className={classes.contentButtons}>
+                                <TextField
+                                    className={classes.textBox}
+                                    variant="outlined"
+                                    placeholder="Search"
+                                    onChange={(e) => {
+                                        setSearch(e.target.value)
+                                    }}
+                                    value={search}
                                 />
-                            </Table>
-                        </TableContainer>
-                        <TablePaginations
-                            lengthData={
-                                isNilOrEmpty(dataParentesco)
-                                    ? 0
-                                    : dataParentesco.length
-                            }
-                            onChangePage={onChangePage}
-                            onChangeRowsPerPage={onChangeRowsPerPage}
-                            pageIndex={pageIndex}
-                            pageSize={pageSize}
-                        />
-                    </Paper>
+                            </div>
+                            <TableContainer>
+                                <Table
+                                    // className={classes.table}
+                                    padding="normal"
+                                    stickyHeader
+                                    aria-label="sticky table"
+                                    {...getTableProps()}
+                                    id={'TableColor'}
+                                >
+                                    <TableHeader headerGroups={headerGroups} />
+                                    <CardTableBody
+                                        getTableBodyProps={getTableBodyProps}
+                                        page={page}
+                                        prepareRow={prepareRow}
+                                    />
+                                </Table>
+                            </TableContainer>
+                            <TablePaginations
+                                lengthData={
+                                    isNilOrEmpty(dataParentesco)
+                                        ? 0
+                                        : dataParentesco.length
+                                }
+                                onChangePage={onChangePage}
+                                onChangeRowsPerPage={onChangeRowsPerPage}
+                                pageIndex={pageIndex}
+                                pageSize={pageSize}
+                            />
+                        </Paper>
+                    </div>
                 </div>
             </PermisoLayout>
         </LayoutTituloPagina>

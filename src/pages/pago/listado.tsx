@@ -55,7 +55,8 @@ const useStyles = makeStyles((theme) =>
             marginBottom: theme.spacing(2),
             borderRadius: '12px',
             // width: 80
-            margin: '30px',
+            // margin: '30px',
+            width: "85%"
         },
         contentButtons: {
             display: 'flex',

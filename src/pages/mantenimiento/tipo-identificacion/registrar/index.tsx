@@ -341,11 +341,14 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                     />
                 )}
                 <div
-                    style={{ justifyContent: 'space-around' }}
+                    style={{ display: "flex", flexDirection: "column", width: "100%" }}
                     className={classes.container}
                 >
-                    <div>
-                        <Box className={classes.root}>
+                    <div style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center", alignItems: "center" }}>
+                        <Box className={classes.root} style={{
+                            width: "90%",
+                            maxWidth: "500px"
+                        }}>
                             <div className={classes.title}>
                                 <Typography variant="overline">
                                     Registro de Tipo de Identificación
@@ -398,50 +401,57 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                         </Box>
                     </div>
 
-                    <Box className={classes.root}>
-                        <div className={classes.title}>
-                            <Typography variant="overline">
-                                Listado de Tipos de Identificaciones
-                            </Typography>
-                        </div>
-                        <div className={classes.contentButtons}>
-                            <TextField
-                                // className={classes.textBox}
-                                variant="outlined"
-                                placeholder="Search"
-                                onChange={(e) => {
-                                    setSearch(e.target.value)
-                                }}
-                                value={search}
-                            />
-                        </div>
-                        <TableContainer>
-                            <Table
-                                // className={classes.table}
-                                padding="normal"
-                                stickyHeader
-                                aria-label="sticky table"
-                                {...getTableProps()}
-                                id={'TableColor'}
-                            >
-                                <TableHeader headerGroups={headerGroups} />
-                                <CardTableBody
-                                    getTableBodyProps={getTableBodyProps}
-                                    page={page}
-                                    prepareRow={prepareRow}
+                    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+
+
+                        <Box className={classes.root} style={{
+                            width: "90%",
+                            maxWidth: "500px"
+                        }}>
+                            <div className={classes.title}>
+                                <Typography variant="overline">
+                                    Listado de Tipos de Identificaciones
+                                </Typography>
+                            </div>
+                            <div className={classes.contentButtons}>
+                                <TextField
+                                    // className={classes.textBox}
+                                    variant="outlined"
+                                    placeholder="Search"
+                                    onChange={(e) => {
+                                        setSearch(e.target.value)
+                                    }}
+                                    value={search}
                                 />
-                            </Table>
-                        </TableContainer>
-                        <TablePaginations
-                            lengthData={
-                                isNilOrEmpty(dataTipoID) ? 0 : dataTipoID.length
-                            }
-                            onChangePage={onChangePage}
-                            onChangeRowsPerPage={onChangeRowsPerPage}
-                            pageIndex={pageIndex}
-                            pageSize={pageSize}
-                        />
-                    </Box>
+                            </div>
+                            <TableContainer>
+                                <Table
+                                    // className={classes.table}
+                                    padding="normal"
+                                    stickyHeader
+                                    aria-label="sticky table"
+                                    {...getTableProps()}
+                                    id={'TableColor'}
+                                >
+                                    <TableHeader headerGroups={headerGroups} />
+                                    <CardTableBody
+                                        getTableBodyProps={getTableBodyProps}
+                                        page={page}
+                                        prepareRow={prepareRow}
+                                    />
+                                </Table>
+                            </TableContainer>
+                            <TablePaginations
+                                lengthData={
+                                    isNilOrEmpty(dataTipoID) ? 0 : dataTipoID.length
+                                }
+                                onChangePage={onChangePage}
+                                onChangeRowsPerPage={onChangeRowsPerPage}
+                                pageIndex={pageIndex}
+                                pageSize={pageSize}
+                            />
+                        </Box>
+                    </div>
                 </div>
             </PermisoLayout>
         </LayoutTituloPagina>

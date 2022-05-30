@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) =>
         },
         formControl: {
             // margin: theme.spacing(1),
-            minWidth: 220,
+            // minWidth: 220,
         },
         form: {
             display: 'flex',
@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme) =>
         containerRoot: {
             display: 'flex',
             flexDirection: 'row',
-            width: '100%',
+            width: '80%',
             margin: theme.spacing(2),
         },
 
@@ -277,9 +277,9 @@ const IngresarUsuario = () => {
                     style={{ justifyContent: 'space-around' }}
                     className={classes.containerRoot}
                 >
-                    <div>
-                        <FormIngresarUsuario />
-                    </div>
+                    {/* <div> */}
+                    <FormIngresarUsuario />
+                    {/* </div> */}
                 </div>
                 <div style={{ flex: 1, width: '80%' }}>
                     <Paper className={classes.root}>
