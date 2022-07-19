@@ -159,7 +159,8 @@ const MantenimientoColorListado = () => {
                     {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
-                            setOpenModal={setOpenModalMsj}
+                            onClose={() => setOpenModalMsj(false)}
+                            //  setOpenModal={setOpenModalMsj}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                             error={errorModal}
