@@ -97,7 +97,7 @@ export interface IListarFilterVehiculoInput {
     idGrupoFamiliar?: number
     marca?: string
     modelo?: string
-    status?: string
+    // status?: string
 }
 
 export interface IListarFilter {

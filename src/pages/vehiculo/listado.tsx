@@ -32,7 +32,7 @@ import XLSX from 'xlsx'
 import { useListarGrupoFamiliar } from '../../components/grupo-familiar/use-grupo-familia'
 import { useListaMarcaQuery } from '../../components/mantenimento/marca/use-marca'
 import { useListaModeloQuery } from '../../components/mantenimento/modelo/use-modelo'
-import { useListaStatusVehiculoQuery } from '../../components/mantenimento/status-vehiculo/use-status-vehiculo'
+//import { useListaStatusVehiculoQuery } from '../../components/mantenimento/status-vehiculo/use-status-vehiculo'
 import { CarruselVehiculoImagenModal } from '../../components/core/input/dialog/modal-carrusel-imagen-vahiculos'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
 import { ActionsButtonsFilterReset } from '../../components/core/actions/actionsButtonsFilterReset'
@@ -211,7 +211,7 @@ const ListadoVehiculo = () => {
             modelo: isEmpty(modelo) ? undefined : modelo,
             // status: isEmpty(status) ? undefined : status,
         })
-    }, [idGrupoFamiliar, marca, modelo, status])
+    }, [idGrupoFamiliar, marca, modelo])
 
     const reset = useCallback(() => {
         // setIdGrupoFamiliarFilter(undefined);
