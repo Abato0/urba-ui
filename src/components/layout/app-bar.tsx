@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import {
     alpha,
     makeStyles,
@@ -14,9 +15,9 @@ import MenuIcon from '@material-ui/icons/Menu'
 import AccountCircle from '@material-ui/icons/AccountCircle'
 import MailIcon from '@material-ui/icons/Mail'
 import NotificationsIcon from '@material-ui/icons/Notifications'
-import MoreIcon from '@material-ui/icons/MoreVert'
-import { colors, Paper, Popover } from '@material-ui/core'
-import { showSidebar, userInfo } from '../../utils/states'
+//import MoreIcon from '@material-ui/icons/MoreVert'
+import { colors, Paper, Popover, Typography } from '@material-ui/core'
+import { showSidebar, userInfo } from '../../utils/states';
 import {
     usePopupState,
     bindTrigger,
@@ -31,7 +32,8 @@ import { authMe } from '../../auth/auth-service'
 import Image from 'next/image'
 import { COLOR_PRIMARIO, COLOR_SECUDARIO } from '../../utils/keys'
 import { EnlacesSidebar } from './sidebar/app-sidebar-morador'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { IResultUsuarioQuery, useListadoUsuario } from '../usuarios/use-usuario'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -40,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
             // backgroundColor: "red",
             flexGrow: 1,
             // width: "100px"
-            minWidth: 900
+            // minWidth: 900
         },
         menuButton: {
             marginRight: theme.spacing(2),
@@ -133,11 +135,28 @@ const NavBar: React.FC = ({ children }) => {
     const router = useRouter()
     const classes = useStyles()
     const [openSidebar, setOpenSidebar] = useRecoilState(showSidebar)
+    const userInformacion = useRecoilValue(userInfo)
+
+
+    // const { data, loading } = useListadoUsuario()
 
     const popupState = usePopupState({
         variant: 'popover',
         popupId: 'demoMenu',
     })
+
+
+    // const [usuarioEncontrado, setUsuarioEncontrado] = useState<IResultUsuarioQuery>();
+
+
+    // useEffect(() => {
+
+    //     if (data && !loading && data.ListaUsuario && userInformacion) {
+    //         const userFound = data.ListaUsuario.find(({ user }) => user === userInformacion.user)
+    //         console.log("data: ", data.ListaUsuario, "user: ", userFound, "userInformacion_ ", userInformacion)
+    //         setUsuarioEncontrado(userFound)
+    //     }
+    // }, [data, loading, userInformacion])
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
@@ -250,7 +269,6 @@ const NavBar: React.FC = ({ children }) => {
         </Menu>
     )
 
-    const userInformacion = useRecoilValue(userInfo)
 
     return (
         <>
@@ -309,18 +327,29 @@ const NavBar: React.FC = ({ children }) => {
           </Typography> */}
 
                                 <div className={classes.grow} />
+
                                 <div className={classes.sectionDesktop}>
-                                    {/* <IconButton
-                                        aria-label="show 17 new notifications"
-                                        // color="primary"
-                                        // color="black"
-                                        className={classes.menuButton}
-                                    // {...bindTrigger(popupState)}
-                                    >
-                                        <Badge badgeContent={17} color="error">
-                                            <NotificationsIcon />
-                                        </Badge>
-                                    </IconButton> */}
+                                    {userInformacion &&
+                                        <div style={{
+                                            justifyItems: "center",
+                                            alignItems: "center",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            paddingTop: "2%"
+                                        }}>
+                                            <div>
+                                                <Typography style={{ textTransform: "uppercase" }} align='center' variant='body2'  >
+                                                    {`${userInformacion.nombres} ${userInformacion.apellidos} - ${userInformacion.num_identificacion}`}
+                                                </Typography>
+                                            </div>
+                                            <div>
+                                                <Typography style={{ textTransform: "uppercase" }} align='center' variant='body2'  >
+                                                    {`${userInformacion.tipo_usuario}`}
+                                                </Typography>
+                                            </div>
+
+
+                                        </div>}
                                     <IconButton
                                         edge="end"
                                         aria-label="account of current user"
@@ -334,7 +363,7 @@ const NavBar: React.FC = ({ children }) => {
                                     </IconButton>
                                 </div>
                                 <div className={classes.sectionMobile}>
-                                    <IconButton
+                                    {/* <IconButton
                                         aria-label="show more"
                                         aria-controls={mobileMenuId}
                                         aria-haspopup="true"
@@ -343,7 +372,18 @@ const NavBar: React.FC = ({ children }) => {
                                     // color="black"
                                     >
                                         <MoreIcon />
-                                    </IconButton>
+                                    </IconButton> */}
+                                    {userInformacion &&
+                                        <div style={{
+                                            justifyItems: "center",
+                                            alignItems: "center",
+                                            display: "flex",
+                                            padding: "8%"
+                                        }}>
+                                            <Typography style={{ textTransform: "uppercase" }} align='center' variant='body2'  >
+                                                {`${userInformacion.nombres} ${userInformacion.apellidos} - ${userInformacion.num_identificacion}`}
+                                            </Typography>
+                                        </div>}
                                 </div>
                             </Toolbar>
                         </AppBar>
@@ -369,6 +409,7 @@ const NavBar: React.FC = ({ children }) => {
                 </>
             ) : null}
             {children}
+
         </>
     )
 }

@@ -1,5 +1,5 @@
 import { Container, makeStyles, Paper } from '@material-ui/core'
-import React from 'react'
+import React, { useMemo } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import LayoutTituloPagina from '../components/layout/tituloPagina-layout'
@@ -7,64 +7,64 @@ import { DashBoardPrueba } from '../components/core/dashboard/dashboardPrueba'
 import { DashBoardPagosRealizados } from '../components/core/dashboard/dashboardPagosRealizados'
 import { CarruselImagenesLogin } from '../components/login/carruselImagenesLogin'
 import { CarruselDashboardHorizontal } from '../components/core/dashboard/CarruselDashboardHorizontal'
+import { useListadoImagenesBienvenidaQuery } from '../components/imagenes-de-bienvenida/use-imagenes-bienvenida'
+import { LUGAR_IMAGEN } from '../utils/keys'
 
 const useStyles = makeStyles({
     gridContent: {
         // marginTop: 80,
-        marginBottom: 180,
+        // marginBottom: 180,
+        // backgroundColor: "red",
+        height: "100%",
+        display: "flex",
+        width: "100%",
+        flexDirection: "column"
+
     },
-    paperItem: {
-        // minWidth: 300,
-        // maxWidth: 450,
-    },
-    cardItem: {
-        display: 'flex',
-        flexDirection: 'row',
-        padding: '30px',
-        alignItems: 'center',
-    },
-    icon: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: 50,
-    },
-    List: {
-        display: 'flex',
-        flexDirection: 'column',
-        marginLeft: '25px',
-    },
-    ListItem: {
-        margin: '2px',
-        width: '100%',
-    },
-    imageLogo: {
-        display: 'flex',
-        justifyContent: 'center',
-        marginBottom: 40,
-        padding: 20,
-    },
-    img: {
-        borderRadius: 10,
-    },
+
     containerImage: {
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
-        // backgroundColor: "red"
+        // alignItems: 'center',
+
     },
     containerCarrusel: {
         display: 'flex',
+        // backgroundColor: "red",
         width: '100%',
-        alignItems: 'center',
+        height: "40%",
+
+        //      alignItems: 'center',
         justifyContent: 'center',
-        margin: 20,
+        flexDirection: "row"
+        // margin: 20,
     },
+    containerBody: {
+        display: "flex",
+        height: "60%",
+        // backgroundColor: "red",
+        flexDirection: "row",
+        width: '100%',
+
+    }
 })
 
 const ScreenHome = () => {
     const classes = useStyles()
     const router = useRouter()
+
+    const { data, loading } = useListadoImagenesBienvenidaQuery();
+    const uriImagenes = useMemo(() => {
+        if (!loading && data) {
+            return data.ListaImagenesSitio.filter(({ lugar }) => LUGAR_IMAGEN.HOME == lugar).map(({ urlImagen }) => {
+                return {
+                    url: urlImagen
+                }
+            })
+        }
+    }, [data, loading])
+
 
     const redirect = (enlace: string) => {
         router.push({
@@ -77,15 +77,21 @@ const ScreenHome = () => {
             <Container className={classes.gridContent}>
                 <div className={classes.containerCarrusel}>
                     <CarruselDashboardHorizontal
-                        imagenes={[
-                            {
-                                url: '/img/urbanizacion.jpg',
-                            },
-                            {
-                                url: '/img/home/logo-home.jpeg',
-                            },
-                        ]}
+                        imagenes={
+                            uriImagenes ?? []
+                            //     [
+                            //     {
+                            //         url: '/img/urbanizacion.jpg',
+                            //     },
+                            //     {
+                            //         url: '/img/home/logo-home.jpeg',
+                            //     },
+                            // ]
+                        }
                     />
+                </div>
+                <div className={classes.containerBody}>
+                    {/* <>dasd</> */}
                 </div>
                 {/* <div className={classes.containerImage}>
                     <DashBoardPagosRealizados />

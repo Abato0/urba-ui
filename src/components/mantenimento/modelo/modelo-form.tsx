@@ -114,16 +114,27 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
 
     const { refetch } = useListaModeloQuery()
 
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPut) {
+
+    const onCloseModalAuht = () => {
+        if (openModalMsj && boolPut) {
             refetch().then(() => {
                 router.push({ pathname: '/mantenimiento/marca/listado' })
             })
+        } else {
+            setOpenModalMsj(false)
         }
-        // }, 2000);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [boolPut, openModalMsj, router])
+    }
+
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPut) {
+    //         refetch().then(() => {
+    //             router.push({ pathname: '/mantenimiento/marca/listado' })
+    //         })
+    //     }
+    //     // }, 2000);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [boolPut, openModalMsj, router])
 
     const [mutate] = isNil(modeloObj)
         ? // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -158,7 +169,7 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
                         })
 
                     if (isNotNilOrEmpty(data)) {
-                        const { message } = isNotNilOrEmpty(data.PutModelo)
+                        const { code, message } = isNotNilOrEmpty(data.PutModelo)
                             ? data.PutModelo
                             : data.PostModelo
                         setLoadingMutate(false)
@@ -168,14 +179,25 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
 
                         //   }, 2000);
 
-                        setErrorModal(false)
+
                         // setMensajeModalMsj(dataMutate.message);
 
-                        if (isNotNilOrEmpty(data.PutModelo)) {
-                            setBoolPut(true)
+
+                        if (code === 200) {
+                            setErrorModal(false)
+                            if (isNotNilOrEmpty(data.PutModelo)) {
+                                setBoolPut(true)
+                                return
+                            }
+
+                            await refetch()
+                            resetForm()
+                        } else {
+                            setErrorModal(true)
                         }
+
                         setOpenModalMsj(true)
-                        resetForm()
+
                     } else {
                         setLoadingMutate(false)
                         setOpenModalMsj(true)
@@ -219,7 +241,8 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    onClose={onCloseModalAuht}
+                    // setOpenModal={setOpenModalMsj}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}

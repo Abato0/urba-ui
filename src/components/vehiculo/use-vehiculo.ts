@@ -24,7 +24,7 @@ export interface IVehiculoVariable {
     placa: string
     marca: IResultQueryMarca
     color: IResultQueryColor
-    status: IResultQueryStatusVehiculo
+    // status: IResultQueryStatusVehiculo
     modelo: IResultQueryModelo
 
     matriculaFrontal: string
@@ -32,6 +32,7 @@ export interface IVehiculoVariable {
     cedulaFrontal: string
     cedulaReverso: string
     num_doc_identidad: string
+    ano: number
 }
 
 export interface IVehiculoVariableNormalize {
@@ -41,7 +42,8 @@ export interface IVehiculoVariableNormalize {
     marca: string
     color: string
     modelo: string
-    status: string
+    ano: number
+    // status: string
 }
 
 export const useSaveVehiculoMutation = () => {
@@ -114,7 +116,7 @@ export const useListadoVehiculoFilterQuery = (
             idGrupoFamiliar: 0,
             marca: '',
             modelo: '',
-            status: '',
+            // status: '',
         }),
     })
 }

@@ -157,11 +157,11 @@ const LogListado = () => {
 
     const [tipoUsuarioFilter, setTipoUsuarioFilter] = useState<string>()
 
-    const {
-        data: dataListadoGrupoFamiliar,
-        loading: loadingListadoGrupoFamiliar,
-        error: errorListadoGrupoFamiliar,
-    } = useListarGrupoFamiliar()
+    // const {
+    //     data: dataListadoGrupoFamiliar,
+    //     loading: loadingListadoGrupoFamiliar,
+    //     error: errorListadoGrupoFamiliar,
+    // } = useListarGrupoFamiliar()
 
     useEffect(() => {
         if (isNotNilOrEmpty(data) && !loading) {
@@ -221,17 +221,25 @@ const LogListado = () => {
         if (isNotNilOrEmpty(dataLog)) {
             const workSheet = XLSX.utils.json_to_sheet(dataLog)
             const workBook = XLSX.utils.book_new()
-            XLSX.utils.book_append_sheet(workBook, workSheet, 'Pagos')
+            XLSX.utils.book_append_sheet(workBook, workSheet, 'Aportaciones')
             XLSX.write(workBook, { bookType: 'xlsx', type: 'binary' })
-            XLSX.writeFile(workBook, 'Listado de Pagos Generados.xlsx')
+            XLSX.writeFile(workBook, 'Listado de Aportaciones Generadas.xlsx')
         }
     }
 
     const filtrar = () => {
-        if (nombreGrupoFamiliarFilter || tipoUsuarioFilter || moduloFilter) {
-            const result = dataLog.filter(
-                ({ modulo, tipoUsuario }) =>
-                    modulo == moduloFilter || tipoUsuario == tipoUsuarioFilter
+        if (data && data.ListaLog && (tipoUsuarioFilter || moduloFilter)) {
+
+            // console.log("tipoUsuarioFilter: ", tipoUsuarioFilter, "moduloFilter: ", moduloFilter)
+
+            const result = data.ListaLog.filter(
+                ({ modulo, tipoUsuario }) => {
+                    if (moduloFilter && tipoUsuarioFilter) {
+                        return modulo == moduloFilter && tipoUsuario == tipoUsuarioFilter
+                    }
+                    return modulo == moduloFilter || tipoUsuario == tipoUsuarioFilter
+                }
+
                 // nombre_familiar == nombreGrupoFamiliarFilter
             )
 
@@ -255,7 +263,7 @@ const LogListado = () => {
                 <div className={classes.contenFilter}>
                     <div className={classes.contentButtons}>
                         <div className={classes.contentForm}>
-                            <div>
+                            <div style={{}}>
                                 <SelectModulos
                                     handleChange={(e: SelectChangeEvent) =>
                                         setModuloFilter(e.target.value)
@@ -263,6 +271,7 @@ const LogListado = () => {
                                     value={moduloFilter}
                                     label={'Módulo'}
                                     id={'modulo_log'}
+                                    style={{ minWidth: "180px" }}
                                 />
                                 <SelectTipoUsuario
                                     handleChange={(e: SelectChangeEvent) =>
@@ -271,6 +280,7 @@ const LogListado = () => {
                                     value={tipoUsuarioFilter}
                                     id={'tipoUsuarioFilter'}
                                     label={'Rol'}
+                                    style={{ minWidth: "180px" }}
                                 />
                             </div>
                         </div>

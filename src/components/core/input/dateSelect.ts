@@ -161,7 +161,7 @@ export const tipoDocumentosIdentidad: string[] = [
     'Carnet de extranjeria',
 ]
 
-export const arrAnios: number[] = range(2000, 2100)
+export const arrAnios: number[] = range(2021, 2100)
 export enum ETipoAporte {
     implementacion = 'Implementacion',
     mantenimiento = 'Mantenimiento',
@@ -239,7 +239,7 @@ export enum EMODULOS {
 export enum EMANTENIMIENTO {
     MANZANA = 'Manzana',
     MARCA = 'Marca',
-    CALLE = 'Calle',
+    CALLE = 'Calles y Peatonales',
     COLOR = 'Color',
     MODELO = 'Modelo',
     PARENTESCO = 'Parentesco',

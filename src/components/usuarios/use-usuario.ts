@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
 import {
+    asignacionUsuario,
     cambioContrasena,
     contrasenaOlvidada,
     deleteUsuario,
@@ -12,6 +13,7 @@ import {
     updateUsuario,
 } from './usuario-typeDefs'
 import { IResultQueryTipoIdentificacion } from '../mantenimento/tipo-identificacion/use-tipo-identificacion'
+import { isNil } from 'ramda'
 
 export interface IResultUsuarioQuery {
     id: number
@@ -51,8 +53,11 @@ export const useListadoUsuarioSinFamilares = () => {
     )
 }
 
-export const useGetUsuario = () => {
-    return useQuery<IGetUsuarioQuery>(getUsuarioQuery)
+export const useGetUsuario = (id?: number) => {
+    return useQuery<IGetUsuarioQuery>(getUsuarioQuery, {
+        variables: { id },
+        skip: isNil(id),
+    })
 }
 
 export const useGetUsuarioToken = () => {
@@ -86,5 +91,10 @@ export const useUpdateUsuarioMutation = () => {
 
 export const useEnvioCorreoMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(envioCorreos)
+    return [mutate, data, loading, error]
+}
+
+export const useAsignacionUsuarioMutate = () => {
+    const [mutate, { data, loading, error }] = useMutation(asignacionUsuario)
     return [mutate, data, loading, error]
 }

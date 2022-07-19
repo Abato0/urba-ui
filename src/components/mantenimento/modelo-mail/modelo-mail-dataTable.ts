@@ -12,10 +12,15 @@ export const columnsModeloMail = Object.freeze([
         Header: 'Categoria',
         accessor: 'categoria',
     },
+
     {
-        Header: 'Titulo',
-        accessor: 'titulo',
+        Header: 'Remitente',
+        accessor: 'remitente',
     },
+    // {
+    //     Header: 'Titulo',
+    //     accessor: 'titulo',
+    // },
     {
         Header: 'Asunto',
         accessor: 'asunto',
@@ -27,6 +32,11 @@ export const columnsModeloMail = Object.freeze([
     {
         Header: 'Texto Inferior',
         accessor: 'textoInferior',
+    },
+
+    {
+        Header: 'Firma',
+        accessor: 'firma',
     },
 
     {

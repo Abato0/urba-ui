@@ -1,8 +1,12 @@
 import { atom } from 'recoil'
 
 export interface IUserInfo {
+    id: number
     user: string
     tipo_usuario: string
+    nombres: string
+    apellidos: string
+    num_identificacion: string
     token?: string
 }
 

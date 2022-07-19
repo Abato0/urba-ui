@@ -25,6 +25,7 @@ import {
     publicPages,
 } from '../../utils/keys'
 import { isNotEmpty } from '../../utils/is-nil-empty'
+import { ItemsOperacionesAdmin, ItemOperacionesOperador, ItemsOperacionesMorador, ItemsListadoOperador, ItemsRegistrosOperador } from '../../utils/keys';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -117,6 +118,10 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
                     setUsuarioState({
                         tipo_usuario: result.data.tipo,
                         user: result.data.usuario,
+                        id: result.data.id,
+                        apellidos: result.data.apellidos,
+                        nombres: result.data.nombres,
+                        num_identificacion: result.data.num_identificacion
                     })
                 }
                 setLoading(false)
@@ -145,7 +150,9 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
         if (!loading && authFlag && isNotEmpty(tipoUsuario)) {
             return equals(tipoUsuario, TipoUsuario.ADMIN)
                 ? ItemsListadoAdmin
-                : ItemsListadoMorador
+                : equals(tipoUsuario, TipoUsuario.OPERATIVO)
+                    ? ItemsListadoOperador
+                    : ItemsListadoMorador
         }
         return []
     }, [loading, authFlag, tipoUsuario])
@@ -153,8 +160,10 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
     const itemRegistroFilter = useMemo(() => {
         if (!loading && authFlag && isNotEmpty(tipoUsuario)) {
             return equals(tipoUsuario, TipoUsuario.ADMIN)
-                ? ItemsRegistrosADMIN
-                : ItemsRegistrosMorador
+                ? ItemsRegistrosADMIN :
+                equals(tipoUsuario, TipoUsuario.OPERATIVO)
+                    ? ItemsRegistrosOperador
+                    : ItemsRegistrosMorador
         }
         return []
     }, [loading, authFlag, tipoUsuario])
@@ -177,6 +186,18 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
         return []
     }, [loading, authFlag, tipoUsuario])
 
+
+    const itemsOperacionesFilter = useMemo(() => {
+        if (!loading && authFlag && isNotEmpty(tipoUsuario)) {
+            return equals(tipoUsuario, TipoUsuario.ADMIN)
+                ? ItemsOperacionesAdmin
+                : equals(tipoUsuario, TipoUsuario.OPERATIVO) ?
+                    ItemOperacionesOperador
+                    : ItemsOperacionesMorador
+        }
+        return []
+    }, [loading, authFlag, tipoUsuario])
+
     return (
         <>
             {!loading && authFlag ? (
@@ -186,6 +207,7 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
                         <div style={{ display: "flex", width: "100%", height: "100%", flexDirection: "row" }}>
                             {/* <div style={{ display: "flex", width: "20%", flexDirection: "column" }}> */}
                             <SideBar
+                                ItemsOperaciones={itemsOperacionesFilter}
                                 ItemsListado={itemListadoFilter}
                                 ItemsMantenimiento={itemManteniementoFilter}
                                 ItemsRegistros={itemRegistroFilter}

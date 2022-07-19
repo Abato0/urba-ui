@@ -1,9 +1,11 @@
 import axios from 'axios'
 import { concat } from 'ramda'
+import { IResultQueryImagenesSitio } from '../components/imagenes-de-bienvenida/use-imagenes-bienvenida'
 import { IOutput } from '../components/mantenimento/calle/use-calle'
 import { IUserInfo } from '../utils/states'
 // import { URL_BASE_API } from '../utils/keys'
 const URL_BASE_API = 'https://urbaapi.nodedatatest.com'
+//const URL_BASE_API = 'http://localhost:8888'
 
 export const login = async (
     user: string,
@@ -31,6 +33,22 @@ export const authMe = async (token: string) => {
         withCredentials: true,
     })
     return resultado.data
+}
+
+export const imagenesLogin = async () => {
+    const resultado = await axios({
+        method: 'get',
+        url: `${URL_BASE_API}/api/usuario/imagenes/login`,
+    })
+    return resultado.data as IResultQueryImagenesSitio[]
+}
+
+export const imagenesRecordarContrasena = async () => {
+    const resultado = await axios({
+        method: 'get',
+        url: `${URL_BASE_API}/api/usuario/imagenes/recordar-contrasena`,
+    })
+    return resultado.data as IResultQueryImagenesSitio[]
 }
 
 export const recordarContrasena = async (

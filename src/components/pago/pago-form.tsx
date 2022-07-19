@@ -364,8 +364,9 @@ export const PagoFormIngresar = () => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    // setOpenModal={setOpenModalMsj}
                     title={titleModalMsj}
+                    onClose={() => setOpenModalMsj(false)}
                     message={mensajeModalMsj}
                     error={errorModal}
                 />

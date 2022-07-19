@@ -2,6 +2,8 @@ import { IResultQueryValorTag } from '../mantenimento/valor-tag/use-valor-tag'
 import { IVehiculoVariable } from '../vehiculo/use-vehiculo'
 import { useMutation, useQuery } from '@apollo/client'
 import {
+    cambiarEstadoTag,
+    deleteTag,
     getTag,
     listadoAllTags,
     listadoTagPagos,
@@ -12,6 +14,18 @@ import {
     putTag,
 } from './tag-typedef'
 import { isNil } from 'ramda'
+
+export enum EstadoTag {
+    DISPONIBLE = 'D',
+    OCUPADO = 'O',
+    INACTIVO = 'I',
+}
+
+export enum EstadoTagRow {
+    DISPONIBLE = 'Disponible',
+    OCUPADO = 'Ocupado',
+    INACTIVO = 'Inactivo',
+}
 
 export interface IResultQueryTagPagos {
     id: number
@@ -92,6 +106,11 @@ export const usePutTagMutation = () => {
 }
 
 export const useDeleteTagMutation = () => {
-    const [mutate, { data, loading, error }] = useMutation(putTag)
+    const [mutate, { data, loading, error }] = useMutation(deleteTag)
     return [mutate, data, loading, error]
+}
+
+export const useCambiarEstadoTag = () => {
+    const [mutate] = useMutation(cambiarEstadoTag)
+    return [mutate]
 }

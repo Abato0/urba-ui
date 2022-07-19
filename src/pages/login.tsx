@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Head from 'next/head'
 import {
@@ -18,7 +18,7 @@ import { useFormik } from 'formik'
 import { isNotNilOrEmpty, isNilOrEmpty } from '../utils/is-nil-empty'
 import { useRouter } from 'next/router'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
-import { login } from '../auth/auth-service'
+import { imagenesLogin, login } from '../auth/auth-service'
 import ModalAuth from '../components/core/input/dialog/modal-dialog'
 import AppLayoutLogin from '../components/layout/auth-login'
 import { LoadingButton } from '@mui/lab'
@@ -26,6 +26,8 @@ import { MeetingRoom as MettingRoomIcon } from '@material-ui/icons'
 import { CarruselImagenesLogin } from '../components/login/carruselImagenesLogin'
 import { EnlacesSidebar } from '../utils/routes'
 import Cookies from 'js-cookie'
+import { useListadoImagenesBienvenidaQuery } from '../components/imagenes-de-bienvenida/use-imagenes-bienvenida'
+import { LUGAR_IMAGEN } from '../utils/keys'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -185,18 +187,21 @@ const LoginScreen = () => {
 
     const [loading, setLoading] = useState(false)
 
+
+
+
     const onSubmit = useCallback(
         async ({ usuario, password }, { setSubmitting }) => {
             try {
                 setLoading(true)
                 // return router.push("home/user");
-                console.log('user: ', usuario, 'password', password)
+                // console.log('user: ', usuario, 'password', password)
                 // console.log(login)
                 if (isNotNilOrEmpty(usuario) && isNotNilOrEmpty(password)) {
                     //   const hash =btoa(password)
                     // console.log("hash ",hash)
                     const data = await login(usuario, password)
-                    console.log('data: ', data)
+                    // console.log('data Login: ', data)
 
                     if (data.token) {
                         const date = new Date();
@@ -267,7 +272,23 @@ const LoginScreen = () => {
         validationSchema,
     })
 
-    const classes = useStyles()
+    const classes = useStyles();
+
+    const [imagenes, setImagenes] = useState<string[]>([])
+
+    useEffect(() => {
+        const getImagen = async () => {
+            try {
+                const result = await imagenesLogin();
+                const r = result.map(({ urlImagen }) => urlImagen);
+                setImagenes(r)
+            } catch (error) {
+                console.log("Error: ", (error as Error).message);
+                setImagenes([])
+            }
+        }
+        getImagen()
+    }, [])
     return (
         <AppLayoutLogin>
             <Head>
@@ -278,19 +299,21 @@ const LoginScreen = () => {
                     {openErrorLogin && (
                         <ModalAuth
                             openModal={openErrorLogin}
-                            setOpenModal={setOpenErrorLogin}
+                            onClose={() => setOpenErrorLogin(false)}
+                            // setOpenModal={setOpenErrorLogin}
                             title={messageError}
                             message={messageError}
                         />
                     )}
                     <Box className={classes.cardLogin}>
-                        <Box className={classes.cardLoginColumn}>
-                            <div className={classes.cardTituloLogin}>
+                        <Box className={classes.cardLoginColumn} style={{ maxWidth: "70vh" }}>
+                            <div className={classes.cardTituloLogin} >
                                 <Typography
                                     variant="h5"
                                     className={classes.titulo}
+                                    style={{ textTransform: "uppercase", textAlign: "center" }}
                                 >
-                                    Login
+                                    BIENVENIDO A LA PLATAFORMA DE CONTROL DE APORTACIONES DE CEP28M
                                 </Typography>
                             </div>
                             <form
@@ -309,7 +332,7 @@ const LoginScreen = () => {
                                         onChange={handleChange}
                                         onBlur={handleBlur}
                                         autoComplete="username"
-                                        label="Email"
+                                        label="Número de Identificación"
                                         margin="normal"
                                         error={
                                             touched.usuario &&
@@ -333,7 +356,7 @@ const LoginScreen = () => {
                                         onChange={handleChange}
                                         onBlur={handleBlur}
                                         autoComplete="current-password"
-                                        label="Password"
+                                        label="Contraseña"
                                         margin="normal"
                                         error={
                                             touched.password &&
@@ -389,7 +412,7 @@ const LoginScreen = () => {
                         </Box>
                         <Hidden smDown>
                             <Box className={classes.cardLoginImg}>
-                                <CarruselImagenesLogin />
+                                <CarruselImagenesLogin imagenes={imagenes} />
                             </Box>
                         </Hidden>
                     </Box>

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { FC, useCallback, useState } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Box, Slide, Modal } from '@material-ui/core'
@@ -74,6 +75,7 @@ interface IProps {
     ItemsListado: IHeaderSidebar[]
     ItemsRegistros: IHeaderSidebar[]
     ItemsMantenimiento: IHeaderSidebar[]
+    ItemsOperaciones: IItemsSidebar[]
 }
 
 const Sidebar: FC<IProps> = ({
@@ -81,6 +83,7 @@ const Sidebar: FC<IProps> = ({
     ItemsMantenimiento,
     ItemsRegistros,
     ItemsUsuario,
+    ItemsOperaciones
 }) => {
     const classes = useStyles()
     const router = useRouter()
@@ -105,13 +108,17 @@ const Sidebar: FC<IProps> = ({
             open={openShowSideBar}
             onClose={() => setOpenShoSidebar(false)}
             style={{
-                overflow: "scroll"
+                // overflow: "scroll",
+                display: "flex",
+                // minHeight: "100px"
+
             }}
+
         // mountOnEnter
         // unmountOnExit
         //   style={{ backgroundColor: "red" }}
         >
-            <Box className={classes.root}>
+            <Box className={classes.root} style={{ overflow: "scroll" }}>
                 <div className={classes.logoContainer}>
                     <img
                         src="/logo-28.svg"
@@ -124,7 +131,7 @@ const Sidebar: FC<IProps> = ({
                     //   className={classes.imageLogo}
                     />
                 </div>
-                {isNotEmpty(ItemsUsuario) && (
+                {/* {isNotEmpty(ItemsUsuario) && (
                     <AcordionHeader
                         icon={faUser}
                         label={'Usuarios'}
@@ -150,7 +157,33 @@ const Sidebar: FC<IProps> = ({
                             )
                         })}
                     </AcordionHeader>
-                )}
+                )} */}
+
+                {isNotEmpty(ItemsOperaciones) && <AcordionHeader
+                    icon={faUser}
+                    label={'Operaciones'}
+                    selected={isNotNil(
+                        ItemsUsuario.find(
+                            ({ ruta }) => ruta === router.pathname
+                        )
+                    )}
+                >
+                    {ItemsOperaciones.map((item, index) => {
+                        return (
+                            <ItemSidebar
+                                key={index}
+                                icon={item.icon}
+                                eventClick={() =>
+                                    router.push({
+                                        pathname: item.ruta,
+                                    })
+                                }
+                                label={item.label}
+                                selected={router.pathname === item.ruta}
+                            />
+                        )
+                    })}
+                </AcordionHeader>}
 
                 {isNotEmpty(ItemsListado) && (
                     <AcordionHeader
@@ -261,7 +294,7 @@ const Sidebar: FC<IProps> = ({
                     <AcordionHeader
                         selected={selectedMantenimientoHeader}
                         icon={faTools}
-                        label={'Mantenimiento'}
+                        label={'Parametrización'}
                     >
                         {ItemsMantenimiento.map((itemHeader, indexHeader) => {
                             return (
@@ -309,7 +342,7 @@ const Sidebar: FC<IProps> = ({
                         })}
                     </AcordionHeader>
                 )}
-                <div style={{ marginTop: "10px", padding: "5px" }}>
+                <div style={{ marginTop: "10px", padding: "5px", backgroundColor: "white" }}>
                     <ItemSidebar
                         eventClick={cerrarSession}
                         label={"Cerrar Sesion"}

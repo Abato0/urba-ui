@@ -311,7 +311,7 @@ const MantenimientoParentescoListado = () => {
     }, [loading, data])
 
     return (
-        <LayoutTituloPagina titulo="Pagos - Listado de Pagos por concepto de Tags">
+        <LayoutTituloPagina titulo="Aportaciones - Listado de Aportaciones por concepto de Tags">
             <PermisoLayout
                 tipoUsuarioRecibido={[TipoUsuario.ADMIN, TipoUsuario.OPERATIVO]}
             >
@@ -319,7 +319,8 @@ const MantenimientoParentescoListado = () => {
                     {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
-                            setOpenModal={setOpenModalMsj}
+                            // setOpenModal={setOpenModalMsj}
+                            onClose={() => setOpenModalMsj(false)}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                             error={errorModal}

@@ -212,7 +212,7 @@ const MantenimientoStatusVehiculoListado = () => {
                             <TableContainer>
                                 <Table
                                     // className={classes.table}
-                                    padding="normal"
+                                    padding="normal"     
                                     stickyHeader
                                     aria-label="sticky table"
                                     {...getTableProps()}

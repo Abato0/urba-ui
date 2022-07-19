@@ -158,13 +158,13 @@ const MantenimientoModeloListado = () => {
     )
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Modelos de Vehiculos">
+        <LayoutTituloPagina titulo="Parametrizacion - Modelos de Vehiculos">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 <>
                     {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
-                            setOpenModal={setOpenModalMsj}
+                            onClose={() => setOpenModalMsj(false)}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                             error={errorModal}
@@ -188,7 +188,7 @@ const MantenimientoModeloListado = () => {
                                     variant="overline"
                                     className={classes.title}
                                 >
-                                    {'Listado de Marcas de los Vehiculos'}
+                                    {'Listado de Modelos de los Vehiculos'}
                                 </Typography>
                             </div>
                             <div className={classes.contentButtons}>

@@ -186,6 +186,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
             }
             : initialValues
     }, [integrante])
+
     const router = useRouter()
     const classes = useStyles()
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
@@ -208,32 +209,44 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
         error: errorListadoTipoID,
     } = useListaTipoIdentificacionQuery()
 
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPut) {
+    const closeModalAuth = () => {
+        if (openModalMsj && boolPut) {
             refetch().then(() => {
                 router.push({ pathname: '/integrante/listado' })
             })
+
+            // console.log("1")
+        } else {
+            setOpenModalMsj(false)
+            //console.log("2", " * ", openModalMsj && boolPut)
         }
-        // }, 2000);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [boolPut, openModalMsj])
+    }
+
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPut) {
+    //         refetch().then(() => {
+    //             router.push({ pathname: '/integrante/listado' })
+    //         })
+    //     }
+    //     // }, 2000);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [boolPut, openModalMsj])
 
     const {
         data: dataParentesco,
         loading: loadingParentesco,
-        error: errorParentesco,
     } = useListaParentescoQuery()
 
-    const [mutate, data, loading, error] = isNil(integrante)
+    const [mutate] = isNil(integrante)
         ? usePostIntegranteMutation()
         : useUpdateIntegranteMutation()
 
     // const [mutateUpdate] = useUpdateIntegranteMutation();
 
-    const [dataGrupoFamiliar, setDataGrupoFamiliar] = useState<
-        IGrupoFamiliar[]
-    >([])
+    // const [dataGrupoFamiliar, setDataGrupoFamiliar] = useState<
+    //     IGrupoFamiliar[]
+    // >([])
 
     const onSubmit = useCallback(
         async (
@@ -299,9 +312,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                             },
                         })
                     if (
-                        isNotNilOrEmpty(dataMutate) &&
-                        (isNotNilOrEmpty(dataMutate.PostIntegrante) ||
-                            isNotNilOrEmpty(dataMutate.UpdateIntegrante))
+                        isNotNilOrEmpty(dataMutate)
                     ) {
                         const { code, message } = isNotNilOrEmpty(
                             dataMutate.PostIntegrante
@@ -311,15 +322,18 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                         setTitleModalMsj(message)
                         setLoadingMutate(false)
                         setOpenModalMsj(true)
+
                         setErrorModal(code === 200 ? false : true)
-                        if (
-                            isNotNilOrEmpty(dataMutate.UpdateIntegrante) &&
-                            code === 200
-                        ) {
-                            setBoolPut(true)
+                        if (code === 200) {
+                            if (isNotNilOrEmpty(dataMutate.UpdateIntegrante)) {
+                                setBoolPut(true)
+                                return
+                            }
+                            await refetch();
+                            resetForm();
                         }
 
-                        console.log('Messaget: ', message)
+                        //  console.log('Messaget: ', message)
 
                         // resetForm();
                     } else if (dataMutate === null) {
@@ -327,7 +341,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                         setTitleModalMsj('Usuario no autorizado')
                         setErrorModal(true)
                         setOpenModalMsj(true)
-                        console.log('dasdasdasd')
+
                     }
                 }
             } catch (err: any) {
@@ -366,7 +380,8 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    // setOpenModal={setOpenModalMsj}
+                    onClose={() => { closeModalAuth() }}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
@@ -393,7 +408,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                         handleBlur={handleBlur}
                         id="idGrupoFamiliar"
                         handleChange={handleChange}
-                        labetTitulo=" Grupo Familiar del Deposito"
+                        labetTitulo=" Grupo Familiar"
                         value={values.idGrupoFamiliar}
                     >
                         {!loadingListaGrupoFamiliar &&

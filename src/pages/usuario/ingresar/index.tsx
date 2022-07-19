@@ -8,33 +8,36 @@ import {
     TextField,
     Typography,
 } from '@material-ui/core'
-import AppLayout from '../../components/layout/app-layout'
-import { FormIngresarUsuario } from '../../components/usuarios/form-ingresar-usuario'
+import AppLayout from '../../../components/layout/app-layout'
+import { FormIngresarUsuario } from '../../../components/usuarios/form-ingresar-usuario'
 import Fuse from 'fuse.js'
 import { isNil, pluck, prop } from 'ramda'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import useDebounce from '../../utils/useDebounce'
-import { useListadoUsuario } from '../../components/usuarios/use-usuario'
+import useDebounce from '../../../utils/useDebounce'
+import { useListadoUsuario, useListadoUsuarioSinFamilares } from '../../../components/usuarios/use-usuario'
 import {
     IResultUsuarioQuery,
     useDeleteUsuarioMutation,
-} from '../../components/usuarios/use-usuario'
+} from '../../../components/usuarios/use-usuario'
 import {
     isNilOrEmpty,
     isNotNil,
     isNotNilOrEmpty,
-} from '../../utils/is-nil-empty'
+} from '../../../utils/is-nil-empty'
 import { useTable, usePagination } from 'react-table'
-import { columnsTags } from '../../components/tag/tag-dataTable'
-import ModalAuth from '../../components/core/input/dialog/modal-dialog'
-import CardTableBody from '../../components/table/table-body'
-import TableHeader from '../../components/table/table-header'
-import TablePaginations from '../../components/table/table-paginations'
-import { columnsUsuario } from '../../components/usuarios/usuario-dataTable'
-import { TipoUsuario } from '../../components/core/input/dateSelect'
-import PermisoLayout from '../../components/layout/auth-layout/permiso-layout'
-import NavBar from '../../components/layout/app-bar'
-import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
+import { columnsTags } from '../../../components/tag/tag-dataTable'
+import ModalAuth from '../../../components/core/input/dialog/modal-dialog'
+import CardTableBody from '../../../components/table/table-body'
+import TableHeader from '../../../components/table/table-header'
+import TablePaginations from '../../../components/table/table-paginations'
+import { columnsUsuario } from '../../../components/usuarios/usuario-dataTable'
+import { TipoUsuario } from '../../../components/core/input/dateSelect'
+import PermisoLayout from '../../../components/layout/auth-layout/permiso-layout'
+import NavBar from '../../../components/layout/app-bar'
+import LayoutTituloPagina from '../../../components/layout/tituloPagina-layout'
+import ModalVinculacionUsuario from '../../../components/usuarios/modalVinculacion'
+import { useRouter } from 'next/router'
+import { useListarGrupoFamiliarSinUsuarios } from '../../../components/grupo-familiar/use-grupo-familia'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -135,7 +138,7 @@ const optionsFuse: Fuse.IFuseOptions<any> = {
 
 const getRowId: any = prop('id')
 
-interface IUsuarioNormalize {
+export interface IUsuarioNormalize {
     tipo_usuario: string
     user: string
     nombre_completo: string
@@ -164,6 +167,20 @@ const IngresarUsuario = () => {
     const [errorModal, setErrorModal] = useState<boolean>(false)
     const [search, setSearch] = useState<string>('')
     const debounceSearch = useDebounce(search, 300)
+    const router = useRouter()
+
+    const { data: dataListarGrupo, loading: loadingListarGrupo } = useListadoUsuarioSinFamilares()
+
+    const listadoSinUsuarios = useMemo(() => {
+        if (!loadingListarGrupo && dataListarGrupo) {
+            return dataListarGrupo.ListaUsuarioSinGrupoFamiliar || []
+        }
+        return []
+    }, [dataListarGrupo, loadingListarGrupo])
+
+    const [openModalVincular, setOpenModalVincular] = useState(false)
+    const [idUsuario, setIdUsuario] = useState<number>()
+
 
     const [dataUsuario, setDataUsuario] = useState<IUsuarioNormalize[]>([])
 
@@ -174,7 +191,27 @@ const IngresarUsuario = () => {
         if (isNotNilOrEmpty(data) && !loading) {
             setDataUsuario(extractData(data?.ListaUsuario ?? []))
         }
-    }, [data, loading, error])
+    }, [data, loading, error]);
+
+
+    const onVerificar = ({ id }: any) => {
+        return listadoSinUsuarios.some((usuario) => usuario.id === id);
+        // return false
+    }
+
+
+    const onVincular = ({ id }: any) => {
+
+
+        setIdUsuario(id);
+        setOpenModalVincular(true)
+    }
+
+    const onEditar = ({ id }: any) => {
+        router.push({
+            pathname: "/usuario/ingresar/" + id
+        })
+    }
 
     const onDelete = useCallback(async ({ id }: any) => {
         try {
@@ -221,6 +258,9 @@ const IngresarUsuario = () => {
             data: dataUsuario,
             getRowId,
             onDelete,
+            onVincular,
+            onEditar,
+            onVerificar
         },
         usePagination
     )
@@ -266,12 +306,25 @@ const IngresarUsuario = () => {
                     {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
-                            setOpenModal={setOpenModalMsj}
+                            onClose={() => setOpenModalMsj(false)}
+                            // setOpenModal={setOpenModalMsj}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                             error={errorModal}
                         />
                     )}
+
+
+                    {
+                        openModalVincular && idUsuario &&
+                        (
+                            <ModalVinculacionUsuario
+                                idUsuario={idUsuario}
+                                open={openModalVincular}
+                                onClose={() => setOpenModalVincular(false)}
+                            />
+                        )
+                    }
                 </>
                 <div
                     style={{ justifyContent: 'space-around' }}

@@ -6,8 +6,9 @@ import {
     Box,
     MenuItem,
     TextField,
+    Button,
 } from '@material-ui/core'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import ModalAuth from '../core/input/dialog/modal-dialog'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
@@ -31,6 +32,8 @@ import { ButtonCargarImagen } from './buttonCargarImagen'
 import ModalImagenFile from '../core/input/dialog/modal-ver-imagen-file'
 import { COLOR_PRIMARIO } from '../../utils/keys'
 import { ButtonVerImage } from './buttonVerImagen'
+import { listadoVehiculo } from './vehiculo-typeDef';
+import { useListadoVehiculosQuery } from './use-vehiculo';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -154,24 +157,33 @@ const useStyles = makeStyles((theme) =>
     })
 )
 
+
 const initialValues = Object.freeze({
-    idGrupoFamiliar: 0,
+    idGrupoFamiliar: undefined,
     // tipo_vehiculo: "",
-    placa: '',
-    id_marca: 0,
-    id_color: 0,
-    id_modelo: 0,
-    id_status: 0,
+    placa: "",
+    id_marca: undefined,
+    id_color: undefined,
+    id_modelo: undefined,
+    // id_status: 0,
     matriculaFrontal: null,
     matriculaReverso: null,
     cedulaFrontal: null,
     cedulaReverso: null,
     num_doc_identidad: '',
+    ano: undefined
     // matriculaPdf: ""
 })
 
 export const FILE_SIZE = 10 * 1024 * 1024
-const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']
+const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'];
+
+const ano_vehicular_minimo = 1980
+
+const anioActual = () => {
+    const date = new Date();
+    return date.getFullYear()
+}
 
 const validationSchema = yup.object().shape({
     idGrupoFamiliar: yup.number().required('Campo Requerido'),
@@ -180,7 +192,7 @@ const validationSchema = yup.object().shape({
     id_marca: yup.number().required('Campo Requerido'),
     id_color: yup.number().required('Campo Requerido'),
     id_modelo: yup.number().required('Campo Requerido'),
-    id_status: yup.number().required('Campo Requerido'),
+    // id_status: yup.number().required('Campo Requerido'),
     matriculaFrontal: yup.mixed().nullable(),
     // .required("A file is required")
     // .test(
@@ -220,6 +232,11 @@ const validationSchema = yup.object().shape({
         .min(10, 'La cantidad de digitos debe ser mayor o igual 10 ')
         .max(15, 'La cantidad de digitos debe ser menor o igual 15 ')
         .required('Campo requerido'),
+
+    ano: yup.number()
+        .required("Campo requerido")
+        .min(ano_vehicular_minimo, "El año del vehiculo excede el limite mínimo permitdo")
+        .max(anioActual(), "El año del vehiculo excede el limite maximo permitido")
     // .test(
     //   "fileFormat",
     //   "Unsupported Format",
@@ -227,18 +244,22 @@ const validationSchema = yup.object().shape({
     // ),
 })
 
+
+
+
 export interface IVehiculoInputRegistro {
     idGrupoFamiliar: number
     placa: string
     id_marca: number
     id_color: number
     id_modelo: number
-    id_status: number
+    // id_status: number
     matriculaFrontal?: File
     matriculaReverso?: File
     cedulaFrontal?: File
     cedulaReverso?: File
     num_doc_identidad: string
+    ano: number
     // matriculaPdf?: string;
 }
 
@@ -257,6 +278,12 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
     const [boolPut, setBoolPut] = React.useState<boolean>(false)
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
+    // const anio_actual = useMemo(() => {
+    //     const date = new Date();
+    //     return date.getFullYear()
+    // }, [])
+
+    const { refetch } = useListadoVehiculosQuery()
     const {
         data: dataModelo,
         loading: loadingModelo,
@@ -269,11 +296,11 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
         error: errorMarca,
     } = useListaMarcaQuery()
 
-    const {
-        data: dataStatus,
-        loading: loadingStatus,
-        error: errorStatus,
-    } = useListaStatusVehiculoQuery()
+    // const {
+    //     data: dataStatus,
+    //     loading: loadingStatus,
+    //     error: errorStatus,
+    // } = useListaStatusVehiculoQuery()
 
     const {
         data: dataListadoColor,
@@ -281,7 +308,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
         error: errorListadoColor,
     } = useListaColorQuery()
 
-    const [file, setFile] = React.useState<File>()
+    // const [file, setFile] = React.useState<File>()
 
     const {
         data: dataGrupoFamiliar,
@@ -301,32 +328,54 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
     // });
 
     const init = React.useMemo(() => {
-        // const {ma} = vehiculo
 
-        if (!isNil(vehiculo)) {
-            // const { matriculaPdf, ...props } = vehiculo;
-            // console.log("props: ", props);
+        return isNotNilOrEmpty(vehiculo)
+            ?
+            {
+                idGrupoFamiliar: vehiculo?.idGrupoFamiliar,
+                placa: vehiculo?.placa,
+                id_marca: vehiculo?.id_marca,
+                id_color: vehiculo?.id_color,
+                id_modelo: vehiculo?.id_modelo,
+                // id_status: number
+                matriculaFrontal: vehiculo?.cedulaFrontal,
+                matriculaReverso: vehiculo?.matriculaReverso,
+                cedulaFrontal: vehiculo?.cedulaFrontal,
+                cedulaReverso: vehiculo?.cedulaReverso,
+                num_doc_identidad: vehiculo?.num_doc_identidad,
+                ano: vehiculo?.ano
+            }
+            : initialValues
 
-            console.log('vehiculos: ', vehiculo)
-            return vehiculo
-        } else {
-            return initialValues
-        }
     }, [vehiculo])
+
+
+    useEffect(() => { console.log("Init Values: ", init) }, [init])
 
     const [mutate] = isNotNilOrEmpty(vehiculo)
         ? useUpdateVehiculoMutation()
         : useSaveVehiculoMutation()
 
-    const router = useRouter()
+    const router = useRouter();
 
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPut) {
-            router.push({ pathname: '/vehiculo/listado' })
+    const onCloseAuth = () => {
+        if (openModalMsj && boolPut) {
+            refetch().then(() => {
+                router.push({ pathname: '/vehiculo/listado' })
+            })
+
+        } else {
+            setOpenModalMsj(false)
         }
-        // }, 2000);
-    }, [boolPut, openModalMsj])
+    }
+
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPut) {
+    //         router.push({ pathname: '/vehiculo/listado' })
+    //     }
+    //     // }, 2000);
+    // }, [boolPut, openModalMsj])
 
     const id: number = React.useMemo(() => {
         return Number(router.query.id)
@@ -340,22 +389,25 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                 id_marca,
                 id_color,
                 id_modelo,
-                id_status,
+                // id_status,
                 matriculaFrontal,
                 matriculaReverso,
                 cedulaFrontal,
                 cedulaReverso,
                 num_doc_identidad,
+                ano
             },
             { setSubmitting }
         ) => {
             try {
                 if (
                     isNotNilOrEmpty(idGrupoFamiliar) &&
-                    !equals(idGrupoFamiliar, 0)
+                    isNotNilOrEmpty(id_marca) &&
+                    isNotNilOrEmpty(id_color) &&
+                    isNotNilOrEmpty(id_modelo)
                 ) {
                     setLoadingMutate(true)
-                    const { data, loading, error } = isNotNilOrEmpty(vehiculo)
+                    const { data } = isNotNilOrEmpty(vehiculo)
                         ? await mutate({
                             variables: {
                                 id,
@@ -364,7 +416,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                                 id_marca,
                                 id_color,
                                 id_modelo,
-                                id_status,
+                                // id_status,
                                 matriculaFrontal: matriculaFrontal
                                     ? matriculaFrontal
                                     : undefined,
@@ -378,6 +430,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                                 cedulaReverso: cedulaReverso
                                     ? cedulaReverso
                                     : undefined,
+                                ano
                             },
                         })
                         : await mutate({
@@ -388,35 +441,43 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                                 id_marca,
                                 id_color,
                                 id_modelo,
-                                id_status,
+                                // id_status,
                                 matriculaFrontal,
                                 matriculaReverso,
                                 cedulaFrontal,
                                 num_doc_identidad,
                                 cedulaReverso,
+                                ano
                             },
                         })
 
-                    if (!loading && isNotNilOrEmpty(data)) {
-                        const { message } = isNotNilOrEmpty(data.PostVehiculo)
+                    if (isNotNilOrEmpty(data)) {
+                        const { code, message } = isNotNilOrEmpty(data.PostVehiculo)
                             ? data.PostVehiculo
                             : data.UpdateVehiculo
-                        setLoadingMutate(false)
-
-                        console.log('data:', data)
-                        setErrorModal(false)
-                        setOpenModalMsj(true)
                         setTitleModalMsj(message)
-                        if (isNotNilOrEmpty(data.UpdateVehiculo)) {
-                            setBoolPut(true)
-                        }
+                        if (code === 200) {
+                            if (isNotNilOrEmpty(data.UpdateVehiculo)) {
+                                setLoadingMutate(false)
+                                setBoolPut(true)
+                                setOpenModalMsj(true)
+                                return
+                            }
+                            resetForm();
+                            // setFieldValue("idGrupoFamiliar", undefined)
+                            await refetch()
+                            setErrorModal(false)
 
-                        resetForm()
-                    } else if (!loading && data === null) {
+                        } else {
+                            setErrorModal(true)
+                        }
                         setLoadingMutate(false)
                         setOpenModalMsj(true)
-                        setTitleModalMsj('Usuario no autorizado')
+                    } else {
+                        setLoadingMutate(false)
+                        setOpenModalMsj(true)
                         setErrorModal(true)
+                        setTitleModalMsj('Usuario no autorizado')
                     }
                 }
             } catch (error: any) {
@@ -431,7 +492,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                 setErrorModal(true)
             }
         },
-        [file]
+        [vehiculo, id]
     )
 
     const {
@@ -461,7 +522,8 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    // setOpenModal={setOpenModalMsj}
+                    onClose={() => { onCloseAuth() }}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
@@ -474,6 +536,10 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                     file={fileSeleccionado}
                 />
             )}
+            {/* <Button onClick={() => {
+                setFieldValue("idGrupoFamiliar", undefined);
+                //    resetForm()
+            }}>Reset Form</Button> */}
             <form
                 action="#"
                 onSubmit={handleSubmit}
@@ -486,7 +552,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                         handleBlur={handleBlur}
                         id="idGrupoFamiliar"
                         handleChange={handleChange}
-                        labetTitulo="Grupo Familiar del Deposito"
+                        labetTitulo="Grupo Familiar"
                         value={values.idGrupoFamiliar}
                         disabled={isNotNilOrEmpty(vehiculo)}
                     >
@@ -508,22 +574,6 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                                 }
                             )}
                     </FormControlHeader>
-                    <TextField
-                        className={classes.textbox}
-                        id="placa"
-                        name="placa"
-                        label="Placa del Vehiculo"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values.placa}
-                        error={touched.placa && isNotNilOrEmpty(errors.placa)}
-                        helperText={touched.placa ? errors.placa : undefined}
-                        required
-                        inputProps={{ style: { textTransform: 'uppercase' } }}
-                    />
-                </div>
-
-                <div>
                     <FormControlHeader
                         classes={classes}
                         handleBlur={handleBlur}
@@ -545,6 +595,10 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                                 )
                             })}
                     </FormControlHeader>
+                </div>
+
+                <div>
+
 
                     <FormControlHeader
                         classes={classes}
@@ -567,9 +621,6 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                                 )
                             })}
                     </FormControlHeader>
-                </div>
-
-                <div>
                     <FormControlHeader
                         classes={classes}
                         handleBlur={handleBlur}
@@ -591,7 +642,11 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                                 )
                             })}
                     </FormControlHeader>
+                </div>
 
+                <div>
+
+                    {/* 
                     <FormControlHeader
                         classes={classes}
                         handleBlur={handleBlur}
@@ -617,7 +672,42 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                                     )
                                 }
                             )}
-                    </FormControlHeader>
+                    </FormControlHeader> */}
+
+                    <TextField
+                        className={classes.textbox}
+                        id="placa"
+                        name="placa"
+                        label="Placa del Vehiculo"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.placa}
+                        error={touched.placa && isNotNilOrEmpty(errors.placa)}
+                        helperText={touched.placa ? errors.placa : undefined}
+                        required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
+                    />
+                    <TextField
+                        className={classes.textbox}
+                        id="ano"
+                        name="ano"
+                        label="Año del Vehiculo"
+                        onChange={handleChange}
+                        type="number"
+                        InputProps={{ inputProps: { min: ano_vehicular_minimo, max: anioActual() } }}
+                        onBlur={handleBlur}
+                        value={values.ano}
+                        error={
+                            touched.ano &&
+                            isNotNilOrEmpty(errors.ano)
+                        }
+                        helperText={
+                            touched.ano
+                                ? errors.ano
+                                : undefined
+                        }
+                        required
+                    />
                 </div>
                 <div>
                     <TextField

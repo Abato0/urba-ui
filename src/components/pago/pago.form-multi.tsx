@@ -16,7 +16,7 @@ import {
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useFormik } from 'formik'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import * as yup from 'yup'
 import ModalAuth from '../core/input/dialog/modal-dialog'
 import FormControlHeader from '../core/input/form-control-select'
@@ -44,6 +44,7 @@ import {
 import { es } from 'date-fns/locale'
 import { LoadingButton } from '@mui/lab'
 import { Send as SendIcon } from 'mdi-material-ui'
+import { rows } from '../core/input/data';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -307,6 +308,11 @@ export const PagoFormMulti = () => {
     const [checkImplementacion, setCheckImplementacion] =
         useState<boolean>(false)
 
+    const [checkMantenimiento, setCheckMantenimiento] = useState<boolean>(false)
+    const [checkTag, setCheckTag] = useState<boolean>(false)
+    const [checkOtros, setChecOtros] = useState<boolean>(false)
+
+
     const [idVehiculoSeleccionado, setIdVehiculoSeleccionado] =
         React.useState<number>()
 
@@ -316,9 +322,6 @@ export const PagoFormMulti = () => {
     const [idValorTag, setIdValorTag] = React.useState<number>()
     const [montoValorTag, setMontoValorTag] = React.useState<number>()
 
-    const [checkMantenimiento, setCheckMantenimiento] = useState<boolean>(false)
-    const [checkTag, setCheckTag] = useState<boolean>(false)
-    const [checkOtros, setChecOtros] = useState<boolean>(false)
     const [file, setFile] = React.useState<File | any>()
 
     const [gridPropsValorTag, setGridValorTag] = useState<IGridPropsPagoTag[]>(
@@ -547,8 +550,7 @@ export const PagoFormMulti = () => {
         handleReset,
         handleSubmit,
         setFieldValue,
-        resetForm,
-        isSubmitting,
+
         touched,
         values,
     } = useFormik({
@@ -556,6 +558,9 @@ export const PagoFormMulti = () => {
         onSubmit,
         validationSchema,
     })
+
+
+
 
     const {
         data: dataListadoVehiculo,
@@ -592,12 +597,28 @@ export const PagoFormMulti = () => {
         return sumaPagoTag() + sumaPagoMantenimiento() + implementacion + otro
     }, [sumaPagoMantenimiento, sumaPagoTag, values.implementacion, values.otro])
 
+
+    useEffect(() => {
+        if (!checkImplementacion) {
+            setFieldValue("implementacion", undefined)
+        }
+    }, [checkImplementacion])
+
+    useEffect(() => {
+        if (!checkMantenimiento) {
+            setPagoMantenimiento([])
+            setMesMantenimiento(undefined)
+            setAnioMantenimiento(undefined)
+        }
+
+    }, [checkMantenimiento])
     return (
         <Box className={classes.root}>
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    // setOpenModal={setOpenModalMsj}
+                    onClose={() => setOpenModalMsj(false)}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
@@ -633,7 +654,7 @@ export const PagoFormMulti = () => {
                                 }
                                 label={
                                     <Typography variant="overline">
-                                        Implementacion
+                                        Implementación
                                     </Typography>
                                 }
                             />
@@ -798,7 +819,7 @@ export const PagoFormMulti = () => {
                                 </Typography>
                                 <div className={classes.contentCardTipoPago}>
                                     <TextField
-                                        id="implementacion"
+                                        id="implementación"
                                         name="implementacion"
                                         className={classes.textBox}
                                         placeholder="Monto Implementacion"
@@ -835,8 +856,8 @@ export const PagoFormMulti = () => {
                                         className={classes.containerLabelTotal}
                                     >
                                         <Typography variant="overline">
-                                            Total Mantenimiento: $
-                                            {sumaPagoMantenimiento()}
+                                            Subtotal por Mantenimiento USD$
+                                            {sumaPagoMantenimiento().toFixed(2)}
                                         </Typography>
                                     </div>
                                 </div>
@@ -1059,7 +1080,7 @@ export const PagoFormMulti = () => {
                                         className={classes.containerLabelTotal}
                                     >
                                         <Typography variant="overline">
-                                            Total de Tag: ${sumaPagoTag()}
+                                            Subtotal por Tags  USD${sumaPagoTag().toFixed(2)}
                                         </Typography>
                                     </div>
                                 </div>
@@ -1085,7 +1106,7 @@ export const PagoFormMulti = () => {
                                                     dataListadoVehiculo.ListaVehiculoFilter
                                                 ) &&
                                                 dataListadoVehiculo.ListaVehiculoFilter.map(
-                                                    ({ id, placa }) => {
+                                                    ({ id, placa, marca, modelo, color }) => {
                                                         return (
                                                             <MenuItem
                                                                 value={id}
@@ -1093,8 +1114,9 @@ export const PagoFormMulti = () => {
                                                                     'listadoVehiculoFormPago' +
                                                                     id
                                                                 }
+                                                                style={{ textTransform: "uppercase" }}
                                                             >
-                                                                {placa}
+                                                                {`${placa} ${marca.marca} ${modelo.modelo} ${color.color}`}
                                                             </MenuItem>
                                                         )
                                                     }
@@ -1109,7 +1131,7 @@ export const PagoFormMulti = () => {
                                             }
                                             value={idValorTag}
                                             id={'tipoTagSelect'}
-                                            label={'Tipo de Tag'}
+                                            label={'Concepto del Tag'}
                                         >
                                             {!loadingValorTag &&
                                                 !isNil(dataValorTag) &&
@@ -1270,46 +1292,54 @@ export const PagoFormMulti = () => {
                                 >
                                     Otro
                                 </Typography>
-                                <div className={classes.contentCardTipoPago}>
-                                    <TextField
-                                        id="descripcion"
-                                        name="descripcion"
-                                        label="Descripcion (Opcional)"
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        value={values.descripcion}
-                                        error={
-                                            touched.descripcion &&
-                                            isNotNilOrEmpty(errors.descripcion)
-                                        }
-                                        helperText={
-                                            touched.descripcion
-                                                ? errors.descripcion
-                                                : undefined
-                                        }
-                                        className={classes.textBox}
-                                        placeholder="Descripcion del pago Otros"
-                                        multiline={true}
-                                    />
-                                    <TextField
-                                        id="otro"
-                                        name="otro"
-                                        value={values.otro}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        error={
-                                            touched.otro &&
-                                            isNotNilOrEmpty(errors.otro)
-                                        }
-                                        helperText={
-                                            touched.otro
-                                                ? errors.otro
-                                                : undefined
-                                        }
-                                        className={classes.textBox}
-                                        placeholder="Monto Otros"
-                                        type={'number'}
-                                    />
+                                <div className={classes.contentCardTipoPago} style={{}}>
+                                    <div style={{ width: "80%" }}>
+                                        <TextField
+                                            style={{ width: "90%" }}
+                                            id="descripcion"
+                                            name="descripcion"
+                                            label="Descripcion (Opcional)"
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            rows={4}
+                                            value={values.descripcion}
+                                            error={
+                                                touched.descripcion &&
+                                                isNotNilOrEmpty(errors.descripcion)
+                                            }
+                                            helperText={
+                                                touched.descripcion
+                                                    ? errors.descripcion
+                                                    : undefined
+                                            }
+                                            className={classes.textBox}
+                                            placeholder="Descripcion del pago Otros"
+                                            multiline={true}
+                                        />
+                                    </div>
+                                    <div style={{ marginTop: "3%" }}>
+
+
+                                        <TextField
+                                            id="otro"
+                                            name="otro"
+                                            value={values.otro}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={
+                                                touched.otro &&
+                                                isNotNilOrEmpty(errors.otro)
+                                            }
+                                            helperText={
+                                                touched.otro
+                                                    ? errors.otro
+                                                    : undefined
+                                            }
+                                            className={classes.textBox}
+                                            placeholder="Monto Otros"
+                                            type={'number'}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </Fade>
@@ -1320,7 +1350,7 @@ export const PagoFormMulti = () => {
                             >
                                 <div className={classes.containerLabelTotal}>
                                     <Typography variant="overline">
-                                        Total del Deposito: ${sumaTotal()}
+                                        Total del Aporte USD${sumaTotal().toFixed(2)}
                                     </Typography>
                                 </div>
                             </div>

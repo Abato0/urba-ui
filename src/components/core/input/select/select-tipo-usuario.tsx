@@ -16,6 +16,7 @@ interface IProps {
     value?: string
     id: string
     label: string
+    style?: any
 }
 
 export const SelectTipoUsuario: React.FC<IProps> = ({
@@ -23,6 +24,7 @@ export const SelectTipoUsuario: React.FC<IProps> = ({
     value,
     id,
     label,
+    style
 }) => {
     return (
         <SelectHeader
@@ -30,6 +32,7 @@ export const SelectTipoUsuario: React.FC<IProps> = ({
             value={value}
             id={id}
             label={label}
+            style={style}
         >
             <MenuItem value={undefined}> - Todos - </MenuItem>
             {tipoUsuarios.map(({ label, value }) => {

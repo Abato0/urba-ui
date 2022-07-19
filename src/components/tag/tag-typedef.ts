@@ -109,6 +109,15 @@ export const putTag = gql`
     }
 `
 
+export const cambiarEstadoTag = gql`
+    mutation ($id: Int!, $estado: String) {
+        CambiarEstadoTag(id: $id, estado: $estado) {
+            code
+            message
+        }
+    }
+`
+
 export const deleteTag = gql`
     mutation ($id: Int!) {
         DeleteTag(id: $id) {

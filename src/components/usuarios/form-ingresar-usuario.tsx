@@ -9,18 +9,20 @@ import {
     Button,
     Paper,
 } from '@material-ui/core'
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, FC, useMemo } from 'react'
 import ModalAuth from '../core/input/dialog/modal-dialog'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
 import FormControlHeader from '../core/input/form-control-select'
 import { tipoUsuarios } from '../core/input/dateSelect'
 import { isNilOrEmpty, isNotNilOrEmpty } from '../../utils/is-nil-empty'
-import { usePostUsuarioMutation, useListadoUsuario } from './use-usuario'
+import { usePostUsuarioMutation, useListadoUsuario, IResultUsuarioQuery, useUpdateUsuarioMutation } from './use-usuario';
 import { useListaTipoIdentificacionQuery } from '../mantenimento/tipo-identificacion/use-tipo-identificacion'
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
-import { equals } from 'ramda'
+import { equals, isNil } from 'ramda'
+import { useUpdateIntegranteMutation } from '../integrante/use-intergrante';
+import { useRouter } from 'next/router'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -123,18 +125,42 @@ const initialValues = Object.freeze({
     apellidos: '',
     email: '',
     telefono: '',
-    idTipoIdentificacion: 0,
+    idTipoIdentificacion: undefined,
 })
 
-export const FormIngresarUsuario = () => {
+interface IProps {
+    dataUsuario?: IResultUsuarioQuery;
+    id?: number
+}
+
+export const FormIngresarUsuario: FC<IProps> = ({
+    dataUsuario,
+    id
+}) => {
+
+    const init = useMemo(() => {
+        return isNotNilOrEmpty(dataUsuario) ? {
+            tipo_usuario: dataUsuario?.tipo_usuario,
+            num_identificacion: dataUsuario?.num_identificacion,
+            nombres: dataUsuario?.nombres,
+            apellidos: dataUsuario?.apellidos,
+            email: dataUsuario?.email,
+            telefono: dataUsuario?.telefono,
+            idTipoIdentificacion: dataUsuario?.tipoIdentificacion.id,
+        } : initialValues
+    }, [dataUsuario])
     const classes = useStyles()
+    const router = useRouter()
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
     const [titleModalMsj, setTitleModalMsj] = useState<string>('')
     const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
     const [errorModal, setErrorModal] = useState<boolean>(false)
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
+    const [boolPut, setBoolPut] = useState<boolean>(false)
 
-    const [mutate] = usePostUsuarioMutation()
+    const [mutatePostUsuario] = usePostUsuarioMutation()
+
+    const [mutateUpdateUsuario] = useUpdateUsuarioMutation()
     const { refetch } = useListadoUsuario()
 
     const {
@@ -142,6 +168,17 @@ export const FormIngresarUsuario = () => {
         loading: loadingTipoID,
         error: errorTipoID,
     } = useListaTipoIdentificacionQuery()
+
+
+    const onCloseModalAuth = () => {
+        if (openModalMsj && boolPut) {
+            refetch().then(() => {
+                router.push({ pathname: '/usuario/ingresar' })
+            })
+        } else {
+            setOpenModalMsj(false)
+        }
+    }
 
     const onSubmit = useCallback(
         async (
@@ -153,72 +190,90 @@ export const FormIngresarUsuario = () => {
                 email,
                 telefono,
                 idTipoIdentificacion,
-            },
-            { }
-        ) => {
-            console.log('dasdasdasdf')
-            if (
-                // isNotNilOrEmpty(idGrupoFamiliar) &&
-                isNotNilOrEmpty(nombres) &&
-                isNotNilOrEmpty(num_identificacion) &&
-                !equals(idTipoIdentificacion, 0) &&
-                isNotNilOrEmpty(nombres) &&
-                isNotNilOrEmpty(apellidos) &&
-                isNotNilOrEmpty(email) &&
-                isNotNilOrEmpty(idTipoIdentificacion) &&
-                isNotNilOrEmpty(telefono)
-            ) {
-                setLoadingMutate(true)
-                const { data, loading, error } = await mutate({
-                    variables: {
-                        tipo_usuario: tipo_usuario,
-                        num_identificacion: num_identificacion,
-                        nombres: nombres,
-                        apellidos: apellidos,
-                        email: email,
-                        telefono: telefono,
-                        idTipoIdentificacion: idTipoIdentificacion,
-                    },
-                })
-                if (
-                    !loading &&
-                    isNotNilOrEmpty(data) &&
-                    isNotNilOrEmpty(data.PostUsuario)
-                ) {
-                    const { code, message } = data.PostUsuario
-
-                    setErrorModal(true)
-                    if (code === 200) {
-                        await refetch()
-                        setErrorModal(false)
-                        resetForm()
-                    }
-                    setLoadingMutate(false)
-
-                    setOpenModalMsj(true)
-                    setTitleModalMsj(message)
-                } else if (!loading && data === null) {
-                    setLoadingMutate(false)
-                    setOpenModalMsj(true)
-                    setTitleModalMsj('Usuario no autorizado')
-                    setErrorModal(true)
-                }
             }
-
+        ) => {
             try {
+                if (
+                    // isNotNilOrEmpty(idGrupoFamiliar) &&
+                    isNotNilOrEmpty(nombres) &&
+                    isNotNilOrEmpty(num_identificacion) &&
+                    isNotNilOrEmpty(nombres) &&
+                    isNotNilOrEmpty(apellidos) &&
+                    isNotNilOrEmpty(email) &&
+                    isNotNilOrEmpty(idTipoIdentificacion) &&
+                    isNotNilOrEmpty(telefono)
+                ) {
+                    setLoadingMutate(true)
+                    const { data } = isNil(dataUsuario)
+                        ? await mutatePostUsuario({
+                            variables: {
+                                tipo_usuario: tipo_usuario,
+                                num_identificacion: num_identificacion,
+                                nombres: nombres,
+                                apellidos: apellidos,
+                                email: email,
+                                telefono: telefono,
+                                idTipoIdentificacion: idTipoIdentificacion,
+                            }
+                        }) : await mutateUpdateUsuario({
+                            variables: {
+                                id: id,
+                                tipo_usuario: tipo_usuario,
+                                num_identificacion: num_identificacion,
+                                nombres: nombres,
+                                apellidos: apellidos,
+                                email: email,
+                                telefono: telefono,
+                                idTipoIdentificacion: idTipoIdentificacion,
+                            }
+                        })
+                    if (
+                        isNotNilOrEmpty(data)
+                    ) {
+                        const { code, message } = isNotNilOrEmpty(data.UpdateUsuario)
+                            ? data.UpdateUsuario
+                            : data.PostUsuario
+
+                        setTitleModalMsj(message)
+                        if (code === 200) {
+
+                            if (isNotNilOrEmpty(data.UpdateUsuario)) {
+                                setLoadingMutate(false)
+                                setBoolPut(true)
+                                setOpenModalMsj(true)
+                                return
+                            }
+
+                            await refetch()
+                            setErrorModal(false)
+                            resetForm()
+                        } else {
+                            setErrorModal(true)
+                        }
+                        setLoadingMutate(false)
+                        setOpenModalMsj(true)
+                    } else {
+                        setLoadingMutate(false)
+                        setOpenModalMsj(true)
+                        setErrorModal(true)
+                        setTitleModalMsj('Usuario no autorizado')
+                    }
+                }
+                // setLoadingMutate(false)
+
             } catch (err: any) {
                 setLoadingMutate(false)
-                console.log('error : ', err)
+                console.log('error : ', (err as Error))
                 setTitleModalMsj('Envio Fallido')
                 setErrorModal(true)
-                setMensajeModalMsj(
-                    'Usuario no ha sido guardado: ' + err.message
-                )
-                setOpenModalMsj(true)
+                // setMensajeModalMsj(
+                //     'Usuario no ha sido guardado: ' + err.message
+                // )
+                //setOpenModalMsj(true)
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
+        [id, dataUsuario]
     )
 
     const {
@@ -233,7 +288,7 @@ export const FormIngresarUsuario = () => {
         resetForm,
         values,
     } = useFormik({
-        initialValues,
+        initialValues: init,
         onSubmit,
         validationSchema,
     })
@@ -243,7 +298,8 @@ export const FormIngresarUsuario = () => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    //  setOpenModal={setOpenModalMsj}
+                    onClose={() => { onCloseModalAuth() }}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}

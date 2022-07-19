@@ -313,7 +313,7 @@ const ListadoPago = () => {
     }, [data, debounceSearch, fuse])
 
     React.useEffect(() => {
-        if (!loading && isNotNilOrEmpty(dataPagoFamiliar)) {
+        if (!loadingPagoFamiliar && isNotNilOrEmpty(dataPagoFamiliar)) {
             // console.log("dataPagoFamiliar: ", dataPagoFamiliar);
             const { pago } = dataPagoFamiliar!.GetPagoFamiliar
             const image = isNotNilOrEmpty(pago.imagen_recibo)
@@ -322,7 +322,7 @@ const ListadoPago = () => {
             setBase64(pago.imagen_recibo ? pago.imagen_recibo : '')
             console.log('adsdas', image)
         }
-    }, [dataPagoFamiliar, loading])
+    }, [dataPagoFamiliar, loadingPagoFamiliar])
 
     const {
         getTableProps,
@@ -410,14 +410,14 @@ const ListadoPago = () => {
             workSheet.E1.v = 'Fecha de subida del pago'
 
             const workBook = XLSX.utils.book_new()
-            XLSX.utils.book_append_sheet(workBook, workSheet, 'Pagos')
+            XLSX.utils.book_append_sheet(workBook, workSheet, 'Aportaciones')
             XLSX.write(workBook, { bookType: 'xlsx', type: 'binary' })
-            XLSX.writeFile(workBook, 'Listado de Pagos Generados.xlsx')
+            XLSX.writeFile(workBook, 'Listado de Aportaciones Generados.xlsx')
         }
     }
 
     return (
-        <LayoutTituloPagina titulo="Pagos - Listado">
+        <LayoutTituloPagina titulo="Aportaciones - Listado">
             <Paper className={classes.paperFilter}>
                 <div className={classes.contenFilter}>
                     <div className={classes.contentButtons}>

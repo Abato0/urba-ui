@@ -198,7 +198,7 @@ export const ListadoCarteraVencida = () => {
     }
 
     return (
-        <LayoutTituloPagina titulo="Pagos - Catera Vencida">
+        <LayoutTituloPagina titulo="Aportaciones - Catera Vencida">
             <Paper className={classes.root}>
                 {/* <div className={classes.containerTitle}>
           <Typography variant="overline" className={classes.title}>

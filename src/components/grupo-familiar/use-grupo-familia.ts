@@ -4,6 +4,7 @@ import {
     deleteGrupoFamiliarMutation,
     GetGrupoFamiliar,
     listadoGrupoFamiliar,
+    listadoGrupoFamiliarSinUsuario,
     listarGruposFamiliaresFilter,
     updateGrupoFamiliarMutation,
 } from './grupo-familiar-typeDefs'
@@ -44,11 +45,11 @@ export const useUpdateFamiliarMutation = (mutation: DocumentNode) => {
 
 export const useDeleteGrupoFamiliarMutatio = (id: number) => {
     const [mutate, { data = {}, loading, error }] = useMutation(
-        deleteGrupoFamiliarMutation
-        // {
-        //   refetchQueries: [{ query: listarGruposFamiliaresFilter }],
-        //   awaitRefetchQueries: true,
-        // }
+        deleteGrupoFamiliarMutation,
+        {
+            refetchQueries: [{ query: listarGruposFamiliaresFilter }],
+            awaitRefetchQueries: true,
+        }
         // ,
         // {
         //   variables: { id },
@@ -73,11 +74,25 @@ interface IListadoGrupoFamiliar {
     ListaGruposFamiliares: IGrupoFamiliar[]
 }
 
+interface IListadoGrupoFamiliarSinUsuario {
+    ListadoGruposFamiliaresSinUsuario: IGrupoFamiliar[]
+}
+
 export const useListarGrupoFamiliar = () => {
     return useQuery<IListadoGrupoFamiliar>(listadoGrupoFamiliar, {
         notifyOnNetworkStatusChange: true,
         fetchPolicy: 'cache-and-network',
     })
+}
+
+export const useListarGrupoFamiliarSinUsuarios = () => {
+    return useQuery<IListadoGrupoFamiliarSinUsuario>(
+        listadoGrupoFamiliarSinUsuario,
+        {
+            notifyOnNetworkStatusChange: true,
+            fetchPolicy: 'cache-and-network',
+        }
+    )
 }
 
 export interface IGetGrupoFamiliar {

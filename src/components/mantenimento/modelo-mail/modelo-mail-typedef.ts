@@ -5,10 +5,12 @@ export const listadoModeloMail = gql`
         ListaModeloMail {
             id
             categoria
-            titulo
+            # titulo
             asunto
             textoSuperior
             textoInferior
+            remitente
+            firma
         }
     }
 `
@@ -18,10 +20,12 @@ export const getModeloMail = gql`
         GetModeloMail(id: $id) {
             id
             categoria
-            titulo
+            # titulo
             asunto
             textoSuperior
             textoInferior
+            remitente
+            firma
         }
     }
 `
@@ -29,18 +33,22 @@ export const getModeloMail = gql`
 export const PutModeloMail = gql`
     mutation (
         $id: Int!
-        $titulo: String
+        # $titulo: String
         $asunto: String
         $textoSuperior: String
         $textoInferior: String
+        $remitente: String
+        $firma: String
     ) {
         PutModeloMail(
             id: $id
             input: {
-                titulo: $titulo
+                # titulo: $titulo
                 asunto: $asunto
                 textoSuperior: $textoSuperior
                 textoInferior: $textoInferior
+                remitente: $remitente
+                firma: $firma
             }
         ) {
             code

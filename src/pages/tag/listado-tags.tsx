@@ -1,14 +1,18 @@
 import {
     colors,
     createStyles,
+    FormControl,
     IconButton,
+    InputLabel,
     makeStyles,
+    MenuItem,
     Paper,
     Table,
     TableContainer,
     TextField,
     Tooltip,
     Typography,
+    Select,
 } from '@material-ui/core'
 import { isNil, pluck, prop } from 'ramda'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -27,6 +31,8 @@ import {
     useListaTag,
     useDeleteTagMutation,
     useListaAllTag,
+    useListaTagVehiculo,
+    EstadoTag,
 } from '../../components/tag/use-tag'
 import {
     isNotNilOrEmpty,
@@ -41,10 +47,14 @@ import {
     Filter as FilterIcon,
     Reload as ReloadIcon,
     FileExcelBox as FileExcelBoxIcon,
+
 } from 'mdi-material-ui'
 import { ExportTablePdf } from '../../components/table/export-table-pdf'
 import NavBar from '../../components/layout/app-bar'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
+import { useCambiarEstadoTag } from '../../components/tag/use-tag';
+import { ListadoEstadoTagRow, Listado_lugares_image } from '../../utils/keys'
+import { ActionsButtonsFilterReset } from '../../components/core/actions/actionsButtonsFilterReset'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -92,7 +102,7 @@ const useStyles = makeStyles((theme) =>
             // padding: theme.spacing(2),
         },
         formControl: {
-            margin: theme.spacing(1),
+            // margin: theme.spacing(1),
             minWidth: 220,
             // textAlign: "center"
         },
@@ -152,7 +162,8 @@ const getRowId: any = prop('id')
 const MantenimientoColorListado = () => {
     const classes = useStyles()
     const router = useRouter()
-    const { data, loading, error } = useListaAllTag()
+    const { data, loading, error, refetch } = useListaAllTag();
+    const { refetch: refetchAsigancion } = useListaTagVehiculo()
     const [dataTag, setColorTag] = useState<ITagNormalize[]>([])
     const [search, setSearch] = useState<string>('')
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
@@ -161,7 +172,12 @@ const MantenimientoColorListado = () => {
     const [errorModal, setErrorModal] = useState<boolean>(false)
     const debounceSearch = useDebounce(search, 300)
 
-    const [mutateEliminar] = useDeleteTagMutation()
+    const [mutateEliminar] = useDeleteTagMutation();
+
+
+    const [estadoSeleccionado, setEstadoSeleccionado] = useState<string>()
+
+    const [mutateCambiarEstado] = useCambiarEstadoTag()
 
     useEffect(() => {
         if (isNotNilOrEmpty(data) && !loading) {
@@ -189,7 +205,14 @@ const MantenimientoColorListado = () => {
                     },
                 })
                 if (isNotNil(data)) {
-                    const { message } = data.DeleteColor
+                    const { code, message } = data.DeleteTag
+                    if (code === 200) {
+                        setErrorModal(false);
+                        await refetch()
+                        await refetchAsigancion()
+                    } else {
+                        setErrorModal(true)
+                    }
                     setTitleModalMsj(message)
                     setErrorModal(false)
                     setOpenModalMsj(true)
@@ -208,6 +231,72 @@ const MantenimientoColorListado = () => {
         [mutateEliminar]
     )
 
+
+    const onActivar = async ({ id }: IResultQueryTag) => {
+        if (id) {
+            try {
+                const { data } = await mutateCambiarEstado({
+                    variables: {
+                        id,
+                        estado: EstadoTag.DISPONIBLE
+                    }
+                })
+                if (data) {
+                    const { code, message } = data.CambiarEstadoTag
+                    setTitleModalMsj(message)
+                    if (code === 200) {
+                        setErrorModal(false);
+                        await refetch()
+                    } else {
+                        setErrorModal(true)
+                    }
+                    setOpenModalMsj(true)
+                } else {
+                    setTitleModalMsj('Usuario no autorizado')
+                    setErrorModal(true)
+                    setOpenModalMsj(true)
+                }
+            } catch (error) {
+                setTitleModalMsj('Envio Fallido')
+                setErrorModal(true)
+                setMensajeModalMsj('' + (error as Error).message)
+                setOpenModalMsj(true)
+            }
+        }
+    }
+
+    const onInactivar = async ({ id }: IResultQueryTag) => {
+        if (id) {
+            try {
+                const { data } = await mutateCambiarEstado({
+                    variables: {
+                        id,
+                        estado: EstadoTag.INACTIVO
+                    }
+                })
+                if (data) {
+                    const { code, message } = data.CambiarEstadoTag
+                    setTitleModalMsj(message)
+                    if (code === 200) {
+                        setErrorModal(false);
+                        await refetch()
+                    } else {
+                        setErrorModal(true)
+                    }
+                    setOpenModalMsj(true)
+                } else {
+                    setTitleModalMsj('Usuario no autorizado')
+                    setErrorModal(true)
+                    setOpenModalMsj(true)
+                }
+            } catch (error) {
+                setTitleModalMsj('Envio Fallido')
+                setErrorModal(true)
+                setMensajeModalMsj('' + (error as Error).message)
+                setOpenModalMsj(true)
+            }
+        }
+    }
     const {
         getTableProps,
         getTableBodyProps,
@@ -224,6 +313,8 @@ const MantenimientoColorListado = () => {
             getRowId,
             onEdit,
             onDelete,
+            onInactivar,
+            onActivar
         },
         usePagination
     )
@@ -262,6 +353,25 @@ const MantenimientoColorListado = () => {
         [setPageSize]
     )
 
+
+    const filtrar = () => {
+
+        if (estadoSeleccionado && data && !loading) {
+            const r = extractData(data?.ListaTagAll!);
+            const result = r.filter(({ estado }) => estado === estadoSeleccionado);
+            setColorTag(result)
+        }
+    }
+
+    const reset = () => {
+        if (data && !loading) {
+            //const r = extractData(data?.ListaTagAll!);
+            setEstadoSeleccionado(undefined);
+            setColorTag(extractData(data?.ListaTagAll!))
+        }
+    }
+
+
     return (
         <LayoutTituloPagina titulo="Listado de Tags">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
@@ -269,7 +379,8 @@ const MantenimientoColorListado = () => {
                     {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
-                            setOpenModal={setOpenModalMsj}
+                            // setOpenModal={setOpenModalMsj}
+                            onClose={() => setOpenModalMsj(false)}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                             error={errorModal}
@@ -291,6 +402,31 @@ const MantenimientoColorListado = () => {
                                 setSearch(e.target.value)
                             }}
                             value={search}
+                        />
+
+                        <FormControl variant="filled" className={classes.formControl}>
+                            <InputLabel id={"estado_seleccionado_label"} style={{ fontSize: '12px' }}>
+                                Estado
+                            </InputLabel>
+                            <Select
+                                labelId={'estado_seleccionado_label'}
+                                value={estadoSeleccionado}
+                                onChange={(e) => setEstadoSeleccionado(e.target.value as string)}
+                            >
+                                {
+                                    ListadoEstadoTagRow.map(({ label, value }) => {
+                                        return (
+                                            <MenuItem key={value} value={value}>
+                                                {label}
+                                            </MenuItem>)
+                                    })
+                                }
+                            </Select>
+                        </FormControl>
+
+                        <ActionsButtonsFilterReset
+                            filtrar={filtrar}
+                            reset={reset}
                         />
                     </div>
                     <TableContainer>

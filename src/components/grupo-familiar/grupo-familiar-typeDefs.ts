@@ -3,7 +3,7 @@ import { gql, useMutation } from '@apollo/client'
 export const saveGrupoFamiliar = gql`
     mutation (
         $id_calle_principal: Int
-        $id_usuario: Int
+        # $id_usuario: Int
         $calle_interseccion: String
         $id_manzana: Int
         $nombre_familiar: String
@@ -18,7 +18,7 @@ export const saveGrupoFamiliar = gql`
                 nombre_familiar: $nombre_familiar
                 # id_tipo_edificacion: $id_tipo_edificacion
                 villa: $villa
-                id_usuario: $id_usuario
+                # id_usuario: $id_usuario
             }
         ) {
             code
@@ -31,7 +31,7 @@ export const updateGrupoFamiliarMutation = gql`
     mutation (
         $id: Int!
         $id_calle_principal: Int
-        $id_usuario: Int
+        # $id_usuario: Int
         $calle_interseccion: String
         # $id_color_fachada: Int
         $id_manzana: Int
@@ -49,7 +49,7 @@ export const updateGrupoFamiliarMutation = gql`
                 nombre_familiar: $nombre_familiar
                 # id_tipo_edificacion: $id_tipo_edificacion
                 villa: $villa
-                id_usuario: $id_usuario
+                # id_usuario: $id_usuario
             }
         ) {
             code
@@ -63,6 +63,25 @@ export const deleteGrupoFamiliarMutation = gql`
         DeleteGrupoFamiliar(id: $id) {
             code
             message
+        }
+    }
+`
+
+export const listadoGrupoFamiliarSinUsuario = gql`
+    query ListadoGruposFamiliaresSinUsuario {
+        ListadoGruposFamiliaresSinUsuario {
+            id
+            nombre_familiar
+            manzana {
+                id
+                manzana
+            }
+            villa
+            calle_principal {
+                id
+                calle
+            }
+            calle_interseccion
         }
     }
 `
@@ -82,9 +101,9 @@ export const listadoGrupoFamiliar = gql`
                 calle
             }
             calle_interseccion
-            usuario {
-                id
-            }
+            # usuario {
+            #     id
+            # }
             # color_fachada {
             #   id
             #   color
@@ -112,9 +131,9 @@ export const GetGrupoFamiliar = gql`
                 calle
             }
             calle_interseccion
-            usuario {
-                id
-            }
+            # usuario {
+            #     id
+            # }
             # color_fachada {
             #   id
             #   color
@@ -154,9 +173,9 @@ export const listarGruposFamiliaresFilter = gql`
                 calle
             }
             calle_interseccion
-            usuario {
-                id
-            }
+            # usuario {
+            #     id
+            # }
             # color_fachada {
             #   id
             #   color

@@ -118,16 +118,30 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
     const { refetch } = useListaColorQuery()
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPutColor) {
+
+    const closeModalAuth = () => {
+        if (openModalMsj && boolPutColor) {
             refetch().then(() => {
                 router.push({ pathname: '/mantenimiento/color/listado' })
             })
+
+            // console.log("1")
+        } else {
+            setOpenModalMsj(false)
+            //console.log("2", " * ", openModalMsj && boolPut)
         }
-        // }, 2000);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [boolPutColor, openModalMsj, router])
+    }
+
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPutColor) {
+    //         refetch().then(() => {
+    //             router.push({ pathname: '/mantenimiento/color/listado' })
+    //         })
+    //     }
+    //     // }, 2000);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [boolPutColor, openModalMsj, router])
 
     const [mutate] = isNil(colorObj)
         ? usePostColorMutation()
@@ -160,7 +174,7 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
                         })
 
                     if (isNotNilOrEmpty(data)) {
-                        const { message } = isNotNilOrEmpty(data.PutColor)
+                        const { code, message } = isNotNilOrEmpty(data.PutColor)
                             ? data.PutColor
                             : data.PostColor
                         setLoadingMutate(false)
@@ -170,15 +184,29 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
 
                         //   }, 2000);
 
-                        setErrorModal(false)
+                        //   setErrorModal(false)
                         // setMensajeModalMsj(dataMutate.message);
-                        setOpenModalMsj(true)
-                        if (isNotNilOrEmpty(data.PutColor)) {
-                            setBoolPutColor(true)
-                        } else if (isNotNilOrEmpty(data.PostColor)) {
+
+                        if (code === 200) {
+                            setErrorModal(false)
+                            if (isNotNilOrEmpty(data.PutColor)) {
+                                setBoolPutColor(true)
+                                setOpenModalMsj(true)
+                                return
+                            }
                             await refetch()
+                            resetForm()
+                        } else {
+                            setErrorModal(true)
                         }
-                        resetForm()
+                        setOpenModalMsj(true)
+
+                        // if (isNotNilOrEmpty(data.PutColor)) {
+                        //     setBoolPutColor(true)
+                        // } else if (isNotNilOrEmpty(data.PostColor)) {
+                        //     await refetch()
+                        // }
+                        // resetForm()
                     } else {
                         setLoadingMutate(false)
                         setOpenModalMsj(true)
@@ -221,7 +249,8 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    onClose={closeModalAuth}
+                    //  setOpenModal={setOpenModalMsj}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}

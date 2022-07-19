@@ -262,7 +262,7 @@ const SidebarMorador: FC = () => {
                                 label={'Listado de Integrantes Familiares'}
                             />
                         </AcordionHeader>
-                        <AcordionHeader icon={faDonate} label={'Pagos'}>
+                        <AcordionHeader icon={faDonate} label={'Aportaciones'}>
                             <ItemSidebar
                                 icon={faListAlt}
                                 eventClick={() =>
@@ -272,7 +272,7 @@ const SidebarMorador: FC = () => {
                                         ),
                                     })
                                 }
-                                label={'Listado de Pagos'}
+                                label={'Listado de Aportaciones'}
                             />
                             <ItemSidebar
                                 icon={faListAlt}
@@ -347,7 +347,7 @@ const SidebarMorador: FC = () => {
                                 label={'Registrar integrante familiar'}
                             />
                         </AcordionHeader>
-                        <AcordionHeader icon={faDonate} label={'Pagos'}>
+                        <AcordionHeader icon={faDonate} label={'Aportaciones'}>
                             <ItemSidebar
                                 icon={faEdit}
                                 eventClick={() =>
@@ -357,7 +357,7 @@ const SidebarMorador: FC = () => {
                                         ),
                                     })
                                 }
-                                label={'Registrar pago'}
+                                label={'Registrar Aportación'}
                             />
                         </AcordionHeader>
                         <AcordionHeader icon={faCar} label={'Vehiculos'}>

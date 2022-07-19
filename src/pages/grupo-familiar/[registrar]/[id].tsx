@@ -59,7 +59,7 @@ const extractData = (data: IGrupoFamiliar): IGrupoFamiliarInput | undefined => {
             // id_tipo_edificacion: data.tipo_edificacion.id,
             nombre_familiar: data.nombre_familiar,
             villa: data.villa,
-            id_usuario: data.usuario.id,
+            // id_usuario: data.usuario.id,
             // id_calle_interseccion: calle_interseccion
         }
         : undefined

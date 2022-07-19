@@ -72,7 +72,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface IProps {
     openModal: boolean
-    setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
+    onClose: () => void
+    // setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
     title: string
     message: string
     error?: boolean
@@ -80,17 +81,18 @@ interface IProps {
 
 const ModalAuth: React.FC<IProps> = ({
     openModal,
-    setOpenModal,
+    // setOpenModal,
     title,
     message,
     error = true,
+    onClose
 }) => {
     const classes = useStyles()
     const [open, setOpen] = React.useState(openModal)
 
-    const handleClose = () => {
-        setOpenModal(false)
-    }
+    // const handleClose = () => {
+    //     setOpenModal(false)
+    // }
 
     return (
         <div>
@@ -102,7 +104,7 @@ const ModalAuth: React.FC<IProps> = ({
                 aria-describedby="transition-modal-description"
                 className={classes.modal}
                 open={open}
-                onClose={handleClose}
+                onClose={onClose}
                 closeAfterTransition
                 BackdropComponent={Backdrop}
                 BackdropProps={{
@@ -147,7 +149,7 @@ const ModalAuth: React.FC<IProps> = ({
                                         ? classes.buttonError
                                         : classes.buttonInfo
                                 }
-                                onClick={handleClose}
+                                onClick={onClose}
                             >
                                 Cerrar
                             </Button>

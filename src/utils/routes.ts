@@ -171,5 +171,11 @@ export const EnlacesSidebar = {
                 route: '/mantenimiento/modelo-mail/listado',
             },
         },
+
+        imagenesSitio: {
+            listado: {
+                route: '/mantenimiento/imagenes-de-bienvenida/listado',
+            },
+        },
     },
 }

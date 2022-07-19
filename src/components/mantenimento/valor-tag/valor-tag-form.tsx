@@ -133,24 +133,38 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
 
     const { refetch } = useListadoValorTag()
 
+
+
+
     const init = useMemo(() => {
         return isNotNilOrEmpty(valorTagObj)
             ? {
-                  tipo_tag: valorTagObj?.tipo_tag,
-                  valor: valorTagObj?.valor,
-              }
+                tipo_tag: valorTagObj?.tipo_tag,
+                valor: valorTagObj?.valor,
+            }
             : initialValues
     }, [valorTagObj])
 
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPut) {
+
+    const onCloseModalAuth = () => {
+        if (openModalMsj && boolPut) {
             refetch().then(() => {
                 router.push({ pathname: '/mantenimiento/valor-tag/listado' })
             })
+        } else {
+            setOpenModalMsj(false)
         }
-        // }, 2000);
-    }, [boolPut, openModalMsj])
+    }
+
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPut) {
+    //         refetch().then(() => {
+    //             router.push({ pathname: '/mantenimiento/valor-tag/listado' })
+    //         })
+    //     }
+    //     // }, 2000);
+    // }, [boolPut, openModalMsj])
 
     // const { data, loading, error } = useGetValorTagQuery();
 
@@ -165,18 +179,18 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
                     setLoadingMutate(true)
                     const { data } = isNilOrEmpty(valorTagObj)
                         ? await mutate({
-                              variables: {
-                                  tipo_tag,
-                                  valor,
-                              },
-                          })
+                            variables: {
+                                tipo_tag,
+                                valor,
+                            },
+                        })
                         : await mutate({
-                              variables: {
-                                  id: Number(id),
-                                  tipo_tag,
-                                  valor,
-                              },
-                          })
+                            variables: {
+                                id: Number(id),
+                                tipo_tag,
+                                valor,
+                            },
+                        })
 
                     if (isNotNilOrEmpty(data)) {
                         const { code, message } = isNilOrEmpty(valorTagObj)
@@ -185,15 +199,26 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
                         setLoadingMutate(false)
                         setTitleModalMsj(message)
                         setErrorModal(code === 200 ? false : true)
-                        setOpenModalMsj(true)
-                        if (isNotNilOrEmpty(data.PutValorTag) && code === 200) {
-                            setBoolPut(true)
-                        } else if (
-                            isNotNilOrEmpty(data.PostValorTag) &&
-                            code === 200
-                        ) {
+
+
+                        if (code === 200) {
+                            if (isNotNilOrEmpty(data.PutValorTag) && code === 200) {
+                                setBoolPut(true)
+                                return
+                            }
                             await refetch()
+                            resetForm()
                         }
+                        setOpenModalMsj(true)
+
+                        // if (isNotNilOrEmpty(data.PutValorTag) && code === 200) {
+                        //     setBoolPut(true)
+                        // } else if (
+                        //     isNotNilOrEmpty(data.PostValorTag) &&
+                        //     code === 200
+                        // ) {
+                        //     await refetch()
+                        // }
 
                         // resetForm();
                     } else {
@@ -238,7 +263,8 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    onClose={onCloseModalAuth}
+                    // setOpenModal={setOpenModalMsj}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}

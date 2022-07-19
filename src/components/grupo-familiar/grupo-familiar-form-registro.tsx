@@ -117,7 +117,7 @@ const initialValues = Object.freeze({
     calle_interseccion: '',
     id_manzana: 0,
     villa: 0,
-    id_usuario: undefined,
+    // id_usuario: undefined,
     // id_tipo_edificacion: 0,
     // id_color_fachada: 0,
 })
@@ -128,7 +128,7 @@ const validationSchema = yup.object().shape({
     villa: yup.number().required('Requerido'),
     id_calle_principal: yup.number().required('Requerido'),
     calle_interseccion: yup.string().required('Requerido'),
-    id_usuario: yup.number().required('Requerido'),
+    // id_usuario: yup.number().required('Requerido'),
     // id_color_fachada: yup.number().required("Requerido"),
     // id_tipo_edificacion: yup.number().required("Requerido"),
 })
@@ -156,9 +156,24 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
     const { refetch } = useListarGrupoFamiliarFilterQuery({})
-    const [mutate, loading, error] = isNil(grupoFam)
+    const [mutate] = isNil(grupoFam)
         ? useGrupoFamiliarMutation(mutation)
         : useUpdateFamiliarMutation(mutation)
+
+
+    const onCloseModalAuth = () => {
+        if (openModalMsj && boolPut) {
+            refetch().then(() => {
+                router.push({ pathname: '/grupo-familiar/listado' })
+            })
+
+            // console.log("1")
+        } else {
+            setOpenModalMsj(false)
+            //console.log("2", " * ", openModalMsj && boolPut)
+        }
+    }
+
 
     const {
         data: dataListadoManzana,
@@ -172,29 +187,29 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
         error: errorListadoCalles,
     } = useListaCallesQuery()
 
-    const {
-        data: dataListadoUsuarios,
-        loading: loadingListadoUsuario,
-        error: errorListadoUsuario,
-    } = useListadoUsuario()
+    // const {
+    //     data: dataListadoUsuarios,
+    //     loading: loadingListadoUsuario,
+    //     error: errorListadoUsuario,
+    // } = useListadoUsuario()
 
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/grupo-familiar/listado' })
-            })
-        }
-        // }, 2000);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [boolPut, openModalMsj])
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPut) {
+    //         refetch().then(() => {
+    //             router.push({ pathname: '/grupo-familiar/listado' })
+    //         })
+    //     }
+    //     // }, 2000);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [boolPut, openModalMsj])
 
     const onSubmit = useCallback(
         async (
             {
                 nombre_familiar,
                 id_calle_principal,
-                id_usuario,
+                // id_usuario,
                 calle_interseccion,
                 id_manzana,
                 villa,
@@ -211,9 +226,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                     isNotNilOrEmpty(calle_interseccion) &&
                     isNotNilOrEmpty(id_manzana) &&
                     !equals(id_manzana, 0) &&
-                    isNotNilOrEmpty(villa) &&
-                    isNotNilOrEmpty(id_usuario) &&
-                    !equals(id_usuario, 0)
+                    isNotNilOrEmpty(villa)
+                    // isNotNilOrEmpty(id_usuario) &&
+                    // !equals(id_usuario, 0)
                     // isNotNilOrEmpty(id_tipo_edificacion) &&
                     // !equals(id_tipo_edificacion, 0) &&
                     // isNotNilOrEmpty(id_color_fachada) &&
@@ -227,7 +242,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                                 id_calle_principal,
                                 calle_interseccion,
                                 id_manzana,
-                                id_usuario,
+                                // id_usuario,
                                 villa,
                                 // id_tipo_edificacion,
                                 // id_color_fachada,
@@ -240,7 +255,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                                 id_calle_principal,
                                 calle_interseccion,
                                 id_manzana,
-                                id_usuario,
+                                // id_usuario,
                                 villa,
                                 // id_tipo_edificacion,
                                 // id_color_fachada,
@@ -262,14 +277,19 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                         setLoadingMutate(false)
                         setOpenModalMsj(true)
                         setErrorModal(code === 200 ? false : true)
-                        if (
-                            isNotNilOrEmpty(dataMutate.UpdateGrupoFamiliar) &&
-                            code === 200
-                        ) {
-                            setBoolPut(true)
+
+                        if (code === 200) {
+                            if (isNotNilOrEmpty(dataMutate.UpdateGrupoFamiliar)) {
+                                setBoolPut(true)
+                                return
+                            }
+                            await refetch();
+                            resetForm();
                         }
 
                         // resetForm();
+                        // return
+
                     } else if (dataMutate === null) {
                         setOpenModalMsj(true)
                         setTitleModalMsj('Usuario no autorizado')
@@ -318,7 +338,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    onClose={() => { onCloseModalAuth() }}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
@@ -337,9 +357,14 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                 onReset={handleReset}
                 className={classes.form}
             >
-                <div className={classes.contentLastTextBox}>
+                <div className={classes.contentLastTextBox} style={{
+                    width: "100%"
+                }}>
                     <TextField
                         className={classes.textbox}
+                        style={{
+                            width: "95%"
+                        }}
                         variant="outlined"
                         id="nombre_familiar"
                         value={values.nombre_familiar}
@@ -359,7 +384,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                         }
                         required
                     />
-
+                    {/* 
                     <FormControlHeader
                         classes={classes}
                         handleBlur={handleBlur}
@@ -385,7 +410,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                                     )
                                 }
                             )}
-                    </FormControlHeader>
+                    </FormControlHeader> */}
                 </div>
 
                 <div className={classes.contentLastTextBox}>
@@ -481,6 +506,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                         label="Numero de lote (Villa)"
                         margin="normal"
                         type={'number'}
+                        InputProps={{ inputProps: { min: 0 } }}
                         error={touched.villa && isNotNilOrEmpty(errors.villa)}
                         helperText={touched.villa ? errors.villa : undefined}
                         required

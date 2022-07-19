@@ -14,13 +14,14 @@ import { useFormik } from 'formik'
 import { isNotNilOrEmpty, isNilOrEmpty } from '../utils/is-nil-empty'
 import { useRouter } from 'next/router'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
-import { recordarContrasena } from '../auth/auth-service'
+import { recordarContrasena, imagenesRecordarContrasena } from '../auth/auth-service';
 import { useSetRecoilState } from 'recoil'
 import { userInfo } from '../utils/states'
 import ModalAuth from '../components/core/input/dialog/modal-dialog'
 
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
+import EmailIcon from '@material-ui/icons/Email';
 import { CarruselImagenesLogin } from '../components/login/carruselImagenesLogin'
 
 const useStyles = makeStyles((theme) => ({
@@ -184,6 +185,23 @@ const RecordarPasswordScreen = () => {
     const [errorModal, setErrorModal] = useState<boolean>(false)
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
+    const [imagenes, setImagenes] = useState<string[]>([])
+
+    useEffect(() => {
+        const getImagen = async () => {
+            try {
+                const result = await imagenesRecordarContrasena();
+                const r = result.map(({ urlImagen }) => urlImagen);
+                setImagenes(r)
+            } catch (error) {
+                console.log("Error: ", (error as Error).message);
+                setImagenes([])
+            }
+        }
+        getImagen()
+    }, [])
+
+
     const [loading, setLoading] = useState<boolean>(false)
 
     useEffect(() => {
@@ -267,7 +285,7 @@ const RecordarPasswordScreen = () => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    onClose={() => setOpenModalMsj(false)}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
@@ -278,14 +296,6 @@ const RecordarPasswordScreen = () => {
             </Head>
             <Box className={classes.root}>
                 <Container className={classes.container}>
-                    {openErrorLogin && (
-                        <ModalAuth
-                            openModal={openErrorLogin}
-                            setOpenModal={setOpenErrorLogin}
-                            title={'Error login'}
-                            message={messageError}
-                        />
-                    )}
                     <Box className={classes.cardLogin}>
                         <Box className={classes.cardLoginColumn}>
                             <div className={classes.cardTituloLogin}>
@@ -294,7 +304,7 @@ const RecordarPasswordScreen = () => {
                                     className={classes.titulo}
                                 >
                                     {' '}
-                                    Recordar Contraseña
+                                    RECORDAR CONTRASEÑA
                                 </Typography>
                             </div>
                             <form
@@ -326,7 +336,7 @@ const RecordarPasswordScreen = () => {
                                                 : undefined
                                         }
                                         required
-                                        // fullWidth
+                                    // fullWidth
                                     />
                                 </div>
 
@@ -338,16 +348,16 @@ const RecordarPasswordScreen = () => {
                                         loadingPosition="start"
                                         type="submit"
                                         variant="text"
-                                        startIcon={<SaveIcon />}
+                                        startIcon={<EmailIcon />}
                                     >
-                                        Ingresar
+                                        Enviar
                                     </LoadingButton>
                                 </div>
                             </form>
                         </Box>
                         <Hidden smDown>
                             <Box className={classes.cardLoginImg}>
-                                <CarruselImagenesLogin />
+                                <CarruselImagenesLogin imagenes={imagenes} />
                             </Box>
                         </Hidden>
                     </Box>

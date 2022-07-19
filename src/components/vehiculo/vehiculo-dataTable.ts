@@ -45,9 +45,14 @@ export const headVehiculoTable = Object.freeze([
     },
 
     {
-        Header: 'Status',
-        accessor: 'status',
+        Header: 'Año',
+        accessor: 'ano',
     },
+
+    // {
+    //     Header: 'Status',
+    //     accessor: 'status',
+    // },
 
     {
         id: 'actions',

@@ -6,6 +6,7 @@ import {
     Typography,
     TextField,
     Button,
+    Grid,
 } from '@material-ui/core'
 import { useFormik } from 'formik'
 import { isNil } from 'ramda'
@@ -51,7 +52,8 @@ const useStyles = makeStyles((theme) =>
         },
         textbox: {
             margin: theme.spacing(1),
-            width: theme.spacing(29),
+            minWidth: theme.spacing(29),
+            width: "100%"
         },
         dropzone: {
             padding: theme.spacing(4),
@@ -74,6 +76,8 @@ const useStyles = makeStyles((theme) =>
             marginTop: theme.spacing(5),
         },
         contentLastTextBox: {
+            display: "flex",
+            width: "100%"
             // display: 'flex',
             // flexDirection: 'row',
             // alignContent: 'center',
@@ -92,19 +96,23 @@ const useStyles = makeStyles((theme) =>
 
 const initialValues = Object.freeze({
     categoria: '',
-    titulo: '',
+    // titulo: '',
     asunto: '',
     textoSuperior: '',
     textoInferior: '',
+    remitente: "",
+    firma: ""
 })
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
     categoria: yup.string().required('Campo requerido'),
-    titulo: yup.string().required('Campo requerido'),
+    // titulo: yup.string().required('Campo requerido'),
     asunto: yup.string().required('Campo requerido'),
     textoSuperior: yup.string().required('Campo requerido'),
     textoInferior: yup.string().required('Campo requerido'),
+    remitente: yup.string().required('Campo requerido'),
+    firma: yup.string().required('Campo requerido'),
 })
 
 interface IProps {
@@ -125,16 +133,26 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
 
     const { refetch } = useListaModeloMailQuery()
 
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPut) {
+    const onCloseModalAuth = () => {
+        if (openModalMsj && boolPut) {
             refetch().then(() => {
                 router.push({ pathname: '/mantenimiento/modelo-mail/listado' })
             })
+        } else {
+            setOpenModalMsj(false)
         }
-        // }, 2000);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [boolPut, openModalMsj, router])
+    }
+
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPut) {
+    //         refetch().then(() => {
+    //             router.push({ pathname: '/mantenimiento/modelo-mail/listado' })
+    //         })
+    //     }
+    //     // }, 2000);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [boolPut, openModalMsj, router])
 
     const [mutate] = usePutModeloMailMutation()
 
@@ -142,38 +160,44 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
         return isNotNilOrEmpty(modeloObj)
             ? {
                 categoria: modeloObj?.categoria,
-                titulo: modeloObj?.titulo,
+                // titulo: modeloObj?.titulo,
                 asunto: modeloObj?.asunto,
                 textoSuperior: modeloObj?.textoSuperior,
                 textoInferior: modeloObj?.textoInferior,
+                remitente: modeloObj?.remitente,
+                firma: modeloObj.firma
             }
             : initialValues
     }, [modeloObj])
 
     const onSubmit = useCallback(
-        async ({ categoria, titulo, asunto, textoSuperior, textoInferior }) => {
+        async ({ categoria, asunto, textoSuperior, textoInferior, remitente, firma }) => {
             try {
                 if (
                     isNotNilOrEmpty(categoria) &&
-                    isNotNilOrEmpty(titulo) &&
+                    // isNotNilOrEmpty(titulo) &&
                     isNotNilOrEmpty(asunto) &&
                     isNotNilOrEmpty(textoSuperior) &&
-                    isNotNilOrEmpty(textoInferior)
+                    isNotNilOrEmpty(textoInferior) &&
+                    isNotNilOrEmpty(remitente) &&
+                    isNotNilOrEmpty(firma)
                 ) {
                     setLoadingMutate(true)
                     const { data } = await mutate({
                         variables: {
                             id,
                             categoria,
-                            titulo,
+                            // titulo,
                             asunto,
                             textoSuperior,
                             textoInferior,
+                            remitente,
+                            firma
                         },
                     })
 
                     if (isNotNilOrEmpty(data)) {
-                        const { message } = data.PutModeloMail
+                        const { code, message } = data.PutModeloMail
                         setLoadingMutate(false)
                         setTitleModalMsj(message)
 
@@ -181,13 +205,26 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
 
                         //   }, 2000);
 
-                        setErrorModal(false)
-                        setOpenModalMsj(true)
+
+
                         // setMensajeModalMsj(dataMutate.message);
 
-                        if (isNotNilOrEmpty(data.PutModeloMail)) {
-                            setBoolPut(true)
+                        if (code === 200) {
+                            setErrorModal(false)
+                            if (isNotNilOrEmpty(data.PutModeloMail)) {
+                                setBoolPut(true);
+
+                                setOpenModalMsj(true)
+                                return
+                            }
+
+
+                        } else {
+                            setErrorModal(true)
                         }
+                        setOpenModalMsj(true)
+
+
 
                         // resetForm();
                     } else {
@@ -232,8 +269,9 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
         <Box className={classes.root}>
             {openModalMsj && (
                 <ModalAuth
+                    onClose={onCloseModalAuth}
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    // setOpenModal={setOpenModalMsj}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
@@ -242,7 +280,7 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
             <div className={classes.title}>
                 <Typography variant="overline">
                     {modeloObj
-                        ? `Actualización de modelo de correo ${modeloObj.titulo}`
+                        ? `Actualización de modelo de correo ${modeloObj.categoria}`
                         : ''}
                 </Typography>
             </div>
@@ -253,97 +291,139 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
                 onReset={handleReset}
                 className={classes.form}
             >
-                <div className={classes.contentLastTextBox}>
-                    <TextField
-                        className={classes.textbox}
-                        variant="outlined"
-                        id="categoria"
-                        value={values.categoria}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        label="Categoria"
-                        margin="normal"
-                        error={
-                            touched.categoria &&
-                            isNotNilOrEmpty(errors.categoria)
-                        }
-                        helperText={
-                            touched.categoria ? errors.categoria : undefined
-                        }
-                        required
-                        disabled
-                    />
-                    <TextField
-                        className={classes.textbox}
-                        variant="outlined"
-                        id="titulo"
-                        value={values.titulo}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        label="Titulo"
-                        margin="normal"
-                        error={touched.titulo && isNotNilOrEmpty(errors.titulo)}
-                        helperText={touched.titulo ? errors.titulo : undefined}
-                        required
-                    />
-                </div>
-                <div className={classes.contentLastTextBox}>
-                    <TextField
-                        className={classes.textbox}
-                        variant="outlined"
-                        id="asunto"
-                        value={values.asunto}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        label="Asunto"
-                        margin="normal"
-                        error={touched.asunto && isNotNilOrEmpty(errors.asunto)}
-                        helperText={touched.asunto ? errors.asunto : undefined}
-                        required
-                    />
-                    <TextField
-                        className={classes.textbox}
-                        variant="outlined"
-                        id="textoSuperior"
-                        value={values.textoSuperior}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        label="Texto Superior"
-                        margin="normal"
-                        error={
-                            touched.textoSuperior &&
-                            isNotNilOrEmpty(errors.textoSuperior)
-                        }
-                        helperText={
-                            touched.textoSuperior
-                                ? errors.textoSuperior
-                                : undefined
-                        }
-                        required
-                    />
-                </div>
-                <div className={classes.contentLastTextBox}>
-                    <TextField
-                        className={classes.textbox}
-                        variant="outlined"
-                        id="textoInferior"
-                        value={values.textoInferior}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        label="TextoInferior"
-                        margin="normal"
-                        error={
-                            touched.textoInferior &&
-                            isNotNilOrEmpty(errors.textoInferior)
-                        }
-                        helperText={
-                            touched.textoInferior
-                                ? errors.textoInferior
-                                : undefined
-                        }
-                        required
-                    />
-                </div>
+
+                <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                        <TextField
+                            className={classes.textbox}
+                            variant="outlined"
+                            id="categoria"
+                            value={values.categoria}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            label="Categoria"
+                            margin="normal"
+                            error={
+                                touched.categoria &&
+                                isNotNilOrEmpty(errors.categoria)
+                            }
+                            helperText={
+                                touched.categoria ? errors.categoria : undefined
+                            }
+                            required
+                            disabled
+                        />
+
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <TextField
+                            className={classes.textbox}
+                            variant="outlined"
+                            id="remitente"
+                            value={values.remitente}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            label="Remitente"
+                            margin="normal"
+                            error={
+                                touched.categoria &&
+                                isNotNilOrEmpty(errors.remitente)
+                            }
+                            helperText={
+                                touched.remitente ? errors.remitente : undefined
+                            }
+                            required
+                        />
+                    </Grid>
+                    <Grid item xs={12} >
+                        <TextField
+                            className={classes.textbox}
+                            variant="outlined"
+                            id="asunto"
+                            multiline
+                            value={values.asunto}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            label="Asunto"
+                            margin="normal"
+                            error={touched.asunto && isNotNilOrEmpty(errors.asunto)}
+                            helperText={touched.asunto ? errors.asunto : undefined}
+                            required
+                        />
+                    </Grid>
+                    <Grid item xs={12} >
+                        <TextField
+                            className={classes.textbox}
+                            variant="outlined"
+                            id="textoSuperior"
+                            value={values.textoSuperior}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            label="Texto Superior"
+                            multiline
+                            minRows={2}
+                            margin="normal"
+                            error={
+                                touched.textoSuperior &&
+                                isNotNilOrEmpty(errors.textoSuperior)
+                            }
+                            helperText={
+                                touched.textoSuperior
+                                    ? errors.textoSuperior
+                                    : undefined
+                            }
+                            required
+                        />
+                    </Grid>
+                    <Grid item xs={12} >
+                        <TextField
+                            className={classes.textbox}
+                            variant="outlined"
+                            id="textoInferior"
+                            multiline
+                            minRows={2}
+                            value={values.textoInferior}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            label="TextoInferior"
+                            margin="normal"
+                            error={
+                                touched.textoInferior &&
+                                isNotNilOrEmpty(errors.textoInferior)
+                            }
+                            helperText={
+                                touched.textoInferior
+                                    ? errors.textoInferior
+                                    : undefined
+                            }
+                            required
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            className={classes.textbox}
+                            variant="outlined"
+                            id="firma"
+                            value={values.firma}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            label="Firma"
+                            margin="normal"
+                            error={
+                                touched.firma &&
+                                isNotNilOrEmpty(errors.firma)
+                            }
+                            helperText={
+                                touched.firma ? errors.firma : undefined
+                            }
+                            required
+                        />
+                    </Grid>
+
+
+                </Grid>
+
+
                 <div className={classes.contentButtons}>
                     <div></div>
                     <LoadingButton

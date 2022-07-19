@@ -142,42 +142,42 @@ export const DashBoardPagosRealizados = () => {
     const dataHistarial = useMemo(() => {
         return !loading && data && data.ListadoPagosDashboard
             ? {
-                  labels: extractLabels(data),
-                  datasets: [
-                      {
-                          label: 'Mantenimiento',
-                          data: data.ListadoPagosDashboard.mantenimiento.map(
-                              ({ monto }) => monto
-                          ),
-                          backgroundColor: colors.blue[400],
-                      },
-                      {
-                          label: 'Implementación',
-                          data: data.ListadoPagosDashboard.implementacion.map(
-                              ({ monto }) => monto
-                          ),
-                          backgroundColor: colors.indigo[400],
-                      },
-                      {
-                          label: 'Tags',
-                          data: data.ListadoPagosDashboard.tag.map(
-                              ({ monto }) => monto
-                          ),
-                          backgroundColor: colors.deepPurple[400],
-                      },
-                      {
-                          label: 'Otros',
-                          data: data.ListadoPagosDashboard.otros.map(
-                              ({ monto }) => monto
-                          ),
-                          backgroundColor: colors.grey[400],
-                      },
-                  ],
-              }
+                labels: extractLabels(data),
+                datasets: [
+                    {
+                        label: 'Mantenimiento',
+                        data: data.ListadoPagosDashboard.mantenimiento.map(
+                            ({ monto }) => monto
+                        ),
+                        backgroundColor: colors.blue[400],
+                    },
+                    {
+                        label: 'Implementación',
+                        data: data.ListadoPagosDashboard.implementacion.map(
+                            ({ monto }) => monto
+                        ),
+                        backgroundColor: colors.indigo[400],
+                    },
+                    {
+                        label: 'Tags',
+                        data: data.ListadoPagosDashboard.tag.map(
+                            ({ monto }) => monto
+                        ),
+                        backgroundColor: colors.deepPurple[400],
+                    },
+                    {
+                        label: 'Otros',
+                        data: data.ListadoPagosDashboard.otros.map(
+                            ({ monto }) => monto
+                        ),
+                        backgroundColor: colors.grey[400],
+                    },
+                ],
+            }
             : {
-                  labels: [],
-                  datasets: [],
-              }
+                labels: [],
+                datasets: [],
+            }
     }, [data, loading])
 
     console.log('data: ', extractData(data))
@@ -187,7 +187,7 @@ export const DashBoardPagosRealizados = () => {
             <Paper className={classes.root}>
                 <div className={classes.containerTitle}>
                     <Typography variant="overline" className={classes.title}>
-                        Historial de Pagos
+                        Historial de Aportaciones
                     </Typography>
                 </div>
                 <div className={classes.headerButton}>

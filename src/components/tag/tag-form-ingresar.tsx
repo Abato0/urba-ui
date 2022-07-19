@@ -24,6 +24,7 @@ import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import ModalAuth from '../core/input/dialog/modal-dialog'
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
+import FormControlHeader from '../core/input/form-control-select'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -120,15 +121,30 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
 
     const { refetch } = useListaAllTag()
 
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPut) {
+
+    const closeModalAuth = () => {
+        if (openModalMsj && boolPut) {
             refetch().then(() => {
                 router.push({ pathname: '/tag/listado-tags' })
             })
+
+            // console.log("1")
+        } else {
+            setOpenModalMsj(false)
+            //console.log("2", " * ", openModalMsj && boolPut)
         }
-        // }, 2000);
-    }, [boolPut, openModalMsj, refetch, router])
+    }
+
+
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPut) {
+    //         refetch().then(() => {
+    //             router.push({ pathname: '/tag/listado-tags' })
+    //         })
+    //     }
+    //     // }, 2000);
+    // }, [boolPut, openModalMsj, refetch, router])
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [mutate] = isNil(tag) ? usePostTagMutation() : usePutTagMutation()
@@ -136,8 +152,8 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
     const init = useMemo(() => {
         return isNotNilOrEmpty(tag)
             ? {
-                  code: tag?.code,
-              }
+                code: tag?.code,
+            }
             : initialValues
     }, [tag])
 
@@ -148,16 +164,16 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(tag)
                         ? await mutate({
-                              variables: {
-                                  code,
-                              },
-                          })
+                            variables: {
+                                code,
+                            },
+                        })
                         : await mutate({
-                              variables: {
-                                  id,
-                                  code,
-                              },
-                          })
+                            variables: {
+                                id,
+                                code,
+                            },
+                        })
 
                     if (isNotNilOrEmpty(data)) {
                         setLoadingMutate(false)
@@ -167,11 +183,14 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
                         setTitleModalMsj(message)
 
                         setOpenModalMsj(true)
-                        if (isNotNilOrEmpty(data.PutTag)) {
-                            setBoolPut(true)
-                        }
+
                         if (code === 200) {
-                            setErrorModal(false)
+                            if (isNotNilOrEmpty(data.PutTag)) {
+                                setBoolPut(true)
+                                return
+                            }
+                            await refetch();
+                            resetForm();
                         }
                     } else {
                         setLoadingMutate(false)
@@ -215,7 +234,8 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    onClose={() => { closeModalAuth() }}
+                    //    setOpenModal={setOpenModalMsj}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
@@ -247,6 +267,7 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
                         helperText={touched.code ? errors.code : undefined}
                         required
                     />
+
                 </div>
                 <div className={classes.contentButtons}>
                     <div></div>

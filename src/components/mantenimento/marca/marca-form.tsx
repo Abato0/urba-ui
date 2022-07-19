@@ -16,6 +16,7 @@ import ModalAuth from '../../core/input/dialog/modal-dialog'
 import { useRouter } from 'next/router'
 import {
     IResultQueryMarca,
+    useListaMarcaQuery,
     usePostMarcaMutation,
     usePutMarcaMutation,
 } from './use-marca'
@@ -115,13 +116,25 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
 
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPut) {
-            router.push({ pathname: '/mantenimiento/marca/listado' })
+    const { refetch } = useListaMarcaQuery()
+
+    const onCloseAuthModal = () => {
+        if (openModalMsj && boolPut) {
+            refetch().then(() => {
+                router.push({ pathname: '/mantenimiento/marca/listado' })
+            })
+        } else {
+            setOpenModalMsj(false)
         }
-        // }, 2000);
-    }, [boolPut, openModalMsj, router])
+    }
+
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPut) {
+    //         router.push({ pathname: '/mantenimiento/marca/listado' })
+    //     }
+    //     // }, 2000);
+    // }, [boolPut, openModalMsj, router])
 
     const [mutate] = isNil(marcaObj)
         ? // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -156,18 +169,31 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
                         })
 
                     if (isNotNilOrEmpty(data)) {
-                        const { message } = isNotNilOrEmpty(data.PutMarca)
+                        const { code, message } = isNotNilOrEmpty(data.PutMarca)
                             ? data.PutMarca
                             : data.PostMarca
                         setLoadingMutate(false)
                         setTitleModalMsj(message)
 
-                        setErrorModal(false)
-                        setOpenModalMsj(true)
-                        if (isNotNilOrEmpty(data.PutMarca)) {
-                            setBoolPut(true)
+
+
+
+                        if (code === 200) {
+                            setErrorModal(false)
+                            if (isNotNilOrEmpty(data.PutMarca)) {
+                                setBoolPut(true)
+                                return
+                            }
+                            await refetch()
+                            resetForm()
+                        } else {
+                            setErrorModal(true)
                         }
-                        resetForm()
+
+                        setOpenModalMsj(true)
+
+
+
                     } else {
                         setLoadingMutate(false)
                         setOpenModalMsj(true)
@@ -211,7 +237,8 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    // setOpenModal={setOpenModalMsj}
+                    onClose={onCloseAuthModal}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}

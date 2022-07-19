@@ -11,7 +11,8 @@ const useStyles = makeStyles((theme) =>
             flexDirection: 'column',
             margin: theme.spacing(1),
             borderRadius: '4px',
-            width: '70%',
+
+            // width: '70%',
         },
         carrusel: {
             // maxWidth: "350px",
@@ -20,6 +21,14 @@ const useStyles = makeStyles((theme) =>
             borderRadius: '12px',
             // backgroundColor: "red"
         },
+        containerImage: {
+            //backgroundColor: "red",
+            display: "flex",
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "center"
+
+        }
     })
 )
 
@@ -45,10 +54,12 @@ export const CarruselDashboardHorizontal: FC<IProps> = ({ imagenes }) => {
             >
                 {imagenes.map(({ url }, index) => {
                     return (
-                        <div key={index}>
+                        <div key={index} className={classes.containerImage}>
                             <img
-                                width={450}
-                                height={250}
+                                // width={"100%"}
+                                // height={"100%"}
+                                style={{ maxWidth: "600px" }}
+                                //sizes={"small"}
                                 // className={classes.img}
                                 src={url}
                                 alt={'img'}

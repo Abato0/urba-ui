@@ -17,7 +17,7 @@ export interface IGrupoFamiliarInput {
     id_calle_principal: number
     calle_interseccion: string
     id_manzana: number
-    id_usuario: number
+    // id_usuario: number
     villa: string
     // id_tipo_edificacion: number;
     // id_color_fachada: number;

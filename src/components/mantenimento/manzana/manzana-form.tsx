@@ -22,6 +22,7 @@ import {
 } from './use-manzana'
 import SaveIcon from '@material-ui/icons/Save'
 import { LoadingButton } from '@mui/lab'
+import { useListaManzanaQuery } from './use-manzana';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -116,13 +117,27 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
     const [boolPut, setBoolPut] = useState<boolean>(false)
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPut) {
-            router.push({ pathname: '/mantenimiento/manzana/listado' })
+
+    const { refetch } = useListaManzanaQuery()
+
+
+    const onCloseModalAuth = () => {
+        if (openModalMsj && boolPut) {
+            refetch().then(() => {
+                router.push({ pathname: '/mantenimiento/manzana/listado' })
+            })
+        } else {
+            setOpenModalMsj(false)
         }
-        // }, 2000);
-    }, [boolPut, openModalMsj, router])
+    }
+
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPut) {
+    //         router.push({ pathname: '/mantenimiento/manzana/listado' })
+    //     }
+    //     // }, 2000);
+    // }, [boolPut, openModalMsj, router])
 
     const [mutate] = isNil(manzanaObj)
         ? usePostManzanaMutation()
@@ -155,17 +170,28 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
                         })
 
                     if (isNotNilOrEmpty(data)) {
-                        const { message } = isNotNilOrEmpty(data.PutManzana)
+                        const { code, message } = isNotNilOrEmpty(data.PutManzana)
                             ? data.PutManzana
                             : data.PostManzana
                         setLoadingMutate(false)
                         setTitleModalMsj(message)
-                        setErrorModal(false)
-                        setOpenModalMsj(true)
-                        if (isNotNilOrEmpty(data.PutManzana)) {
-                            setBoolPut(true)
+
+
+                        if (code === 200) {
+                            setErrorModal(false)
+                            if (isNotNilOrEmpty(data.PutManzana)) {
+                                setBoolPut(true)
+                                return
+                            }
+                            await refetch();
+                            resetForm()
+                        } else {
+                            setErrorModal(true)
                         }
-                        resetForm()
+                        setOpenModalMsj(true)
+
+
+                        // resetForm()
                     } else {
                         setLoadingMutate(false)
                         setOpenModalMsj(true)
@@ -208,7 +234,8 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    onClose={onCloseModalAuth}
+                    //setOpenModal={setOpenModalMsj}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}

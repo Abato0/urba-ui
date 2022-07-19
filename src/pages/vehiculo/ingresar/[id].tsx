@@ -59,7 +59,8 @@ const extractData = (
             id_marca: Number(data.GetVehiculos.marca.id),
             id_color: Number(data.GetVehiculos.color.id),
             id_modelo: Number(data.GetVehiculos.modelo.id),
-            id_status: Number(data.GetVehiculos.status.id),
+            ano: Number(data.GetVehiculos.ano),
+            // id_status: Number(data.GetVehiculos.status.id),
             matriculaFrontal: undefined,
             matriculaReverso: undefined,
             cedulaFrontal: undefined,
@@ -87,7 +88,7 @@ const EditarVehiculo = () => {
         }
     }, [data, loading, error])
 
-    const llenarVehiculo = async () => {}
+    const llenarVehiculo = async () => { }
 
     return (
         <LayoutTituloPagina titulo="Vehiculo - Actualización">

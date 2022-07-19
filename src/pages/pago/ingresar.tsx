@@ -6,7 +6,7 @@ import { PagoFormMulti } from '../../components/pago/pago.form-multi'
 
 export const IngresarPago = () => {
     return (
-        <LayoutTituloPagina titulo="Pago - REGISTRO">
+        <LayoutTituloPagina titulo="Aportación - REGISTRO">
             <PagoFormMulti />
         </LayoutTituloPagina>
     )

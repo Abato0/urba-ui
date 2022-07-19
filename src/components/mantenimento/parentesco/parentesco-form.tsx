@@ -23,6 +23,7 @@ import {
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
 import { useListadoUsuario } from '../../usuarios/use-usuario'
+import { useListaParentescoQuery } from './use-parentesco';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -115,13 +116,26 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
     const [boolPut, setBoolPut] = useState<boolean>(false)
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPut) {
-            router.push({ pathname: '/mantenimiento/parentesco/listado' })
+    const { refetch } = useListaParentescoQuery();
+
+    const onCloseModalAuth = () => {
+        if (openModalMsj && boolPut) {
+            refetch().then(() => {
+                router.push({ pathname: '/mantenimiento/parentesco/listado' })
+            })
+
+        } else {
+            setOpenModalMsj(false)
         }
-        // }, 2000);
-    }, [boolPut, openModalMsj, router])
+    }
+
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPut) {
+    //         router.push({ pathname: '/mantenimiento/parentesco/listado' })
+    //     }
+    //     // }, 2000);
+    // }, [boolPut, openModalMsj, router])
 
     const [mutate] = isNil(parentescoObj)
         ? usePostParentescoMutation()
@@ -162,11 +176,20 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
                         setLoadingMutate(false)
                         setTitleModalMsj(message)
 
-                        if (isNotNilOrEmpty(data.PutParentesco)) {
-                            setBoolPut(true)
-                        }
+
+
+
                         if (code === 200) {
                             setErrorModal(false)
+                            if (isNotNilOrEmpty(data.PutParentesco)) {
+                                setBoolPut(true)
+                                return
+                            }
+
+                            await refetch();
+                            resetForm()
+                        } else {
+                            setErrorModal(true)
                         }
                         setOpenModalMsj(true)
                     } else {
@@ -212,7 +235,8 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    onClose={onCloseModalAuth}
+                    //setOpenModal={setOpenModalMsj}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}

@@ -29,9 +29,10 @@ import {
 } from '../../components/usuarios/use-usuario'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import AddIcon from '@material-ui/icons/Add'
+import EmailIcon from "@material-ui/icons/Email"
 import DeleteIcon from '@material-ui/icons/Delete'
-import NavBar from '../../components/layout/app-bar'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
+import { rows } from '../../components/core/input/data';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -50,7 +51,10 @@ const useStyles = makeStyles((theme) =>
             // width: "90%"
             margin: theme.spacing(2),
             paddingTop: theme.spacing(1),
-            paddingBottom: theme.spacing(1)
+            paddingBottom: theme.spacing(1),
+            width: "50%",
+            minWidth: theme.spacing(45)
+
             // padding: '60px',
         },
         formControl: {
@@ -145,14 +149,14 @@ const useStyles = makeStyles((theme) =>
 
 const initialValues = Object.freeze({
     asunto: '',
-    titulo: '',
+    // titulo: 'CEP28M',
     mensaje: '',
 })
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
     asunto: yup.string().required('Campo requerido'),
-    titulo: yup.string().required('Campo requerido'),
+    // titulo: yup.string().required('Campo requerido'),
     mensaje: yup.string().required('Campo requerido'),
 })
 
@@ -178,7 +182,7 @@ const EnvioCorreo = () => {
     } = useListadoUsuario()
 
     const onSubmit = useCallback(
-        async ({ asunto, titulo, mensaje }) => {
+        async ({ asunto, mensaje }) => {
             try {
                 if (arrUsuarios.length > 0) {
                     setLoadingMutate(true)
@@ -186,7 +190,7 @@ const EnvioCorreo = () => {
                         variables: {
                             emails: arrUsuarios.map(({ email }) => email),
                             asunto,
-                            titulo,
+                            titulo: "PCE28M",
                             mensaje,
                         },
                     })
@@ -299,7 +303,9 @@ const EnvioCorreo = () => {
                         </div>
                         <div
                             style={{
-                                marginBottom: "20px"
+                                marginBottom: "20px",
+
+                                width: "100%"
                             }}
                         // style={{
                         //     display: 'flex',
@@ -309,7 +315,9 @@ const EnvioCorreo = () => {
                         //     alignItems: "center"
                         // }}
                         >
+
                             <SelectHeader
+                                style={{ width: '40%' }}
                                 id="id_usuario"
                                 handleChange={(e: SelectChangeEvent) =>
                                     setIdUsuarioSeleccionado(
@@ -323,27 +331,31 @@ const EnvioCorreo = () => {
                                 {!loadingUsuario &&
                                     dataUsuario &&
                                     isNotNilOrEmpty(dataUsuario.ListaUsuario) &&
-                                    dataUsuario.ListaUsuario.map(
-                                        (
-                                            {
-                                                id,
-                                                user,
-                                                nombres,
-                                                apellidos,
-                                                tipo_usuario,
-                                            },
-                                            index
-                                        ) => {
-                                            return (
-                                                <MenuItem
-                                                    key={index}
-                                                    value={id}
-                                                >
-                                                    {`${user}  - ${tipo_usuario} - ${nombres} ${apellidos}`}
-                                                </MenuItem>
-                                            )
-                                        }
-                                    )}
+                                    dataUsuario.ListaUsuario
+                                        .filter(({ tipo_usuario }) => TipoUsuario.MORADOR === tipo_usuario)
+                                        .sort((a, b) => a.apellidos.localeCompare(b.apellidos))
+                                        .map(
+                                            (
+                                                {
+                                                    id,
+                                                    user,
+                                                    nombres,
+                                                    apellidos,
+                                                    tipo_usuario,
+                                                },
+                                                index
+                                            ) => {
+                                                return (
+                                                    <MenuItem
+                                                        key={index}
+                                                        value={id}
+                                                        style={{ textTransform: "uppercase" }}
+                                                    >
+                                                        {`${user}  - ${tipo_usuario} - ${apellidos} ${nombres}`}
+                                                    </MenuItem>
+                                                )
+                                            }
+                                        )}
                             </SelectHeader>
 
                             <Fab
@@ -387,7 +399,7 @@ const EnvioCorreo = () => {
                                     >
                                         {arrUsuarios.map(
                                             (
-                                                { id, user, tipo_usuario },
+                                                { id, user, tipo_usuario, nombres, apellidos, num_identificacion },
                                                 index
                                             ) => {
                                                 return (
@@ -443,13 +455,13 @@ const EnvioCorreo = () => {
                                                                         variant="overline"
 
 
-                                                                    >{`${user} ${tipo_usuario} `}</Typography>
-                                                                    {/* <Typography
+                                                                    >{`${num_identificacion}`}</Typography>
+                                                                    <Typography
                                                                         className={
                                                                             classes.itemLabel
                                                                         }
                                                                         variant="overline"
-                                                                    >{`}`}</Typography> */}
+                                                                    >{`${nombres} ${apellidos}`}</Typography>
                                                                 </div>
 
                                                                 <Fab
@@ -457,8 +469,8 @@ const EnvioCorreo = () => {
                                                                     color="primary"
                                                                     aria-label="add"
                                                                     style={{
-                                                                        padding: 12,
-                                                                        marginRight: 10,
+                                                                        // padding: 12,
+                                                                        // marginRight: 10,
                                                                     }}
                                                                     onClick={() =>
                                                                         removeUsuario(
@@ -487,15 +499,16 @@ const EnvioCorreo = () => {
                                 Ingresar los detalles del mensaje
                             </Typography>
                         </div>
-                        <div style={{ marginTop: 15 }}>
-                            <TextField
+                        <div style={{ marginTop: "3%", width: "90%" }}>
+                            {/* <TextField
+                                style={{ display: "none" }}
                                 className={classes.textbox}
                                 id="titulo"
                                 name="titulo"
                                 label="Titulo"
                                 onChange={handleChange}
                                 onBlur={handleBlur}
-                                value={values.titulo}
+                                value={"CEP28M"}
                                 error={
                                     touched.titulo &&
                                     isNotNilOrEmpty(errors.titulo)
@@ -504,9 +517,10 @@ const EnvioCorreo = () => {
                                     touched.titulo ? errors.titulo : undefined
                                 }
                                 required
-                            />
+                            /> */}
                             <TextField
                                 className={classes.textbox}
+                                style={{ width: "100%" }}
                                 id="asunto"
                                 name="asunto"
                                 label="Asunto"
@@ -523,12 +537,17 @@ const EnvioCorreo = () => {
                                 required
                             />
                         </div>
-                        <div>
+                        <div style={{ width: "90%" }}>
                             <TextField
                                 className={classes.textbox}
+                                style={{
+                                    width: "100%"
+                                }}
+
                                 // style={{
                                 //     width: '450px',
                                 // }}
+                                rows={5}
                                 id="mensaje"
                                 name="mensaje"
                                 label="Mensaje"
@@ -546,16 +565,16 @@ const EnvioCorreo = () => {
                                 required
                             />
                         </div>
-                        <div className={classes.contentButtons}>
+                        <div className={classes.contentButtons} style={{ marginBottom: "2%", marginRight: "2%" }}>
                             <div></div>
                             <LoadingButton
                                 loading={loadingMutate}
                                 loadingPosition="start"
                                 type="submit"
                                 variant="text"
-                                startIcon={<SaveIcon />}
+                                startIcon={<EmailIcon />}
                             >
-                                Guardar
+                                Enviar
                             </LoadingButton>
                         </div>
                     </form>

@@ -129,21 +129,36 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
     const [dataTipoIdentificacion, setDataTipoIdentificacion] =
         useState<IResultQueryTipoIdentificacion>()
-
+    const { refetch } = useListaTipoIdentificacionQuery()
+    const [mutate] = usePutTipoIdentificacionMutation();
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPut) {
+    // const {refetch} = useListaTipoIdentificacionQuery()
+
+    const onCloseModalAuth = () => {
+        if (openModalMsj && boolPut) {
             refetch().then(() => {
                 router.push({
                     pathname: '/mantenimiento/tipo-identificacion/registrar',
                 })
             })
+        } else {
+            setOpenModalMsj(false)
         }
-        // }, 2000);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [boolPut, openModalMsj, router])
+    }
+
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPut) {
+    //         refetch().then(() => {
+    //             router.push({
+    //                 pathname: '/mantenimiento/tipo-identificacion/registrar',
+    //             })
+    //         })
+    //     }
+    //     // }, 2000);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [boolPut, openModalMsj, router])
 
     const id = useMemo(() => {
         if (isNotNilOrEmpty(router.query.id)) {
@@ -159,9 +174,6 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
         }
     }, [loading, error, data])
 
-    const { refetch } = useListaTipoIdentificacionQuery()
-
-    const [mutate] = usePutTipoIdentificacionMutation()
 
     const onSubmit = useCallback(
         async ({ tipo_identificacion }) => {
@@ -179,14 +191,17 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
                         const { code, message } = data.PutTipoIdentificacion
                         setTitleModalMsj(message)
                         setLoadingMutate(false)
-                        setOpenModalMsj(true)
+
                         // if (isNotNilOrEmpty(data.PutParentesco)) {
                         //   setBoolPut(true);
                         // }
                         if (code === 200) {
                             setErrorModal(false)
                             setBoolPut(true)
+                        } else {
+                            setErrorModal(false)
                         }
+                        setOpenModalMsj(true)
                     } else {
                         setLoadingMutate(false)
                         setOpenModalMsj(true)
@@ -247,7 +262,8 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
                         {openModalMsj && (
                             <ModalAuth
                                 openModal={openModalMsj}
-                                setOpenModal={setOpenModalMsj}
+                                //  setOpenModal={setOpenModalMsj}
+                                onClose={onCloseModalAuth}
                                 title={titleModalMsj}
                                 message={mensajeModalMsj}
                                 error={errorModal}

@@ -188,6 +188,7 @@ export const IngresarTagVehiculoForm: FC = () => {
                     if (code === 200) {
                         setErrorModal(false)
                         await refetch()
+                        resetForm()
                     }
                 } else {
                     setLoadingMutate(false)
@@ -228,7 +229,8 @@ export const IngresarTagVehiculoForm: FC = () => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    //   setOpenModal={setOpenModalMsj}
+                    onClose={() => { setOpenModalMsj(false) }}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}

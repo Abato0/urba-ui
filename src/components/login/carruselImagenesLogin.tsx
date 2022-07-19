@@ -1,7 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import { makeStyles, createStyles } from '@material-ui/core'
+import { ConeOff } from 'mdi-material-ui'
+import { divide } from 'ramda'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { Carousel } from 'react-responsive-carousel'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
+import { imagenesLogin } from '../../auth/auth-service'
+import { LUGAR_IMAGEN } from '../../utils/keys'
+import { useListadoImagenesBienvenidaQuery } from '../imagenes-de-bienvenida/use-imagenes-bienvenida'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -21,8 +27,12 @@ const useStyles = makeStyles((theme) =>
     })
 )
 
-export const CarruselImagenesLogin = () => {
-    const classes = useStyles()
+interface IProps {
+    imagenes: string[]
+}
+
+export const CarruselImagenesLogin: FC<IProps> = ({ imagenes }) => {
+    const classes = useStyles();
     return (
         <div className={classes.imgContainer}>
             <Carousel
@@ -34,16 +44,23 @@ export const CarruselImagenesLogin = () => {
                 className={classes.carrusel}
                 showThumbs={false}
             >
-                <div>
-                    <img
-                        width={450}
-                        height={570}
-                        // className={classes.img}
-                        src={'/img/login/iowa-city.jpg'}
-                        alt={'img'}
-                    />
-                </div>
-                <div>
+                {
+                    imagenes.map((url) => {
+                        return (
+                            <div key="1">
+                                <img
+                                    width={450}
+                                    height={570}
+                                    src={url}
+                                    // className={classes.img}
+                                    //src={'/img/login/iowa-city.jpg'}
+                                    alt={'img'}
+                                />
+                            </div>)
+                    })
+                }
+
+                {/* <div>
                     <img
                         width={450}
                         height={570}
@@ -60,7 +77,7 @@ export const CarruselImagenesLogin = () => {
                         src={'/img/login/rascacielo.jpg'}
                         alt={'img'}
                     />
-                </div>
+                </div> */}
             </Carousel>
         </div>
     )

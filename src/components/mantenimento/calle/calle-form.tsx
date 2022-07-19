@@ -17,6 +17,7 @@ import ModalAuth from '../../core/input/dialog/modal-dialog'
 import { useRouter } from 'next/router'
 import {
     IResultQueryCalle,
+    useListaCallesQuery,
     usePostCalleMutation,
     usePutCalleMutation,
 } from './use-calle'
@@ -115,14 +116,30 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
 
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
-    useEffect(() => {
-        // setTimeout(() => {
-        if (!openModalMsj && boolPut) {
-            router.push({ pathname: '/mantenimiento/calle/listado' })
+    const { refetch } = useListaCallesQuery()
+
+
+    const onCloseModalAuth = () => {
+        if (openModalMsj && boolPut) {
+            refetch().then(() => {
+                router.push({ pathname: '/mantenimiento/calle/listado' })
+            })
+
+            // console.log("1")
+        } else {
+            setOpenModalMsj(false)
+            //console.log("2", " * ", openModalMsj && boolPut)
         }
-        // }, 2000);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [boolPut, openModalMsj])
+    }
+
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //     if (!openModalMsj && boolPut) {
+    //         router.push({ pathname: '/mantenimiento/calle/listado' })
+    //     }
+    //     // }, 2000);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [boolPut, openModalMsj])
 
     const [mutate] = isNil(calleObj)
         ? usePostCalleMutation()
@@ -155,23 +172,32 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
                         })
 
                     if (isNotNilOrEmpty(data)) {
-                        const { message } = isNotNilOrEmpty(data.PutCalle)
+                        const { code, message } = isNotNilOrEmpty(data.PutCalle)
                             ? data.PutCalle
                             : data.PostCalle
-                        setLoadingMutate(false)
-                        setTitleModalMsj(message)
+
 
                         //   setTimeout(() => {
 
                         //   }, 2000);
 
-                        setErrorModal(false)
+
                         // setMensajeModalMsj(dataMutate.message);
-                        setOpenModalMsj(true)
-                        if (isNotNilOrEmpty(data.PutCalle)) {
-                            setBoolPut(true)
+
+
+                        if (code === 200) {
+                            setOpenModalMsj(false)
+                            if (isNotNilOrEmpty(data.PutCalle)) {
+                                setBoolPut(true)
+                                return
+                            }
+                            await refetch();
+                            resetForm()
+                        } else {
+                            setErrorModal(true)
                         }
-                        resetForm()
+                        setOpenModalMsj(true)
+
                     } else {
                         setLoadingMutate(false)
                         setOpenModalMsj(true)
@@ -215,7 +241,7 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    setOpenModal={setOpenModalMsj}
+                    onClose={onCloseModalAuth}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
@@ -243,7 +269,7 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
                         value={values.calle}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        label="Calle"
+                        label="Calles y Peatonales"
                         margin="normal"
                         error={touched.calle && isNotNilOrEmpty(errors.calle)}
                         helperText={touched.calle ? errors.calle : undefined}

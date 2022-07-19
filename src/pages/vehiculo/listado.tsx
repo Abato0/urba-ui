@@ -125,13 +125,13 @@ const useStyles = makeStyles((theme) =>
 const extractData = (data: IListarFilter): IVehiculoVariableNormalize[] => {
     return isNotNilOrEmpty(data)
         ? data.ListaVehiculoFilter.map(
-            ({ grupoFamiliar, color, marca, modelo, status, ...props }) => {
+            ({ grupoFamiliar, color, marca, modelo, ...props }) => {
                 return {
                     nombre_familiar: grupoFamiliar.nombre_familiar,
                     marca: marca.marca,
                     color: color.color,
                     modelo: modelo.modelo,
-                    status: status.statusVehiculo,
+                    // status: status.statusVehiculo,
                     ...props,
                 }
             }
@@ -140,7 +140,7 @@ const extractData = (data: IListarFilter): IVehiculoVariableNormalize[] => {
 }
 
 const getRowId: any = prop('id')
-const idTable = 'idListadoIntegranteTable'
+const idTable = 'idListadoVehiculoTable'
 const titlePdf = 'Listado de Vehiculos por Familia'
 const columnsPdf = [
     'Nombre Familiar',
@@ -167,7 +167,7 @@ const ListadoVehiculo = () => {
     )
     const [marca, setMarca] = useState<string>('')
     const [modelo, setModelo] = useState<string>('')
-    const [status, setStatus] = useState<string>('')
+    // const [status, setStatus] = useState<string>('')
     const [idVehiculoSeleccionado, setIdVehiculoSeleccionado] =
         useState<number>()
 
@@ -195,11 +195,11 @@ const ListadoVehiculo = () => {
         error: errorMarca,
     } = useListaMarcaQuery()
 
-    const {
-        data: dataStatus,
-        loading: loadingStatus,
-        error: errorStatus,
-    } = useListaStatusVehiculoQuery()
+    // const {
+    //     data: dataStatus,
+    //     loading: loadingStatus,
+    //     error: errorStatus,
+    // } = useListaStatusVehiculoQuery()
 
     const filtrar = useCallback(() => {
         setInputFilter({
@@ -209,7 +209,7 @@ const ListadoVehiculo = () => {
                     : idGrupoFamiliar,
             marca: isEmpty(marca) ? undefined : marca,
             modelo: isEmpty(modelo) ? undefined : modelo,
-            status: isEmpty(status) ? undefined : status,
+            // status: isEmpty(status) ? undefined : status,
         })
     }, [idGrupoFamiliar, marca, modelo, status])
 
@@ -218,7 +218,7 @@ const ListadoVehiculo = () => {
         setMarca('')
         // setClleInterseccionFilter("");
         setModelo('')
-        setStatus('')
+        // setStatus('')
         setIdGrupoFamiliar(undefined)
         setInputFilter({})
     }, [])
@@ -245,14 +245,14 @@ const ListadoVehiculo = () => {
     const ExportExcel = useCallback(() => {
         if (isNotNilOrEmpty(allVehiculo)) {
             const newCampos = allVehiculo.map(
-                ({ color, marca, modelo, nombre_familiar, placa, status }) => {
+                ({ color, marca, modelo, nombre_familiar, placa }) => {
                     return {
                         GrupoFamiliar: nombre_familiar,
                         Marca: marca,
                         Modelo: modelo,
                         Placa: placa,
                         Color: color,
-                        Status: status,
+                        // Status: status,
                     }
                 }
             )
@@ -332,7 +332,8 @@ const ListadoVehiculo = () => {
                     {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
-                            setOpenModal={setOpenModalMsj}
+                            // setOpenModal={setOpenModalMsj}
+                            onClose={() => { setOpenModalMsj(false) }}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                         />
@@ -485,7 +486,7 @@ const ListadoVehiculo = () => {
                                             </Select>
                                         </FormControl>
 
-                                        <FormControl
+                                        {/* <FormControl
                                             variant="filled"
                                             className={classes.formControl}
                                         >
@@ -533,7 +534,7 @@ const ListadoVehiculo = () => {
                                                         }
                                                     )}
                                             </Select>
-                                        </FormControl>
+                                        </FormControl> */}
                                     </div>
                                 </div>
                                 <ActionsButtonsFilterReset

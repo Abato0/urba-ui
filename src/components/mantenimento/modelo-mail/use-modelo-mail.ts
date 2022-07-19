@@ -9,10 +9,12 @@ import {
 export interface IResultQueryModeloMail {
     id: number
     categoria: string
-    titulo: string
+    // titulo: string
     asunto: string
     textoSuperior: string
     textoInferior: string
+    remitente: string
+    firma: string
 }
 
 export interface IListadoModeloMail {

@@ -94,7 +94,7 @@ const AcordionHeader: React.FC<IProps> = ({
                                 color: selected
                                     ? 'white'
                                     : colors.deepPurple[900],
-                                overflow: "clip"
+                                // overflow: "clip"
                             }}
                         >
                             {label}

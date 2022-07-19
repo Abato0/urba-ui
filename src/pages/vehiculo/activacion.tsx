@@ -59,7 +59,7 @@ const ActivacionVehiculos = () => {
                                 </Button>
                             </Grid>
                         </Grid>
-
+                        {/* 
                         <Fade
                             in={fadeActive === 0}
                             timeout={500}
@@ -77,7 +77,7 @@ const ActivacionVehiculos = () => {
                             unmountOnExit
                         >
                             <ListadoInactivos />
-                        </Fade>
+                        </Fade> */}
                     </div>
                 </Paper>
             </PermisoLayout>

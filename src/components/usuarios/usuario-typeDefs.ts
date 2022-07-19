@@ -24,7 +24,7 @@ export const envioCorreos = gql`
 export const saveUsuario = gql`
     mutation (
         $tipo_usuario: String
-        $imagen_perfil: Upload
+        # $imagen_perfil: Upload
         $num_identificacion: String
         $nombres: String
         $apellidos: String
@@ -35,7 +35,7 @@ export const saveUsuario = gql`
         PostUsuario(
             input: {
                 tipo_usuario: $tipo_usuario
-                imagen_perfil: $imagen_perfil
+                # imagen_perfil: $imagen_perfil
                 num_identificacion: $num_identificacion
                 nombres: $nombres
                 apellidos: $apellidos
@@ -54,7 +54,7 @@ export const updateUsuario = gql`
     mutation (
         $id: Int!
         $tipo_usuario: String
-        $imagen_perfil: Upload
+        # $imagen_perfil: Upload
         $num_identificacion: String
         $nombres: String
         $apellidos: String
@@ -62,11 +62,11 @@ export const updateUsuario = gql`
         $telefono: String
         $idTipoIdentificacion: Int
     ) {
-        UpdatePago(
+        UpdateUsuario(
             id: $id
             input: {
                 tipo_usuario: $tipo_usuario
-                imagen_perfil: $imagen_perfil
+                # imagen_perfil: $imagen_perfil
                 num_identificacion: $num_identificacion
                 nombres: $nombres
                 apellidos: $apellidos
@@ -90,13 +90,24 @@ export const deleteUsuario = gql`
     }
 `
 
+export const asignacionUsuario = gql`
+    mutation ($idGrupoFamiliar: Int!, $idUsuario: Int!) {
+        AsignacionUsuario(
+            input: { idGrupoFamiliar: $idGrupoFamiliar, idUsuario: $idUsuario }
+        ) {
+            code
+            message
+        }
+    }
+`
+
 export const listadoUsuarios = gql`
     query {
         ListaUsuario {
             id
             user
             tipo_usuario
-            imagen_perfil
+            # imagen_perfil
             num_identificacion
             nombres
             apellidos
@@ -116,7 +127,7 @@ export const listadoUsuariosSinGrupoFamiliar = gql`
             id
             user
             tipo_usuario
-            imagen_perfil
+            # imagen_perfil
             num_identificacion
             nombres
             apellidos
@@ -136,7 +147,7 @@ export const getUsuarioTokenQuery = gql`
             id
             user
             tipo_usuario
-            imagen_perfil
+            # imagen_perfil
             num_identificacion
             nombres
             apellidos
@@ -151,13 +162,13 @@ export const getUsuarioTokenQuery = gql`
 `
 
 export const getUsuarioQuery = gql`
-    query GetUsuarioQuery($id: Int) {
+    query GetUsuarioQuery($id: Int!) {
         GetUsuario(id: $id) {
             id
             user
             # password: String
             tipo_usuario
-            imagen_perfil
+            # imagen_perfil
             # grupoFamiliar: GrupoFamiliar
             num_identificacion
             nombres

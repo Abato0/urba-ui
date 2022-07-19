@@ -178,6 +178,7 @@ export const ListadoMatrizOperaciones = () => {
 
     useEffect(() => {
         if (!loading && data && data.MatrizOperaciones) {
+            console.log("Data matriaz: ", data.MatrizOperaciones)
             setKeysColumns(drop(1, data.MatrizOperaciones.keys))
             setDataColumnsV2(extractDataV2(data.MatrizOperaciones))
         }
@@ -210,8 +211,29 @@ export const ListadoMatrizOperaciones = () => {
         }
     }
 
+
+    const totalFila = (rowData: string[]) => {
+        return rowData.reduce((callback, item) => {
+            const pago = Number(item);
+            return isNaN(pago) ? callback : callback + pago
+        }, 0);
+    }
+
+
+    useEffect(() => {
+        if (dataColumnsV2.length > 0) {
+            console.log("dataColumnsV2: ", dataColumnsV2);
+
+            const r = dataColumnsV2.map((fila, index) => {
+
+
+            })
+        }
+    }, [dataColumnsV2])
+    const totalColumnas = () => { }
+
     return (
-        <LayoutTituloPagina titulo="Pagos - Matriz de Aportaciones">
+        <LayoutTituloPagina titulo="Aportaciones - Matriz de Aportaciones">
             <Paper className={classes.root}>
                 <div className={classes.contenFilter}>
                     <div className={classes.contentButtons}>
@@ -268,6 +290,10 @@ export const ListadoMatrizOperaciones = () => {
                                         </TableCell>
                                     )
                                 })}
+                                {
+                                    keysColumns.length > 0 && <TableCell className={classes.tableHead}
+                                        align="center">Total</TableCell>
+                                }
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -287,6 +313,9 @@ export const ListadoMatrizOperaciones = () => {
                                                 </TableCell>
                                             )
                                         })}
+                                        {
+                                            rowData.length > 0 && <TableCell>{totalFila(rowData)}</TableCell>
+                                        }
                                     </TableRow>
                                 )
                             })}

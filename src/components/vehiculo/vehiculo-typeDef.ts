@@ -10,18 +10,20 @@ export const saveVehiculo = gql`
         $cedulaFrontal: Upload
         $cedulaReverso: Upload
         $id_modelo: Int
-        $id_status: Int
+        # $id_status: Int
         $placa: String
         $num_doc_identidad: String
+        $ano: Int
     ) {
         PostVehiculo(
             idGrupoFamiliar: $idGrupoFamiliar
             input: {
+                ano: $ano
                 placa: $placa
                 id_marca: $id_marca
                 id_color: $id_color
                 id_modelo: $id_modelo
-                id_status: $id_status
+                # id_status: $id_status
                 matriculaFrontal: $matriculaFrontal
                 matriculaReverso: $matriculaReverso
                 cedulaFrontal: $cedulaFrontal
@@ -39,15 +41,14 @@ export const listadoVehiculoFilter = gql`
     query VehiculosFilter(
         $idGrupoFamiliar: Int
         $marca: String
-        $modelo: String
-        $status: String
+        $modelo: String # $status: String
     ) {
         ListaVehiculoFilter(
             input: {
                 idGrupoFamiliar: $idGrupoFamiliar
                 marca: $marca
                 modelo: $modelo
-                status: $status
+                # status: $status
             }
         ) {
             id
@@ -64,11 +65,12 @@ export const listadoVehiculoFilter = gql`
             color {
                 color
             }
-            status {
-                statusVehiculo
-            }
+            # status {
+            #     statusVehiculo
+            # }
             placa
             num_doc_identidad
+            ano
             # matriculaPdf
         }
     }
@@ -91,11 +93,12 @@ export const listadoVehiculo = gql`
             color {
                 color
             }
-            status {
-                statusVehiculo
-            }
+            # status {
+            #     statusVehiculo
+            # }
             placa
             num_doc_identidad
+            ano
             # matriculaPdf
         }
     }
@@ -118,12 +121,14 @@ export const listadoVehiculoInactivos = gql`
             color {
                 color
             }
-            status {
-                statusVehiculo
-            }
-            placa
-            num_doc_identidad
-            # matriculaPdf
+            ano
+            # status {
+            #     #     statusVehiculo
+            #     # }
+            #     placa
+            #     num_doc_identidad
+            #     # matriculaPdf
+            # }
         }
     }
 `
@@ -148,16 +153,17 @@ export const getVehiculo = gql`
                 id
                 color
             }
-            status {
-                id
-                statusVehiculo
-            }
+            # status {
+            #     id
+            #     statusVehiculo
+            # }
             placa
             matriculaFrontal
             matriculaReverso
             cedulaFrontal
             num_doc_identidad
             cedulaReverso
+            ano
         }
     }
 `
@@ -172,18 +178,20 @@ export const updateVehiculo = gql`
         $cedulaFrontal: Upload
         $cedulaReverso: Upload
         $id_modelo: Int
-        $id_status: Int
+        # $id_status: Int
         $placa: String
         $num_doc_identidad: String
+        $ano: Int
     ) {
         UpdateVehiculo(
             id: $id
             input: {
+                ano: $ano
                 placa: $placa
                 id_marca: $id_marca
                 id_color: $id_color
                 id_modelo: $id_modelo
-                id_status: $id_status
+                # id_status: $id_status
                 matriculaFrontal: $matriculaFrontal
                 matriculaReverso: $matriculaReverso
                 cedulaFrontal: $cedulaFrontal
