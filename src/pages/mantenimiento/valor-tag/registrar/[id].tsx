@@ -34,7 +34,7 @@ const MantenimientoValorTagEditar = () => {
     //   }, [loading, error, data]);
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Actualización de valor del tag">
+        <LayoutTituloPagina titulo="Parametrización - Actualización de valor del tag">
             {!loading &&
                 isNotNilOrEmpty(data) &&
                 isNotNilOrEmpty(data?.GetValorTag) &&

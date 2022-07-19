@@ -155,14 +155,15 @@ const MantenimientoManzanaListado = () => {
     )
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Marcas Vehiculares">
+        <LayoutTituloPagina titulo="Parametrización - Marcas Vehiculares">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 <div>
                     <>
                         {openModalMsj && (
                             <ModalAuth
                                 openModal={openModalMsj}
-                                setOpenModal={setOpenModalMsj}
+                                //setOpenModal={setOpenModalMsj}
+                                onClose={() => setOpenModalMsj(false)}
                                 title={titleModalMsj}
                                 message={mensajeModalMsj}
                                 error={errorModal}

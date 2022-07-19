@@ -112,13 +112,14 @@ const MantenimientoModeloMailListado = () => {
     )
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Listado de Modelos de Correos">
+        <LayoutTituloPagina titulo="Parametrización - Listado de Modelos de Correos">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 <>
                     {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
-                            setOpenModal={setOpenModalMsj}
+                            onClose={() => setOpenModalMsj(false)}
+                            // setOpenModal={setOpenModalMsj}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                             error={errorModal}

@@ -239,7 +239,9 @@ const MantenimientoTipoEdificacionListado = () => {
                     {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
-                            setOpenModal={setOpenModalMsj}
+                            //setOpenModal={setOpenModalMsj}
+
+                            onClose={() => setOpenModalMsj(false)}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                             error={errorModal}

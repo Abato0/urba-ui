@@ -159,13 +159,13 @@ const MantenimientoCalleListado = () => {
     )
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Calle">
+        <LayoutTituloPagina titulo="Parametrización - Calle">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 <>
                     {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
-                            setOpenModal={setOpenModalMsj}
+                            onClose={() => setOpenModalMsj(false)}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                             error={errorModal}

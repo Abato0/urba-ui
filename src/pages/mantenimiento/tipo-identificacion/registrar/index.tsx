@@ -330,7 +330,7 @@ const MantenimientoTipoIdentificacionIngresar = () => {
     )
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Tipos de Identificaciones">
+        <LayoutTituloPagina titulo="Parametrización - Tipos de Identificaciones">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 {openModalMsj && (
                     <ModalAuth

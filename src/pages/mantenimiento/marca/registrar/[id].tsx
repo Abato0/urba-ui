@@ -30,7 +30,7 @@ const MantenimientoMarcaEditar = () => {
     }, [loading, error, data])
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Actualización de Marcas Vehiculares">
+        <LayoutTituloPagina titulo="Parametrización - Actualización de Marcas Vehiculares">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 {!loading &&
                     isNotNilOrEmpty(dataMarca) &&

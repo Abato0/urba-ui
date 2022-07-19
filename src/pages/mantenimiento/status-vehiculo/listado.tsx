@@ -164,13 +164,15 @@ const MantenimientoStatusVehiculoListado = () => {
     )
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Status de los Vehiculos">
+        <LayoutTituloPagina titulo="Parametrización - Status de los Vehiculos">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 <>
                     {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
-                            setOpenModal={setOpenModalMsj}
+                            //setOpenModal={setOpenModalMsj}
+
+                            onClose={() => setOpenModalMsj(false)}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                             error={errorModal}
@@ -212,7 +214,7 @@ const MantenimientoStatusVehiculoListado = () => {
                             <TableContainer>
                                 <Table
                                     // className={classes.table}
-                                    padding="normal"     
+                                    padding="normal"
                                     stickyHeader
                                     aria-label="sticky table"
                                     {...getTableProps()}

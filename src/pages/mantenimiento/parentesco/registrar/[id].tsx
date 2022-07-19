@@ -32,7 +32,7 @@ const MantenimientoParentescoEditar = () => {
     }, [loading, error, data])
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Actualización de Parentesco">
+        <LayoutTituloPagina titulo="Parametrización - Actualización de Parentesco">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 {!loading &&
                     isNotNilOrEmpty(dataParentesco) &&

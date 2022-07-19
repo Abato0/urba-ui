@@ -222,7 +222,7 @@ const ListadoInactivos = () => {
 
     return (
         <div>
-            {openModalMsj && (
+            {/* {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
                     setOpenModal={setOpenModalMsj}
@@ -230,7 +230,7 @@ const ListadoInactivos = () => {
                     message={mensajeModalMsj}
                     error={errorModal}
                 />
-            )}
+            )} */}
             <Paper className={classes.root}>
                 <div className={classes.contentButtons}>
                     <TextField

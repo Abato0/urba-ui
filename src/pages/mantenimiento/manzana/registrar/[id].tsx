@@ -29,7 +29,7 @@ const MantenimientoManzanaEditar = () => {
     }, [loading, error, data])
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Actualización de Manzana">
+        <LayoutTituloPagina titulo="Parametrización - Actualización de Manzana">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 {!loading &&
                     isNotNilOrEmpty(dataManzana) &&

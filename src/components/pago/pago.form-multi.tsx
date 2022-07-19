@@ -719,7 +719,7 @@ export const PagoFormMulti = () => {
                                 handleBlur={handleBlur}
                                 id="idGrupoFamiliar"
                                 handleChange={handleChange}
-                                labetTitulo=" Grupo Familiar del Deposito"
+                                labetTitulo=" Grupo Familiar"
                                 value={values.idGrupoFamiliar}
                             >
                                 {!loadingGrupoFamiliar &&

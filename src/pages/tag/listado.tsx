@@ -455,7 +455,7 @@ const MantenimientoParentescoListado = () => {
                                     'Grupo Familiar',
                                     'Vehiculo',
                                     'Tipo Tag',
-                                    'Deposito',
+                                    'Aportación',
                                     'Fecha del Pago',
                                 ]}
                             />

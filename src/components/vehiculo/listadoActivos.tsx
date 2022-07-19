@@ -220,7 +220,7 @@ const ListadoActivos = () => {
     }
     return (
         <>
-            {openModalMsj && (
+            {/* {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
                     setOpenModal={setOpenModalMsj}
@@ -228,7 +228,7 @@ const ListadoActivos = () => {
                     message={mensajeModalMsj}
                     error={errorModal}
                 />
-            )}
+            )} */}
             <Paper elevation={6} className={classes.root}>
                 <div className={classes.contentButtons}>
                     <TextField

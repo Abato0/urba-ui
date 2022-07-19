@@ -29,7 +29,7 @@ const MantenimientoCalleEditar = () => {
     }, [loading, error, data])
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Actualización de Calle">
+        <LayoutTituloPagina titulo="Parametrización - Actualización de Calle">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 {!loading &&
                     isNotNilOrEmpty(dataCalle) &&

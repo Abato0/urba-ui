@@ -52,7 +52,7 @@ const MantenimientoTipoIdentificacionEditar = () => {
     }, [loading, error, data])
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Actualización de Tipo de Identificación">
+        <LayoutTituloPagina titulo="Parametrización - Actualización de Tipo de Identificación">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 {!loading &&
                     isNotNilOrEmpty(dataTipoIdentificacion) &&

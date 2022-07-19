@@ -103,14 +103,14 @@ const ListadoAporte = () => {
         <>
             {!loading && (
                 <>
-                    {openModalMsj && (
+                    {/* {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
                             setOpenModal={setOpenModalMsj}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                         />
-                    )}
+                    )} */}
 
                     <CardTable
                         columns={headAporteTable}

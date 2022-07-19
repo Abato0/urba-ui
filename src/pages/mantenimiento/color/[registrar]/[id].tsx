@@ -30,7 +30,7 @@ const MantenimientoColorEditar = () => {
     }, [loading, error, data])
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Actulización de Color">
+        <LayoutTituloPagina titulo="Parametrización - Actulización de Color">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 {!loading &&
                     isNotNilOrEmpty(dataColor) &&

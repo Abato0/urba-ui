@@ -397,7 +397,7 @@ export const PagoFormIngresar = () => {
                         handleBlur={handleBlur}
                         id="idGrupoFamiliar"
                         handleChange={handleChange}
-                        labetTitulo=" Grupo Familiar del Deposito"
+                        labetTitulo="Grupo Familiar"
                         value={values.idGrupoFamiliar}
                     >
                         {!loading &&
@@ -508,7 +508,7 @@ export const PagoFormIngresar = () => {
 
                     <TextField
                         className={classes.textbox}
-                        label="Monto del Deposito"
+                        label="Monto de la Aportación"
                         onChange={(e) => setAddMonto(Number(e.target.value))}
                         type={'number'}
                         value={addMonto}

@@ -153,7 +153,7 @@ const MantenimientoColorListado = () => {
     )
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Colores">
+        <LayoutTituloPagina titulo="Parametrización - Colores">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 <>
                     {openModalMsj && (

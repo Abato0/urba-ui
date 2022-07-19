@@ -165,13 +165,15 @@ const MantenimientoParentescoListado = () => {
     )
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Parentesco">
+        <LayoutTituloPagina titulo="Parametrización - Parentesco">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 <>
                     {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
-                            setOpenModal={setOpenModalMsj}
+                            // setOpenModal={setOpenModalMsj}
+
+                            onClose={() => setOpenModalMsj(false)}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                             error={errorModal}

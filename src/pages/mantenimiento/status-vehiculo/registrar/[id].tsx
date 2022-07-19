@@ -37,7 +37,7 @@ const MantenimientoStatusVehiculoEditar = () => {
     }, [loading, error, data])
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Actualización de Status del Vehiculo">
+        <LayoutTituloPagina titulo="Parametrización - Actualización de Status del Vehiculo">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 {!loading &&
                     isNotNilOrEmpty(dataStatusVehiculo) &&

@@ -188,7 +188,7 @@ export const AporteFormIngresar: FC = () => {
     })
     return (
         <Box className={classes.root}>
-            {openModalMsj && (
+            {/* {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
                     setOpenModal={setOpenModalMsj}
@@ -196,7 +196,7 @@ export const AporteFormIngresar: FC = () => {
                     message={mensajeModalMsj}
                     error={errorModal}
                 />
-            )}
+            )} */}
             <Typography variant="h5"> Ingreso de Aporte</Typography>
             <form
                 action="#"
@@ -301,9 +301,9 @@ export const AporteFormIngresar: FC = () => {
                         }
                         error={touched.cuotas && isNotNilOrEmpty(errors.cuotas)}
                         helperText={touched.cuotas ? errors.cuotas : undefined}
-                        disabled={
-                            values.tipo_aporte === ETipoAporte.implementacion
-                        }
+                        // disabled={
+                        //     values.tipo_aporte === ETipoAporte.implementacion
+                        // }
                         required
                     />
                 </div>

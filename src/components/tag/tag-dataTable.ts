@@ -15,7 +15,7 @@ export const columnsTags = Object.freeze([
         accessor: 'tipo_tag',
     },
     {
-        Header: 'Deposito',
+        Header: 'Aportación',
         accessor: 'monto',
     },
     {

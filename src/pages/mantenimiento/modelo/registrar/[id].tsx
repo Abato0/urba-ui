@@ -31,7 +31,7 @@ const MantenimientoModeloEditar = () => {
     }, [loading, error, data])
 
     return (
-        <LayoutTituloPagina titulo="Mantenimiento - Actualización de Modelo de Vehiculo">
+        <LayoutTituloPagina titulo="Parametrización - Actualización de Modelo de Vehiculo">
             <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
                 {!loading &&
                     isNotNilOrEmpty(dataModelo) &&
