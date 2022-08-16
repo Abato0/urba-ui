@@ -48,7 +48,7 @@ const VisualizarActionsCell: React.FC<IProps> = ({
             return usuarioState.tipo_usuario === TipoUsuario.ADMIN
         }
         return false
-    }, [usuarioState, TipoUsuario])
+    }, [usuarioState])
     return (
         <div
             style={{

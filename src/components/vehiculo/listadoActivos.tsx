@@ -213,6 +213,7 @@ const ListadoActivos = () => {
                 setErrorModal(true)
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRowIds])
 
     const filterData = (ids: string) => {

@@ -70,25 +70,22 @@ const MyDropzone: React.FC = () => {
     // const [mutate] = useSubirFoto();
 
     // usePostPago()
-    const onDrop = React.useCallback(
-        ([file]: [File]) => {
-            // Do something with the files
-            // console.log("accept: ", head(acceptedFiles));
+    const onDrop = React.useCallback(([file]: [File]) => {
+        // Do something with the files
+        // console.log("accept: ", head(acceptedFiles));
 
-            setFile(file)
-            // setFile(acceptedFiles[0]);
+        setFile(file)
+        // setFile(acceptedFiles[0]);
 
-            // const result: any = await getBase64(acceptedFiles[0]);
-            // // console.log("result: ", result);
-            // // const handleClose = () => setOpen(false);
+        // const result: any = await getBase64(acceptedFiles[0]);
+        // // console.log("result: ", result);
+        // // const handleClose = () => setOpen(false);
 
-            // setBase64(String(result));
-            // handleClose();
+        // setBase64(String(result));
+        // handleClose();
 
-            // base64_decode(String(result));
-        },
-        [mutate]
-    )
+        // base64_decode(String(result));
+    }, [])
 
     // const onDrop = React.useCallback(
     //   async ([file]) => {
@@ -191,7 +188,6 @@ const MyDropzone: React.FC = () => {
                             boxShadow: 24,
                             p: 4,
                         }}
-
                         style={{
                             transform: 'translate(-50%, -50%)',
                         }}

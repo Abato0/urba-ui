@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import {
     Box,
     Button,
@@ -199,9 +200,9 @@ const ModalImagenFile: FC<IProps> = ({ open, handleClose, file }) => {
                                                     height={400}
                                                     // blurDataURL={"/img/loading.png"}
                                                     placeholder="blur"
-                                                // onError={() =>
-                                                //   setFileImage("/img/image-not-found.png")
-                                                // }
+                                                    // onError={() =>
+                                                    //   setFileImage("/img/image-not-found.png")
+                                                    // }
                                                 />
                                             </Box>
                                         </TransformComponent>

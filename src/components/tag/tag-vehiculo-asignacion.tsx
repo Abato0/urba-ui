@@ -247,7 +247,8 @@ export const IngresarTagVehiculoForm: FC = () => {
                 setOpenModalMsj(true)
             }
         },
-        [mutate, refetch]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
     )
 
     const {

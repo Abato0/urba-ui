@@ -243,6 +243,7 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
                 setOpenModalMsj(true)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [id, valorTagObj]
     )
 

@@ -147,6 +147,7 @@ export const IngresarTagForm: FC<IProps> = ({ tag, idStatus }) => {
         }
     }
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [mutate] = isNil(tag) ? usePostTagMutation() : usePutTagMutation()
 
     const init = useMemo(() => {
@@ -213,6 +214,7 @@ export const IngresarTagForm: FC<IProps> = ({ tag, idStatus }) => {
                 setOpenModalMsj(true)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [mutate, tag]
     )
 
@@ -238,6 +240,7 @@ export const IngresarTagForm: FC<IProps> = ({ tag, idStatus }) => {
             // setLoadingMutate(true)
             setFieldValue('idStatus', ID_STATUS_TAG_DISPONIBLE)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tag])
 
     return (

@@ -210,6 +210,7 @@ export const IngresarStatusTagForm: FC<IProps> = ({ statusObj }) => {
                 setOpenModalMsj(true)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [statusObj]
     )
 

@@ -176,6 +176,7 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
         if (tipoUsuario === TipoUsuario.MORADOR && idUsuario) {
             authMorador()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [idUsuario, tipoUsuario])
 
     const itemListadoFilter = useMemo(() => {

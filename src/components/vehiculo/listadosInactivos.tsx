@@ -218,6 +218,7 @@ const ListadoInactivos = () => {
                 setErrorModal(true)
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRowIds])
 
     return (

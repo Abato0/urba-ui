@@ -609,12 +609,14 @@ export const PagoFormMulti = () => {
         const pagoMantenimieno = sumaPagoMantenimiento() || 0
 
         return pagoTag + pagoMantenimieno + implementacion + otro
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values, gridPropsValorTag, pagoMantenimiento])
 
     useEffect(() => {
         if (!checkImplementacion) {
             setFieldValue('implementacion', undefined)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [checkImplementacion])
 
     useEffect(() => {

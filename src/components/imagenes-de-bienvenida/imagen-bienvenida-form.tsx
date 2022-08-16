@@ -173,6 +173,7 @@ export const IngresarImagenBienvenida = () => {
             setOpenModalMsj(true)
             setErrorModal(true)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const {

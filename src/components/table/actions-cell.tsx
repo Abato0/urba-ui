@@ -29,14 +29,14 @@ const ActionsCell: React.FC<IProps> = ({
             return usuarioState.tipo_usuario === TipoUsuario.MORADOR
         }
         return false
-    }, [usuarioState, TipoUsuario])
+    }, [usuarioState])
 
     const administradorFlag = useMemo(() => {
         if (usuarioState) {
             return usuarioState.tipo_usuario === TipoUsuario.ADMIN
         }
         return false
-    }, [usuarioState, TipoUsuario])
+    }, [usuarioState])
     return (
         <>
             {!moradorFlag && (

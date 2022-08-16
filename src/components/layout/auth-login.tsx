@@ -73,7 +73,9 @@ const AppLayoutLogin: React.FC<IProps> = ({ children }) => {
 
     useEffect(() => {
         autho()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
     return (
         <>
             {!loading && !authFlag ? (
