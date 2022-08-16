@@ -279,9 +279,9 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                                   apellido: String(apellido).toUpperCase(),
                                   telefono,
                                   id_parentesco,
-                                  fecha_nacimiento: moment(
-                                      fecha_nacimiento,
-                                      'YYYY-MM-DD'
+                                  fecha_nacimiento: lightFormat(
+                                      new Date(fecha_nacimiento),
+                                      'yyyy-MM-dd'
                                   ),
                                   id_tipo_doc_identidad,
                                   num_doc_identidad,
