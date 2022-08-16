@@ -38,6 +38,7 @@ import {
 } from '@material-ui/pickers'
 
 import esLocale from 'date-fns/locale/es'
+import moment from 'moment'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -315,7 +316,10 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                                   idGrupoFamiliar: idGrupoFamiliarSeleccionado,
                                   idParentesco: idParentescoSeleccionado,
                                   genero: generoSeleccionado,
-                                  fecha_nacimiento: fechaDeNaciemiento,
+                                  fecha_nacimiento:
+                                      moment(fechaDeNaciemiento).format(
+                                          'YYYY-MM-DD'
+                                      ),
                               }
                             : {
                                   tipo_usuario: tipo_usuario,
