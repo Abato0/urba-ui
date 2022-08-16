@@ -108,7 +108,7 @@ const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
     categoria: yup
         .string()
-        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        // .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
         .required('Campo requerido'),
     // titulo: yup.string().required('Campo requerido'),
     asunto: yup
