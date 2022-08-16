@@ -1,12 +1,14 @@
-import { Backdrop, Box, createStyles, Fade, FormControl, InputLabel, makeStyles, MenuItem, Modal, Paper, Select, Theme, Typography } from "@material-ui/core"
+import { Backdrop, Box, createStyles, Fade, FormControl, Grid, InputLabel, makeStyles, MenuItem, Modal, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Theme, Typography } from "@material-ui/core"
 import { FC, useMemo, useState } from "react";
 import FormControlHeader from "../core/input/form-control-select";
 import { useListarGrupoFamiliarSinUsuarios } from "../grupo-familiar/use-grupo-familia";
 import { useGetUsuario, useListadoUsuario, useAsignacionUsuarioMutate, useListadoUsuarioSinFamilares } from './use-usuario';
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
+import { SupervisedUserCircle } from "@material-ui/icons"
 import ModalAuth from "../core/input/dialog/modal-dialog";
 import { isNotNilOrEmpty } from "../../utils/is-nil-empty";
+import { COLOR_PRIMARIO } from '../../utils/keys';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -15,6 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: "auto"
         },
         paper: {
             display: 'flex',
@@ -179,7 +182,9 @@ const ModalVinculacionUsuario: FC<IProps> = ({ onClose, open, idUsuario }) => {
                 BackdropComponent={Backdrop}
                 BackdropProps={{
                     timeout: 500,
-                }}>
+                }}
+
+            >
                 <Fade in={open}>
                     <>
                         <Paper className={classes.paper}>
@@ -199,17 +204,6 @@ const ModalVinculacionUsuario: FC<IProps> = ({ onClose, open, idUsuario }) => {
                                 alignItems: "center",
                                 flexDirection: "column"
                             }}>
-                                {/* {dataUsuario
-                            &&
-                            <Typography
-                            // className={
-                            //     classes.titleInfo
-                            // }
-                            // variant="subtitle1"
-                            >
-                                {dataUsuario.num_identificacion}
-                            </Typography>
-                        } */}
 
                                 <div
                                     style={{
@@ -220,21 +214,97 @@ const ModalVinculacionUsuario: FC<IProps> = ({ onClose, open, idUsuario }) => {
 
                                     }}>
                                     {dataUsuario
-                                        &&
-                                        <Typography
-                                            // className={
-                                            //     classes.titleInfo
-                                            // }
-                                            variant="subtitle1"
-                                            align="center"
+                                        && (
+                                            <TableContainer component={Paper} style={{
+                                                // marginRight: "3%",
+                                                // marginLeft: "3%",
+                                                // margin: "5%",
+                                                //  backgroundColor: "red",
+                                                width: "100%",
 
-                                        >
-                                            {dataUsuario.num_identificacion} - {dataUsuario.nombres} {dataUsuario.apellidos}
-                                        </Typography>
+                                            }}>
+                                                <Table >
+                                                    <TableHead>
+                                                        <TableRow style={{
+                                                            backgroundColor: COLOR_PRIMARIO,
+
+                                                        }}>
+                                                            <TableCell style={{
+                                                                color: "white"
+                                                            }}>Identificación</TableCell>
+                                                            <TableCell style={{
+                                                                color: "white"
+                                                            }} align="right">Grupo Familiar</TableCell>
+
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+
+                                                        <TableRow
+                                                        >
+                                                            <TableCell>  {dataUsuario.num_identificacion}</TableCell>
+                                                            <TableCell align="right">{dataUsuario.nombres} {dataUsuario.apellidos}</TableCell>
+
+                                                        </TableRow>
+
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        )
+
                                     }
                                 </div>
 
-                                <div style={{
+
+                                <Grid container spacing={4}>
+                                    <Grid item >
+                                        <FormControl variant="filled"
+                                            style={{
+                                                width: "65%",
+                                                minWidth: 240
+
+                                            }}>
+                                            <InputLabel id={'grupo_familiar_label'} style={{ fontSize: '12px' }}>
+                                                Grupos Familiares
+                                            </InputLabel>
+
+                                            <Select onChange={(e) => { setIdGrupoSeleccionado(Number(e.target.value)) }} labelId="grupo_familiar_label" name="grupo_familiar">
+                                                {
+                                                    dataListadoGrupoFamiliar
+                                                    &&
+                                                    dataListadoGrupoFamiliar.map(({ id, nombre_familiar }) =>
+                                                    (<MenuItem key={id} value={id}>
+                                                        {
+                                                            nombre_familiar
+                                                        }
+                                                    </MenuItem>)
+                                                    )
+                                                }
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item style={{
+                                        //  backgroundColor: "red",
+                                        marginTop: "6%",
+
+                                    }}>
+                                        <LoadingButton
+                                            loading={loadingMutate}
+                                            loadingPosition="start"
+                                            type="submit"
+                                            variant="text"
+                                            startIcon={<SupervisedUserCircle />}
+                                            style={{
+
+                                            }}
+                                            onClick={onSubmit}
+                                        >
+                                            Asignar
+                                        </LoadingButton>
+                                    </Grid>
+                                </Grid>
+
+                                {/* <div style={{
                                     display: "flex",
                                     flexDirection: "row",
                                     width: "100%",
@@ -282,7 +352,7 @@ const ModalVinculacionUsuario: FC<IProps> = ({ onClose, open, idUsuario }) => {
                                     >
                                         Asignar
                                     </LoadingButton>
-                                </div>
+                                </div> */}
 
                             </Box>
 

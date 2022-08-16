@@ -7,7 +7,7 @@ import { Button, Paper, Typography } from '@material-ui/core'
 import InfoTwoToneIcon from '@material-ui/icons/InfoTwoTone'
 import ErrorTwoToneIcon from '@material-ui/icons/ErrorTwoTone'
 
-const useStyles = makeStyles((theme: Theme) =>
+export const useStylesModalDialog = makeStyles((theme: Theme) =>
     createStyles({
         modal: {
             display: 'flex',
@@ -39,12 +39,12 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         titleInfo: {
             fontSize: theme.typography.pxToRem(23),
-            fontWeight: "bold",
+            fontWeight: 'bold',
             color: theme.palette.info.dark,
         },
         titleError: {
             fontSize: theme.typography.pxToRem(23),
-            fontWeight: "bold",
+            fontWeight: 'bold',
             color: theme.palette.error.dark,
         },
         contentButton: {
@@ -85,10 +85,10 @@ const ModalAuth: React.FC<IProps> = ({
     title,
     message,
     error = true,
-    onClose
+    onClose,
 }) => {
-    const classes = useStyles()
-    const [open, setOpen] = React.useState(openModal)
+    const classes = useStylesModalDialog()
+    // const [open, setOpen] = React.useState(openModal)
 
     // const handleClose = () => {
     //     setOpenModal(false)
@@ -96,14 +96,11 @@ const ModalAuth: React.FC<IProps> = ({
 
     return (
         <div>
-            {/* <button type="button" onClick={handleOpen}>
-        react-transition-group
-      </button> */}
             <Modal
                 aria-labelledby="transition-modal-title"
                 aria-describedby="transition-modal-description"
                 className={classes.modal}
-                open={open}
+                open={openModal}
                 onClose={onClose}
                 closeAfterTransition
                 BackdropComponent={Backdrop}
@@ -111,8 +108,11 @@ const ModalAuth: React.FC<IProps> = ({
                     timeout: 500,
                 }}
             >
-                <Fade in={open}>
-                    <Paper className={classes.paper}>
+                <Fade in={openModal}>
+                    <Paper
+                        style={{ maxWidth: '80%' }}
+                        className={classes.paper}
+                    >
                         <div className={classes.containerTitle}>
                             <Typography
                                 className={
@@ -121,6 +121,9 @@ const ModalAuth: React.FC<IProps> = ({
                                         : classes.titleInfo
                                 }
                                 variant="subtitle1"
+                                // style={{
+                                //     textTransform: 'uppercase',
+                                // }}
                             >
                                 {error ? 'Error' : 'Info'}
                             </Typography>
@@ -140,7 +143,14 @@ const ModalAuth: React.FC<IProps> = ({
                                     className={classes.iconInfo}
                                 />
                             )}
-                            <Typography variant="body2">{title}</Typography>
+                            <Typography
+                                // style={{
+                                //     textTransform: 'uppercase',
+                                // }}
+                                variant="body2"
+                            >
+                                {title}
+                            </Typography>
                         </div>
                         <div className={classes.contentButton}>
                             <Button

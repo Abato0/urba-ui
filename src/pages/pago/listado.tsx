@@ -1,7 +1,8 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import {
     IDataListaPagoFilter,
     IPagoGrupoFamiliarInput,
+    useDeletePagoMutation,
     usePagoFamiliar,
     usePagoFamiliarFilters,
 } from '../../components/pago/use-pago'
@@ -15,7 +16,7 @@ import {
     colors,
     createStyles,
     FormControl,
-    IconButton,
+    Grid,
     InputLabel,
     makeStyles,
     MenuItem,
@@ -26,16 +27,15 @@ import {
     TableFooter,
     TableRow,
     TextField,
-    Tooltip,
 } from '@material-ui/core'
-import { ExportTablePdf } from '../../components/table/export-table-pdf'
+
 import { usePagination, useTable } from 'react-table'
 import TableHeader from '../../components/table/table-header'
 import CardTableBody from '../../components/table/table-body'
 import useDebounce from '../../utils/useDebounce'
 import Fuse from 'fuse.js'
 import { TableCell } from '@material-ui/core'
-import { isNotNilOrEmpty, isNotNil } from '../../utils/is-nil-empty'
+import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import ModalImagen from '../../components/core/input/dialog/modal-ver-imagen'
 import XLSX from 'xlsx'
 import { useListarGrupoFamiliar } from '../../components/grupo-familiar/use-grupo-familia'
@@ -43,10 +43,11 @@ import { SelectMeses } from '../../components/core/input/select/select-meses'
 import { SelectAnios } from '../../components/core/input/select/select-anios'
 import { SelectChangeEvent } from '@mui/material'
 import { SelectTipoPago } from '../../components/core/input/select/select-tipo-pago'
-import { FileExcelBox as FileExcelBoxIcon } from 'mdi-material-ui'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
 import { ActionsButtonsFilterReset } from '../../components/core/actions/actionsButtonsFilterReset'
 import { ActionsButtonsExcelPdf } from '../../components/core/actions/actionsButtonsExcelPdf'
+import ModalAuth from '../../components/core/input/dialog/modal-dialog'
+import { ModalConfirmacion } from '../../components/core/modal/modalConfirmacion'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -56,7 +57,7 @@ const useStyles = makeStyles((theme) =>
             borderRadius: '12px',
             // width: 80
             // margin: '30px',
-            width: "85%"
+            width: '85%',
         },
         contentButtons: {
             display: 'flex',
@@ -153,7 +154,7 @@ const optionsFuse: Fuse.IFuseOptions<any> = {
     keys: ['nombre_familiar'],
 }
 
-interface IDataTablePagoListado {
+export interface IDataTablePagoListado {
     id: number
     nombre_familiar: string
     tipo_pago: string
@@ -162,6 +163,7 @@ interface IDataTablePagoListado {
     descripcion: string
     fecha_recibo: string
     monto: number
+    cod_recibo?: string
 }
 
 const extractData = (data: IDataListaPagoFilter[]) => {
@@ -185,7 +187,7 @@ export const calcularMonto = (data: AllPagoTable[]) => {
             acum += monto
         })
     }
-    return acum
+    return acum.toFixed(2)
 }
 
 const getRowId: any = prop('id')
@@ -200,6 +202,15 @@ const ListadoPago = () => {
     const [idPago, setIdPago] = React.useState<number>(0)
     const [base64, setBase64] = React.useState<string>('')
 
+    const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
+    const [titleModalMsj, setTitleModalMsj] = useState<string>('')
+    const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
+    const [errorModal, setErrorModal] = useState<boolean>(false)
+
+    const [idPagoSeleccionado, setPagoSeleccionado] = useState<number>()
+
+    const [modalConfirmar, setModalConfirmar] = useState(false)
+
     const [idGrupoFamiliarFilter, setIdGrupoFamiliarFilter] = React.useState<
         number | undefined
     >()
@@ -213,22 +224,62 @@ const ListadoPago = () => {
 
     const [tipoPagoFilter, setTipoPagoFilter] = React.useState<string>()
 
-    const [fechaAporteFilter, setFechaAporteFilter] = React.useState<string>('')
+    // const [fechaAporteFilter, setFechaAporteFilter] = React.useState<string>('')
     const [filterInput, setFilterInput] =
         React.useState<IPagoGrupoFamiliarInput>({})
 
-    const { data, loading, error } = usePagoFamiliarFilters(filterInput)
+    const { data, loading } = usePagoFamiliarFilters(filterInput)
 
-    // const {
-    //   data: dataAporte,
-    //   loading: loadingAporte,
-    //   error: erroAporte,
-    // } = useListarAporteQuery();
+    const [mutate] = useDeletePagoMutation()
+
+    const onConfirmModal = async ({ id }: any) => {
+        // if (!modalConfirmar) {
+        //     await onDeletePago({ id })
+        // }
+        setPagoSeleccionado(id)
+        setModalConfirmar(true)
+    }
+
+    const onDeletePago = async ({ id }: any) => {
+        try {
+            const { data } = await mutate({
+                variables: {
+                    id,
+                },
+            })
+            if (data) {
+                const { code, message } = data.DeletePago
+                setTitleModalMsj(message)
+
+                if (code === 200) {
+                    setErrorModal(false)
+                } else {
+                    setErrorModal(true)
+                }
+                // await refetch()
+                setOpenModalMsj(true)
+                setPagoSeleccionado(undefined)
+                setModalConfirmar(false)
+            } else {
+                setTitleModalMsj('Usuario no autorizado')
+                setErrorModal(true)
+                setOpenModalMsj(true)
+                setPagoSeleccionado(undefined)
+                setModalConfirmar(false)
+            }
+        } catch (error) {
+            setTitleModalMsj('Envio Fallido')
+            setErrorModal(true)
+            setMensajeModalMsj('' + (error as Error).message)
+            setOpenModalMsj(true)
+            setPagoSeleccionado(undefined)
+            setModalConfirmar(false)
+        }
+    }
 
     const {
         data: dataListadoGrupoFamiliar,
         loading: loadingListadoGrupoFamiliar,
-        error: errorListadoGrupoFamiliar,
     } = useListarGrupoFamiliar()
 
     const debounceSearch = useDebounce(search, 300)
@@ -236,11 +287,8 @@ const ListadoPago = () => {
     // const handleOpen = () => setOpen(!open);
     const handleClose = () => setOpen(false)
 
-    const {
-        data: dataPagoFamiliar,
-        loading: loadingPagoFamiliar,
-        error: errorPagoFamiliar,
-    } = usePagoFamiliar(idPago)
+    const { data: dataPagoFamiliar, loading: loadingPagoFamiliar } =
+        usePagoFamiliar(idPago)
 
     const idTable = React.useMemo(() => {
         return 'listadoPagoTable'
@@ -320,7 +368,6 @@ const ListadoPago = () => {
                 ? pago.imagen_recibo
                 : ''
             setBase64(pago.imagen_recibo ? pago.imagen_recibo : '')
-            console.log('adsdas', image)
         }
     }, [dataPagoFamiliar, loadingPagoFamiliar])
 
@@ -339,6 +386,7 @@ const ListadoPago = () => {
             data: allPagoData,
             getRowId,
             onSeeImg,
+            onDelete: onConfirmModal,
         },
         usePagination
     )
@@ -422,92 +470,144 @@ const ListadoPago = () => {
                 <div className={classes.contenFilter}>
                     <div className={classes.contentButtons}>
                         <div>
-                            <div>
-                                <FormControl
-                                    variant="filled"
-                                    className={classes.formControl}
-                                >
-                                    <InputLabel id="idGrupoFamiliar_label">
-                                        Grupo Familiar
-                                    </InputLabel>
-                                    <Select
-                                        className={classes.selectFilter}
-                                        // variant="outlined"
-                                        labelId="idGrupoFamiliar_label"
-                                        // label={<p>Grupo Familiar</p>}
-                                        id="idGrupoFamiliar"
-                                        name="idGrupoFamiliar"
-                                        value={idGrupoFamiliarFilter}
-                                        onChange={(e) =>
-                                            setIdGrupoFamiliarFilter(
-                                                e.target.value as number
+                            {openModalMsj && (
+                                <ModalAuth
+                                    openModal={openModalMsj}
+                                    onClose={() => setOpenModalMsj(false)}
+                                    title={titleModalMsj}
+                                    message={mensajeModalMsj}
+                                    error={errorModal}
+                                />
+                            )}
+                            {modalConfirmar && (
+                                <ModalConfirmacion
+                                    openModal={modalConfirmar}
+                                    onCancel={() => {
+                                        setModalConfirmar(false)
+                                        setPagoSeleccionado(undefined)
+                                    }}
+                                    onConfirm={async () => {
+                                        if (idPagoSeleccionado) {
+                                            await onDeletePago({
+                                                id: idPagoSeleccionado,
+                                            })
+                                        }
+                                    }}
+                                    mensaje={
+                                        '¿Está seguro de eliminar el pago?'
+                                    }
+                                />
+                            )}
+                            <Grid container spacing={4}>
+                                <Grid item sm={6}>
+                                    <FormControl
+                                        variant="filled"
+                                        className={classes.formControl}
+                                        style={{
+                                            width: '100%',
+                                        }}
+                                    >
+                                        <InputLabel id="idGrupoFamiliar_label">
+                                            Grupo Familiar
+                                        </InputLabel>
+                                        <Select
+                                            className={classes.selectFilter}
+                                            // variant="outlined"
+                                            labelId="idGrupoFamiliar_label"
+                                            // label={<p>Grupo Familiar</p>}
+                                            id="idGrupoFamiliar"
+                                            name="idGrupoFamiliar"
+                                            value={idGrupoFamiliarFilter}
+                                            onChange={(e) =>
+                                                setIdGrupoFamiliarFilter(
+                                                    e.target.value as number
+                                                )
+                                            }
+                                        >
+                                            <MenuItem
+                                                style={{
+                                                    textTransform: 'uppercase',
+                                                }}
+                                                value={undefined}
+                                            >
+                                                {' '}
+                                                Todos{' '}
+                                            </MenuItem>
+                                            {!loadingListadoGrupoFamiliar &&
+                                                isNotNilOrEmpty(
+                                                    dataListadoGrupoFamiliar
+                                                ) &&
+                                                dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
+                                                    ({
+                                                        id,
+                                                        nombre_familiar,
+                                                    }) => {
+                                                        return (
+                                                            <MenuItem
+                                                                key={
+                                                                    'GrupoFamiliarFilterListadoPago-' +
+                                                                    id
+                                                                }
+                                                                value={id}
+                                                                style={{
+                                                                    textTransform:
+                                                                        'uppercase',
+                                                                }}
+                                                            >
+                                                                {
+                                                                    nombre_familiar
+                                                                }
+                                                            </MenuItem>
+                                                        )
+                                                    }
+                                                )}
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item sm={6}>
+                                    <SelectMeses
+                                        handleChange={(e: SelectChangeEvent) =>
+                                            setmesPagoFilterFilter(
+                                                String(e.target.value)
                                             )
                                         }
-                                    >
-                                        <MenuItem value={undefined}>
-                                            {' '}
-                                            Todos{' '}
-                                        </MenuItem>
-                                        {!loadingListadoGrupoFamiliar &&
-                                            isNotNilOrEmpty(
-                                                dataListadoGrupoFamiliar
-                                            ) &&
-                                            dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
-                                                ({ id, nombre_familiar }) => {
-                                                    return (
-                                                        <MenuItem
-                                                            key={
-                                                                'GrupoFamiliarFilterListadoPago-' +
-                                                                id
-                                                            }
-                                                            value={id}
-                                                        >
-                                                            {nombre_familiar}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            )}
-                                    </Select>
-                                </FormControl>
-
-                                <SelectMeses
-                                    handleChange={(e: SelectChangeEvent) =>
-                                        setmesPagoFilterFilter(
-                                            String(e.target.value)
-                                        )
-                                    }
-                                    value={mesPagoFilter}
-                                    label={'Mes'}
-                                    id={'mes_manteniento'}
-                                />
-
-                                <SelectAnios
-                                    handleChange={(e: SelectChangeEvent) =>
-                                        setAnioPagoFilter(
-                                            Number(e.target.value)
-                                        )
-                                    }
-                                    value={anioPagoFilter}
-                                    label={'Año'}
-                                    id={'anio_manteniento'}
-                                />
-                                <SelectTipoPago
-                                    handleChange={(e: SelectChangeEvent) =>
-                                        setTipoPagoFilter(
-                                            String(e.target.value)
-                                        )
-                                    }
-                                    value={tipoPagoFilter}
-                                    label={'Tipo de Pago'}
-                                    id={'tipo_pago'}
-                                />
-                            </div>
+                                        value={mesPagoFilter}
+                                        label={'Mes'}
+                                        id={'mes_manteniento'}
+                                    />
+                                </Grid>
+                                <Grid item sm={6}>
+                                    <SelectAnios
+                                        handleChange={(e: SelectChangeEvent) =>
+                                            setAnioPagoFilter(
+                                                Number(e.target.value)
+                                            )
+                                        }
+                                        value={anioPagoFilter}
+                                        label={'Año'}
+                                        id={'anio_manteniento'}
+                                    />
+                                </Grid>
+                                <Grid item sm={6}>
+                                    <SelectTipoPago
+                                        handleChange={(e: SelectChangeEvent) =>
+                                            setTipoPagoFilter(
+                                                String(e.target.value)
+                                            )
+                                        }
+                                        value={tipoPagoFilter}
+                                        label={'Concepto de Pago'}
+                                        id={'tipo_pago'}
+                                    />
+                                </Grid>
+                            </Grid>
                         </div>
-
-                        <ActionsButtonsFilterReset
-                            filtrar={filtrar}
-                            reset={cancelFiltrar}
-                        />
+                        <div style={{ marginLeft: '4%' }}>
+                            <ActionsButtonsFilterReset
+                                filtrar={filtrar}
+                                reset={cancelFiltrar}
+                            />
+                        </div>
                     </div>
                 </div>
             </Paper>
@@ -516,11 +616,12 @@ const ListadoPago = () => {
                     <TextField
                         className={classes.textBox}
                         variant="outlined"
-                        placeholder="Search"
+                        placeholder="Buscar"
                         onChange={(e) => {
                             setSearch(e.target.value)
                         }}
                         value={search}
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                     <ActionsButtonsExcelPdf
                         ExportExcel={ExportExcel}
@@ -538,7 +639,7 @@ const ListadoPago = () => {
                         {...getTableProps()}
                         id={idTable}
 
-                    // className={classes.table}
+                        // className={classes.table}
                     >
                         <TableHeader headerGroups={headerGroups} />
                         <CardTableBody
@@ -548,13 +649,13 @@ const ListadoPago = () => {
                         />
                         <TableFooter>
                             <TableRow>
-                                <TableCell>Total</TableCell>
+                                <TableCell align="center">TOTAL</TableCell>
                                 <TableCell></TableCell>
                                 <TableCell></TableCell>
                                 <TableCell></TableCell>
                                 <TableCell></TableCell>
-                                <TableCell>
-                                    {calcularMonto(allPagoData)}
+                                <TableCell align="center">
+                                    {'$ ' + calcularMonto(allPagoData)}
                                 </TableCell>
                             </TableRow>
                         </TableFooter>

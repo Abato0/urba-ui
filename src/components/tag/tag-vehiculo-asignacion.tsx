@@ -7,30 +7,32 @@ import {
     FormControl,
     InputLabel,
     Select,
+    Grid,
+    Typography,
 } from '@material-ui/core'
 import { useFormik } from 'formik'
-import { isNil } from 'ramda'
 import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import * as yup from 'yup'
 
 import { useRouter } from 'next/router'
 import {
-    IResultQueryTag,
     useListaTag,
     useListaTagPagos,
-    usePostTagMutation,
+    useListaTagVehiculo,
     usePostTagVehiculoMutation,
-    usePutTagMutation,
 } from './use-tag'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import ModalAuth from '../core/input/dialog/modal-dialog'
-import { IGrupoFamiliar } from '../../interface/grupo-familiar.interface'
 import { IVehiculoVariable } from '../vehiculo/use-vehiculo'
 import { useListarGrupoFamiliar } from '../grupo-familiar/use-grupo-familia'
-import { id } from 'date-fns/locale'
 import FormControlHeader from '../core/input/form-control-select'
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
+import { useListaStatusTagQuery } from '../mantenimento/status-tag/use-status-tag'
+import {
+    ID_STATUS_TAG_OCUPADO,
+    ID_STATUS_TAG_DISPONIBLE,
+} from '../../utils/keys'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -123,6 +125,12 @@ export const IngresarTagVehiculoForm: FC = () => {
     // const [boolPut, setBoolPut] = useState<boolean>(false);
 
     const { data, loading, error, refetch } = useListaTagPagos()
+
+    const {
+        data: dataListadoTagVehiculo,
+        loading: loadingListadoTagVehiculo,
+        refetch: refetchListadoTagVehiculo,
+    } = useListaTagVehiculo()
     const {
         data: dataTag,
         loading: loadingTag,
@@ -134,16 +142,54 @@ export const IngresarTagVehiculoForm: FC = () => {
     >()
     const [vehiculo, setVehiculo] = useState<IVehiculoVariable[]>([])
 
+    const vehiculosVisibles = useMemo(() => {
+        if (
+            !loadingListadoTagVehiculo &&
+            dataListadoTagVehiculo &&
+            dataListadoTagVehiculo.ListaTagVehiculo
+        ) {
+            const idsVehiculos = dataListadoTagVehiculo.ListaTagVehiculo.map(
+                ({ vehiculo }) => vehiculo.id!
+            )
+            return vehiculo.filter(({ id }) => id && !idsVehiculos.includes(id))
+        }
+        return vehiculo
+    }, [dataListadoTagVehiculo, loadingListadoTagVehiculo, vehiculo])
+
+    const { data: dataListadoStatus, loading: loadingListadoStatus } =
+        useListaStatusTagQuery()
     const {
         data: dataListadoGrupoFamiliar,
         loading: loadingListadoGrupoFamiliar,
         error: errorGrupoFamiliar,
     } = useListarGrupoFamiliar()
 
+    const Disponible = useMemo(() => {
+        if (
+            !loadingListadoStatus &&
+            dataListadoStatus &&
+            dataListadoStatus.ListaStatusTag
+        ) {
+            return dataListadoStatus.ListaStatusTag.find(
+                ({ id }) => id == ID_STATUS_TAG_DISPONIBLE
+            )
+        }
+    }, [loadingListadoStatus, dataListadoStatus])
+
+    const listadoTagsVisibles = useMemo(() => {
+        if (!loadingTag && dataTag && dataTag.ListaTag && Disponible) {
+            return dataTag.ListaTag.filter(
+                ({ estado }) => estado === Disponible.statusTag
+            )
+        } else if (!loadingTag && dataTag && dataTag.ListaTag) {
+            return dataTag.ListaTag
+        }
+
+        return []
+    }, [loadingTag, dataTag, Disponible])
+
     useEffect(() => {
         if (!loading && data && data.ListaTagPago && idGrupoFamiliarFilter) {
-            // const resultGrupoFamiliar = data.ListaTagPago.map(({})=>{
-            // })
             const result = data.ListaTagPago.filter(
                 ({ vehiculo }) =>
                     vehiculo.grupoFamiliar.id === idGrupoFamiliarFilter
@@ -153,59 +199,56 @@ export const IngresarTagVehiculoForm: FC = () => {
         }
     }, [data, loading, error, idGrupoFamiliarFilter])
 
-    // useEffect(()=>{
-    //   if(!loading)
-    // },[loadingTag,dataTag])
-
-    // // useEffect(() => {
-    //   // setTimeout(() => {
-    //   if (!openModalMsj && boolPut) {
-    //     router.push({ pathname: "/mantenimiento/parentesco/listado" });
-    //   }
-    //   // }, 2000);
-    // }, [boolPut, openModalMsj, router]);
-
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [mutate] = usePostTagVehiculoMutation()
-    const onSubmit = useCallback(async ({ idVehiculo, idTag }) => {
-        try {
-            if (isNotNilOrEmpty(idTag) && isNotNilOrEmpty(idVehiculo)) {
-                setLoadingMutate(true)
-                const { data } = await mutate({
-                    variables: {
-                        idVehiculo,
-                        idTag,
-                    },
-                })
+    const onSubmit = useCallback(
+        async ({ idVehiculo, idTag }) => {
+            try {
+                if (isNotNilOrEmpty(idTag) && isNotNilOrEmpty(idVehiculo)) {
+                    setLoadingMutate(true)
+                    const { data } = await mutate({
+                        variables: {
+                            idVehiculo,
+                            idTag,
+                        },
+                    })
 
-                if (isNotNilOrEmpty(data)) {
-                    const { code, message } = data.PostTagVehiculo
-                    setTitleModalMsj(message)
-                    setOpenModalMsj(true)
-                    // if (isNotNilOrEmpty(data.PutTag)) {
-                    //   setBoolPut(true);
-                    // }
-                    if (code === 200) {
+                    if (isNotNilOrEmpty(data)) {
+                        const { code, message } = data.PostTagVehiculo
+                        setTitleModalMsj(message)
+
+                        // if (isNotNilOrEmpty(data.PutTag)) {
+                        //   setBoolPut(true);
+                        // }
+                        if (code === 200) {
+                            setErrorModal(false)
+                            await refetch()
+                            resetForm()
+                        } else {
+                            setErrorModal(false)
+                        }
+                        setOpenModalMsj(true)
+                        setLoadingMutate(false)
+                    } else {
+                        setLoadingMutate(false)
+                        setOpenModalMsj(true)
                         setErrorModal(false)
-                        await refetch()
-                        resetForm()
+                        setTitleModalMsj('Usuario no autorizado')
                     }
-                } else {
-                    setLoadingMutate(false)
-                    setOpenModalMsj(true)
-                    setErrorModal(false)
-                    setTitleModalMsj('Usuario no autorizado')
                 }
+            } catch (error: any) {
+                setLoadingMutate(false)
+                console.log('error.;', error)
+                setTitleModalMsj('Envio Fallido')
+                setErrorModal(true)
+                setMensajeModalMsj(
+                    'El tag no ha sido guardado: ' + error.message
+                )
+                setOpenModalMsj(true)
             }
-        } catch (error: any) {
-            setLoadingMutate(false)
-            console.log('error.;', error)
-            setTitleModalMsj('Envio Fallido')
-            setErrorModal(true)
-            setMensajeModalMsj('El tag no ha sido guardado: ' + error.message)
-            setOpenModalMsj(true)
-        }
-    }, [mutate, refetch])
+        },
+        [mutate, refetch]
+    )
 
     const {
         errors,
@@ -230,15 +273,14 @@ export const IngresarTagVehiculoForm: FC = () => {
                 <ModalAuth
                     openModal={openModalMsj}
                     //   setOpenModal={setOpenModalMsj}
-                    onClose={() => { setOpenModalMsj(false) }}
+                    onClose={() => {
+                        setOpenModalMsj(false)
+                    }}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
                 />
             )}
-            {/* <div className={classes.title}>
-        <Typography variant="overline">Asignación de Tags</Typography>
-      </div> */}
 
             <form
                 action="#"
@@ -246,7 +288,103 @@ export const IngresarTagVehiculoForm: FC = () => {
                 onReset={handleReset}
                 className={classes.form}
             >
-                <div className={classes.contentLastTextBox}>
+                <Grid container>
+                    <Grid item>
+                        <FormControlHeader
+                            classes={classes}
+                            handleBlur={() => console.log('')}
+                            id="idGrupoFamiliar"
+                            handleChange={(e) =>
+                                setIdGrupoFamiliarFilter(
+                                    e.target.value as number
+                                )
+                            }
+                            labetTitulo="Grupo Familiar"
+                            value={idGrupoFamiliarFilter}
+                        >
+                            {!loadingListadoGrupoFamiliar &&
+                                isNotNilOrEmpty(dataListadoGrupoFamiliar) &&
+                                dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
+                                    ({ id, nombre_familiar }) => {
+                                        return (
+                                            <MenuItem
+                                                value={id}
+                                                key={
+                                                    'ListadoTagFilterGrupoFamiliar' +
+                                                    id
+                                                }
+                                            >
+                                                <Typography
+                                                    style={{
+                                                        textTransform:
+                                                            'uppercase',
+                                                    }}
+                                                >
+                                                    {nombre_familiar}
+                                                </Typography>
+                                            </MenuItem>
+                                        )
+                                    }
+                                )}
+                        </FormControlHeader>
+                    </Grid>
+                    <Grid item>
+                        <FormControlHeader
+                            classes={classes}
+                            handleBlur={handleBlur}
+                            id="idVehiculo"
+                            handleChange={handleChange}
+                            labetTitulo="Vehiculo"
+                            value={values.idVehiculo}
+                        >
+                            {vehiculosVisibles &&
+                                vehiculosVisibles.map(({ id, placa }) => {
+                                    return (
+                                        <MenuItem
+                                            value={id}
+                                            key={'listadoVehiculoFormTag' + id}
+                                        >
+                                            <Typography
+                                                style={{
+                                                    textTransform: 'uppercase',
+                                                }}
+                                            >
+                                                {placa}
+                                            </Typography>
+                                        </MenuItem>
+                                    )
+                                })}
+                        </FormControlHeader>
+                    </Grid>
+                    <Grid item>
+                        <FormControlHeader
+                            classes={classes}
+                            handleBlur={handleBlur}
+                            id="idTag"
+                            handleChange={handleChange}
+                            labetTitulo="Tag"
+                            value={values.idTag}
+                        >
+                            {listadoTagsVisibles.map(({ code, id }) => {
+                                return (
+                                    <MenuItem
+                                        value={id}
+                                        key={'listadoVehiculoFormTag' + id}
+                                    >
+                                        <Typography
+                                            style={{
+                                                textTransform: 'uppercase',
+                                            }}
+                                        >
+                                            {code}
+                                        </Typography>
+                                    </MenuItem>
+                                )
+                            })}
+                        </FormControlHeader>
+                    </Grid>
+                </Grid>
+                {/* <div className={classes.contentLastTextBox}>
                     <FormControl
                         variant="filled"
                         className={classes.formControl}
@@ -315,21 +453,18 @@ export const IngresarTagVehiculoForm: FC = () => {
                         labetTitulo="Tag"
                         value={values.idTag}
                     >
-                        {!loadingTag &&
-                            dataTag &&
-                            isNotNilOrEmpty(dataTag.ListaTag) &&
-                            dataTag.ListaTag.map(({ code, id }) => {
-                                return (
-                                    <MenuItem
-                                        value={id}
-                                        key={'listadoVehiculoFormTag' + id}
-                                    >
-                                        {code}
-                                    </MenuItem>
-                                )
-                            })}
+                        {listadoTagsVisibles.map(({ code, id }) => {
+                            return (
+                                <MenuItem
+                                    value={id}
+                                    key={'listadoVehiculoFormTag' + id}
+                                >
+                                    {code}
+                                </MenuItem>
+                            )
+                        })}
                     </FormControlHeader>
-                </div>
+                </div> */}
                 <div className={classes.contentButtons}>
                     <div></div>
                     <LoadingButton

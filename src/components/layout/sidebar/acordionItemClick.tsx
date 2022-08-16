@@ -75,7 +75,7 @@ const ItemSidebar: React.FC<IProps> = ({
             }}
             onClick={eventClick}
 
-            // startIcon={<FontAwesomeIcon icon={icon} className={classes.icon} />}
+        // startIcon={<FontAwesomeIcon icon={icon} className={classes.icon} />}
         >
             <Typography
                 className={classes.label}

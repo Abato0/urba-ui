@@ -30,11 +30,26 @@ export const SelectTipoPago: React.FC<IProps> = ({
             value={value}
             id={id}
             label={label}
+            style={{ width: '100%' }}
         >
-            <MenuItem value={undefined}> - Todos - </MenuItem>
+            <MenuItem
+                style={{
+                    textTransform: 'uppercase',
+                }}
+                value={undefined}
+            >
+                {' '}
+                - Todos -{' '}
+            </MenuItem>
             {ArrTipoPago.map(({ label, value }) => {
                 return (
-                    <MenuItem value={value} key={id + 'TipoPago - ' + value}>
+                    <MenuItem
+                        value={value}
+                        style={{
+                            textTransform: 'uppercase',
+                        }}
+                        key={id + 'TipoPago - ' + value}
+                    >
                         {label}
                     </MenuItem>
                 )

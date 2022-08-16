@@ -97,7 +97,10 @@ const initialValues = Object.freeze({
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    marca: yup.string().required('Campo requerido'),
+    marca: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
 })
 
 interface IProps {
@@ -138,15 +141,15 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
 
     const [mutate] = isNil(marcaObj)
         ? // eslint-disable-next-line react-hooks/rules-of-hooks
-        usePostMarcaMutation()
+          usePostMarcaMutation()
         : // eslint-disable-next-line react-hooks/rules-of-hooks
-        usePutMarcaMutation()
+          usePutMarcaMutation()
 
     const init = useMemo(() => {
         return isNotNilOrEmpty(marcaObj)
             ? {
-                marca: marcaObj?.marca,
-            }
+                  marca: marcaObj?.marca,
+              }
             : initialValues
     }, [marcaObj])
 
@@ -157,16 +160,16 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(marcaObj)
                         ? await mutate({
-                            variables: {
-                                marca,
-                            },
-                        })
+                              variables: {
+                                  marca: String(marca).toUpperCase(),
+                              },
+                          })
                         : await mutate({
-                            variables: {
-                                id,
-                                marca,
-                            },
-                        })
+                              variables: {
+                                  id,
+                                  marca: String(marca).toUpperCase(),
+                              },
+                          })
 
                     if (isNotNilOrEmpty(data)) {
                         const { code, message } = isNotNilOrEmpty(data.PutMarca)
@@ -174,9 +177,6 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
                             : data.PostMarca
                         setLoadingMutate(false)
                         setTitleModalMsj(message)
-
-
-
 
                         if (code === 200) {
                             setErrorModal(false)
@@ -191,9 +191,6 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
                         }
 
                         setOpenModalMsj(true)
-
-
-
                     } else {
                         setLoadingMutate(false)
                         setOpenModalMsj(true)
@@ -270,6 +267,7 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
                         error={touched.marca && isNotNilOrEmpty(errors.marca)}
                         helperText={touched.marca ? errors.marca : undefined}
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
                 <div className={classes.contentButtons}>

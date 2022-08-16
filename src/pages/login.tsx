@@ -40,17 +40,14 @@ const useStyles = makeStyles((theme) => ({
         // minWidth: '450px',
         backgroundColor: colors.blueGrey[100],
         //width: "100%",
-        height: "100%"
-
-
+        height: '100%',
     },
     container: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        maxWidth: "100%",
+        maxWidth: '100%',
         //      backgroundColor: "red"
-
     },
     cardLogin: {
         display: 'flex',
@@ -187,9 +184,6 @@ const LoginScreen = () => {
 
     const [loading, setLoading] = useState(false)
 
-
-
-
     const onSubmit = useCallback(
         async ({ usuario, password }, { setSubmitting }) => {
             try {
@@ -204,10 +198,10 @@ const LoginScreen = () => {
                     // console.log('data Login: ', data)
 
                     if (data.token) {
-                        const date = new Date();
-                        date.setDate(date.getDate() + 1);
-                        Cookies.set("token", "Bearer " + data.token, {
-                            expires: date
+                        const date = new Date()
+                        date.setDate(date.getDate() + 1)
+                        Cookies.set('token', 'Bearer ' + data.token, {
+                            expires: date,
                         })
                     }
                     setLoading(false)
@@ -236,7 +230,7 @@ const LoginScreen = () => {
             } catch (err) {
                 setLoading(false)
                 setOpenErrorLogin(true)
-                setMessageError("Usuario / Contraseña incorrecta")
+                setMessageError('Usuario / Contraseña incorrecta')
                 // console.log("eerr: ",err.message)
                 //   const failedLoginError = isBadRequestError(err)
                 //     ? 'Missing username or password'
@@ -272,18 +266,18 @@ const LoginScreen = () => {
         validationSchema,
     })
 
-    const classes = useStyles();
+    const classes = useStyles()
 
     const [imagenes, setImagenes] = useState<string[]>([])
 
     useEffect(() => {
         const getImagen = async () => {
             try {
-                const result = await imagenesLogin();
-                const r = result.map(({ urlImagen }) => urlImagen);
+                const result = await imagenesLogin()
+                const r = result.map(({ urlImagen }) => urlImagen)
                 setImagenes(r)
             } catch (error) {
-                console.log("Error: ", (error as Error).message);
+                console.log('Error: ', (error as Error).message)
                 setImagenes([])
             }
         }
@@ -306,14 +300,21 @@ const LoginScreen = () => {
                         />
                     )}
                     <Box className={classes.cardLogin}>
-                        <Box className={classes.cardLoginColumn} style={{ maxWidth: "70vh" }}>
-                            <div className={classes.cardTituloLogin} >
+                        <Box
+                            className={classes.cardLoginColumn}
+                            style={{ maxWidth: '70vh' }}
+                        >
+                            <div className={classes.cardTituloLogin}>
                                 <Typography
                                     variant="h5"
                                     className={classes.titulo}
-                                    style={{ textTransform: "uppercase", textAlign: "center" }}
+                                    style={{
+                                        textTransform: 'uppercase',
+                                        textAlign: 'center',
+                                    }}
                                 >
-                                    BIENVENIDO A LA PLATAFORMA DE CONTROL DE APORTACIONES DE CEP28M
+                                    BIENVENIDO A LA PLATAFORMA DE CONTROL DE
+                                    APORTACIONES DE CEP28M
                                 </Typography>
                             </div>
                             <form
@@ -344,7 +345,8 @@ const LoginScreen = () => {
                                                 : undefined
                                         }
                                         required
-                                    // fullWidth
+
+                                        // fullWidth
                                     />
                                     <TextField
                                         className={classes.textBoox}
@@ -368,7 +370,7 @@ const LoginScreen = () => {
                                                 : undefined
                                         }
                                         required
-                                    // fullWidth
+                                        // fullWidth
                                     />
                                 </div>
 

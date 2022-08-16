@@ -16,6 +16,7 @@ interface IProps {
     value?: number
     id: string
     label: string
+    style?: any
 }
 
 export const SelectAnios: React.FC<IProps> = ({
@@ -23,6 +24,7 @@ export const SelectAnios: React.FC<IProps> = ({
     value,
     id,
     label,
+    style = { width: '100%' },
 }) => {
     return (
         <SelectHeader
@@ -30,6 +32,7 @@ export const SelectAnios: React.FC<IProps> = ({
             value={value}
             id={id}
             label={label}
+            style={style}
         >
             {arrAnios.map((anios) => {
                 return (

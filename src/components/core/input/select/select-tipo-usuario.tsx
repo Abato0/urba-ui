@@ -24,7 +24,7 @@ export const SelectTipoUsuario: React.FC<IProps> = ({
     value,
     id,
     label,
-    style
+    style,
 }) => {
     return (
         <SelectHeader
@@ -34,10 +34,24 @@ export const SelectTipoUsuario: React.FC<IProps> = ({
             label={label}
             style={style}
         >
-            <MenuItem value={undefined}> - Todos - </MenuItem>
+            <MenuItem
+                style={{
+                    textTransform: 'uppercase',
+                }}
+                value={undefined}
+            >
+                {' '}
+                - Todos -{' '}
+            </MenuItem>
             {tipoUsuarios.map(({ label, value }) => {
                 return (
-                    <MenuItem value={value} key={id + 'TipoUsuario - ' + value}>
+                    <MenuItem
+                        style={{
+                            textTransform: 'uppercase',
+                        }}
+                        value={value}
+                        key={id + 'TipoUsuario - ' + value}
+                    >
                         {label}
                     </MenuItem>
                 )

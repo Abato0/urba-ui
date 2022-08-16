@@ -112,7 +112,10 @@ const optionsFuse: Fuse.IFuseOptions<any> = {
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    tipo_identificacion: yup.string().required('Campo requerido'),
+    tipo_identificacion: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
 })
 
 interface IProps {
@@ -130,7 +133,7 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
     const [dataTipoIdentificacion, setDataTipoIdentificacion] =
         useState<IResultQueryTipoIdentificacion>()
     const { refetch } = useListaTipoIdentificacionQuery()
-    const [mutate] = usePutTipoIdentificacionMutation();
+    const [mutate] = usePutTipoIdentificacionMutation()
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
     // const {refetch} = useListaTipoIdentificacionQuery()
@@ -174,7 +177,6 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
         }
     }, [loading, error, data])
 
-
     const onSubmit = useCallback(
         async ({ tipo_identificacion }) => {
             try {
@@ -183,7 +185,8 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
                     const { data } = await mutate({
                         variables: {
                             id: tipoId.id,
-                            tipo_identificacion,
+                            tipo_identificacion:
+                                String(tipo_identificacion).toUpperCase(),
                         },
                     })
 
@@ -215,7 +218,7 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
                 setErrorModal(true)
                 setMensajeModalMsj(
                     'El Tipo de identificacion no ha sido guardado: ' +
-                    (error as Error).message
+                        (error as Error).message
                 )
                 setOpenModalMsj(true)
                 setLoadingMutate(false)
@@ -304,6 +307,11 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
                                                 : undefined
                                         }
                                         required
+                                        inputProps={{
+                                            style: {
+                                                textTransform: 'uppercase',
+                                            },
+                                        }}
                                     />
                                 </div>
                                 <div className={classes.contentButtons}>

@@ -62,6 +62,15 @@ export const postTagVehiculo = gql`
     }
 `
 
+export const deleteTagVehiculo = gql`
+    mutation ($id: Int!) {
+        DeleteTagPagoVehiculo(id: $id) {
+            code
+            message
+        }
+    }
+`
+
 export const listadoTags = gql`
     query {
         ListaTag {
@@ -87,13 +96,14 @@ export const getTag = gql`
         GetTag(id: $id) {
             id
             code
+            estado
         }
     }
 `
 
 export const postTag = gql`
-    mutation ($code: String) {
-        PostTag(code: $code) {
+    mutation ($code: String, $idStatus: Int) {
+        PostTag(code: $code, idStatus: $idStatus) {
             code
             message
         }
@@ -101,8 +111,8 @@ export const postTag = gql`
 `
 
 export const putTag = gql`
-    mutation ($id: Int!, $code: String) {
-        PutTag(id: $id, code: $code) {
+    mutation ($id: Int!, $code: String, $idStatus: Int) {
+        PutTag(id: $id, code: $code, idStatus: $idStatus) {
             code
             message
         }

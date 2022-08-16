@@ -112,8 +112,14 @@ const initialValues = Object.freeze({
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    tipo_tag: yup.string().required('Campo requerido'),
-    valor: yup.number().required('Campo requerido'),
+    tipo_tag: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
+    valor: yup
+        .number()
+        .min(0, 'Valores no pueden ser negativos')
+        .required('Campo requerido'),
 })
 
 interface IProps {
@@ -133,18 +139,14 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
 
     const { refetch } = useListadoValorTag()
 
-
-
-
     const init = useMemo(() => {
         return isNotNilOrEmpty(valorTagObj)
             ? {
-                tipo_tag: valorTagObj?.tipo_tag,
-                valor: valorTagObj?.valor,
-            }
+                  tipo_tag: valorTagObj?.tipo_tag,
+                  valor: valorTagObj?.valor,
+              }
             : initialValues
     }, [valorTagObj])
-
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
@@ -179,18 +181,18 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
                     setLoadingMutate(true)
                     const { data } = isNilOrEmpty(valorTagObj)
                         ? await mutate({
-                            variables: {
-                                tipo_tag,
-                                valor,
-                            },
-                        })
+                              variables: {
+                                  tipo_tag: String(tipo_tag).toUpperCase(),
+                                  valor,
+                              },
+                          })
                         : await mutate({
-                            variables: {
-                                id: Number(id),
-                                tipo_tag,
-                                valor,
-                            },
-                        })
+                              variables: {
+                                  id: Number(id),
+                                  tipo_tag: String(tipo_tag).toUpperCase(),
+                                  valor,
+                              },
+                          })
 
                     if (isNotNilOrEmpty(data)) {
                         const { code, message } = isNilOrEmpty(valorTagObj)
@@ -200,9 +202,11 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
                         setTitleModalMsj(message)
                         setErrorModal(code === 200 ? false : true)
 
-
                         if (code === 200) {
-                            if (isNotNilOrEmpty(data.PutValorTag) && code === 200) {
+                            if (
+                                isNotNilOrEmpty(data.PutValorTag) &&
+                                code === 200
+                            ) {
                                 setBoolPut(true)
                                 return
                             }
@@ -301,6 +305,7 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
                             touched.tipo_tag ? errors.tipo_tag : undefined
                         }
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
                 <div className={classes.contentLastTextBox}>
@@ -317,6 +322,7 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
                         error={touched.valor && isNotNilOrEmpty(errors.valor)}
                         helperText={touched.valor ? errors.valor : undefined}
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
                 <div className={classes.contentButtons}>

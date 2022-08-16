@@ -14,15 +14,11 @@ interface IProps {
     onEdit: any
     onDelete: any
     row: Row<IResultQueryTag>,
-    onInactivar: any,
-    onActivar: any,
 }
 
 const ActionsCellEditDelete: React.FC<IProps> = ({
     onEdit,
     onDelete,
-    onInactivar,
-    onActivar,
     row,
     className,
 }) => {
@@ -39,30 +35,7 @@ const ActionsCellEditDelete: React.FC<IProps> = ({
                     <FileEditIcon color="primary" />
                 </IconButton>
             </Tooltip>
-            <Tooltip placeholder="top" className={className} title={'Activar'}>
-                <IconButton
-                    // variant="text"
-                    disabled={
-                        row.original.estado === EstadoTagRow.OCUPADO
-                        || row.original.estado === EstadoTagRow.INACTIVO
-                    }
-                    onClick={() => onActivar(row.original)}
-                >
-                    <AlarmLightIcon color={row.original.estado === EstadoTagRow.OCUPADO
-                        || row.original.estado === EstadoTagRow.INACTIVO ? "disabled" : "primary"} />
-                </IconButton>
-            </Tooltip>
-            <Tooltip placeholder="top" className={className} title={'Inactivar'}>
-                <IconButton
-                    // variant="text"
-                    // color="secondary"
-                    disabled={row.original.estado === EstadoTagRow.OCUPADO || row.original.estado === EstadoTagRow.DISPONIBLE}
-                    onClick={() => onInactivar(row.original)}
-                >
-                    <AlarmLigthOffIcon color={row.original.estado === EstadoTagRow.OCUPADO
-                        || row.original.estado === EstadoTagRow.DISPONIBLE ? "disabled" : "primary"} />
-                </IconButton>
-            </Tooltip>
+
             <Tooltip placeholder="top" className={className} title={'Eliminar'}>
                 <IconButton
                     // variant="text"

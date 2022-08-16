@@ -1,6 +1,7 @@
 import { Column } from 'react-table'
 import { Data } from '../core/input/data'
 import ActionsCell from '../table/actions-cell'
+import RepresentanteCells from './representanteCell'
 
 export const headIntegranteTable = Object.freeze([
     {
@@ -46,7 +47,8 @@ export const headIntegranteTable = Object.freeze([
     },
     {
         Header: 'Representante',
-        accessor: 'representante',
+        // accessor: 'representante',
+        Cell: RepresentanteCells,
     },
 
     // {

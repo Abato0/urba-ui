@@ -16,9 +16,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { usePagination, useTable } from 'react-table'
 import {
     IResultQueryTagVehiculo,
+    useDeleteTagVehiculoMutation,
     useListaTagVehiculo,
 } from '../../components/tag/use-tag'
-import { isNilOrEmpty, isNotNilOrEmpty } from '../../utils/is-nil-empty'
+import {
+    isNilOrEmpty,
+    isNotNil,
+    isNotNilOrEmpty,
+} from '../../utils/is-nil-empty'
 import Fuse from 'fuse.js'
 import { columnsTagVehiculo } from '../../components/tag/tag-dataTable'
 import useDebounce from '../../utils/useDebounce'
@@ -160,17 +165,17 @@ const extractData = (
 ): ITagsVariablesNormalize[] => {
     return isNotNilOrEmpty(data)
         ? data.map(({ id, vehiculo, tag }) => {
-            return {
-                id,
-                idGrupoFamiliar: vehiculo.grupoFamiliar.id!,
-                nombre_familiar: vehiculo.grupoFamiliar.nombre_familiar,
-                placa: vehiculo.placa,
-                code: tag.code,
-                color: vehiculo.color.color ?? '',
-                marca: vehiculo.marca.marca ?? '',
-                modelo: vehiculo.modelo.modelo ?? '',
-            }
-        })
+              return {
+                  id,
+                  idGrupoFamiliar: vehiculo.grupoFamiliar.id!,
+                  nombre_familiar: vehiculo.grupoFamiliar.nombre_familiar,
+                  placa: vehiculo.placa,
+                  code: tag.code,
+                  color: vehiculo.color.color ?? '',
+                  marca: vehiculo.marca.marca ?? '',
+                  modelo: vehiculo.modelo.modelo ?? '',
+              }
+          })
         : []
 }
 
@@ -191,18 +196,60 @@ const MantenimientoParentescoListado = () => {
     const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
     const [errorModal, setErrorModal] = useState<boolean>(false)
 
+    const [boolPut, setBoolPut] = useState<boolean>(false)
+
+    const [mutateEliminar] = useDeleteTagVehiculoMutation()
     const debounceSearch = useDebounce(search, 300)
     const [idGrupoFamiliarFilter, setIdGrupoFamiliarFilter] = useState<
         number | undefined
     >()
 
-    const [idValorTagFilter, setValorTagFilter] = useState<number | undefined>()
-
     const {
         data: dataListadoGrupoFamiliar,
         loading: loadingListadoGrupoFamiliar,
-        error: errorListadoGrupoFamiliar,
     } = useListarGrupoFamiliar()
+
+    const onCloseModal = async () => {
+        if (openModalMsj && boolPut) {
+            await refetch()
+            setOpenModalMsj(false)
+            // console.log("1")
+        } else {
+            setOpenModalMsj(false)
+            //console.log("2", " * ", openModalMsj && boolPut)
+        }
+    }
+
+    const onDelete = async ({ id }: IResultQueryTagVehiculo) => {
+        try {
+            const { data } = await mutateEliminar({
+                variables: {
+                    id,
+                },
+            })
+            if (isNotNil(data)) {
+                const { code, message } = data.DeleteTagPagoVehiculo
+                setTitleModalMsj(message)
+                if (code === 200) {
+                    setBoolPut(true)
+                    setErrorModal(false)
+                } else {
+                    setErrorModal(true)
+                }
+                setOpenModalMsj(true)
+                return
+            } else {
+                setTitleModalMsj('Usuario no autorizado')
+                setErrorModal(true)
+                setOpenModalMsj(true)
+            }
+        } catch (error: any) {
+            setTitleModalMsj('Envio Fallido')
+            setErrorModal(true)
+            setMensajeModalMsj('' + error.message)
+            setOpenModalMsj(true)
+        }
+    }
 
     // const {
     //   data: dataValorTag,
@@ -231,7 +278,7 @@ const MantenimientoParentescoListado = () => {
             data: dataTag,
             getRowId,
             //   onEdit,
-            //   onDelete,
+            onDelete,
         },
         usePagination
     )
@@ -301,7 +348,7 @@ const MantenimientoParentescoListado = () => {
                     {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
-                            onClose={() => setOpenModalMsj(false)}
+                            onClose={() => onCloseModal()}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                             error={errorModal}
@@ -371,11 +418,14 @@ const MantenimientoParentescoListado = () => {
                         <TextField
                             className={classes.textBox}
                             variant="outlined"
-                            placeholder="Search"
+                            placeholder="Buscar"
                             onChange={(e) => {
                                 setSearch(e.target.value)
                             }}
                             value={search}
+                            inputProps={{
+                                style: { textTransform: 'uppercase' },
+                            }}
                         />
 
                         <ActionsButtonsExcelPdf

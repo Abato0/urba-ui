@@ -6,6 +6,7 @@ import {
 } from '@material-ui/pickers'
 import React from 'react'
 import { isNotNilOrEmpty } from '../../../utils/is-nil-empty'
+import esLocale from 'date-fns/locale/es'
 
 interface IProps {
     classes: ClassNameMap<'textbox'>
@@ -31,7 +32,7 @@ const FormControlDate: React.FC<IProps> = ({
     disableFuture = false,
 }) => {
     return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <MuiPickersUtilsProvider locale={esLocale} utils={DateFnsUtils}>
             <KeyboardDatePicker
                 className={classes.textbox}
                 id={id}

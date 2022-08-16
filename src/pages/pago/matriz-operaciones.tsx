@@ -18,23 +18,15 @@ import {
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
 import { drop, isEmpty, isNil, zipObj } from 'ramda'
 import React, { useEffect, useState } from 'react'
-import { SelectFecha } from '../../components/core/input/select/select-fecha'
-import AppLayout from '../../components/layout/app-layout'
+
 import {
     IArrKeyData,
-    useCarteraVencida,
     useMatrizOperaciones,
 } from '../../components/pago/use-pago'
 import { lightFormat } from 'date-fns'
 import { useCallback } from 'react'
-import {
-    Filter as FilterIcon,
-    Reload as ReloadIcon,
-    FileExcelBox as FileExcelBoxIcon,
-    TableSearch,
-} from 'mdi-material-ui'
+import { FileExcelBox as FileExcelBoxIcon, TableSearch } from 'mdi-material-ui'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
-import NavBar from '../../components/layout/app-bar'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
 import { DateDesdeHasta } from '../../components/core/input/dateDesdeHasta'
 
@@ -178,7 +170,7 @@ export const ListadoMatrizOperaciones = () => {
 
     useEffect(() => {
         if (!loading && data && data.MatrizOperaciones) {
-            console.log("Data matriaz: ", data.MatrizOperaciones)
+            console.log('Data matriaz: ', data.MatrizOperaciones)
             setKeysColumns(drop(1, data.MatrizOperaciones.keys))
             setDataColumnsV2(extractDataV2(data.MatrizOperaciones))
         }
@@ -211,26 +203,21 @@ export const ListadoMatrizOperaciones = () => {
         }
     }
 
-
     const totalFila = (rowData: string[]) => {
         return rowData.reduce((callback, item) => {
-            const pago = Number(item);
+            const pago = Number(item)
             return isNaN(pago) ? callback : callback + pago
-        }, 0);
+        }, 0)
     }
-
 
     useEffect(() => {
         if (dataColumnsV2.length > 0) {
-            console.log("dataColumnsV2: ", dataColumnsV2);
+            console.log('dataColumnsV2: ', dataColumnsV2)
 
-            const r = dataColumnsV2.map((fila, index) => {
-
-
-            })
+            const r = dataColumnsV2.map((fila, index) => {})
         }
     }, [dataColumnsV2])
-    const totalColumnas = () => { }
+    const totalColumnas = () => {}
 
     return (
         <LayoutTituloPagina titulo="Aportaciones - Matriz de Aportaciones">
@@ -290,35 +277,53 @@ export const ListadoMatrizOperaciones = () => {
                                         </TableCell>
                                     )
                                 })}
-                                {
-                                    keysColumns.length > 0 && <TableCell className={classes.tableHead}
-                                        align="center">Total</TableCell>
-                                }
+                                {keysColumns.length > 0 && (
+                                    <TableCell
+                                        className={classes.tableHead}
+                                        align="center"
+                                    >
+                                        Total
+                                    </TableCell>
+                                )}
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {dataColumnsV2.map((rowData, index) => {
-                                return (
-                                    <TableRow
-                                        className={classes.tableBody}
-                                        key={index}
-                                    >
-                                        {rowData.map((columnData, index) => {
-                                            return (
-                                                <TableCell
-                                                    align="center"
-                                                    key={index}
-                                                >
-                                                    {columnData}
+                            {dataColumnsV2.length > 0 ? (
+                                dataColumnsV2.map((rowData, index) => {
+                                    return (
+                                        <TableRow
+                                            className={classes.tableBody}
+                                            key={index}
+                                        >
+                                            {rowData.map(
+                                                (columnData, index) => {
+                                                    return (
+                                                        <TableCell
+                                                            align="center"
+                                                            key={index}
+                                                        >
+                                                            {columnData}
+                                                        </TableCell>
+                                                    )
+                                                }
+                                            )}
+                                            {rowData.length > 0 && (
+                                                <TableCell>
+                                                    {totalFila(rowData)}
                                                 </TableCell>
-                                            )
-                                        })}
-                                        {
-                                            rowData.length > 0 && <TableCell>{totalFila(rowData)}</TableCell>
-                                        }
-                                    </TableRow>
-                                )
-                            })}
+                                            )}
+                                        </TableRow>
+                                    )
+                                })
+                            ) : (
+                                <TableRow className={classes.tableBody}>
+                                    <TableCell align="center">
+                                        <Typography variant="overline">
+                                            No se encontraron resultados
+                                        </Typography>
+                                    </TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </TableContainer>

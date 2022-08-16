@@ -15,7 +15,7 @@ interface IProps {
     handleChange: any
     value?: string
     id: string
-    label: string;
+    label: string
     style?: any
 }
 
@@ -24,7 +24,7 @@ export const SelectModulos: React.FC<IProps> = ({
     value,
     id,
     label,
-    style
+    style,
 }) => {
     return (
         <SelectHeader
@@ -34,10 +34,24 @@ export const SelectModulos: React.FC<IProps> = ({
             label={label}
             style={style}
         >
-            <MenuItem value={undefined}> - Todos - </MenuItem>
+            <MenuItem
+                style={{
+                    textTransform: 'uppercase',
+                }}
+                value={undefined}
+            >
+                {' '}
+                - Todos -{' '}
+            </MenuItem>
             {arrModulos.map(({ label, value }) => {
                 return (
-                    <MenuItem value={value} key={id + 'Modulo - ' + value}>
+                    <MenuItem
+                        style={{
+                            textTransform: 'uppercase',
+                        }}
+                        value={value}
+                        key={id + 'Modulo - ' + value}
+                    >
                         {label}
                     </MenuItem>
                 )

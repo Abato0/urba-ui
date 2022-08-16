@@ -1,4 +1,3 @@
-import AppLayout from '../../../../components/layout/app-layout'
 // import { IngresarParentescoForm } from "../../../../components/mantenimento/parentesco/parentesco-form";
 import {
     makeStyles,
@@ -7,7 +6,6 @@ import {
     Box,
     Typography,
     TextField,
-    Button,
     Table,
     TableContainer,
 } from '@material-ui/core'
@@ -42,7 +40,6 @@ import { TipoUsuario } from '../../../../components/core/input/dateSelect'
 import PermisoLayout from '../../../../components/layout/auth-layout/permiso-layout'
 import NavBar from '../../../../components/layout/app-bar'
 import LayoutTituloPagina from '../../../../components/layout/tituloPagina-layout'
-import { useStylesMantenimientoListado } from '../../../../utils/styles'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -170,7 +167,8 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                     setLoadingMutate(true)
                     const { data } = await mutate({
                         variables: {
-                            tipo_identificacion,
+                            tipo_identificacion:
+                                String(tipo_identificacion).toUpperCase(),
                         },
                     })
 
@@ -199,7 +197,7 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                 setErrorModal(true)
                 setMensajeModalMsj(
                     'El Tipo de identificacion no ha sido guardado: ' +
-                    (error as Error).message
+                        (error as Error).message
                 )
                 setOpenModalMsj(true)
                 setLoadingMutate(false)
@@ -256,7 +254,8 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                 setOpenModalMsj(true)
             }
         },
-        [mutateEliminar, refetch]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
     )
 
     const fuse = useMemo(() => {
@@ -343,14 +342,29 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                     />
                 )}
                 <div
-                    style={{ display: "flex", flexDirection: "column", width: "100%" }}
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '100%',
+                    }}
                     className={classes.container}
                 >
-                    <div style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center", alignItems: "center" }}>
-                        <Box className={classes.root} style={{
-                            width: "90%",
-                            maxWidth: "500px"
-                        }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            width: '100%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Box
+                            className={classes.root}
+                            style={{
+                                width: '90%',
+                                maxWidth: '500px',
+                            }}
+                        >
                             <div className={classes.title}>
                                 <Typography variant="overline">
                                     Registro de Tipo de Identificación
@@ -385,6 +399,11 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                                                 : undefined
                                         }
                                         required
+                                        inputProps={{
+                                            style: {
+                                                textTransform: 'uppercase',
+                                            },
+                                        }}
                                     />
                                 </div>
                                 <div className={classes.contentButtons}>
@@ -403,13 +422,20 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                         </Box>
                     </div>
 
-                    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-
-
-                        <Box className={classes.root} style={{
-                            width: "90%",
-                            maxWidth: "500px"
-                        }}>
+                    <div
+                        style={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Box
+                            className={classes.root}
+                            style={{
+                                width: '90%',
+                                maxWidth: '500px',
+                            }}
+                        >
                             <div className={classes.title}>
                                 <Typography variant="overline">
                                     Listado de Tipos de Identificaciones
@@ -419,11 +445,14 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                                 <TextField
                                     // className={classes.textBox}
                                     variant="outlined"
-                                    placeholder="Search"
+                                    placeholder="Buscar"
                                     onChange={(e) => {
                                         setSearch(e.target.value)
                                     }}
                                     value={search}
+                                    inputProps={{
+                                        style: { textTransform: 'uppercase' },
+                                    }}
                                 />
                             </div>
                             <TableContainer>
@@ -445,7 +474,9 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                             </TableContainer>
                             <TablePaginations
                                 lengthData={
-                                    isNilOrEmpty(dataTipoID) ? 0 : dataTipoID.length
+                                    isNilOrEmpty(dataTipoID)
+                                        ? 0
+                                        : dataTipoID.length
                                 }
                                 onChangePage={onChangePage}
                                 onChangeRowsPerPage={onChangeRowsPerPage}

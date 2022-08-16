@@ -259,7 +259,9 @@ const SidebarMorador: FC = () => {
                                         ),
                                     })
                                 }
-                                label={'Listado de Integrantes Familiares'}
+                                label={
+                                    'Listado de Integrantes de Grupos Familiares'
+                                }
                             />
                         </AcordionHeader>
                         <AcordionHeader icon={faDonate} label={'Aportaciones'}>

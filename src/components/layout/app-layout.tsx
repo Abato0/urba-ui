@@ -5,10 +5,10 @@ import {
     createStyles,
     LinearProgress,
     makeStyles,
-    Container
+    Container,
 } from '@material-ui/core'
 import NavBar from './app-bar'
-import { authMe } from '../../auth/auth-service'
+import { authMe, userRepresentante } from '../../auth/auth-service'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
 import { TipoUsuario } from '../core/input/dateSelect'
@@ -16,16 +16,25 @@ import { equals } from 'ramda'
 import { useSetRecoilState } from 'recoil'
 import { userInfo } from '../../utils/states'
 import {
-    ItemsListadoAdmin,
-    ItemsListadoMorador,
-    ItemsMantenimientoAdmin,
-    ItemsRegistrosADMIN,
-    ItemsRegistrosMorador,
     ItemUsuarioAdmin,
+    newItemsListadoAdmin,
+    newItemsListadoMorador,
+    newItemsListadoOperador,
+    newItemsManeniminetoOperador,
+    newItemsMantenimientoAdmin,
+    newItemsRegistrosADMIN,
+    newItemsRegistrosMorador,
+    newItemsRegistrosOperador,
     publicPages,
 } from '../../utils/keys'
 import { isNotEmpty } from '../../utils/is-nil-empty'
-import { ItemsOperacionesAdmin, ItemOperacionesOperador, ItemsOperacionesMorador, ItemsListadoOperador, ItemsRegistrosOperador } from '../../utils/keys';
+import {
+    ItemsOperacionesAdmin,
+    ItemOperacionesOperador,
+    ItemsOperacionesMorador,
+    ItemsListadoOperador,
+    ItemsRegistrosOperador,
+} from '../../utils/keys'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -36,7 +45,7 @@ const useStyles = makeStyles((theme) =>
             // minHeight: '100vh',
             // width: "100%",
             //backgroundColor: "red"
-            marginTop: theme.spacing(10)
+            marginTop: theme.spacing(10),
         },
         componentRoot: {
             display: 'flex',
@@ -46,7 +55,7 @@ const useStyles = makeStyles((theme) =>
             // minHeight:"100%",
             // minWidth: '400px',
             // background: 'linear-gradient(to right, #e0eafc, #cfdef3)',
-            backgroundColor: "red",
+            backgroundColor: 'red',
             borderRadius: '10px',
             alignContent: 'center',
             alignItems: 'center',
@@ -99,6 +108,9 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
     const [loading, setLoading] = useState<boolean>(false)
     const [tipoUsuario, setTipoUsuario] = useState('')
 
+    const [idUsuario, setIdUsuario] = useState<number>()
+    const [flagMorador, seFlagMorador] = useState(false)
+
     const setUsuarioState = useSetRecoilState(userInfo)
 
     const paht = useMemo(() => {
@@ -115,13 +127,14 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
                 if (result && result.code === 200) {
                     setAuthFlag(true)
                     setTipoUsuario(result.data.tipo)
+                    setIdUsuario(result.data.id)
                     setUsuarioState({
                         tipo_usuario: result.data.tipo,
                         user: result.data.usuario,
                         id: result.data.id,
                         apellidos: result.data.apellidos,
                         nombres: result.data.nombres,
-                        num_identificacion: result.data.num_identificacion
+                        num_identificacion: result.data.num_identificacion,
                     })
                 }
                 setLoading(false)
@@ -146,13 +159,32 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    const authMorador = async () => {
+        try {
+            if (idUsuario) {
+                const result = await userRepresentante(idUsuario)
+                console.log('Result: ', result)
+                seFlagMorador(result.ok)
+            }
+        } catch (error) {
+            console.log('Error: ', (error as Error).message)
+            seFlagMorador(false)
+        }
+    }
+
+    useEffect(() => {
+        if (tipoUsuario === TipoUsuario.MORADOR && idUsuario) {
+            authMorador()
+        }
+    }, [idUsuario, tipoUsuario])
+
     const itemListadoFilter = useMemo(() => {
         if (!loading && authFlag && isNotEmpty(tipoUsuario)) {
             return equals(tipoUsuario, TipoUsuario.ADMIN)
-                ? ItemsListadoAdmin
+                ? newItemsListadoAdmin
                 : equals(tipoUsuario, TipoUsuario.OPERATIVO)
-                    ? ItemsListadoOperador
-                    : ItemsListadoMorador
+                ? newItemsListadoOperador
+                : newItemsListadoMorador
         }
         return []
     }, [loading, authFlag, tipoUsuario])
@@ -160,13 +192,15 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
     const itemRegistroFilter = useMemo(() => {
         if (!loading && authFlag && isNotEmpty(tipoUsuario)) {
             return equals(tipoUsuario, TipoUsuario.ADMIN)
-                ? ItemsRegistrosADMIN :
-                equals(tipoUsuario, TipoUsuario.OPERATIVO)
-                    ? ItemsRegistrosOperador
-                    : ItemsRegistrosMorador
+                ? newItemsRegistrosADMIN
+                : equals(tipoUsuario, TipoUsuario.OPERATIVO)
+                ? newItemsRegistrosOperador
+                : equals(tipoUsuario, TipoUsuario.MORADOR) && flagMorador
+                ? newItemsRegistrosMorador
+                : []
         }
         return []
-    }, [loading, authFlag, tipoUsuario])
+    }, [loading, authFlag, tipoUsuario, flagMorador])
 
     const itemUsuarioFilter = useMemo(() => {
         if (!loading && authFlag && isNotEmpty(tipoUsuario)) {
@@ -180,20 +214,21 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
     const itemManteniementoFilter = useMemo(() => {
         if (!loading && authFlag && isNotEmpty(tipoUsuario)) {
             return equals(tipoUsuario, TipoUsuario.ADMIN)
-                ? ItemsMantenimientoAdmin
+                ? newItemsMantenimientoAdmin
+                : equals(tipoUsuario, TipoUsuario.OPERATIVO)
+                ? newItemsManeniminetoOperador
                 : []
         }
         return []
     }, [loading, authFlag, tipoUsuario])
 
-
     const itemsOperacionesFilter = useMemo(() => {
         if (!loading && authFlag && isNotEmpty(tipoUsuario)) {
             return equals(tipoUsuario, TipoUsuario.ADMIN)
                 ? ItemsOperacionesAdmin
-                : equals(tipoUsuario, TipoUsuario.OPERATIVO) ?
-                    ItemOperacionesOperador
-                    : ItemsOperacionesMorador
+                : equals(tipoUsuario, TipoUsuario.OPERATIVO)
+                ? ItemOperacionesOperador
+                : ItemsOperacionesMorador
         }
         return []
     }, [loading, authFlag, tipoUsuario])
@@ -201,10 +236,17 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
     return (
         <>
             {!loading && authFlag ? (
-                <Container >
+                <Container>
                     <NavBar />
                     <div className={classes.root}>
-                        <div style={{ display: "flex", width: "100%", height: "100%", flexDirection: "row" }}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                width: '100%',
+                                height: '100%',
+                                flexDirection: 'row',
+                            }}
+                        >
                             {/* <div style={{ display: "flex", width: "20%", flexDirection: "column" }}> */}
                             <SideBar
                                 ItemsOperaciones={itemsOperacionesFilter}

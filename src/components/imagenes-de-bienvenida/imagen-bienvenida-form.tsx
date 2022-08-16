@@ -11,21 +11,22 @@ import {
     InputLabel,
     MenuItem,
 } from '@material-ui/core'
-import { useCallback, useState } from 'react';
-import ModalAuth from '../core/input/dialog/modal-dialog';
+import { useCallback, useState } from 'react'
+import ModalAuth from '../core/input/dialog/modal-dialog'
 import * as yup from 'yup'
-import { isNotNilOrEmpty } from '../../utils/is-nil-empty';
+import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import { useFormik } from 'formik'
-import FormControlHeader from '../core/input/form-control-select';
-import { Listado_lugares_image } from '../../utils/keys';
+import FormControlHeader from '../core/input/form-control-select'
+import { Listado_lugares_image } from '../../utils/keys'
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
-import { ButtonCargarImagen } from '../vehiculo/buttonCargarImagen';
-import { ButtonVerImage } from '../vehiculo/buttonVerImagen';
-import ModalImagenFile from '../core/input/dialog/modal-ver-imagen-file';
-import { usePostImagenBienvenidaMutation, useListadoImagenesBienvenidaQuery } from './use-imagenes-bienvenida';
-
-
+import { ButtonCargarImagen } from '../vehiculo/buttonCargarImagen'
+import { ButtonVerImage } from '../vehiculo/buttonVerImagen'
+import ModalImagenFile from '../core/input/dialog/modal-ver-imagen-file'
+import {
+    usePostImagenBienvenidaMutation,
+    useListadoImagenesBienvenidaQuery,
+} from './use-imagenes-bienvenida'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -40,7 +41,7 @@ const useStyles = makeStyles((theme) =>
             textAlign: 'center',
             backgroundColor: 'white',
             marginRight: theme.spacing(3),
-            marginLeft: theme.spacing(3)
+            marginLeft: theme.spacing(3),
             // width:"100px"
         },
         formControl: {
@@ -54,7 +55,6 @@ const useStyles = makeStyles((theme) =>
             alignContent: 'center',
             alignItems: 'center',
             marginTop: theme.spacing(6),
-
         },
         textbox: {
             margin: theme.spacing(1),
@@ -100,19 +100,20 @@ const useStyles = makeStyles((theme) =>
 const initialValues = Object.freeze({
     nombre: '',
     lugar: undefined,
-    imagen: undefined
+    imagen: undefined,
 })
-
 
 const validationSchema = yup.object().shape({
-    nombre: yup.string().required("Campo requerido"),
-    lugar: yup.string().required("Campo requerido"),
-    imagen: yup.mixed().required("Imagen requerida")
+    nombre: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
+    lugar: yup.string().required('Campo requerido'),
+    imagen: yup.mixed().required('Imagen requerida'),
 })
 
-
 export const IngresarImagenBienvenida = () => {
-    const classes = useStyles();
+    const classes = useStyles()
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
     const [titleModalMsj, setTitleModalMsj] = useState<string>('')
     const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
@@ -123,33 +124,30 @@ export const IngresarImagenBienvenida = () => {
     >(null)
     const [openModalImagen, setOpenModalImage] = useState(false)
 
-
     const [mutate] = usePostImagenBienvenidaMutation()
     const { refetch } = useListadoImagenesBienvenidaQuery()
-    const onSubmit = useCallback(async ({
-        nombre,
-        lugar,
-        imagen
-    }) => {
+    const onSubmit = useCallback(async ({ nombre, lugar, imagen }) => {
         try {
-            if (isNotNilOrEmpty(nombre) &&
+            if (
+                isNotNilOrEmpty(nombre) &&
                 isNotNilOrEmpty(lugar) &&
-                isNotNilOrEmpty(imagen)) {
-
+                isNotNilOrEmpty(imagen)
+            ) {
                 setLoadingMutate(true)
 
                 const { data } = await mutate({
                     variables: {
-                        nombre, lugar, imagen
-                    }
-                });
+                        nombre: String(nombre).toUpperCase(),
+                        lugar: String(lugar).toUpperCase(),
+                        imagen,
+                    },
+                })
 
                 if (isNotNilOrEmpty(data) && data.PostImagenSitio) {
-
-                    const { code, message } = data.PostImagenSitio;
+                    const { code, message } = data.PostImagenSitio
                     setTitleModalMsj(message)
                     if (code === 200) {
-                        resetForm();
+                        resetForm()
                         await refetch()
                         setErrorModal(false)
                     } else {
@@ -177,7 +175,6 @@ export const IngresarImagenBienvenida = () => {
         }
     }, [])
 
-
     const {
         errors,
         handleBlur,
@@ -195,104 +192,110 @@ export const IngresarImagenBienvenida = () => {
         validationSchema,
     })
 
-    return <Box className={classes.root}>
-        {openModalMsj && (
-            <ModalAuth
-                openModal={openModalMsj}
-                onClose={() => setOpenModalMsj(false)}
-                title={titleModalMsj}
-                message={mensajeModalMsj}
-                error={errorModal}
-            />
-        )}
+    return (
+        <Box className={classes.root}>
+            {openModalMsj && (
+                <ModalAuth
+                    openModal={openModalMsj}
+                    onClose={() => setOpenModalMsj(false)}
+                    title={titleModalMsj}
+                    message={mensajeModalMsj}
+                    error={errorModal}
+                />
+            )}
 
-        {openModalImagen && (
-            <ModalImagenFile
-                handleClose={() => setOpenModalImage(false)}
-                open={openModalImagen}
-                file={fileSeleccionado}
-            />
-        )}
+            {openModalImagen && (
+                <ModalImagenFile
+                    handleClose={() => setOpenModalImage(false)}
+                    open={openModalImagen}
+                    file={fileSeleccionado}
+                />
+            )}
 
-        <form
-            action="#"
-            onSubmit={handleSubmit}
-            onReset={handleReset}
-            className={classes.form}>
-            <Grid container spacing={1}>
-                <Grid item xs={12} sm={6}>
-                    <TextField
-                        className={classes.textbox}
-                        id="nombre"
-                        name="nombre"
-                        label="Nombre de la imagen"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values.nombre}
-                        error={touched.nombre && isNotNilOrEmpty(errors.nombre)}
-                        helperText={touched.nombre ? errors.nombre : undefined}
-                        required
-                        inputProps={{ style: { textTransform: 'uppercase' } }}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    <FormControlHeader
-                        classes={classes}
-                        handleBlur={handleBlur}
-                        id="lugar"
-                        handleChange={handleChange}
-                        labetTitulo="Lugar"
-                        value={values.lugar}
-                    >
-                        {
-                            Listado_lugares_image.map(({ label, value }) => {
+            <form
+                action="#"
+                onSubmit={handleSubmit}
+                onReset={handleReset}
+                className={classes.form}
+            >
+                <Grid container spacing={1}>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            className={classes.textbox}
+                            id="nombre"
+                            name="nombre"
+                            label="Nombre de la imagen"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            value={values.nombre}
+                            error={
+                                touched.nombre && isNotNilOrEmpty(errors.nombre)
+                            }
+                            helperText={
+                                touched.nombre ? errors.nombre : undefined
+                            }
+                            required
+                            inputProps={{
+                                style: { textTransform: 'uppercase' },
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <FormControlHeader
+                            classes={classes}
+                            handleBlur={handleBlur}
+                            id="lugar"
+                            handleChange={handleChange}
+                            labetTitulo="Lugar"
+                            value={values.lugar}
+                        >
+                            {Listado_lugares_image.map(({ label, value }) => {
                                 return (
                                     <MenuItem key={value} value={value}>
                                         {label}
-                                    </MenuItem>)
-                            })
-                        }
-                    </FormControlHeader>
-                </Grid>
+                                    </MenuItem>
+                                )
+                            })}
+                        </FormControlHeader>
+                    </Grid>
 
-                <Grid item xs={12}>
-                    <ButtonCargarImagen
-                        id="imagen"
-                        label={"Imagen de Bienvenida"}
-                        value={values.imagen}
-                        onBlur={handleBlur}
-                        onChange={(event: any) => {
-                            setFieldValue(
-                                'imagen',
-                                event.currentTarget.files[0]
-                            )
-                        }}
-                    >
-                        {values.imagen && (
-                            <ButtonVerImage
-                                onclick={() => {
-                                    setFileSeleccionado(
-                                        values.imagen
-                                    )
-                                    setOpenModalImage(true)
-                                }}
-                            />
-                        )}
-                    </ButtonCargarImagen>
+                    <Grid item xs={12}>
+                        <ButtonCargarImagen
+                            id="imagen"
+                            label={'Imagen de Bienvenida'}
+                            value={values.imagen}
+                            onBlur={handleBlur}
+                            onChange={(event: any) => {
+                                setFieldValue(
+                                    'imagen',
+                                    event.currentTarget.files[0]
+                                )
+                            }}
+                        >
+                            {values.imagen && (
+                                <ButtonVerImage
+                                    onclick={() => {
+                                        setFileSeleccionado(values.imagen)
+                                        setOpenModalImage(true)
+                                    }}
+                                />
+                            )}
+                        </ButtonCargarImagen>
+                    </Grid>
                 </Grid>
-            </Grid>
-            <div className={classes.contentButtons}>
-                <div></div>
-                <LoadingButton
-                    loading={loadingMutate}
-                    loadingPosition="start"
-                    type="submit"
-                    variant="text"
-                    startIcon={<SaveIcon />}
-                >
-                    Guardar
-                </LoadingButton>
-            </div>
-        </form>
-    </Box>
+                <div className={classes.contentButtons}>
+                    <div></div>
+                    <LoadingButton
+                        loading={loadingMutate}
+                        loadingPosition="start"
+                        type="submit"
+                        variant="text"
+                        startIcon={<SaveIcon />}
+                    >
+                        Guardar
+                    </LoadingButton>
+                </div>
+            </form>
+        </Box>
+    )
 }

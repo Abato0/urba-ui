@@ -158,6 +158,7 @@ const CardTable: FC<IProps> = ({
                             setSearch(e.target.value)
                         }}
                         value={search}
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                     <ActionsButtonsExcelPdf
                         ExportExcel={ExportExcel}

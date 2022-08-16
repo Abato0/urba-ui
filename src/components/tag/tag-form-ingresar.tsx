@@ -6,6 +6,7 @@ import {
     Typography,
     TextField,
     Button,
+    MenuItem,
 } from '@material-ui/core'
 import { useFormik } from 'formik'
 import { isNil } from 'ramda'
@@ -25,19 +26,23 @@ import ModalAuth from '../core/input/dialog/modal-dialog'
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
 import FormControlHeader from '../core/input/form-control-select'
+import { useListaStatusTagQuery } from '../mantenimento/status-tag/use-status-tag'
+import { ID_STATUS_TAG_DISPONIBLE } from '../../utils/keys'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
-            marginTop: theme.spacing(10),
-            marginBottom: theme.spacing(10),
-            marginLeft: theme.spacing(20),
-            marginRight: theme.spacing(20),
-            padding: '60px',
-            // minWidth: "820px",
-            borderRadius: '10px',
-            textAlign: 'center',
+            // marginTop: theme.spacing(10),
+            // marginBottom: theme.spacing(10),
+            // marginLeft: theme.spacing(20),
+            // marginRight: theme.spacing(20),
+            // padding: '60px',
+            // // minWidth: "820px",
+            // borderRadius: '10px',
+            // textAlign: 'center',
+            padding: '10%',
             backgroundColor: 'white',
+
             // width:"100px"
         },
         formControl: {
@@ -51,6 +56,7 @@ const useStyles = makeStyles((theme) =>
             alignContent: 'center',
             alignItems: 'center',
             marginTop: theme.spacing(2),
+            // width: "70%"
         },
         textbox: {
             margin: theme.spacing(1),
@@ -95,19 +101,24 @@ const useStyles = makeStyles((theme) =>
 
 const initialValues = Object.freeze({
     code: '',
+    idStatus: undefined,
 })
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    code: yup.string().required('Campo requerido'),
+    code: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
+    idStatus: yup.number().required('Campo requerido'),
 })
 
 interface IProps {
     tag?: IResultQueryTag
-    id?: number
+    idStatus?: number
 }
 
-export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
+export const IngresarTagForm: FC<IProps> = ({ tag, idStatus }) => {
     const classes = useStyles()
     const router = useRouter()
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
@@ -115,12 +126,13 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
     const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
     const [errorModal, setErrorModal] = useState<boolean>(false)
 
+    const { data, loading } = useListaStatusTagQuery()
+
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
     const { refetch } = useListaAllTag()
-
 
     const closeModalAuth = () => {
         if (openModalMsj && boolPut) {
@@ -135,45 +147,36 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
         }
     }
 
-
-    // useEffect(() => {
-    //     // setTimeout(() => {
-    //     if (!openModalMsj && boolPut) {
-    //         refetch().then(() => {
-    //             router.push({ pathname: '/tag/listado-tags' })
-    //         })
-    //     }
-    //     // }, 2000);
-    // }, [boolPut, openModalMsj, refetch, router])
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [mutate] = isNil(tag) ? usePostTagMutation() : usePutTagMutation()
 
     const init = useMemo(() => {
         return isNotNilOrEmpty(tag)
             ? {
-                code: tag?.code,
-            }
+                  code: tag?.code,
+                  idStatus: idStatus,
+              }
             : initialValues
-    }, [tag])
+    }, [tag, idStatus])
 
     const onSubmit = useCallback(
-        async ({ code }) => {
+        async ({ code, idStatus: idStatusTag }) => {
             try {
                 if (isNotNilOrEmpty(code)) {
                     setLoadingMutate(true)
                     const { data } = isNil(tag)
                         ? await mutate({
-                            variables: {
-                                code,
-                            },
-                        })
+                              variables: {
+                                  code,
+                                  idStatus: idStatusTag,
+                              },
+                          })
                         : await mutate({
-                            variables: {
-                                id,
-                                code,
-                            },
-                        })
+                              variables: {
+                                  id: tag.id,
+                                  code,
+                                  idStatus: idStatusTag,
+                              },
+                          })
 
                     if (isNotNilOrEmpty(data)) {
                         setLoadingMutate(false)
@@ -189,8 +192,8 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
                                 setBoolPut(true)
                                 return
                             }
-                            await refetch();
-                            resetForm();
+                            await refetch()
+                            resetForm()
                         }
                     } else {
                         setLoadingMutate(false)
@@ -210,7 +213,7 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
                 setOpenModalMsj(true)
             }
         },
-        [id, mutate, tag]
+        [mutate, tag]
     )
 
     const {
@@ -223,18 +226,28 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
         touched,
         values,
         resetForm,
+        setFieldValue,
     } = useFormik({
         initialValues: init,
         onSubmit,
         validationSchema,
     })
 
+    useEffect(() => {
+        if (!tag) {
+            // setLoadingMutate(true)
+            setFieldValue('idStatus', ID_STATUS_TAG_DISPONIBLE)
+        }
+    }, [tag])
+
     return (
         <Box className={classes.root}>
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    onClose={() => { closeModalAuth() }}
+                    onClose={() => {
+                        closeModalAuth()
+                    }}
                     //    setOpenModal={setOpenModalMsj}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
@@ -254,21 +267,59 @@ export const IngresarTagForm: FC<IProps> = ({ tag, id }) => {
                 className={classes.form}
             >
                 <div className={classes.contentLastTextBox}>
-                    <TextField
-                        className={classes.textbox}
-                        variant="outlined"
-                        id="code"
-                        value={values.code}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        label="Codigo del Tag"
-                        margin="normal"
-                        error={touched.code && isNotNilOrEmpty(errors.code)}
-                        helperText={touched.code ? errors.code : undefined}
-                        required
-                    />
-
+                    <div>
+                        <TextField
+                            className={classes.textbox}
+                            variant="outlined"
+                            id="code"
+                            value={values.code}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            label="Codigo del Tag"
+                            margin="normal"
+                            error={touched.code && isNotNilOrEmpty(errors.code)}
+                            helperText={touched.code ? errors.code : undefined}
+                            required
+                            inputProps={{
+                                style: { textTransform: 'uppercase' },
+                            }}
+                        />
+                    </div>
+                    {tag && (
+                        <div>
+                            <FormControlHeader
+                                classes={classes}
+                                handleBlur={handleBlur}
+                                id="idStatus"
+                                handleChange={handleChange}
+                                labetTitulo="Status del Tag"
+                                value={values.idStatus}
+                            >
+                                {!loading &&
+                                    data &&
+                                    isNotNilOrEmpty(data.ListaStatusTag) &&
+                                    data.ListaStatusTag.map(
+                                        ({ id, statusTag }) => {
+                                            return (
+                                                <MenuItem key={id} value={id}>
+                                                    <Typography
+                                                        variant="inherit"
+                                                        style={{
+                                                            textTransform:
+                                                                'uppercase',
+                                                        }}
+                                                    >
+                                                        {statusTag}
+                                                    </Typography>
+                                                </MenuItem>
+                                            )
+                                        }
+                                    )}
+                            </FormControlHeader>
+                        </div>
+                    )}
                 </div>
+
                 <div className={classes.contentButtons}>
                     <div></div>
                     <LoadingButton

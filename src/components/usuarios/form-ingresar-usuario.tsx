@@ -14,15 +14,30 @@ import ModalAuth from '../core/input/dialog/modal-dialog'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
 import FormControlHeader from '../core/input/form-control-select'
-import { tipoUsuarios } from '../core/input/dateSelect'
+import { TipoUsuario, tipoUsuarios } from '../core/input/dateSelect'
 import { isNilOrEmpty, isNotNilOrEmpty } from '../../utils/is-nil-empty'
-import { usePostUsuarioMutation, useListadoUsuario, IResultUsuarioQuery, useUpdateUsuarioMutation } from './use-usuario';
+import {
+    usePostUsuarioMutation,
+    useListadoUsuario,
+    IResultUsuarioQuery,
+    useUpdateUsuarioMutation,
+    useListadoUsuarioSinFamilares,
+} from './use-usuario'
 import { useListaTipoIdentificacionQuery } from '../mantenimento/tipo-identificacion/use-tipo-identificacion'
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
 import { equals, isNil } from 'ramda'
-import { useUpdateIntegranteMutation } from '../integrante/use-intergrante';
+import { useUpdateIntegranteMutation } from '../integrante/use-intergrante'
 import { useRouter } from 'next/router'
+import { useListarGrupoFamiliar } from '../grupo-familiar/use-grupo-familia'
+import { useListaParentescoQuery } from '../mantenimento/parentesco/use-parentesco'
+import DateFnsUtils from '@date-io/date-fns'
+import {
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker,
+} from '@material-ui/pickers'
+
+import esLocale from 'date-fns/locale/es'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -105,8 +120,14 @@ const validationSchema = yup.object().shape({
         .string()
         .matches(/^[0-9]+$/, 'Solo números')
         .required('Campo requerido'),
-    nombres: yup.string().required('Campo requerido'),
-    apellidos: yup.string().required('Campo requerido'),
+    nombres: yup
+        .string()
+        .matches(/^[aA-zZ\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
+    apellidos: yup
+        .string()
+        .matches(/^[aA-zZ\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
     email: yup
         .string()
         .email('Debe ser un correo electronico')
@@ -129,25 +150,23 @@ const initialValues = Object.freeze({
 })
 
 interface IProps {
-    dataUsuario?: IResultUsuarioQuery;
+    dataUsuario?: IResultUsuarioQuery
     id?: number
 }
 
-export const FormIngresarUsuario: FC<IProps> = ({
-    dataUsuario,
-    id
-}) => {
-
+export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
     const init = useMemo(() => {
-        return isNotNilOrEmpty(dataUsuario) ? {
-            tipo_usuario: dataUsuario?.tipo_usuario,
-            num_identificacion: dataUsuario?.num_identificacion,
-            nombres: dataUsuario?.nombres,
-            apellidos: dataUsuario?.apellidos,
-            email: dataUsuario?.email,
-            telefono: dataUsuario?.telefono,
-            idTipoIdentificacion: dataUsuario?.tipoIdentificacion.id,
-        } : initialValues
+        return isNotNilOrEmpty(dataUsuario)
+            ? {
+                  tipo_usuario: dataUsuario?.tipo_usuario,
+                  num_identificacion: dataUsuario?.num_identificacion,
+                  nombres: dataUsuario?.nombres,
+                  apellidos: dataUsuario?.apellidos,
+                  email: dataUsuario?.email,
+                  telefono: dataUsuario?.telefono,
+                  idTipoIdentificacion: dataUsuario?.tipoIdentificacion.id,
+              }
+            : initialValues
     }, [dataUsuario])
     const classes = useStyles()
     const router = useRouter()
@@ -158,10 +177,62 @@ export const FormIngresarUsuario: FC<IProps> = ({
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
+    const [idGrupoFamiliarSeleccionado, setIdGrupoFamiliarSeleccionado] =
+        useState<number>()
+
+    const [fechaDeNaciemiento, setFechaDeNaciemiento] = useState<Date>()
+
+    const [idParentescoSeleccionado, setIdParentescoSeleccionado] =
+        useState<number>()
+
+    const [generoSeleccionado, setGeneroSeleccionado] = useState<string>()
+
     const [mutatePostUsuario] = usePostUsuarioMutation()
 
     const [mutateUpdateUsuario] = useUpdateUsuarioMutation()
     const { refetch } = useListadoUsuario()
+    const {
+        data: dataGruposFamiliaresSinUsuarios,
+        loading: loadingGruposFamilairesSinUsuarios,
+        refetch: refecthListadoUsuarioSinFamiliares,
+    } = useListadoUsuarioSinFamilares()
+
+    const { data: dataParentesco, loading: loadingParentesco } =
+        useListaParentescoQuery()
+
+    const { data: dataGrupos, loading: loadingGrupos } =
+        useListarGrupoFamiliar()
+
+    const listadoParentesco = useMemo(() => {
+        if (
+            !loadingParentesco &&
+            dataParentesco &&
+            dataParentesco.ListaParentesco
+        ) {
+            return dataParentesco.ListaParentesco
+        }
+        return []
+    }, [loadingParentesco, dataParentesco])
+
+    const gruposFamiliares = useMemo(() => {
+        if (!loadingGrupos && dataGrupos && dataGrupos.ListaGruposFamiliares) {
+            return dataGrupos.ListaGruposFamiliares
+        }
+        return []
+    }, [dataGrupos, loadingGrupos])
+
+    const gruposFamiliaresSinUsuarios = useMemo(() => {
+        if (
+            !loadingGruposFamilairesSinUsuarios &&
+            dataGruposFamiliaresSinUsuarios &&
+            dataGruposFamiliaresSinUsuarios.ListaUsuarioSinGrupoFamiliar
+        ) {
+            return dataGruposFamiliaresSinUsuarios.ListaUsuarioSinGrupoFamiliar.map(
+                ({ id }) => id
+            )
+        }
+        return []
+    }, [dataGruposFamiliaresSinUsuarios, loadingGruposFamilairesSinUsuarios])
 
     const {
         data: dataTipoID,
@@ -169,6 +240,14 @@ export const FormIngresarUsuario: FC<IProps> = ({
         error: errorTipoID,
     } = useListaTipoIdentificacionQuery()
 
+    const verifGrupoFamiliar = useMemo(() => {
+        if (idGrupoFamiliarSeleccionado) {
+            return gruposFamiliaresSinUsuarios.includes(
+                idGrupoFamiliarSeleccionado
+            )
+        }
+        return false
+    }, [idGrupoFamiliarSeleccionado, gruposFamiliaresSinUsuarios])
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
@@ -181,20 +260,40 @@ export const FormIngresarUsuario: FC<IProps> = ({
     }
 
     const onSubmit = useCallback(
-        async (
-            {
-                tipo_usuario,
-                num_identificacion,
-                nombres,
-                apellidos,
-                email,
-                telefono,
-                idTipoIdentificacion,
-            }
-        ) => {
+        async ({
+            tipo_usuario,
+            num_identificacion,
+            nombres,
+            apellidos,
+            email,
+            telefono,
+            idTipoIdentificacion,
+        }) => {
             try {
+                console.log(
+                    'Values: ',
+                    String(tipo_usuario).trim(),
+                    num_identificacion,
+                    nombres,
+                    apellidos,
+                    email,
+                    telefono,
+                    idTipoIdentificacion
+                )
+                if (
+                    tipo_usuario === TipoUsuario.MORADOR &&
+                    (!idGrupoFamiliarSeleccionado ||
+                        !fechaDeNaciemiento ||
+                        !idParentescoSeleccionado ||
+                        !generoSeleccionado)
+                ) {
+                    console.log('No entre')
+                    return
+                }
+
                 if (
                     // isNotNilOrEmpty(idGrupoFamiliar) &&
+                    isNotNilOrEmpty(tipo_usuario) &&
                     isNotNilOrEmpty(nombres) &&
                     isNotNilOrEmpty(num_identificacion) &&
                     isNotNilOrEmpty(nombres) &&
@@ -203,40 +302,66 @@ export const FormIngresarUsuario: FC<IProps> = ({
                     isNotNilOrEmpty(idTipoIdentificacion) &&
                     isNotNilOrEmpty(telefono)
                 ) {
+                    const variablesPost =
+                        tipo_usuario === TipoUsuario.MORADOR
+                            ? {
+                                  tipo_usuario: tipo_usuario,
+                                  num_identificacion: num_identificacion,
+                                  nombres: String(nombres).trim().toUpperCase(),
+                                  apellidos: String(apellidos).toUpperCase(),
+                                  email: email,
+                                  telefono: telefono,
+                                  idTipoIdentificacion: idTipoIdentificacion,
+                                  idGrupoFamiliar: idGrupoFamiliarSeleccionado,
+                                  idParentesco: idParentescoSeleccionado,
+                                  genero: generoSeleccionado,
+                                  fecha_nacimiento: fechaDeNaciemiento,
+                              }
+                            : {
+                                  tipo_usuario: tipo_usuario,
+                                  num_identificacion: num_identificacion,
+                                  nombres: nombres,
+                                  apellidos: apellidos,
+                                  email: email,
+                                  telefono: telefono,
+                                  idTipoIdentificacion: idTipoIdentificacion,
+                              }
                     setLoadingMutate(true)
                     const { data } = isNil(dataUsuario)
                         ? await mutatePostUsuario({
-                            variables: {
-                                tipo_usuario: tipo_usuario,
-                                num_identificacion: num_identificacion,
-                                nombres: nombres,
-                                apellidos: apellidos,
-                                email: email,
-                                telefono: telefono,
-                                idTipoIdentificacion: idTipoIdentificacion,
-                            }
-                        }) : await mutateUpdateUsuario({
-                            variables: {
-                                id: id,
-                                tipo_usuario: tipo_usuario,
-                                num_identificacion: num_identificacion,
-                                nombres: nombres,
-                                apellidos: apellidos,
-                                email: email,
-                                telefono: telefono,
-                                idTipoIdentificacion: idTipoIdentificacion,
-                            }
-                        })
-                    if (
-                        isNotNilOrEmpty(data)
-                    ) {
-                        const { code, message } = isNotNilOrEmpty(data.UpdateUsuario)
+                              variables: {
+                                  ...variablesPost,
+                                  //   tipo_usuario: tipo_usuario,
+                                  //   num_identificacion: num_identificacion,
+                                  //   nombres: nombres,
+                                  //   apellidos: apellidos,
+                                  //   email: email,
+                                  //   telefono: telefono,
+                                  //   idTipoIdentificacion: idTipoIdentificacion,
+                              },
+                          })
+                        : await mutateUpdateUsuario({
+                              variables: {
+                                  id: id,
+                                  tipo_usuario: tipo_usuario,
+                                  num_identificacion: num_identificacion,
+                                  nombres: String(nombres).toUpperCase(),
+                                  apellidos: String(apellidos).toUpperCase(),
+                                  email: email,
+                                  telefono: telefono,
+                                  idTipoIdentificacion: idTipoIdentificacion,
+                              },
+                          })
+                    if (isNotNilOrEmpty(data)) {
+                        const { code, message } = isNotNilOrEmpty(
+                            data.UpdateUsuario
+                        )
                             ? data.UpdateUsuario
                             : data.PostUsuario
 
                         setTitleModalMsj(message)
                         if (code === 200) {
-
+                            await refecthListadoUsuarioSinFamiliares()
                             if (isNotNilOrEmpty(data.UpdateUsuario)) {
                                 setLoadingMutate(false)
                                 setBoolPut(true)
@@ -246,6 +371,11 @@ export const FormIngresarUsuario: FC<IProps> = ({
 
                             await refetch()
                             setErrorModal(false)
+
+                            setIdGrupoFamiliarSeleccionado(undefined)
+                            setFechaDeNaciemiento(undefined)
+                            setIdParentescoSeleccionado(undefined)
+                            setGeneroSeleccionado(undefined)
                             resetForm()
                         } else {
                             setErrorModal(true)
@@ -260,10 +390,9 @@ export const FormIngresarUsuario: FC<IProps> = ({
                     }
                 }
                 // setLoadingMutate(false)
-
             } catch (err: any) {
                 setLoadingMutate(false)
-                console.log('error : ', (err as Error))
+                console.log('error : ', err as Error)
                 setTitleModalMsj('Envio Fallido')
                 setErrorModal(true)
                 // setMensajeModalMsj(
@@ -273,7 +402,14 @@ export const FormIngresarUsuario: FC<IProps> = ({
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [id, dataUsuario]
+        [
+            id,
+            dataUsuario,
+            idGrupoFamiliarSeleccionado,
+            fechaDeNaciemiento,
+            idParentescoSeleccionado,
+            generoSeleccionado,
+        ]
     )
 
     const {
@@ -293,13 +429,28 @@ export const FormIngresarUsuario: FC<IProps> = ({
         validationSchema,
     })
 
+    useEffect(() => {
+        if (values.tipo_usuario !== TipoUsuario.MORADOR) {
+            setIdGrupoFamiliarSeleccionado(undefined)
+            setIdParentescoSeleccionado(undefined)
+            setFechaDeNaciemiento(undefined)
+            setGeneroSeleccionado(undefined)
+        }
+    }, [values.tipo_usuario])
+
+    // useEffect(() => {
+    //     console.log('Values: ', values)
+    // }, [values])
+
     return (
         <Box className={classes.root}>
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
                     //  setOpenModal={setOpenModalMsj}
-                    onClose={() => { onCloseModalAuth() }}
+                    onClose={() => {
+                        onCloseModalAuth()
+                    }}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
@@ -376,6 +527,7 @@ export const FormIngresarUsuario: FC<IProps> = ({
                         helperText={
                             touched.nombres ? errors.nombres : undefined
                         }
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                         required
                     />
                     <TextField
@@ -393,6 +545,7 @@ export const FormIngresarUsuario: FC<IProps> = ({
                         helperText={
                             touched.apellidos ? errors.apellidos : undefined
                         }
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                         required
                     />
                 </div>
@@ -430,6 +583,13 @@ export const FormIngresarUsuario: FC<IProps> = ({
                 </div>
 
                 <div>
+                    {idGrupoFamiliarSeleccionado && !verifGrupoFamiliar && (
+                        <Typography variant="overline" color="error">
+                            Este grupo Familiar ya tiene asignado un Usuario
+                        </Typography>
+                    )}
+                </div>
+                <div>
                     <FormControlHeader
                         classes={classes}
                         handleBlur={handleBlur}
@@ -449,6 +609,151 @@ export const FormIngresarUsuario: FC<IProps> = ({
                             )
                         })}
                     </FormControlHeader>
+
+                    {!dataUsuario &&
+                        values.tipo_usuario === TipoUsuario.MORADOR && (
+                            <>
+                                <FormControlHeader
+                                    id="grupoFamiliar"
+                                    classes={classes}
+                                    handleChange={(e) =>
+                                        setIdGrupoFamiliarSeleccionado(
+                                            Number(e.target.value)
+                                        )
+                                    }
+                                    handleBlur={() => console.log('')}
+                                    labetTitulo="Grupo Familiar"
+                                    value={idGrupoFamiliarSeleccionado}
+                                >
+                                    {gruposFamiliares.map(
+                                        ({ id, nombre_familiar }) => {
+                                            return (
+                                                <MenuItem
+                                                    key={id}
+                                                    style={{
+                                                        backgroundColor:
+                                                            gruposFamiliaresSinUsuarios.includes(
+                                                                id!
+                                                            )
+                                                                ? colors
+                                                                      .green[100]
+                                                                : 'white',
+                                                    }}
+                                                    value={id}
+                                                    selected={
+                                                        idGrupoFamiliarSeleccionado ===
+                                                        id
+                                                    }
+                                                >
+                                                    {nombre_familiar}
+                                                </MenuItem>
+                                            )
+                                        }
+                                    )}
+                                </FormControlHeader>
+                            </>
+                        )}
+                </div>
+
+                <div>
+                    {!dataUsuario &&
+                        values.tipo_usuario === TipoUsuario.MORADOR && (
+                            <>
+                                <FormControlHeader
+                                    id="parenesco"
+                                    classes={classes}
+                                    handleChange={(e) =>
+                                        setIdParentescoSeleccionado(
+                                            Number(e.target.value)
+                                        )
+                                    }
+                                    handleBlur={() => console.log('')}
+                                    labetTitulo="Parentesco"
+                                    value={idParentescoSeleccionado}
+                                >
+                                    {listadoParentesco.map(
+                                        ({ id, parentesco }) => {
+                                            return (
+                                                <MenuItem
+                                                    selected={
+                                                        idParentescoSeleccionado ===
+                                                        Number(id)
+                                                    }
+                                                    key={id}
+                                                    value={id}
+                                                >
+                                                    {parentesco}
+                                                </MenuItem>
+                                            )
+                                        }
+                                    )}
+                                </FormControlHeader>
+
+                                <FormControlHeader
+                                    classes={classes}
+                                    handleBlur={() => console.log('')}
+                                    id="genero"
+                                    handleChange={(e) =>
+                                        setGeneroSeleccionado(e.target.value)
+                                    }
+                                    labetTitulo="Genero"
+                                    value={generoSeleccionado}
+                                >
+                                    <MenuItem
+                                        key="ListGeneroMasculino"
+                                        value={'masculino'}
+                                        selected={
+                                            generoSeleccionado === 'masculino'
+                                        }
+                                    >
+                                        Masculino
+                                    </MenuItem>
+                                    <MenuItem
+                                        key="ListGeneroFemenino"
+                                        value={'femenino'}
+                                        selected={
+                                            generoSeleccionado === 'femenino'
+                                        }
+                                    >
+                                        Femenino
+                                    </MenuItem>
+                                    <MenuItem
+                                        key="ListGeneroOtro"
+                                        value={'otro'}
+                                        selected={generoSeleccionado === 'otro'}
+                                    >
+                                        Otro
+                                    </MenuItem>
+                                </FormControlHeader>
+                            </>
+                        )}
+                </div>
+
+                <div>
+                    {!dataUsuario &&
+                        values.tipo_usuario === TipoUsuario.MORADOR && (
+                            <MuiPickersUtilsProvider
+                                locale={esLocale}
+                                utils={DateFnsUtils}
+                            >
+                                <KeyboardDatePicker
+                                    className={classes.textbox}
+                                    name={'fechaDeNaciemiento'}
+                                    label={'Fecha de Nacimiento'}
+                                    inputVariant="outlined"
+                                    format="MM/dd/yyyy"
+                                    value={fechaDeNaciemiento}
+                                    // onChange={handleChange}
+                                    onChange={(value) =>
+                                        setFechaDeNaciemiento(value as Date)
+                                    }
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                    required
+                                />
+                            </MuiPickersUtilsProvider>
+                        )}
                 </div>
 
                 <div className={classes.contentButtons}>

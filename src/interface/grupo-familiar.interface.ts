@@ -7,6 +7,7 @@ export interface IGrupoFamiliar {
     calle_interseccion: string
     manzana: IManzana
     villa: string
+    extension: string
     usuario: IResultUsuarioQuery
     // tipo_edificacion: ITipoEdificacion;
     // color_fachada: IColorFachada;
@@ -19,6 +20,7 @@ export interface IGrupoFamiliarInput {
     id_manzana: number
     // id_usuario: number
     villa: string
+    extension: string
     // id_tipo_edificacion: number;
     // id_color_fachada: number;
 }

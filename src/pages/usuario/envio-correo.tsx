@@ -9,17 +9,16 @@ import {
     Paper,
     Typography,
     TextField,
+    Button,
 } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import { TipoUsuario } from '../../components/core/input/dateSelect'
 import ModalAuth from '../../components/core/input/dialog/modal-dialog'
-import AppLayout from '../../components/layout/app-layout'
 import PermisoLayout from '../../components/layout/auth-layout/permiso-layout'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
 import { LoadingButton } from '@mui/lab'
-import SaveIcon from '@material-ui/icons/Save'
 import { SelectChangeEvent } from '@mui/material'
 import { SelectHeader } from '../../components/core/input/select/select-header'
 import {
@@ -29,10 +28,9 @@ import {
 } from '../../components/usuarios/use-usuario'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import AddIcon from '@material-ui/icons/Add'
-import EmailIcon from "@material-ui/icons/Email"
+import EmailIcon from '@material-ui/icons/Email'
 import DeleteIcon from '@material-ui/icons/Delete'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
-import { rows } from '../../components/core/input/data';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -52,8 +50,8 @@ const useStyles = makeStyles((theme) =>
             margin: theme.spacing(2),
             paddingTop: theme.spacing(1),
             paddingBottom: theme.spacing(1),
-            width: "50%",
-            minWidth: theme.spacing(45)
+            width: '50%',
+            minWidth: theme.spacing(45),
 
             // padding: '60px',
         },
@@ -128,8 +126,7 @@ const useStyles = makeStyles((theme) =>
             // fontFamily:"bold",
             color: 'white',
             fontSize: theme.typography.pxToRem(9),
-            overflow: "hidden"
-
+            overflow: 'hidden',
         },
         containerTitle: {
             margin: theme.spacing(2),
@@ -155,7 +152,10 @@ const initialValues = Object.freeze({
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    asunto: yup.string().required('Campo requerido'),
+    asunto: yup
+        .string()
+        .matches(/^[aA-zZ\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
     // titulo: yup.string().required('Campo requerido'),
     mensaje: yup.string().required('Campo requerido'),
 })
@@ -189,8 +189,8 @@ const EnvioCorreo = () => {
                     const { data } = await mutate({
                         variables: {
                             emails: arrUsuarios.map(({ email }) => email),
-                            asunto,
-                            titulo: "PCE28M",
+                            asunto: String(asunto).toUpperCase(),
+                            titulo: 'PCE28M',
                             mensaje,
                         },
                     })
@@ -220,6 +220,7 @@ const EnvioCorreo = () => {
                 setOpenModalMsj(true)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [arrUsuarios]
     )
 
@@ -253,6 +254,16 @@ const EnvioCorreo = () => {
 
             setArrUsuarios(filterUsuario)
         }
+    }
+
+    const seleccionarTodosUsuarios = () => {
+        if (dataUsuario && dataUsuario.ListaUsuario) {
+            setArrUsuarios(dataUsuario.ListaUsuario)
+        }
+    }
+
+    const vaciarUsuarios = () => {
+        setArrUsuarios([])
     }
 
     const {
@@ -302,21 +313,31 @@ const EnvioCorreo = () => {
                                 Ingresar los destinatarios
                             </Typography>
                         </div>
+                        <div style={{ marginBottom: '4%' }}>
+                            <Button
+                                style={{
+                                    backgroundColor: colors.deepPurple[400],
+                                    color: 'white',
+                                }}
+                                onClick={seleccionarTodosUsuarios}
+                            >
+                                Seleccionar todos los usuarios
+                            </Button>
+                        </div>
                         <div
                             style={{
-                                marginBottom: "20px",
+                                marginBottom: '20px',
 
-                                width: "100%"
+                                width: '100%',
                             }}
-                        // style={{
-                        //     display: 'flex',
-                        //     flexDirection: 'column',
-                        //     justifyContent: 'space-evenly',
-                        //     width: '100%',
-                        //     alignItems: "center"
-                        // }}
+                            // style={{
+                            //     display: 'flex',
+                            //     flexDirection: 'column',
+                            //     justifyContent: 'space-evenly',
+                            //     width: '100%',
+                            //     alignItems: "center"
+                            // }}
                         >
-
                             <SelectHeader
                                 style={{ width: '40%' }}
                                 id="id_usuario"
@@ -327,14 +348,20 @@ const EnvioCorreo = () => {
                                 }
                                 label="Usuarios"
                                 value={idUsuarioSeleccionado}
-                            // value={values.id_parentesco}
+                                // value={values.id_parentesco}
                             >
                                 {!loadingUsuario &&
                                     dataUsuario &&
                                     isNotNilOrEmpty(dataUsuario.ListaUsuario) &&
-                                    dataUsuario.ListaUsuario
-                                        .filter(({ tipo_usuario }) => TipoUsuario.MORADOR === tipo_usuario)
-                                        .sort((a, b) => a.apellidos.localeCompare(b.apellidos))
+                                    dataUsuario.ListaUsuario.filter(
+                                        ({ tipo_usuario }) =>
+                                            TipoUsuario.MORADOR === tipo_usuario
+                                    )
+                                        .sort((a, b) =>
+                                            a.apellidos.localeCompare(
+                                                b.apellidos
+                                            )
+                                        )
                                         .map(
                                             (
                                                 {
@@ -350,7 +377,10 @@ const EnvioCorreo = () => {
                                                     <MenuItem
                                                         key={index}
                                                         value={id}
-                                                        style={{ textTransform: "uppercase" }}
+                                                        style={{
+                                                            textTransform:
+                                                                'uppercase',
+                                                        }}
                                                     >
                                                         {`${user}  - ${tipo_usuario} - ${apellidos} ${nombres}`}
                                                     </MenuItem>
@@ -367,11 +397,12 @@ const EnvioCorreo = () => {
                                     backgroundColor: colors.deepPurple[400],
                                 }}
                                 onClick={addUsuario}
-                            // onClick={agregarPagoMantenimiento}
+                                // onClick={agregarPagoMantenimiento}
                             >
                                 <AddIcon style={{ color: 'white' }} />
                             </Fab>
                         </div>
+
                         {arrUsuarios.length > 0 && (
                             <div
                                 style={{
@@ -400,7 +431,14 @@ const EnvioCorreo = () => {
                                     >
                                         {arrUsuarios.map(
                                             (
-                                                { id, user, tipo_usuario, nombres, apellidos, num_identificacion },
+                                                {
+                                                    id,
+                                                    user,
+                                                    tipo_usuario,
+                                                    nombres,
+                                                    apellidos,
+                                                    num_identificacion,
+                                                },
                                                 index
                                             ) => {
                                                 return (
@@ -446,7 +484,8 @@ const EnvioCorreo = () => {
                                                                         width: '100%',
                                                                         height: '100%',
                                                                         padding: 5,
-                                                                        overflow: "auto"
+                                                                        overflow:
+                                                                            'auto',
                                                                     }}
                                                                 >
                                                                     <Typography
@@ -454,8 +493,6 @@ const EnvioCorreo = () => {
                                                                             classes.itemLabel
                                                                         }
                                                                         variant="overline"
-
-
                                                                     >{`${num_identificacion}`}</Typography>
                                                                     <Typography
                                                                         className={
@@ -469,10 +506,12 @@ const EnvioCorreo = () => {
                                                                     size="small"
                                                                     color="primary"
                                                                     aria-label="add"
-                                                                    style={{
-                                                                        // padding: 12,
-                                                                        // marginRight: 10,
-                                                                    }}
+                                                                    style={
+                                                                        {
+                                                                            // padding: 12,
+                                                                            // marginRight: 10,
+                                                                        }
+                                                                    }
                                                                     onClick={() =>
                                                                         removeUsuario(
                                                                             id
@@ -500,7 +539,7 @@ const EnvioCorreo = () => {
                                 Ingresar los detalles del mensaje
                             </Typography>
                         </div>
-                        <div style={{ marginTop: "3%", width: "90%" }}>
+                        <div style={{ marginTop: '3%', width: '90%' }}>
                             {/* <TextField
                                 style={{ display: "none" }}
                                 className={classes.textbox}
@@ -521,7 +560,7 @@ const EnvioCorreo = () => {
                             /> */}
                             <TextField
                                 className={classes.textbox}
-                                style={{ width: "100%" }}
+                                style={{ width: '100%' }}
                                 id="asunto"
                                 name="asunto"
                                 label="Asunto"
@@ -536,15 +575,17 @@ const EnvioCorreo = () => {
                                     touched.asunto ? errors.asunto : undefined
                                 }
                                 required
+                                inputProps={{
+                                    style: { textTransform: 'uppercase' },
+                                }}
                             />
                         </div>
-                        <div style={{ width: "90%" }}>
+                        <div style={{ width: '90%' }}>
                             <TextField
                                 className={classes.textbox}
                                 style={{
-                                    width: "100%"
+                                    width: '100%',
                                 }}
-
                                 // style={{
                                 //     width: '450px',
                                 // }}
@@ -564,9 +605,15 @@ const EnvioCorreo = () => {
                                     touched.mensaje ? errors.mensaje : undefined
                                 }
                                 required
+                                // inputProps={{
+                                //     style: { textTransform: 'uppercase' },
+                                // }}
                             />
                         </div>
-                        <div className={classes.contentButtons} style={{ marginBottom: "2%", marginRight: "2%" }}>
+                        <div
+                            className={classes.contentButtons}
+                            style={{ marginBottom: '2%', marginRight: '8%' }}
+                        >
                             <div></div>
                             <LoadingButton
                                 loading={loadingMutate}

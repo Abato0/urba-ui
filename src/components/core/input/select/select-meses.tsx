@@ -16,6 +16,7 @@ interface IProps {
     value?: string
     id: string
     label: string
+    style?: any
 }
 
 export const SelectMeses: React.FC<IProps> = ({
@@ -23,6 +24,7 @@ export const SelectMeses: React.FC<IProps> = ({
     value,
     id,
     label,
+    style = { width: '100%' },
 }) => {
     return (
         <SelectHeader
@@ -30,10 +32,17 @@ export const SelectMeses: React.FC<IProps> = ({
             value={value}
             id={id}
             label={label}
+            style={style}
         >
             {arrMeses.map((mes) => {
                 return (
-                    <MenuItem value={mes} key={id + 'Mes-' + mes}>
+                    <MenuItem
+                        style={{
+                            textTransform: 'uppercase',
+                        }}
+                        value={mes}
+                        key={id + 'Mes-' + mes}
+                    >
                         {mes}
                     </MenuItem>
                 )

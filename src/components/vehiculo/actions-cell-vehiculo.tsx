@@ -1,6 +1,9 @@
 import { Button, Tooltip } from '@material-ui/core'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Row } from 'react-table'
+import { useRecoilValue } from 'recoil'
+import { userInfo } from '../../utils/states'
+import { TipoUsuario } from '../core/input/dateSelect'
 
 interface IProps {
     className?: string
@@ -15,6 +18,20 @@ const ActionsCellVehiculo: React.FC<IProps> = ({
     row,
     className,
 }) => {
+    const usuarioState = useRecoilValue(userInfo)
+    const moradorFlag = useMemo(() => {
+        if (usuarioState) {
+            return usuarioState.tipo_usuario === TipoUsuario.MORADOR
+        }
+        return false
+    }, [usuarioState])
+
+    // const administradorFlag = useMemo(() => {
+    //     if (usuarioState) {
+    //         return usuarioState.tipo_usuario === TipoUsuario.ADMIN
+    //     }
+    //     return false
+    // }, [usuarioState])
     return (
         <Tooltip className={className} title={'Editar'}>
             <div
@@ -24,13 +41,15 @@ const ActionsCellVehiculo: React.FC<IProps> = ({
                     alignItems: 'center',
                 }}
             >
-                <Button
-                    variant="text"
-                    color="secondary"
-                    onClick={() => onEdit(row.original)}
-                >
-                    Editar
-                </Button>
+                {!moradorFlag && (
+                    <Button
+                        variant="text"
+                        color="secondary"
+                        onClick={() => onEdit(row.original)}
+                    >
+                        Editar
+                    </Button>
+                )}
                 <Button
                     variant="text"
                     color="secondary"

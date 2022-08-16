@@ -170,6 +170,7 @@ const MantenimientoManzanaListado = () => {
                 `/mantenimiento/manzana/registrar/${encodeURIComponent(id)}`
             )
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const onDelete = useCallback(async ({ id }: any) => {
@@ -196,6 +197,7 @@ const MantenimientoManzanaListado = () => {
             setMensajeModalMsj('' + error.message)
             setOpenModalMsj(true)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const {
@@ -206,7 +208,7 @@ const MantenimientoManzanaListado = () => {
         page,
         prepareRow,
         setPageSize,
-        state: { pageIndex, pageSize, selectedRowIds },
+        state: { pageIndex, pageSize },
     } = useTable(
         {
             columns: columnsManzana,
@@ -267,18 +269,39 @@ const MantenimientoManzanaListado = () => {
                     )}
                 </>
                 <div
-                    style={{ display: "flex", flexDirection: "column", width: "100%" }}
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '100%',
+                    }}
                     className={classes.containerRoot}
                 >
-                    <div style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center", alignItems: "center" }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            width: '100%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
                         <IngresarManzanaForm />
                     </div>
 
-                    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                        <Paper className={classes.root} style={{
-                            width: "90%",
-                            maxWidth: "500px",
-                        }}>
+                    <div
+                        style={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Paper
+                            className={classes.root}
+                            style={{
+                                width: '90%',
+                                maxWidth: '500px',
+                            }}
+                        >
                             <div className={classes.containerTitle}>
                                 <Typography
                                     variant="overline"
@@ -292,11 +315,14 @@ const MantenimientoManzanaListado = () => {
                                 <TextField
                                     className={classes.textBox}
                                     variant="outlined"
-                                    placeholder="Search"
+                                    placeholder="Buscar"
                                     onChange={(e) => {
                                         setSearch(e.target.value)
                                     }}
                                     value={search}
+                                    inputProps={{
+                                        style: { textTransform: 'uppercase' },
+                                    }}
                                 />
                             </div>
                             <TableContainer>

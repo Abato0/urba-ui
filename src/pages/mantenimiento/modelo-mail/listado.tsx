@@ -28,7 +28,7 @@ const getRowId: any = prop('id')
 const MantenimientoModeloMailListado = () => {
     const classes = useStylesMantenimientoListado()
     const router = useRouter()
-    const { data, loading, error, refetch } = useListaModeloMailQuery()
+    const { data, loading, error } = useListaModeloMailQuery()
     const [search, setSearch] = useState<string>('')
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
     const [titleModalMsj, setTitleModalMsj] = useState<string>('')
@@ -58,6 +58,8 @@ const MantenimientoModeloMailListado = () => {
             } catch (error) {
                 console.log('error: ', error)
                 setMensajeModalMsj((error as Error).message)
+                setErrorModal(true)
+                setTitleModalMsj((error as Error).message)
             }
         },
         [router]
@@ -108,7 +110,8 @@ const MantenimientoModeloMailListado = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value), [setPageSize]
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
+        [setPageSize]
     )
 
     return (
@@ -127,24 +130,30 @@ const MantenimientoModeloMailListado = () => {
                     )}
                 </>
 
-                <Paper className={classes.root} style={{
-                    width: "90%",
-                    maxWidth: "700px"
-                }}>
+                <Paper
+                    className={classes.root}
+                    style={{
+                        width: '90%',
+                        maxWidth: '700px',
+                    }}
+                >
                     {/* <div className={classes.containerTitle}>
-            <Typography variant="overline" className={classes.title}>
-              Modelos de correos
-            </Typography>
-          </div> */}
+                        <Typography variant="overline" className={classes.title}>
+                        Modelos de correos
+                        </Typography>
+                    </div> */}
                     <div className={classes.contentButtons}>
                         <TextField
                             className={classes.textBox}
                             variant="outlined"
-                            placeholder="Search"
+                            placeholder="Buscar"
                             onChange={(e) => {
                                 setSearch(e.target.value)
                             }}
                             value={search}
+                            inputProps={{
+                                style: { textTransform: 'uppercase' },
+                            }}
                         />
                     </div>
                     <TableContainer>

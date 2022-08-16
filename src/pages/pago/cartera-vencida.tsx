@@ -1,6 +1,5 @@
 import XLSX from 'xlsx'
 import {
-    Button,
     colors,
     createStyles,
     IconButton,
@@ -19,19 +18,13 @@ import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
 import { drop, isEmpty, isNil, zipObj } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { SelectFecha } from '../../components/core/input/select/select-fecha'
-import AppLayout from '../../components/layout/app-layout'
 import { IArrKeyData, useCarteraVencida } from '../../components/pago/use-pago'
 import { lightFormat } from 'date-fns'
 import { useCallback } from 'react'
-import {
-    Filter as FilterIcon,
-    Reload as ReloadIcon,
-    FileExcelBox as FileExcelBoxIcon,
-    TableSearch,
-} from 'mdi-material-ui'
+import { FileExcelBox as FileExcelBoxIcon, TableSearch } from 'mdi-material-ui'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
-import { COLOR_PRIMARIO } from '../../utils/keys';
+import { COLOR_PRIMARIO } from '../../utils/keys'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -162,7 +155,7 @@ export const ListadoCarteraVencida = () => {
 
     const [fechaString, setFechaString] = useState<string>('')
 
-    const { data, loading, error } = useCarteraVencida(fechaString)
+    const { data, loading } = useCarteraVencida(fechaString)
 
     useEffect(() => {
         if (!loading && data && data.CarteraVencida) {
@@ -281,25 +274,37 @@ export const ListadoCarteraVencida = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {dataColumnsV2.map((rowData, index) => {
-                                return (
-                                    <TableRow
-                                        className={classes.tableBody}
-                                        key={index}
-                                    >
-                                        {rowData.map((columnData, index) => {
-                                            return (
-                                                <TableCell
-                                                    align="center"
-                                                    key={index}
-                                                >
-                                                    {columnData}
-                                                </TableCell>
-                                            )
-                                        })}
-                                    </TableRow>
-                                )
-                            })}
+                            {dataColumnsV2.length > 0 ? (
+                                dataColumnsV2.map((rowData, index) => {
+                                    return (
+                                        <TableRow
+                                            className={classes.tableBody}
+                                            key={index}
+                                        >
+                                            {rowData.map(
+                                                (columnData, index) => {
+                                                    return (
+                                                        <TableCell
+                                                            align="center"
+                                                            key={index}
+                                                        >
+                                                            {columnData}
+                                                        </TableCell>
+                                                    )
+                                                }
+                                            )}
+                                        </TableRow>
+                                    )
+                                })
+                            ) : (
+                                <TableRow className={classes.tableBody}>
+                                    <TableCell align="center">
+                                        <Typography variant="overline">
+                                            No se encontraron resultados
+                                        </Typography>
+                                    </TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </TableContainer>

@@ -122,42 +122,44 @@ export const CambiarContrasenaUsuarioForm = () => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [mutate] = useCambioContrasenaUsuarioMutation()
 
-    const onSubmit = useCallback(async ({ password, newPassword }) => {
-        try {
-            if (isNotNilOrEmpty(password) && isNotNilOrEmpty(newPassword)) {
-                setLoadingMutate(true)
-                const { data } = await mutate({
-                    variables: {
-                        // user,
-                        password,
-                        newPassword,
-                    },
-                })
+    const onSubmit = useCallback(
+        async ({ password, newPassword }) => {
+            try {
+                if (isNotNilOrEmpty(password) && isNotNilOrEmpty(newPassword)) {
+                    setLoadingMutate(true)
+                    const { data } = await mutate({
+                        variables: {
+                            password,
+                            newPassword,
+                        },
+                    })
 
-                if (isNotNilOrEmpty(data)) {
-                    const { code, message } = data.CambioContrasena
-                    setTitleModalMsj(message)
-                    setErrorModal(true)
-                    if (code === 200) {
+                    if (isNotNilOrEmpty(data)) {
+                        const { code, message } = data.CambioContrasena
+                        setTitleModalMsj(message)
+                        setErrorModal(true)
+                        if (code === 200) {
+                            setErrorModal(false)
+                        }
+                        setLoadingMutate(false)
+                        setOpenModalMsj(true)
+                    } else {
+                        setLoadingMutate(false)
+                        setOpenModalMsj(true)
                         setErrorModal(false)
+                        setTitleModalMsj('Usuario no autorizado')
                     }
-                    setLoadingMutate(false)
-                    setOpenModalMsj(true)
-                } else {
-                    setLoadingMutate(false)
-                    setOpenModalMsj(true)
-                    setErrorModal(false)
-                    setTitleModalMsj('Usuario no autorizado')
                 }
+            } catch (error: any) {
+                console.log('error.;', error)
+                setLoadingMutate(false)
+                setTitleModalMsj('Envio Fallido')
+                setErrorModal(true)
+                setOpenModalMsj(true)
             }
-        } catch (error: any) {
-            console.log('error.;', error)
-            setLoadingMutate(false)
-            setTitleModalMsj('Envio Fallido')
-            setErrorModal(true)
-            setOpenModalMsj(true)
-        }
-    }, [mutate])
+        },
+        [mutate]
+    )
 
     const {
         errors,
@@ -214,6 +216,7 @@ export const CambiarContrasenaUsuarioForm = () => {
                             touched.password ? errors.password : undefined
                         }
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                     <TextField
                         className={classes.textbox}
@@ -233,6 +236,7 @@ export const CambiarContrasenaUsuarioForm = () => {
                             touched.newPassword ? errors.newPassword : undefined
                         }
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
 
@@ -256,6 +260,7 @@ export const CambiarContrasenaUsuarioForm = () => {
                             : undefined
                     }
                     required
+                    inputProps={{ style: { textTransform: 'uppercase' } }}
                 />
 
                 <div className={classes.contentButtons}>

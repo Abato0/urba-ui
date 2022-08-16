@@ -1,4 +1,5 @@
 import { Column } from 'react-table'
+import ActionsCellDelete from '../core/actions/actionsButtoonOnDelete'
 import ActionsCellEditDelete from '../table/actions-delete-edit'
 
 export const columnsTags = Object.freeze([
@@ -50,6 +51,11 @@ export const columnsTagVehiculo = Object.freeze([
     {
         Header: 'Color',
         accessor: 'color',
+    },
+    {
+        id: 'actions',
+        Cell: ActionsCellDelete,
+        padding: 'none',
     },
 ] as Column<any>[])
 

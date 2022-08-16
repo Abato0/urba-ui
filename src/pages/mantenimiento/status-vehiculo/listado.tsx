@@ -107,6 +107,7 @@ const MantenimientoStatusVehiculoListado = () => {
             setMensajeModalMsj('' + error.message)
             setOpenModalMsj(true)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const {
@@ -117,7 +118,7 @@ const MantenimientoStatusVehiculoListado = () => {
         page,
         prepareRow,
         setPageSize,
-        state: { pageIndex, pageSize, selectedRowIds },
+        state: { pageIndex, pageSize },
     } = useTable(
         {
             columns: columnsStatusVehiculo,
@@ -180,18 +181,39 @@ const MantenimientoStatusVehiculoListado = () => {
                     )}
                 </>
                 <div
-                    style={{ display: "flex", flexDirection: "column", width: "100%" }}
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '100%',
+                    }}
                     className={classes.containerRoot}
                 >
-                    <div style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center", alignItems: "center" }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            width: '100%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
                         <IngresarStatusVehiculoForm />
                     </div>
 
-                    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                        <Paper className={classes.root} style={{
-                            width: "100%",
-                            maxWidth: "500px"
-                        }}>
+                    <div
+                        style={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Paper
+                            className={classes.root}
+                            style={{
+                                width: '100%',
+                                maxWidth: '500px',
+                            }}
+                        >
                             <div className={classes.containerTitle}>
                                 <Typography
                                     variant="overline"
@@ -204,11 +226,14 @@ const MantenimientoStatusVehiculoListado = () => {
                                 <TextField
                                     className={classes.textBox}
                                     variant="outlined"
-                                    placeholder="Search"
+                                    placeholder="Buscar"
                                     onChange={(e) => {
                                         setSearch(e.target.value)
                                     }}
                                     value={search}
+                                    inputProps={{
+                                        style: { textTransform: 'uppercase' },
+                                    }}
                                 />
                             </div>
                             <TableContainer>

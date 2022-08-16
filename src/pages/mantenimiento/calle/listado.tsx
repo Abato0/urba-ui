@@ -59,7 +59,7 @@ const MantenimientoCalleListado = () => {
     const [errorModal, setErrorModal] = useState<boolean>(false)
     const debounceSearch = useDebounce(search, 300)
 
-    const [boolPutColor, setBoolPutColor] = useState<boolean>(false)
+    // const [boolPutColor, setBoolPutColor] = useState<boolean>(false)
 
     const [mutateEliminar] = useDeleteCalleMutation()
 
@@ -76,6 +76,7 @@ const MantenimientoCalleListado = () => {
                 `/mantenimiento/calle/registrar/${encodeURIComponent(id)}`
             )
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const onDelete = useCallback(async ({ id }: any) => {
@@ -102,6 +103,7 @@ const MantenimientoCalleListado = () => {
             setMensajeModalMsj('' + error.message)
             setOpenModalMsj(true)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const {
@@ -112,7 +114,7 @@ const MantenimientoCalleListado = () => {
         page,
         prepareRow,
         setPageSize,
-        state: { pageIndex, pageSize, selectedRowIds },
+        state: { pageIndex, pageSize },
     } = useTable(
         {
             columns: columnsCalle,
@@ -173,17 +175,34 @@ const MantenimientoCalleListado = () => {
                     )}
                 </>
                 <div
-                    style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center", alignItems: "center" }}
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
                     className={classes.containerRoot}
                 >
-                    <div style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center", alignItems: "center" }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            width: '100%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
                         <IngresarCalleForm />
                     </div>
 
-                    <Paper className={classes.root} style={{
-                        width: "90%",
-                        maxWidth: "500px"
-                    }}>
+                    <Paper
+                        className={classes.root}
+                        style={{
+                            width: '90%',
+                            maxWidth: '500px',
+                        }}
+                    >
                         <div className={classes.containerTitle}>
                             <Typography
                                 variant="overline"
@@ -196,11 +215,14 @@ const MantenimientoCalleListado = () => {
                             <TextField
                                 className={classes.textBox}
                                 variant="outlined"
-                                placeholder="Search"
+                                placeholder="Buscar"
                                 onChange={(e) => {
                                     setSearch(e.target.value)
                                 }}
                                 value={search}
+                                inputProps={{
+                                    style: { textTransform: 'uppercase' },
+                                }}
                             />
                         </div>
                         <TableContainer>

@@ -44,7 +44,7 @@ export const ExportTablePdf: FC<IProps> = ({
 
         doc.setFontSize(22)
         doc.setFont('helvetica', 'bold')
-        doc.text(title, 80, 30)
+        doc.text(title, 60, 30)
 
         // doc.setFont("helvetica", "normal");
         // doc.setFontSize(12);

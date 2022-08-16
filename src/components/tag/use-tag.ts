@@ -4,6 +4,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import {
     cambiarEstadoTag,
     deleteTag,
+    deleteTagVehiculo,
     getTag,
     listadoAllTags,
     listadoTagPagos,
@@ -96,8 +97,29 @@ export const usePostTagMutation = () => {
 }
 
 export const usePostTagVehiculoMutation = () => {
-    const [mutate, { data, loading, error }] = useMutation(postTagVehiculo)
+    const [mutate, { data, loading, error }] = useMutation(postTagVehiculo, {
+        refetchQueries: [
+            { query: listaTagVehiculo },
+            { query: listadoAllTags },
+            { query: listadoTagPagos },
+            { query: listadoTags },
+        ],
+        awaitRefetchQueries: true,
+    })
     return [mutate, data, loading, error]
+}
+
+export const useDeleteTagVehiculoMutation = () => {
+    const [mutate] = useMutation(deleteTagVehiculo, {
+        refetchQueries: [
+            { query: listaTagVehiculo },
+            { query: listadoAllTags },
+            { query: listadoTagPagos },
+            { query: listadoTags },
+        ],
+        awaitRefetchQueries: true,
+    })
+    return [mutate]
 }
 
 export const usePutTagMutation = () => {
@@ -106,7 +128,15 @@ export const usePutTagMutation = () => {
 }
 
 export const useDeleteTagMutation = () => {
-    const [mutate, { data, loading, error }] = useMutation(deleteTag)
+    const [mutate, { data, loading, error }] = useMutation(deleteTag, {
+        refetchQueries: [
+            { query: listaTagVehiculo },
+            { query: listadoAllTags },
+            { query: listadoTagPagos },
+            { query: listadoTags },
+        ],
+        awaitRefetchQueries: true,
+    })
     return [mutate, data, loading, error]
 }
 

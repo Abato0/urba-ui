@@ -123,8 +123,8 @@ const useStyles = makeStyles((theme) =>
             background: colors.green[800],
         },
         labelMonto: {
-            fontWeight: "lighter",
-            fontFamily: "bold",
+            fontWeight: 'lighter',
+            fontFamily: 'bold',
         },
     })
 )
@@ -141,7 +141,10 @@ const validationSchema = yup.object().shape({
     id_aporte: yup.number().required(),
     idGrupoFamiliar: yup.number().required(),
     descripcion: yup.string(),
-    cod_recibo: yup.string().required(),
+    cod_recibo: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required(),
     fecha_recibo: yup.date().required(),
 })
 
@@ -453,6 +456,7 @@ export const PagoFormIngresar = () => {
                             touched.cod_recibo ? errors.cod_recibo : undefined
                         }
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
 
                     <FormControlDate
@@ -483,6 +487,7 @@ export const PagoFormIngresar = () => {
                         helperText={
                             touched.descripcion ? errors.descripcion : undefined
                         }
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
 

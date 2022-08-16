@@ -119,7 +119,7 @@ const MantenimientoParentescoListado = () => {
         page,
         prepareRow,
         setPageSize,
-        state: { pageIndex, pageSize, selectedRowIds },
+        state: { pageIndex, pageSize },
     } = useTable(
         {
             columns: columnsParentesco,
@@ -161,7 +161,8 @@ const MantenimientoParentescoListado = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value), [setPageSize]
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
+        [setPageSize]
     )
 
     return (
@@ -181,17 +182,38 @@ const MantenimientoParentescoListado = () => {
                     )}
                 </>
                 <div
-                    style={{ display: "flex", flexDirection: "column", width: "100%" }}
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '100%',
+                    }}
                     className={classes.containerRoot}
                 >
-                    <div style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center", alignItems: "center" }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            width: '100%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
                         <IngresarParentescoForm />
                     </div>
-                    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                        <Paper className={classes.root} style={{
-                            width: "100%",
-                            maxWidth: "500px"
-                        }}>
+                    <div
+                        style={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Paper
+                            className={classes.root}
+                            style={{
+                                width: '100%',
+                                maxWidth: '500px',
+                            }}
+                        >
                             <div className={classes.containerTitle}>
                                 <Typography
                                     variant="overline"
@@ -204,11 +226,14 @@ const MantenimientoParentescoListado = () => {
                                 <TextField
                                     className={classes.textBox}
                                     variant="outlined"
-                                    placeholder="Search"
+                                    placeholder="Buscar"
                                     onChange={(e) => {
                                         setSearch(e.target.value)
                                     }}
                                     value={search}
+                                    inputProps={{
+                                        style: { textTransform: 'uppercase' },
+                                    }}
                                 />
                             </div>
                             <TableContainer>

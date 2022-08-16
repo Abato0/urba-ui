@@ -11,6 +11,14 @@ import {
 import { equals, isEmpty } from 'ramda'
 import { IGrupoFamiliar } from '../../interface/grupo-familiar.interface'
 import { isNilOrEmpty } from '../../utils/is-nil-empty'
+import {
+    listadoVehiculo,
+    listadoVehiculoFilter,
+} from '../vehiculo/vehiculo-typeDef'
+import {
+    listadoIntegrante,
+    listaIntergranteFilter,
+} from '../integrante/integrante-typedefs'
 
 export const useGrupoFamiliarMutation = (mutation: DocumentNode) => {
     const [mutate, { data = {}, loading, error }] = useMutation(
@@ -47,7 +55,13 @@ export const useDeleteGrupoFamiliarMutatio = (id: number) => {
     const [mutate, { data = {}, loading, error }] = useMutation(
         deleteGrupoFamiliarMutation,
         {
-            refetchQueries: [{ query: listarGruposFamiliaresFilter }],
+            refetchQueries: [
+                { query: listarGruposFamiliaresFilter },
+                { query: listadoVehiculoFilter },
+                { query: listadoVehiculo },
+                { query: listadoIntegrante },
+                { query: listaIntergranteFilter },
+            ],
             awaitRefetchQueries: true,
         }
         // ,

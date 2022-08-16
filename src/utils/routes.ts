@@ -148,6 +148,15 @@ export const EnlacesSidebar = {
             },
         },
 
+        statustag: {
+            registrar: {
+                route: '/mantenimiento/status-tag/registrar',
+            },
+            listado: {
+                route: '/mantenimiento/status-tag/listado',
+            },
+        },
+
         parentesco: {
             registrar: {
                 route: '/mantenimiento/parentesco/registrar',

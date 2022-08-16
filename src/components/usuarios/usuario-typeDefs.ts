@@ -31,6 +31,10 @@ export const saveUsuario = gql`
         $email: String
         $telefono: String
         $idTipoIdentificacion: Int
+        $idGrupoFamiliar: Int
+        $idParentesco: Int
+        $genero: String
+        $fecha_nacimiento: String
     ) {
         PostUsuario(
             input: {
@@ -42,6 +46,10 @@ export const saveUsuario = gql`
                 email: $email
                 telefono: $telefono
                 idTipoIdentificacion: $idTipoIdentificacion
+                idGrupoFamiliar: $idGrupoFamiliar
+                idParentesco: $idParentesco
+                genero: $genero
+                fecha_nacimiento: $fecha_nacimiento
             }
         ) {
             code
@@ -117,6 +125,7 @@ export const listadoUsuarios = gql`
                 id
                 tipo_identificacion
             }
+            grupoFamiliar
         }
     }
 `

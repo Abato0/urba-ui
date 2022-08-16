@@ -38,6 +38,9 @@ const FormControlHeader: React.FC<IProps> = ({
                 className={classes.textbox}
                 required
                 disabled={disabled}
+                style={{
+                    textTransform: 'uppercase',
+                }}
             >
                 {children}
             </Select>

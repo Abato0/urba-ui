@@ -18,4 +18,5 @@ interface IPago {
     // estado: string;
     tipo_pago: string
     monto: number
+    cod_recibo?: string
 }

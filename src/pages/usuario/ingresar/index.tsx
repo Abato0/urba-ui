@@ -8,13 +8,15 @@ import {
     TextField,
     Typography,
 } from '@material-ui/core'
-import AppLayout from '../../../components/layout/app-layout'
 import { FormIngresarUsuario } from '../../../components/usuarios/form-ingresar-usuario'
 import Fuse from 'fuse.js'
-import { isNil, pluck, prop } from 'ramda'
+import { isEmpty, isNil, pluck, prop } from 'ramda'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import useDebounce from '../../../utils/useDebounce'
-import { useListadoUsuario, useListadoUsuarioSinFamilares } from '../../../components/usuarios/use-usuario'
+import {
+    useListadoUsuario,
+    useListadoUsuarioSinFamilares,
+} from '../../../components/usuarios/use-usuario'
 import {
     IResultUsuarioQuery,
     useDeleteUsuarioMutation,
@@ -25,7 +27,6 @@ import {
     isNotNilOrEmpty,
 } from '../../../utils/is-nil-empty'
 import { useTable, usePagination } from 'react-table'
-import { columnsTags } from '../../../components/tag/tag-dataTable'
 import ModalAuth from '../../../components/core/input/dialog/modal-dialog'
 import CardTableBody from '../../../components/table/table-body'
 import TableHeader from '../../../components/table/table-header'
@@ -33,11 +34,11 @@ import TablePaginations from '../../../components/table/table-paginations'
 import { columnsUsuario } from '../../../components/usuarios/usuario-dataTable'
 import { TipoUsuario } from '../../../components/core/input/dateSelect'
 import PermisoLayout from '../../../components/layout/auth-layout/permiso-layout'
-import NavBar from '../../../components/layout/app-bar'
 import LayoutTituloPagina from '../../../components/layout/tituloPagina-layout'
 import ModalVinculacionUsuario from '../../../components/usuarios/modalVinculacion'
 import { useRouter } from 'next/router'
-import { useListarGrupoFamiliarSinUsuarios } from '../../../components/grupo-familiar/use-grupo-familia'
+import { ModalConfirmacion } from '../../../components/core/modal/modalConfirmacion'
+import { recordarContrasena } from '../../../auth/auth-service'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -144,19 +145,24 @@ export interface IUsuarioNormalize {
     nombre_completo: string
     email: string
     telefono: string
+    num_identificacion: string
 }
 
 const extractData = (data: IResultUsuarioQuery[]): IUsuarioNormalize[] => {
-    return data.map((usuario) => {
-        return {
-            id: usuario.id,
-            tipo_usuario: usuario.tipo_usuario,
-            user: usuario.user,
-            email: usuario.email,
-            nombre_completo: `${usuario.nombres} ${usuario.apellidos}`,
-            telefono: usuario.telefono,
-        }
-    })
+    return data
+        .map((usuario) => {
+            return {
+                id: usuario.id,
+                tipo_usuario: usuario.tipo_usuario,
+                user: usuario.user,
+                email: usuario.email,
+                nombre_completo: `${usuario.nombres} ${usuario.apellidos}`,
+                telefono: usuario.telefono,
+                num_identificacion: usuario.num_identificacion,
+                grupoFamiliar: usuario.grupoFamiliar || '',
+            }
+        })
+        .sort((a, b) => (a.nombre_completo < b.nombre_completo ? -1 : 1))
 }
 
 const IngresarUsuario = () => {
@@ -169,7 +175,8 @@ const IngresarUsuario = () => {
     const debounceSearch = useDebounce(search, 300)
     const router = useRouter()
 
-    const { data: dataListarGrupo, loading: loadingListarGrupo } = useListadoUsuarioSinFamilares()
+    const { data: dataListarGrupo, loading: loadingListarGrupo } =
+        useListadoUsuarioSinFamilares()
 
     const listadoSinUsuarios = useMemo(() => {
         if (!loadingListarGrupo && dataListarGrupo) {
@@ -179,38 +186,78 @@ const IngresarUsuario = () => {
     }, [dataListarGrupo, loadingListarGrupo])
 
     const [openModalVincular, setOpenModalVincular] = useState(false)
-    const [idUsuario, setIdUsuario] = useState<number>()
+    const [idUsuarioVincular, setIdUsuarioVincular] = useState<number>()
 
+    const [numIdenUsuarioPassword, setNumIdenUsuarioPassword] =
+        useState<string>('')
 
     const [dataUsuario, setDataUsuario] = useState<IUsuarioNormalize[]>([])
 
     const [mutateEliminar] = useDeleteUsuarioMutation()
     const { data, loading, error, refetch } = useListadoUsuario()
 
+    const [openModalPermiso, setOpenModalPermiso] = useState(false)
+    const [titlePermiso, setTitlePermiso] = useState('')
+
     useEffect(() => {
         if (isNotNilOrEmpty(data) && !loading) {
             setDataUsuario(extractData(data?.ListaUsuario ?? []))
         }
-    }, [data, loading, error]);
+    }, [data, loading, error])
 
-
-    const onVerificar = ({ id }: any) => {
-        return listadoSinUsuarios.some((usuario) => usuario.id === id);
+    const onVerificar = ({ id }: IResultUsuarioQuery) => {
+        return listadoSinUsuarios.some((usuario) => usuario.id === id)
         // return false
     }
 
-
-    const onVincular = ({ id }: any) => {
-
-
-        setIdUsuario(id);
+    const onVincular = ({ id }: IResultUsuarioQuery) => {
+        setIdUsuarioVincular(id)
         setOpenModalVincular(true)
     }
 
-    const onEditar = ({ id }: any) => {
+    const onEditar = ({ id }: IResultUsuarioQuery) => {
         router.push({
-            pathname: "/usuario/ingresar/" + id
+            pathname: '/usuario/ingresar/' + id,
         })
+    }
+
+    const onChangePassword = ({
+        email,
+        num_identificacion,
+    }: IResultUsuarioQuery) => {
+        setTitlePermiso(
+            `La nueva contraseña, se enviara por correo a la direccion de correo ${email}. ¿Está seguro de reestablecer la contraseña?. ${num_identificacion}`
+        )
+        setNumIdenUsuarioPassword(num_identificacion)
+        setOpenModalPermiso(true)
+    }
+
+    const cambiarContraseña = async () => {
+        try {
+            if (numIdenUsuarioPassword && !isEmpty(numIdenUsuarioPassword)) {
+                const data = await recordarContrasena(numIdenUsuarioPassword)
+                if (data) {
+                    setOpenModalPermiso(false)
+                    const { code, message } = data
+                    setTitleModalMsj(message)
+                    setErrorModal(true)
+                    if (code === 200) {
+                        setErrorModal(false)
+                    }
+                    setOpenModalMsj(true)
+                } else {
+                    setOpenModalPermiso(false)
+                    setOpenModalMsj(true)
+                    setErrorModal(false)
+                    setTitleModalMsj('Contraseña no ha sido cambiada')
+                }
+            }
+        } catch (error) {
+            setTitleModalMsj('Envio Fallido')
+            setErrorModal(true)
+            setMensajeModalMsj((error as Error).message)
+            setOpenModalMsj(true)
+        }
     }
 
     const onDelete = useCallback(async ({ id }: any) => {
@@ -241,6 +288,7 @@ const IngresarUsuario = () => {
             setMensajeModalMsj('' + error.message)
             setOpenModalMsj(true)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const {
@@ -251,7 +299,7 @@ const IngresarUsuario = () => {
         page,
         prepareRow,
         setPageSize,
-        state: { pageIndex, pageSize, selectedRowIds },
+        state: { pageIndex, pageSize },
     } = useTable(
         {
             columns: columnsUsuario,
@@ -260,7 +308,8 @@ const IngresarUsuario = () => {
             onDelete,
             onVincular,
             onEditar,
-            onVerificar
+            onVerificar,
+            onChangePassword,
         },
         usePagination
     )
@@ -314,17 +363,21 @@ const IngresarUsuario = () => {
                         />
                     )}
 
-
-                    {
-                        openModalVincular && idUsuario &&
-                        (
-                            <ModalVinculacionUsuario
-                                idUsuario={idUsuario}
-                                open={openModalVincular}
-                                onClose={() => setOpenModalVincular(false)}
-                            />
-                        )
-                    }
+                    {openModalVincular && idUsuarioVincular && (
+                        <ModalVinculacionUsuario
+                            idUsuario={idUsuarioVincular}
+                            open={openModalVincular}
+                            onClose={() => setOpenModalVincular(false)}
+                        />
+                    )}
+                    {openModalPermiso && (
+                        <ModalConfirmacion
+                            mensaje={titlePermiso}
+                            openModal={openModalPermiso}
+                            onCancel={() => setOpenModalPermiso(false)}
+                            onConfirm={() => cambiarContraseña()}
+                        />
+                    )}
                 </>
                 <div
                     style={{ justifyContent: 'space-around' }}
@@ -348,11 +401,14 @@ const IngresarUsuario = () => {
                             <TextField
                                 // className={classes.textBox}
                                 variant="outlined"
-                                placeholder="Search"
+                                placeholder="Buscar"
                                 onChange={(e) => {
                                     setSearch(e.target.value)
                                 }}
                                 value={search}
+                                inputProps={{
+                                    style: { textTransform: 'uppercase' },
+                                }}
                             />
                         </div>
                         <TableContainer>

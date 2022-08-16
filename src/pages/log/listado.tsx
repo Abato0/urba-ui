@@ -229,15 +229,20 @@ const LogListado = () => {
 
     const filtrar = () => {
         if (data && data.ListaLog && (tipoUsuarioFilter || moduloFilter)) {
-
             // console.log("tipoUsuarioFilter: ", tipoUsuarioFilter, "moduloFilter: ", moduloFilter)
 
             const result = data.ListaLog.filter(
                 ({ modulo, tipoUsuario }) => {
                     if (moduloFilter && tipoUsuarioFilter) {
-                        return modulo == moduloFilter && tipoUsuario == tipoUsuarioFilter
+                        return (
+                            modulo == moduloFilter &&
+                            tipoUsuario == tipoUsuarioFilter
+                        )
                     }
-                    return modulo == moduloFilter || tipoUsuario == tipoUsuarioFilter
+                    return (
+                        modulo == moduloFilter ||
+                        tipoUsuario == tipoUsuarioFilter
+                    )
                 }
 
                 // nombre_familiar == nombreGrupoFamiliarFilter
@@ -271,7 +276,7 @@ const LogListado = () => {
                                     value={moduloFilter}
                                     label={'Módulo'}
                                     id={'modulo_log'}
-                                    style={{ minWidth: "180px" }}
+                                    style={{ minWidth: '180px' }}
                                 />
                                 <SelectTipoUsuario
                                     handleChange={(e: SelectChangeEvent) =>
@@ -280,7 +285,7 @@ const LogListado = () => {
                                     value={tipoUsuarioFilter}
                                     id={'tipoUsuarioFilter'}
                                     label={'Rol'}
-                                    style={{ minWidth: "180px" }}
+                                    style={{ minWidth: '180px' }}
                                 />
                             </div>
                         </div>
@@ -304,11 +309,12 @@ const LogListado = () => {
                     <TextField
                         className={classes.textBox}
                         variant="outlined"
-                        placeholder="Search"
+                        placeholder="Buscar"
                         onChange={(e) => {
                             setSearch(e.target.value)
                         }}
                         value={search}
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
 
                     <ActionsButtonsExcelPdf

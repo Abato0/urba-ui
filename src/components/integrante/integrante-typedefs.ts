@@ -159,6 +159,15 @@ export const updateIntegrante = gql`
     }
 `
 
+export const deleteIntegrante = gql`
+    mutation ($id: Int!) {
+        DeleteIntegrante(id: $id) {
+            code
+            message
+        }
+    }
+`
+
 export const listaIntergranteFilter = gql`
     query (
         # $calle_interseccion: String

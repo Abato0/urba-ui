@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) =>
             fontSize: 14,
             fontWeight: 'unset',
             fontFamily: 'Roboto',
+            textTransform: 'uppercase',
         },
     })
 )

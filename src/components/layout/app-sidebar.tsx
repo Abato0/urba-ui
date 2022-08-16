@@ -7,6 +7,8 @@ import { showSidebar } from '../../utils/states'
 import AcordionHeader from './sidebar/acordionHeader'
 import ItemSidebar from './sidebar/acordionItemClick'
 import {
+    faChartBar,
+    faFolder,
     faFolderOpen,
     faTools,
     faUser,
@@ -72,9 +74,9 @@ export interface IHeaderSidebar {
 
 interface IProps {
     ItemsUsuario: IItemsSidebar[]
-    ItemsListado: IHeaderSidebar[]
-    ItemsRegistros: IHeaderSidebar[]
-    ItemsMantenimiento: IHeaderSidebar[]
+    ItemsListado: IItemsSidebar[]
+    ItemsRegistros: IItemsSidebar[]
+    ItemsMantenimiento: IItemsSidebar[]
     ItemsOperaciones: IItemsSidebar[]
 }
 
@@ -131,42 +133,16 @@ const Sidebar: FC<IProps> = ({
                     //   className={classes.imageLogo}
                     />
                 </div>
-                {/* {isNotEmpty(ItemsUsuario) && (
-                    <AcordionHeader
-                        icon={faUser}
-                        label={'Usuarios'}
-                        selected={isNotNil(
-                            ItemsUsuario.find(
-                                ({ ruta }) => ruta === router.pathname
-                            )
-                        )}
-                    >
-                        {ItemsUsuario.map((item, index) => {
-                            return (
-                                <ItemSidebar
-                                    key={index}
-                                    icon={item.icon}
-                                    eventClick={() =>
-                                        router.push({
-                                            pathname: item.ruta,
-                                        })
-                                    }
-                                    label={item.label}
-                                    selected={router.pathname === item.ruta}
-                                />
-                            )
-                        })}
-                    </AcordionHeader>
-                )} */}
+
 
                 {isNotEmpty(ItemsOperaciones) && <AcordionHeader
                     icon={faUser}
                     label={'Operaciones'}
-                    selected={isNotNil(
-                        ItemsUsuario.find(
-                            ({ ruta }) => ruta === router.pathname
-                        )
-                    )}
+                // selected={isNotNil(
+                //     ItemsUsuario.find(
+                //         ({ ruta }) => ruta === router.pathname
+                //     )
+                // )}
                 >
                     {ItemsOperaciones.map((item, index) => {
                         return (
@@ -185,7 +161,38 @@ const Sidebar: FC<IProps> = ({
                     })}
                 </AcordionHeader>}
 
-                {isNotEmpty(ItemsListado) && (
+                {
+                    isNotEmpty(ItemsListado) && <AcordionHeader
+                        icon={faChartBar}
+                        label={'Listados'}
+
+                    // selected={isNotNil(
+                    //     ItemsUsuario.find(
+                    //         ({ ruta }) => ruta === router.pathname
+                    //     )
+                    // )}
+                    >
+                        {
+                            ItemsListado.map((item, index) => {
+                                return (
+                                    <ItemSidebar
+                                        key={index}
+                                        icon={item.icon}
+                                        eventClick={() =>
+                                            router.push({
+                                                pathname: item.ruta,
+                                            })
+                                        }
+                                        label={item.label}
+                                        selected={router.pathname === item.ruta}
+                                    />
+                                )
+                            })}
+
+                    </AcordionHeader>}
+
+
+                {/* {isNotEmpty(ItemsListado) && (
                     <AcordionHeader
                         selected={selectedListadoHeader}
                         icon={faFolderOpen}
@@ -236,9 +243,35 @@ const Sidebar: FC<IProps> = ({
                             )
                         })}
                     </AcordionHeader>
-                )}
+                )} */}
 
-                {isNotEmpty(ItemsRegistros) && (
+                {
+                    isNotEmpty(ItemsRegistros) && <AcordionHeader
+                        // selected={selectedRegistroHeader}
+                        icon={faFolder}
+                        label={'Registros'}
+                    >
+                        {ItemsRegistros.map((item, index) => {
+                            return (
+                                <ItemSidebar
+                                    key={index}
+                                    icon={item.icon}
+                                    eventClick={() =>
+                                        router.push({
+                                            pathname: item.ruta,
+                                        })
+                                    }
+                                    label={item.label}
+                                    selected={router.pathname === item.ruta}
+                                />
+                            )
+                        })}
+                    </AcordionHeader>
+                }
+
+
+
+                {/* {isNotEmpty(ItemsRegistros) && (
                     <AcordionHeader
                         selected={selectedRegistroHeader}
                         icon={faTools}
@@ -289,8 +322,32 @@ const Sidebar: FC<IProps> = ({
                             )
                         })}
                     </AcordionHeader>
-                )}
-                {isNotEmpty(ItemsMantenimiento) && (
+                )} */}
+
+                {
+                    isNotEmpty(ItemsMantenimiento) && <AcordionHeader
+                        // selected={selectedRegistroHeader}
+                        icon={faTools}
+                        label={'Parametrización'}
+                    >
+                        {ItemsMantenimiento.map((item, index) => {
+                            return (
+                                <ItemSidebar
+                                    key={index}
+                                    icon={item.icon}
+                                    eventClick={() =>
+                                        router.push({
+                                            pathname: item.ruta,
+                                        })
+                                    }
+                                    label={item.label}
+                                    selected={router.pathname === item.ruta}
+                                />
+                            )
+                        })}
+                    </AcordionHeader>
+                }
+                {/* {isNotEmpty(ItemsMantenimiento) && (
                     <AcordionHeader
                         selected={selectedMantenimientoHeader}
                         icon={faTools}
@@ -341,7 +398,7 @@ const Sidebar: FC<IProps> = ({
                             )
                         })}
                     </AcordionHeader>
-                )}
+                )} */}
                 <div style={{ marginTop: "10px", padding: "5px", backgroundColor: "white" }}>
                     <ItemSidebar
                         eventClick={cerrarSession}

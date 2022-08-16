@@ -7,6 +7,16 @@ import { IUserInfo } from '../utils/states'
 const URL_BASE_API = 'https://urbaapi.nodedatatest.com'
 //const URL_BASE_API = 'http://localhost:8888'
 
+export const userRepresentante = async (
+    idUser: number
+): Promise<{ ok: boolean; message: string }> => {
+    const result = await axios({
+        method: 'GET',
+        url: `${URL_BASE_API}/api/usuario/representante?idUser=${idUser}`,
+    })
+    return result.data
+}
+
 export const login = async (
     user: string,
     password: string

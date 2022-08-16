@@ -23,7 +23,7 @@ import {
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
 import { useListadoUsuario } from '../../usuarios/use-usuario'
-import { useListaParentescoQuery } from './use-parentesco';
+import { useListaParentescoQuery } from './use-parentesco'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -98,7 +98,10 @@ const initialValues = Object.freeze({
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    parentesco: yup.string().required('Campo requerido'),
+    parentesco: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
 })
 
 interface IProps {
@@ -116,14 +119,13 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
     const [boolPut, setBoolPut] = useState<boolean>(false)
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
-    const { refetch } = useListaParentescoQuery();
+    const { refetch } = useListaParentescoQuery()
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
             refetch().then(() => {
                 router.push({ pathname: '/mantenimiento/parentesco/listado' })
             })
-
         } else {
             setOpenModalMsj(false)
         }
@@ -144,8 +146,8 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
     const init = useMemo(() => {
         return isNotNilOrEmpty(parentescoObj)
             ? {
-                parentesco: parentescoObj?.parentesco,
-            }
+                  parentesco: parentescoObj?.parentesco,
+              }
             : initialValues
     }, [parentescoObj])
 
@@ -156,16 +158,16 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(parentescoObj)
                         ? await mutate({
-                            variables: {
-                                parentesco,
-                            },
-                        })
+                              variables: {
+                                  parentesco: String(parentesco).toUpperCase(),
+                              },
+                          })
                         : await mutate({
-                            variables: {
-                                id,
-                                parentesco,
-                            },
-                        })
+                              variables: {
+                                  id,
+                                  parentesco: String(parentesco).toUpperCase(),
+                              },
+                          })
 
                     if (isNotNilOrEmpty(data)) {
                         const { code, message } = isNotNilOrEmpty(
@@ -176,9 +178,6 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
                         setLoadingMutate(false)
                         setTitleModalMsj(message)
 
-
-
-
                         if (code === 200) {
                             setErrorModal(false)
                             if (isNotNilOrEmpty(data.PutParentesco)) {
@@ -186,7 +185,7 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
                                 return
                             }
 
-                            await refetch();
+                            await refetch()
                             resetForm()
                         } else {
                             setErrorModal(true)
@@ -274,6 +273,7 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
                             touched.parentesco ? errors.parentesco : undefined
                         }
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
                 <div className={classes.contentButtons}>

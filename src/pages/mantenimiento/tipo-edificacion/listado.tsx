@@ -11,7 +11,6 @@ import { isNil, pluck, prop } from 'ramda'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { usePagination, useTable } from 'react-table'
 import ModalAuth from '../../../components/core/input/dialog/modal-dialog'
-import AppLayout from '../../../components/layout/app-layout'
 import CardTableBody from '../../../components/table/table-body'
 import TableHeader from '../../../components/table/table-header'
 import TablePaginations from '../../../components/table/table-paginations'
@@ -131,7 +130,7 @@ const MantenimientoTipoEdificacionListado = () => {
     const [errorModal, setErrorModal] = useState<boolean>(false)
     const debounceSearch = useDebounce(search, 300)
 
-    const [boolPutColor, setBoolPutColor] = useState<boolean>(false)
+    // const [boolPutColor, setBoolPutColor] = useState<boolean>(false)
 
     const [mutateEliminar] = useDeleteTipoEdificacionMutation()
 
@@ -141,16 +140,22 @@ const MantenimientoTipoEdificacionListado = () => {
         }
     }, [data, loading, error])
 
-    const onEdit = useCallback(({ id }: any) => {
-        if (!isNil(id)) {
-            router.push(
-                { pathname: '/mantenimiento/tipo-edificacion/registrar/[id]' },
-                `/mantenimiento/tipo-edificacion/registrar/${encodeURIComponent(
-                    id
-                )}`
-            )
-        }
-    }, [])
+    const onEdit = useCallback(
+        ({ id }: any) => {
+            if (!isNil(id)) {
+                router.push(
+                    {
+                        pathname:
+                            '/mantenimiento/tipo-edificacion/registrar/[id]',
+                    },
+                    `/mantenimiento/tipo-edificacion/registrar/${encodeURIComponent(
+                        id
+                    )}`
+                )
+            }
+        },
+        [router]
+    )
 
     const onDelete = useCallback(async ({ id }: any) => {
         try {
@@ -176,6 +181,7 @@ const MantenimientoTipoEdificacionListado = () => {
             setMensajeModalMsj('' + error.message)
             setOpenModalMsj(true)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const {
@@ -186,7 +192,7 @@ const MantenimientoTipoEdificacionListado = () => {
         page,
         prepareRow,
         setPageSize,
-        state: { pageIndex, pageSize, selectedRowIds },
+        state: { pageIndex, pageSize },
     } = useTable(
         {
             columns: columnsTipoEdificacion,
@@ -220,7 +226,7 @@ const MantenimientoTipoEdificacionListado = () => {
         } else {
             setDataTipoEdificacion(extractData(data?.ListaTipoEdificacion!))
         }
-    }, [debounceSearch])
+    }, [data, debounceSearch, fuse])
 
     const onChangePage = useCallback(
         (event, page) => gotoPage(page),
@@ -253,11 +259,14 @@ const MantenimientoTipoEdificacionListado = () => {
                         <TextField
                             className={classes.textBox}
                             variant="outlined"
-                            placeholder="Search"
+                            placeholder="Buscar"
                             onChange={(e) => {
                                 setSearch(e.target.value)
                             }}
                             value={search}
+                            inputProps={{
+                                style: { textTransform: 'uppercase' },
+                            }}
                         />
                     </div>
                     <TableContainer>

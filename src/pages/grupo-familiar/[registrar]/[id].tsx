@@ -3,9 +3,7 @@ import { useRouter } from 'next/router'
 import { isNil, isEmpty, prop } from 'ramda'
 import { useMemo, useEffect, useState } from 'react'
 import GrupoFamiliarFormRegistro from '../../../components/grupo-familiar/grupo-familiar-form-registro'
-import {
-    updateGrupoFamiliarMutation,
-} from '../../../components/grupo-familiar/grupo-familiar-typeDefs'
+import { updateGrupoFamiliarMutation } from '../../../components/grupo-familiar/grupo-familiar-typeDefs'
 import { useGetGrupoFamiliar } from '../../../components/grupo-familiar/use-grupo-familia'
 import LayoutTituloPagina from '../../../components/layout/tituloPagina-layout'
 import {
@@ -52,16 +50,17 @@ const extractData = (data: IGrupoFamiliar): IGrupoFamiliarInput | undefined => {
     console.log('extractData: ', data)
     return !isNil(data) && !isEmpty(data)
         ? {
-            calle_interseccion: data.calle_interseccion,
-            id_calle_principal: data.calle_principal.id,
-            // id_color_fachada: data.color_fachada.id,
-            id_manzana: data.manzana.id,
-            // id_tipo_edificacion: data.tipo_edificacion.id,
-            nombre_familiar: data.nombre_familiar,
-            villa: data.villa,
-            // id_usuario: data.usuario.id,
-            // id_calle_interseccion: calle_interseccion
-        }
+              calle_interseccion: data.calle_interseccion,
+              id_calle_principal: data.calle_principal.id,
+              // id_color_fachada: data.color_fachada.id,
+              id_manzana: data.manzana.id,
+              // id_tipo_edificacion: data.tipo_edificacion.id,
+              nombre_familiar: data.nombre_familiar,
+              villa: data.villa,
+              extension: data.extension,
+              // id_usuario: data.usuario.id,
+              // id_calle_interseccion: calle_interseccion
+          }
         : undefined
 }
 

@@ -2,7 +2,6 @@ import {
     colors,
     createStyles,
     FormControl,
-    IconButton,
     InputLabel,
     makeStyles,
     MenuItem,
@@ -10,9 +9,8 @@ import {
     Table,
     TableContainer,
     TextField,
-    Tooltip,
-    Typography,
     Select,
+    Typography,
 } from '@material-ui/core'
 import { isNil, pluck, prop } from 'ramda'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -21,14 +19,12 @@ import { usePagination, useTable } from 'react-table'
 import Fuse from 'fuse.js'
 import { useRouter } from 'next/router'
 import ModalAuth from '../../components/core/input/dialog/modal-dialog'
-import AppLayout from '../../components/layout/app-layout'
-import { columnsColor } from '../../components/mantenimento/color/color-dataTable'
+
 import CardTableBody from '../../components/table/table-body'
 import TableHeader from '../../components/table/table-header'
 import TablePaginations from '../../components/table/table-paginations'
 import {
     IResultQueryTag,
-    useListaTag,
     useDeleteTagMutation,
     useListaAllTag,
     useListaTagVehiculo,
@@ -43,18 +39,10 @@ import useDebounce from '../../utils/useDebounce'
 import { columnsListadoTags } from '../../components/tag/tag-dataTable'
 import { TipoUsuario } from '../../components/core/input/dateSelect'
 import PermisoLayout from '../../components/layout/auth-layout/permiso-layout'
-import {
-    Filter as FilterIcon,
-    Reload as ReloadIcon,
-    FileExcelBox as FileExcelBoxIcon,
-
-} from 'mdi-material-ui'
-import { ExportTablePdf } from '../../components/table/export-table-pdf'
-import NavBar from '../../components/layout/app-bar'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
-import { useCambiarEstadoTag } from '../../components/tag/use-tag';
-import { ListadoEstadoTagRow, Listado_lugares_image } from '../../utils/keys'
+import { useCambiarEstadoTag } from '../../components/tag/use-tag'
 import { ActionsButtonsFilterReset } from '../../components/core/actions/actionsButtonsFilterReset'
+import { useListaStatusTagQuery } from '../../components/mantenimento/status-tag/use-status-tag'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -162,7 +150,11 @@ const getRowId: any = prop('id')
 const MantenimientoColorListado = () => {
     const classes = useStyles()
     const router = useRouter()
-    const { data, loading, error, refetch } = useListaAllTag();
+    const { data, loading, error, refetch } = useListaAllTag()
+
+    const { data: dataStatusTag, loading: loadingStatusTag } =
+        useListaStatusTagQuery()
+
     const { refetch: refetchAsigancion } = useListaTagVehiculo()
     const [dataTag, setColorTag] = useState<ITagNormalize[]>([])
     const [search, setSearch] = useState<string>('')
@@ -172,12 +164,18 @@ const MantenimientoColorListado = () => {
     const [errorModal, setErrorModal] = useState<boolean>(false)
     const debounceSearch = useDebounce(search, 300)
 
-    const [mutateEliminar] = useDeleteTagMutation();
-
+    const [mutateEliminar] = useDeleteTagMutation()
 
     const [estadoSeleccionado, setEstadoSeleccionado] = useState<string>()
 
     const [mutateCambiarEstado] = useCambiarEstadoTag()
+
+    const statusTagsVisibles = useMemo(() => {
+        if (!loading && dataStatusTag && dataStatusTag.ListaStatusTag) {
+            return dataStatusTag.ListaStatusTag
+        }
+        return []
+    }, [dataStatusTag, loading])
 
     useEffect(() => {
         if (isNotNilOrEmpty(data) && !loading) {
@@ -207,7 +205,7 @@ const MantenimientoColorListado = () => {
                 if (isNotNil(data)) {
                     const { code, message } = data.DeleteTag
                     if (code === 200) {
-                        setErrorModal(false);
+                        setErrorModal(false)
                         await refetch()
                         await refetchAsigancion()
                     } else {
@@ -228,9 +226,9 @@ const MantenimientoColorListado = () => {
                 setOpenModalMsj(true)
             }
         },
-        [mutateEliminar]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
     )
-
 
     const onActivar = async ({ id }: IResultQueryTag) => {
         if (id) {
@@ -238,14 +236,14 @@ const MantenimientoColorListado = () => {
                 const { data } = await mutateCambiarEstado({
                     variables: {
                         id,
-                        estado: EstadoTag.DISPONIBLE
-                    }
+                        estado: EstadoTag.DISPONIBLE,
+                    },
                 })
                 if (data) {
                     const { code, message } = data.CambiarEstadoTag
                     setTitleModalMsj(message)
                     if (code === 200) {
-                        setErrorModal(false);
+                        setErrorModal(false)
                         await refetch()
                     } else {
                         setErrorModal(true)
@@ -271,14 +269,14 @@ const MantenimientoColorListado = () => {
                 const { data } = await mutateCambiarEstado({
                     variables: {
                         id,
-                        estado: EstadoTag.INACTIVO
-                    }
+                        estado: EstadoTag.INACTIVO,
+                    },
                 })
                 if (data) {
                     const { code, message } = data.CambiarEstadoTag
                     setTitleModalMsj(message)
                     if (code === 200) {
-                        setErrorModal(false);
+                        setErrorModal(false)
                         await refetch()
                     } else {
                         setErrorModal(true)
@@ -305,7 +303,7 @@ const MantenimientoColorListado = () => {
         page,
         prepareRow,
         setPageSize,
-        state: { pageIndex, pageSize, selectedRowIds },
+        state: { pageIndex, pageSize },
     } = useTable(
         {
             columns: columnsListadoTags,
@@ -314,7 +312,7 @@ const MantenimientoColorListado = () => {
             onEdit,
             onDelete,
             onInactivar,
-            onActivar
+            onActivar,
         },
         usePagination
     )
@@ -353,12 +351,12 @@ const MantenimientoColorListado = () => {
         [setPageSize]
     )
 
-
     const filtrar = () => {
-
         if (estadoSeleccionado && data && !loading) {
-            const r = extractData(data?.ListaTagAll!);
-            const result = r.filter(({ estado }) => estado === estadoSeleccionado);
+            const r = extractData(data?.ListaTagAll!)
+            const result = r.filter(
+                ({ estado }) => estado === estadoSeleccionado
+            )
             setColorTag(result)
         }
     }
@@ -366,11 +364,10 @@ const MantenimientoColorListado = () => {
     const reset = () => {
         if (data && !loading) {
             //const r = extractData(data?.ListaTagAll!);
-            setEstadoSeleccionado(undefined);
+            setEstadoSeleccionado(undefined)
             setColorTag(extractData(data?.ListaTagAll!))
         }
     }
-
 
     return (
         <LayoutTituloPagina titulo="Listado de Tags">
@@ -397,30 +394,56 @@ const MantenimientoColorListado = () => {
                         <TextField
                             className={classes.textBox}
                             variant="outlined"
-                            placeholder="Search"
+                            placeholder="Buscar"
                             onChange={(e) => {
                                 setSearch(e.target.value)
                             }}
                             value={search}
+                            inputProps={{
+                                style: { textTransform: 'uppercase' },
+                            }}
                         />
 
-                        <FormControl variant="filled" className={classes.formControl}>
-                            <InputLabel id={"estado_seleccionado_label"} style={{ fontSize: '12px' }}>
+                        <FormControl
+                            variant="filled"
+                            className={classes.formControl}
+                        >
+                            <InputLabel
+                                id={'estado_seleccionado_label'}
+                                style={{ fontSize: '12px' }}
+                            >
                                 Estado
                             </InputLabel>
                             <Select
                                 labelId={'estado_seleccionado_label'}
                                 value={estadoSeleccionado}
-                                onChange={(e) => setEstadoSeleccionado(e.target.value as string)}
-                            >
-                                {
-                                    ListadoEstadoTagRow.map(({ label, value }) => {
-                                        return (
-                                            <MenuItem key={value} value={value}>
-                                                {label}
-                                            </MenuItem>)
-                                    })
+                                onChange={(e) =>
+                                    setEstadoSeleccionado(
+                                        e.target.value as string
+                                    )
                                 }
+                            >
+                                {statusTagsVisibles.map(({ id, statusTag }) => {
+                                    return (
+                                        <MenuItem key={id} value={statusTag}>
+                                            <Typography
+                                                variant="inherit"
+                                                style={{
+                                                    textTransform: 'uppercase',
+                                                }}
+                                            >
+                                                {statusTag}
+                                            </Typography>
+                                        </MenuItem>
+                                    )
+                                })}
+                                {/* {ListadoEstadoTagRow.map(({ label, value }) => {
+                                    return (
+                                        <MenuItem key={value} value={value}>
+                                            {label}
+                                        </MenuItem>
+                                    )
+                                })} */}
                             </Select>
                         </FormControl>
 

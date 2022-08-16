@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) =>
             textAlign: 'center',
             backgroundColor: 'white',
             width: '80%',
-            maxWidth: "750px"
+            maxWidth: '750px',
             // margin: theme.spacing(2),
             // width:"100px"
         },
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) =>
         textbox: {
             margin: theme.spacing(1),
             minWidth: theme.spacing(29),
-            width: "100%"
+            width: '100%',
         },
         dropzone: {
             padding: theme.spacing(4),
@@ -76,8 +76,8 @@ const useStyles = makeStyles((theme) =>
             marginTop: theme.spacing(5),
         },
         contentLastTextBox: {
-            display: "flex",
-            width: "100%"
+            display: 'flex',
+            width: '100%',
             // display: 'flex',
             // flexDirection: 'row',
             // alignContent: 'center',
@@ -100,19 +100,37 @@ const initialValues = Object.freeze({
     asunto: '',
     textoSuperior: '',
     textoInferior: '',
-    remitente: "",
-    firma: ""
+    remitente: '',
+    firma: '',
 })
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    categoria: yup.string().required('Campo requerido'),
+    categoria: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
     // titulo: yup.string().required('Campo requerido'),
-    asunto: yup.string().required('Campo requerido'),
-    textoSuperior: yup.string().required('Campo requerido'),
-    textoInferior: yup.string().required('Campo requerido'),
-    remitente: yup.string().required('Campo requerido'),
-    firma: yup.string().required('Campo requerido'),
+    asunto: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
+    textoSuperior: yup
+        .string()
+        //  .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
+    textoInferior: yup
+        .string()
+        //   .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
+    remitente: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
+    firma: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
 })
 
 interface IProps {
@@ -159,19 +177,26 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
     const init = useMemo(() => {
         return isNotNilOrEmpty(modeloObj)
             ? {
-                categoria: modeloObj?.categoria,
-                // titulo: modeloObj?.titulo,
-                asunto: modeloObj?.asunto,
-                textoSuperior: modeloObj?.textoSuperior,
-                textoInferior: modeloObj?.textoInferior,
-                remitente: modeloObj?.remitente,
-                firma: modeloObj.firma
-            }
+                  categoria: modeloObj?.categoria,
+                  // titulo: modeloObj?.titulo,
+                  asunto: modeloObj?.asunto,
+                  textoSuperior: modeloObj?.textoSuperior,
+                  textoInferior: modeloObj?.textoInferior,
+                  remitente: modeloObj?.remitente,
+                  firma: modeloObj.firma,
+              }
             : initialValues
     }, [modeloObj])
 
     const onSubmit = useCallback(
-        async ({ categoria, asunto, textoSuperior, textoInferior, remitente, firma }) => {
+        async ({
+            categoria,
+            asunto,
+            textoSuperior,
+            textoInferior,
+            remitente,
+            firma,
+        }) => {
             try {
                 if (
                     isNotNilOrEmpty(categoria) &&
@@ -188,11 +213,11 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
                             id,
                             categoria,
                             // titulo,
-                            asunto,
+                            asunto: String(asunto).toUpperCase(),
                             textoSuperior,
                             textoInferior,
-                            remitente,
-                            firma
+                            remitente: String(remitente).toUpperCase(),
+                            firma: String(firma).toUpperCase(),
                         },
                     })
 
@@ -205,26 +230,20 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
 
                         //   }, 2000);
 
-
-
                         // setMensajeModalMsj(dataMutate.message);
 
                         if (code === 200) {
                             setErrorModal(false)
                             if (isNotNilOrEmpty(data.PutModeloMail)) {
-                                setBoolPut(true);
+                                setBoolPut(true)
 
                                 setOpenModalMsj(true)
                                 return
                             }
-
-
                         } else {
                             setErrorModal(true)
                         }
                         setOpenModalMsj(true)
-
-
 
                         // resetForm();
                     } else {
@@ -291,7 +310,6 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
                 onReset={handleReset}
                 className={classes.form}
             >
-
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
                         <TextField
@@ -312,8 +330,10 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
                             }
                             required
                             disabled
+                            inputProps={{
+                                style: { textTransform: 'uppercase' },
+                            }}
                         />
-
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <TextField
@@ -333,9 +353,12 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
                                 touched.remitente ? errors.remitente : undefined
                             }
                             required
+                            inputProps={{
+                                style: { textTransform: 'uppercase' },
+                            }}
                         />
                     </Grid>
-                    <Grid item xs={12} >
+                    <Grid item xs={12}>
                         <TextField
                             className={classes.textbox}
                             variant="outlined"
@@ -346,12 +369,19 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
                             onBlur={handleBlur}
                             label="Asunto"
                             margin="normal"
-                            error={touched.asunto && isNotNilOrEmpty(errors.asunto)}
-                            helperText={touched.asunto ? errors.asunto : undefined}
+                            error={
+                                touched.asunto && isNotNilOrEmpty(errors.asunto)
+                            }
+                            helperText={
+                                touched.asunto ? errors.asunto : undefined
+                            }
                             required
+                            inputProps={{
+                                style: { textTransform: 'uppercase' },
+                            }}
                         />
                     </Grid>
-                    <Grid item xs={12} >
+                    <Grid item xs={12}>
                         <TextField
                             className={classes.textbox}
                             variant="outlined"
@@ -373,9 +403,12 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
                                     : undefined
                             }
                             required
+                            // inputProps={{
+                            //     style: { textTransform: 'uppercase' },
+                            // }}
                         />
                     </Grid>
-                    <Grid item xs={12} >
+                    <Grid item xs={12}>
                         <TextField
                             className={classes.textbox}
                             variant="outlined"
@@ -397,6 +430,9 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
                                     : undefined
                             }
                             required
+                            // inputProps={{
+                            //     style: { textTransform: 'uppercase' },
+                            // }}
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -410,19 +446,18 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
                             label="Firma"
                             margin="normal"
                             error={
-                                touched.firma &&
-                                isNotNilOrEmpty(errors.firma)
+                                touched.firma && isNotNilOrEmpty(errors.firma)
                             }
                             helperText={
                                 touched.firma ? errors.firma : undefined
                             }
                             required
+                            inputProps={{
+                                style: { textTransform: 'uppercase' },
+                            }}
                         />
                     </Grid>
-
-
                 </Grid>
-
 
                 <div className={classes.contentButtons}>
                     <div></div>

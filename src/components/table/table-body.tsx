@@ -48,7 +48,10 @@ const CardTableBody: FC<IProps> = ({ getTableBodyProps, prepareRow, page }) => {
                                     size="small"
                                     align="center"
                                     key={index}
-                                    style={{ fontVariant: 'traditional' }}
+                                    style={{
+                                        fontVariant: 'traditional',
+                                        textTransform: 'uppercase',
+                                    }}
                                     // className={classes.root}
                                 >
                                     {cell.render('Cell')}

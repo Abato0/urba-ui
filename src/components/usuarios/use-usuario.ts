@@ -25,6 +25,7 @@ export interface IResultUsuarioQuery {
     email: string
     telefono: string
     tipoIdentificacion: IResultQueryTipoIdentificacion
+    grupoFamiliar?: string
 }
 
 export interface IListaUsuarioQuery {

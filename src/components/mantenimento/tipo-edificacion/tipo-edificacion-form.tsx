@@ -85,7 +85,10 @@ const initialValues = Object.freeze({
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    tipo_edificacion: yup.string().required('Campo requerido'),
+    tipo_edificacion: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
 })
 
 interface IProps {
@@ -122,8 +125,8 @@ export const IngresarTipoEdificacionForm: FC<IProps> = ({
     const init = useMemo(() => {
         return isNotNilOrEmpty(tipoEdificacionObj)
             ? {
-                tipo_edificacion: tipoEdificacionObj?.tipo_edificacion,
-            }
+                  tipo_edificacion: tipoEdificacionObj?.tipo_edificacion,
+              }
             : initialValues
     }, [tipoEdificacionObj])
 
@@ -132,16 +135,16 @@ export const IngresarTipoEdificacionForm: FC<IProps> = ({
             if (isNotNilOrEmpty(tipo_edificacion)) {
                 const { data } = isNil(tipoEdificacionObj)
                     ? await mutate({
-                        variables: {
-                            tipo_edificacion,
-                        },
-                    })
+                          variables: {
+                              tipo_edificacion,
+                          },
+                      })
                     : await mutate({
-                        variables: {
-                            id,
-                            tipo_edificacion,
-                        },
-                    })
+                          variables: {
+                              id,
+                              tipo_edificacion,
+                          },
+                      })
 
                 if (isNotNilOrEmpty(data)) {
                     const { message } = isNotNilOrEmpty(data.PutTipoEdificacion)
@@ -235,6 +238,7 @@ export const IngresarTipoEdificacionForm: FC<IProps> = ({
                                 : undefined
                         }
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
                 <div className={classes.contentButtons}>

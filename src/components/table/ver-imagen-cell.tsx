@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import {
     Button,
     createStyles,
@@ -10,12 +10,16 @@ import {
 } from '@material-ui/core'
 import { Row } from 'react-table'
 
-import { EyeCircle } from 'mdi-material-ui'
+import { EyeCircle, TrashCan } from 'mdi-material-ui'
+import { TipoUsuario } from '../core/input/dateSelect'
+import { useRecoilValue } from 'recoil'
+import { userInfo } from '../../utils/states'
 
 interface IProps {
     className?: string
     onSeeImg: any
     row: Row
+    onDelete: any
 }
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -34,19 +38,46 @@ const VisualizarActionsCell: React.FC<IProps> = ({
     onSeeImg,
     row,
     className,
+    onDelete,
 }) => {
     const classes = useStyles()
+    const usuarioState = useRecoilValue(userInfo)
 
+    const administradorFlag = useMemo(() => {
+        if (usuarioState) {
+            return usuarioState.tipo_usuario === TipoUsuario.ADMIN
+        }
+        return false
+    }, [usuarioState, TipoUsuario])
     return (
-        <Tooltip className={className} placement="top" title="Visualizar">
-            <IconButton
-                color="secondary"
-                onClick={() => onSeeImg(row.original)}
-                className={classes.fab}
-            >
-                <EyeCircle />
-            </IconButton>
-        </Tooltip>
+        <div
+            style={{
+                display: 'flex',
+                flex: 'row',
+                justifyContent: 'space-evenly',
+            }}
+        >
+            <Tooltip className={className} placement="top" title="Visualizar">
+                <IconButton
+                    color="secondary"
+                    onClick={() => onSeeImg(row.original)}
+                    className={classes.fab}
+                >
+                    <EyeCircle />
+                </IconButton>
+            </Tooltip>
+            {administradorFlag && (
+                <Tooltip className={className} placement="top" title="Eliminar">
+                    <IconButton
+                        color="secondary"
+                        onClick={() => onDelete(row.original)}
+                        className={classes.fab}
+                    >
+                        <TrashCan />
+                    </IconButton>
+                </Tooltip>
+            )}
+        </div>
     )
 }
 

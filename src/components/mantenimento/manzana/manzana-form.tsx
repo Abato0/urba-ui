@@ -22,7 +22,7 @@ import {
 } from './use-manzana'
 import SaveIcon from '@material-ui/icons/Save'
 import { LoadingButton } from '@mui/lab'
-import { useListaManzanaQuery } from './use-manzana';
+import { useListaManzanaQuery } from './use-manzana'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -98,7 +98,10 @@ const initialValues = Object.freeze({
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    manzana: yup.string().required('Campo requerido'),
+    manzana: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
 })
 
 interface IProps {
@@ -117,9 +120,7 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
     const [boolPut, setBoolPut] = useState<boolean>(false)
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
-
     const { refetch } = useListaManzanaQuery()
-
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
@@ -146,8 +147,8 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
     const init = useMemo(() => {
         return isNotNilOrEmpty(manzanaObj)
             ? {
-                manzana: manzanaObj?.manzana,
-            }
+                  manzana: manzanaObj?.manzana,
+              }
             : initialValues
     }, [manzanaObj])
 
@@ -158,24 +159,25 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(manzanaObj)
                         ? await mutate({
-                            variables: {
-                                manzana,
-                            },
-                        })
+                              variables: {
+                                  manzana: String(manzana).toUpperCase(),
+                              },
+                          })
                         : await mutate({
-                            variables: {
-                                id,
-                                manzana,
-                            },
-                        })
+                              variables: {
+                                  id,
+                                  manzana: String(manzana).toUpperCase(),
+                              },
+                          })
 
                     if (isNotNilOrEmpty(data)) {
-                        const { code, message } = isNotNilOrEmpty(data.PutManzana)
+                        const { code, message } = isNotNilOrEmpty(
+                            data.PutManzana
+                        )
                             ? data.PutManzana
                             : data.PostManzana
                         setLoadingMutate(false)
                         setTitleModalMsj(message)
-
 
                         if (code === 200) {
                             setErrorModal(false)
@@ -183,13 +185,12 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
                                 setBoolPut(true)
                                 return
                             }
-                            await refetch();
+                            await refetch()
                             resetForm()
                         } else {
                             setErrorModal(true)
                         }
                         setOpenModalMsj(true)
-
 
                         // resetForm()
                     } else {
@@ -272,6 +273,7 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
                             touched.manzana ? errors.manzana : undefined
                         }
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
                 <div className={classes.contentButtons}>

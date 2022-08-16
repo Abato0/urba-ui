@@ -50,6 +50,7 @@ export const listadoPago = gql`
                 monto
                 fecha_subida
                 fecha_recibo
+                cod_recibo
             }
         }
     }
@@ -104,6 +105,7 @@ export const getPagoFamiliarFilter = gql`
                 tipo_pago
                 fecha_subida
                 fecha_recibo
+                cod_recibo
                 # status
             }
             # aporte {
@@ -169,6 +171,15 @@ export const matrizOperaciones = gql`
         MatrizOperaciones(fechaDesde: $fechaDesde, fechaHasta: $fechaHasta) {
             keys
             data
+        }
+    }
+`
+
+export const deletePago = gql`
+    mutation ($id: Int!) {
+        DeletePago(id: $id) {
+            code
+            message
         }
     }
 `

@@ -14,7 +14,7 @@ interface IProps {
     handleChange: any
     value: any
     id: string
-    label: string,
+    label: string
     style?: any
 }
 
@@ -34,11 +34,15 @@ export const SelectHeader: React.FC<IProps> = ({
     id,
     label,
     children,
-    style
+    style,
 }) => {
     const classes = useStyles()
     return (
-        <FormControl style={style} className={classes.formControl} variant="filled">
+        <FormControl
+            style={style}
+            className={classes.formControl}
+            variant="filled"
+        >
             <InputLabel id={id + '_label'}>{label}</InputLabel>
             <Select
                 labelId={id + '_label'}

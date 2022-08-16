@@ -101,7 +101,10 @@ const initialValues = Object.freeze({
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    statusVehiculo: yup.string().required('Campo requerido'),
+    statusVehiculo: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
 })
 
 interface IProps {
@@ -138,8 +141,8 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
     const init = useMemo(() => {
         return isNotNilOrEmpty(statusVehiculoObj)
             ? {
-                statusVehiculo: statusVehiculoObj?.statusVehiculo,
-            }
+                  statusVehiculo: statusVehiculoObj?.statusVehiculo,
+              }
             : initialValues
     }, [statusVehiculoObj])
 
@@ -150,16 +153,18 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
                     setLoadingMutate(true)
                     const { data } = isNil(statusVehiculoObj)
                         ? await mutate({
-                            variables: {
-                                statusVehiculo,
-                            },
-                        })
+                              variables: {
+                                  statusVehiculo:
+                                      String(statusVehiculo).toUpperCase(),
+                              },
+                          })
                         : await mutate({
-                            variables: {
-                                id,
-                                statusVehiculo,
-                            },
-                        })
+                              variables: {
+                                  id,
+                                  statusVehiculo:
+                                      String(statusVehiculo).toUpperCase(),
+                              },
+                          })
 
                     if (isNotNilOrEmpty(data)) {
                         const { code, message } = isNotNilOrEmpty(
@@ -263,6 +268,7 @@ export const IngresarStatusVehiculoForm: FC<IProps> = ({
                                 : undefined
                         }
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
                 <div className={classes.contentButtons}>

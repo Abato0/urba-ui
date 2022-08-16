@@ -7,6 +7,7 @@ import {
     getIntegrante,
     updateIntegrante,
     listaIntergranteFilter,
+    deleteIntegrante,
 } from './integrante-typedefs'
 import { equals } from 'ramda'
 import { IResultQueryParentesco } from '../mantenimento/parentesco/use-parentesco'
@@ -82,6 +83,13 @@ export const useGetIntegranteQuery = (id: number) => {
         notifyOnNetworkStatusChange: true,
         fetchPolicy: 'cache-and-network',
     })
+}
+
+export const useDeleteIntegranteMuttation = () => {
+    const [mutate] = useMutation(deleteIntegrante, {
+        awaitRefetchQueries: true,
+    })
+    return [mutate]
 }
 
 export interface IListaIntegranteFilterQuery {

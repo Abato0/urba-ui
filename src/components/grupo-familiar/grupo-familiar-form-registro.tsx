@@ -8,6 +8,7 @@ import {
     TextField,
     MenuItem,
     Typography,
+    Grid,
 } from '@material-ui/core'
 import { useFormik } from 'formik'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
@@ -108,26 +109,55 @@ const useStyles = makeStyles((theme) =>
             paddingRight: theme.spacing(4),
             borderRadius: 5,
         },
+        input: {
+            '& input[type=number]': {
+                '-moz-appearance': 'textfield',
+            },
+            '& input[type=number]::-webkit-outer-spin-button': {
+                '-webkit-appearance': 'none',
+                margin: 0,
+            },
+            '& input[type=number]::-webkit-inner-spin-button': {
+                '-webkit-appearance': 'none',
+                margin: 0,
+            },
+            margin: theme.spacing(1),
+            width: theme.spacing(29),
+        },
     })
 )
 
 const initialValues = Object.freeze({
     nombre_familiar: '',
     id_calle_principal: 0,
-    calle_interseccion: '',
+    calle_interseccion: '0',
     id_manzana: 0,
-    villa: 0,
+    villa: 1,
+    extension: '',
     // id_usuario: undefined,
     // id_tipo_edificacion: 0,
     // id_color_fachada: 0,
 })
 
 const validationSchema = yup.object().shape({
-    nombre_familiar: yup.string().required('Requerido'),
+    nombre_familiar: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Requerido'),
     id_manzana: yup.number().required('Requerido'),
-    villa: yup.number().required('Requerido'),
+    villa: yup
+        .number()
+        .min(1, 'No se acepta 0 o numeros negativos')
+        .required('Requerido'),
     id_calle_principal: yup.number().required('Requerido'),
-    calle_interseccion: yup.string().required('Requerido'),
+    calle_interseccion: yup
+        .string()
+        .matches(/^[aA-zZ\s]+$/, 'No colocar caracteres especiales')
+        .required('Requerido'),
+    extension: yup.string(),
+    // .matches(/^[aA-zZ\s]+$/, 'No colocar caracteres especiales')
+    // .max(4, 'Excede la cantidad de caracteres permitidos'),
+    // .nullable(),
     // id_usuario: yup.number().required('Requerido'),
     // id_color_fachada: yup.number().required("Requerido"),
     // id_tipo_edificacion: yup.number().required("Requerido"),
@@ -160,7 +190,6 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
         ? useGrupoFamiliarMutation(mutation)
         : useUpdateFamiliarMutation(mutation)
 
-
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
             refetch().then(() => {
@@ -174,18 +203,11 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
         }
     }
 
+    const { data: dataListadoManzana, loading: loadingListadoManzana } =
+        useListaManzanaQuery()
 
-    const {
-        data: dataListadoManzana,
-        loading: loadingListadoManzana,
-        error: errorListadoManzana,
-    } = useListaManzanaQuery()
-
-    const {
-        data: dataListadoCalles,
-        loading: loadingListadoCalles,
-        error: errorListadoCalles,
-    } = useListaCallesQuery()
+    const { data: dataListadoCalles, loading: loadingListadoCalles } =
+        useListaCallesQuery()
 
     // const {
     //     data: dataListadoUsuarios,
@@ -205,25 +227,25 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
     // }, [boolPut, openModalMsj])
 
     const onSubmit = useCallback(
-        async (
-            {
-                nombre_familiar,
-                id_calle_principal,
-                // id_usuario,
-                calle_interseccion,
-                id_manzana,
-                villa,
-                // id_tipo_edificacion,
-                // id_color_fachada,
-            },
-            { setSubmitting }
-        ) => {
+        async ({
+            nombre_familiar,
+            id_calle_principal,
+            // id_usuario,
+            calle_interseccion,
+            id_manzana,
+            villa,
+            extension,
+            // id_tipo_edificacion,
+            // id_color_fachada,
+        }) => {
             try {
+                console.log('Entre')
                 if (
                     isNotNilOrEmpty(nombre_familiar) &&
                     isNotNilOrEmpty(id_calle_principal) &&
                     !equals(id_calle_principal, 0) &&
                     isNotNilOrEmpty(calle_interseccion) &&
+                    !equals(calle_interseccion, '0') &&
                     isNotNilOrEmpty(id_manzana) &&
                     !equals(id_manzana, 0) &&
                     isNotNilOrEmpty(villa)
@@ -237,30 +259,40 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                     setLoadingMutate(true)
                     const { data: dataMutate } = isNil(grupoFam)
                         ? await mutate({
-                            variables: {
-                                nombre_familiar,
-                                id_calle_principal,
-                                calle_interseccion,
-                                id_manzana,
-                                // id_usuario,
-                                villa,
-                                // id_tipo_edificacion,
-                                // id_color_fachada,
-                            },
-                        })
+                              variables: {
+                                  nombre_familiar:
+                                      String(nombre_familiar).toUpperCase(),
+                                  id_calle_principal,
+                                  calle_interseccion:
+                                      String(calle_interseccion).toUpperCase(),
+                                  id_manzana,
+                                  // id_usuario,
+                                  villa,
+                                  extension: extension
+                                      ? String(extension).toUpperCase()
+                                      : '',
+                                  // id_tipo_edificacion,
+                                  // id_color_fachada,
+                              },
+                          })
                         : await mutate({
-                            variables: {
-                                id: idGrupoFamiliar,
-                                nombre_familiar,
-                                id_calle_principal,
-                                calle_interseccion,
-                                id_manzana,
-                                // id_usuario,
-                                villa,
-                                // id_tipo_edificacion,
-                                // id_color_fachada,
-                            },
-                        })
+                              variables: {
+                                  id: idGrupoFamiliar,
+                                  nombre_familiar:
+                                      String(nombre_familiar).toUpperCase(),
+                                  id_calle_principal,
+                                  calle_interseccion:
+                                      String(calle_interseccion).toUpperCase(),
+                                  id_manzana,
+                                  // id_usuario,
+                                  villa,
+                                  extension: extension
+                                      ? String(extension).toUpperCase()
+                                      : '',
+                                  // id_tipo_edificacion,
+                                  // id_color_fachada,
+                              },
+                          })
                     if (
                         (isNotNilOrEmpty(dataMutate) &&
                             isNotNilOrEmpty(dataMutate.PostGrupoFamiliar)) ||
@@ -279,17 +311,18 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                         setErrorModal(code === 200 ? false : true)
 
                         if (code === 200) {
-                            if (isNotNilOrEmpty(dataMutate.UpdateGrupoFamiliar)) {
+                            if (
+                                isNotNilOrEmpty(dataMutate.UpdateGrupoFamiliar)
+                            ) {
                                 setBoolPut(true)
                                 return
                             }
-                            await refetch();
-                            resetForm();
+                            await refetch()
+                            resetForm()
                         }
 
                         // resetForm();
                         // return
-
                     } else if (dataMutate === null) {
                         setOpenModalMsj(true)
                         setTitleModalMsj('Usuario no autorizado')
@@ -326,11 +359,33 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
         touched,
         values,
         resetForm,
+        setFieldValue,
+        setValues,
     } = useFormik({
         initialValues: init,
         onSubmit,
         validationSchema,
     })
+
+    // useEffect(() => {
+    //     if (
+    //         (!values.calle_interseccion ||
+    //             values.calle_interseccion.length === 0) &&
+    //         !loadingListadoCalles &&
+    //         dataListadoCalles &&
+    //         dataListadoCalles.ListaCalle &&
+    //         dataListadoCalles.ListaCalle.length > 0
+    //     ) {
+    //         setFieldValue(
+    //             'calle_interseccion',
+    //             dataListadoCalles.ListaCalle[0].calle
+    //         )
+    //     }
+    // }, [loadingListadoCalles, dataListadoCalles, values])
+
+    useEffect(() => {
+        console.log('Values: ', values)
+    }, [values])
 
     const classes = useStyles()
     return (
@@ -338,7 +393,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    onClose={() => { onCloseModalAuth() }}
+                    onClose={() => {
+                        onCloseModalAuth()
+                    }}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
@@ -357,16 +414,20 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                 onReset={handleReset}
                 className={classes.form}
             >
-                <div className={classes.contentLastTextBox} style={{
-                    width: "100%"
-                }}>
+                <div
+                    className={classes.contentLastTextBox}
+                    style={{
+                        width: '100%',
+                    }}
+                >
                     <TextField
                         className={classes.textbox}
                         style={{
-                            width: "95%"
+                            width: '95%',
                         }}
                         variant="outlined"
                         id="nombre_familiar"
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                         value={values.nombre_familiar}
                         onChange={handleChange}
                         onBlur={handleBlur}
@@ -384,7 +445,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                         }
                         required
                     />
-                    {/* 
+                    {/*
                     <FormControlHeader
                         classes={classes}
                         handleBlur={handleBlur}
@@ -451,67 +512,114 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                     >
                         {!loadingListadoCalles &&
                             !isNil(dataListadoCalles) &&
-                            dataListadoCalles.ListaCalle.map(({ calle }) => {
-                                return (
-                                    <MenuItem
-                                        key={
-                                            'ingresoGrupoFamiliar-calle-interseccion' +
-                                            calle
-                                        }
-                                        value={calle}
-                                    >
-                                        {calle}
-                                    </MenuItem>
-                                )
-                            })}
-                    </FormControlHeader>
-                </div>
-
-                <div className={classes.contentLastTextBox}>
-                    <FormControlHeader
-                        classes={classes}
-                        handleBlur={handleBlur}
-                        id="id_manzana"
-                        handleChange={handleChange}
-                        labetTitulo="Manzana"
-                        value={values.id_manzana}
-                    >
-                        {!loadingListadoManzana &&
-                            !isNil(dataListadoManzana) &&
-                            dataListadoManzana.ListaManzana.map(
-                                ({ id, manzana }) => {
+                            dataListadoCalles.ListaCalle.map(
+                                ({ id, calle }) => {
                                     return (
                                         <MenuItem
                                             key={
-                                                'ingresoGrupoFamiliar-manzana' +
+                                                'ingresoGrupoFamiliar-calle-interseccion' +
                                                 id
                                             }
-                                            value={id}
+                                            value={calle}
                                         >
-                                            {manzana}
+                                            {calle}
                                         </MenuItem>
                                     )
                                 }
                             )}
                     </FormControlHeader>
-
-                    <TextField
-                        className={classes.textbox}
-                        variant="outlined"
-                        id="villa"
-                        value={values.villa}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        autoComplete="villa"
-                        label="Numero de lote (Villa)"
-                        margin="normal"
-                        type={'number'}
-                        InputProps={{ inputProps: { min: 0 } }}
-                        error={touched.villa && isNotNilOrEmpty(errors.villa)}
-                        helperText={touched.villa ? errors.villa : undefined}
-                        required
-                    />
                 </div>
+
+                <>
+                    <div className={classes.contentLastTextBox}>
+                        <FormControlHeader
+                            classes={classes}
+                            handleBlur={handleBlur}
+                            id="id_manzana"
+                            handleChange={handleChange}
+                            labetTitulo="Manzana"
+                            value={values.id_manzana}
+                        >
+                            {!loadingListadoManzana &&
+                                !isNil(dataListadoManzana) &&
+                                dataListadoManzana.ListaManzana.map(
+                                    ({ id, manzana }) => {
+                                        return (
+                                            <MenuItem
+                                                key={
+                                                    'ingresoGrupoFamiliar-manzana' +
+                                                    id
+                                                }
+                                                value={id}
+                                            >
+                                                {manzana}
+                                            </MenuItem>
+                                        )
+                                    }
+                                )}
+                        </FormControlHeader>
+
+                        <TextField
+                            className={classes.input}
+                            style={{ width: 108 }}
+                            variant="outlined"
+                            id="villa"
+                            value={values.villa}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            autoComplete="villa"
+                            label="Núm. de lote"
+                            margin="normal"
+                            type={'number'}
+                            InputProps={{ inputProps: { min: 1 } }}
+                            InputLabelProps={{
+                                style: {
+                                    fontSize: 14,
+                                    textAlign: 'left',
+                                },
+                            }}
+                            error={
+                                touched.villa && isNotNilOrEmpty(errors.villa)
+                            }
+                            helperText={
+                                touched.villa ? errors.villa : undefined
+                            }
+                            required
+                        />
+
+                        <TextField
+                            className={classes.textbox}
+                            style={{ width: 108 }}
+                            variant="outlined"
+                            id="extension"
+                            value={values.extension}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            autoComplete="extension"
+                            label="Extensión"
+                            margin="normal"
+                            // type={'number'}
+                            inputProps={{
+                                style: {
+                                    textTransform: 'uppercase',
+                                },
+                            }}
+                            InputLabelProps={{
+                                style: {
+                                    fontSize: 14,
+                                },
+                            }}
+                            error={
+                                touched.extension &&
+                                isNotNilOrEmpty(errors.extension)
+                            }
+                            helperText={
+                                touched.extension ? errors.extension : undefined
+                            }
+                            // required
+                        />
+                    </div>
+                </>
 
                 <div className={classes.contentButtons}>
                     <div></div>

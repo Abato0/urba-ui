@@ -1,5 +1,6 @@
 import { Column } from 'react-table'
 import VisualizarActionsCell from '../table/ver-imagen-cell'
+import MontoPago from './montoPago'
 
 export interface AllPagoTable {
     id: number
@@ -27,12 +28,19 @@ export const headPagoTable = Object.freeze([
     },
 
     {
-        Header: 'Fecha del Pago',
+        Header: 'Cuota / Mes',
         accessor: 'fecha_pago',
     },
 
     {
-        Header: 'Fecha del Recibo',
+        Header: 'Fecha del Regitro del Pago',
+        accessor: 'fecha_subida',
+    },
+
+    {
+        // Header: 'Fecha del Recibo',
+
+        Header: 'Fecha del Pago',
         accessor: 'fecha_recibo',
     },
 
@@ -41,12 +49,12 @@ export const headPagoTable = Object.freeze([
     //   accessor: "mes_ano_pago",
     // },
     {
-        Header: 'Descripcion',
-        accessor: 'descripcion',
+        Header: 'Código de Recibo',
+        accessor: 'cod_recibo',
     },
     {
         Header: 'Monto',
-        accessor: 'monto',
+        Cell: MontoPago,
     },
     // {
     //   Header: "Estado",

@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client'
 import {
     carteraVencida,
+    deletePago,
     getPagoFamiliar,
     getPagoFamiliarFilter,
     listadoPago,
@@ -105,6 +106,7 @@ export interface IDataListaPagoFilter {
         descripcion: string
         monto: number
         fecha_recibo: string
+        cod_recibo?: string
     }
     // aporte: {
     //   nombre_aporte: string;
@@ -152,6 +154,20 @@ export const useCarteraVencida = (fecha: string) => {
             fecha,
         },
     })
+}
+
+export const useDeletePagoMutation = () => {
+    const [mutate] = useMutation(deletePago, {
+        refetchQueries: [
+            { query: pagosDashboard },
+            { query: listadoPago },
+            { query: getPagoFamiliarFilter },
+            { query: carteraVencida },
+            { query: matrizOperaciones },
+        ],
+        awaitRefetchQueries: true,
+    })
+    return [mutate]
 }
 
 export const useMatrizOperaciones = (

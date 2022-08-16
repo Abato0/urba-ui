@@ -4,6 +4,7 @@ import {
     IIntegranteFilterInput,
     IIntegranteVariables,
     IListaIntegranteFilterQuery,
+    useDeleteIntegranteMuttation,
     useListaIntergranteFilterQuery,
 } from '../../components/integrante/use-intergrante'
 import CardTable from '../../components/table/card-table'
@@ -113,20 +114,20 @@ const extractData = (
 const VariablesNormalizeIntegrantes = (data: IIntegranteVariables[]) => {
     return isNotNilOrEmpty(data)
         ? data.map(
-            ({ grupoFamiliar, parentesco, tipoIdentificacion, ...input }) => {
-                return omit(['__typename'], {
-                    ...input,
-                    nombre_familiar: grupoFamiliar.nombre_familiar,
-                    parentesco: parentesco.parentesco,
-                    tipo_doc_identidad:
-                        tipoIdentificacion.tipo_identificacion ?? '',
-                    // manzana: grupoFamiliar.manzana,
-                    // calle_principal: grupoFamiliar.calle_principal,
-                    // calle_interseccion: grupoFamiliar.calle_interseccion,
-                    // villa: grupoFamiliar.villa,
-                })
-            }
-        )
+              ({ grupoFamiliar, parentesco, tipoIdentificacion, ...input }) => {
+                  return omit(['__typename'], {
+                      ...input,
+                      nombre_familiar: grupoFamiliar.nombre_familiar,
+                      parentesco: parentesco.parentesco,
+                      tipo_doc_identidad:
+                          tipoIdentificacion.tipo_identificacion ?? '',
+                      // manzana: grupoFamiliar.manzana,
+                      // calle_principal: grupoFamiliar.calle_principal,
+                      // calle_interseccion: grupoFamiliar.calle_interseccion,
+                      // villa: grupoFamiliar.villa,
+                  })
+              }
+          )
         : []
 }
 
@@ -165,10 +166,13 @@ const ListadoIntegrante = () => {
         []
     )
     const [search, setSearch] = useState<string>('')
+
     const debounceSearch = useDebounce(search, 300)
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
     const [titleModalMsj, setTitleModalMsj] = useState<string>('')
     const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
+
+    const [errorModal, setErrorModal] = useState<boolean>(false)
     const [inputFilter, setInputFilter] = useState<IIntegranteFilterInput>({})
 
     const {
@@ -177,7 +181,8 @@ const ListadoIntegrante = () => {
         error: errorListadoGrupoFamiliar,
     } = useListarGrupoFamiliar()
 
-    const { data, loading, error } = useListaIntergranteFilterQuery(inputFilter)
+    const { data, loading, error, refetch } =
+        useListaIntergranteFilterQuery(inputFilter)
 
     const [idGrupoFamiliarFilter, setIdGrupoFamiliarFilter] = useState<
         number | undefined
@@ -186,6 +191,8 @@ const ListadoIntegrante = () => {
     const [cllInterseccionFilter, setClleInterseccionFilter] =
         useState<string>('')
     const [manzanaFilter, setManzanaFilter] = useState<string>('')
+
+    const [mutateEliminar] = useDeleteIntegranteMuttation()
 
     useEffect(() => {
         if (!loading && !isNil(data) && isNil(error)) {
@@ -213,7 +220,7 @@ const ListadoIntegrante = () => {
         }
     }, [data, debounceSearch, fuse])
 
-    const onEdit = ({ id }: any) => {
+    const onEdit = ({ id }: IIntegranteVariablesNormalize) => {
         if (!isNil(id)) {
             router.push(
                 { pathname: '/integrante/ingresar/[id]' },
@@ -222,7 +229,36 @@ const ListadoIntegrante = () => {
         }
     }
 
-    const onDelete = async ({ id }: any) => { }
+    const onDelete = async ({ id }: IIntegranteVariablesNormalize) => {
+        try {
+            const { data } = await mutateEliminar({
+                variables: {
+                    id,
+                },
+            })
+            if (data) {
+                const { code, message } = data.DeleteIntegrante
+                setTitleModalMsj(message)
+
+                if (code === 200) {
+                    setErrorModal(false)
+                } else {
+                    setErrorModal(true)
+                }
+                await refetch()
+                setOpenModalMsj(true)
+            } else {
+                setTitleModalMsj('Usuario no autorizado')
+                setErrorModal(true)
+                setOpenModalMsj(true)
+            }
+        } catch (error) {
+            setTitleModalMsj('Envio Fallido')
+            setErrorModal(true)
+            setMensajeModalMsj('' + (error as Error).message)
+            setOpenModalMsj(true)
+        }
+    }
 
     const ExportExcel = useCallback(() => {
         if (isNotNilOrEmpty(dataTable)) {
@@ -307,6 +343,7 @@ const ListadoIntegrante = () => {
                             onClose={() => setOpenModalMsj(false)}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
+                            error={errorModal}
                         />
                     )}
                     <Paper className={classes.paperFilter}>
@@ -330,7 +367,12 @@ const ListadoIntegrante = () => {
                                                 )
                                             }
                                         >
-                                            <MenuItem value={undefined}>
+                                            <MenuItem
+                                                style={{
+                                                    textTransform: 'uppercase',
+                                                }}
+                                                value={undefined}
+                                            >
                                                 {' '}
                                                 - Todos -{' '}
                                             </MenuItem>
@@ -347,6 +389,10 @@ const ListadoIntegrante = () => {
                                                             <MenuItem
                                                                 key={index}
                                                                 value={id}
+                                                                style={{
+                                                                    textTransform:
+                                                                        'uppercase',
+                                                                }}
                                                             >
                                                                 {
                                                                     nombre_familiar

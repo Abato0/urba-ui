@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) =>
             textAlign: 'center',
             backgroundColor: 'white',
             margin: theme.spacing(2),
-            maxWidth: theme.spacing(60)
+            maxWidth: theme.spacing(60),
             // width:"100px"
         },
         formControl: {
@@ -99,7 +99,10 @@ const initialValues = Object.freeze({
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    color: yup.string().required('Campo requerido'),
+    color: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
 })
 
 interface IProps {
@@ -150,8 +153,8 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
     const init = useMemo(() => {
         return isNotNilOrEmpty(colorObj)
             ? {
-                color: colorObj?.color,
-            }
+                  color: colorObj?.color,
+              }
             : initialValues
     }, [colorObj])
 
@@ -162,16 +165,16 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(colorObj)
                         ? await mutate({
-                            variables: {
-                                color,
-                            },
-                        })
+                              variables: {
+                                  color: String(color).toUpperCase(),
+                              },
+                          })
                         : await mutate({
-                            variables: {
-                                id,
-                                color,
-                            },
-                        })
+                              variables: {
+                                  id,
+                                  color: String(color).toUpperCase(),
+                              },
+                          })
 
                     if (isNotNilOrEmpty(data)) {
                         const { code, message } = isNotNilOrEmpty(data.PutColor)
@@ -282,6 +285,7 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
                         error={touched.color && isNotNilOrEmpty(errors.color)}
                         helperText={touched.color ? errors.color : undefined}
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
                 <div className={classes.contentButtons}>

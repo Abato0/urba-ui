@@ -45,6 +45,12 @@ import { useRouter } from 'next/router'
 import { useListaTipoIdentificacionQuery } from '../mantenimento/tipo-identificacion/use-tipo-identificacion'
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
+import moment from 'moment'
+import {
+    KeyboardDatePicker,
+    MuiPickersUtilsProvider,
+} from '@material-ui/pickers'
+import DateFnsUtils from '@date-io/date-fns'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -135,7 +141,7 @@ const validationSchema = yup.object().shape({
     id_tipo_doc_identidad: yup.number().required('Campo requerido'),
     num_doc_identidad: yup
         .string()
-        .matches(/^[0-9]+$/, 'Solo numeros')
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
         .min(10, 'La cantidad de digitos debe ser mayor o igual 10 ')
         .max(15, 'La cantidad de digitos debe ser menor o igual 15 ')
         .required('Campo requerido'),
@@ -163,30 +169,6 @@ interface IProps {
 }
 
 const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
-    const init = useMemo(() => {
-        return isNotNilOrEmpty(integrante)
-            ? {
-                idGrupoFamiliar: integrante?.grupoFamiliar.id,
-                id_tipo_doc_identidad: integrante?.tipoIdentificacion.id,
-                num_doc_identidad: integrante?.num_doc_identidad,
-                nombre: integrante?.nombre,
-                apellido: integrante?.apellido,
-                telefono: integrante?.telefono,
-                email: integrante?.email,
-                genero: integrante?.genero,
-                representante: integrante?.representante,
-                id_parentesco: integrante?.parentesco.id,
-                // piso_ocupa: integrante?.piso_ocupa,
-                // status: integrante?.status,
-                fecha_nacimiento: isNotNilOrEmpty(
-                    integrante?.fecha_nacimiento
-                )
-                    ? parseStringDate(integrante?.fecha_nacimiento!)
-                    : new Date(),
-            }
-            : initialValues
-    }, [integrante])
-
     const router = useRouter()
     const classes = useStyles()
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
@@ -197,11 +179,8 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
     const { refetch } = useListaIntergranteFilterQuery({})
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
-    const {
-        data: dataListaGrupoFamiliar,
-        loading: loadingListaGrupoFamiliar,
-        error: errorListaGrupoFamiliar,
-    } = useListarGrupoFamiliar()
+    const { data: dataListaGrupoFamiliar, loading: loadingListaGrupoFamiliar } =
+        useListarGrupoFamiliar()
 
     const {
         data: dataListadoTipoID,
@@ -233,10 +212,8 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
     //     // eslint-disable-next-line react-hooks/exhaustive-deps
     // }, [boolPut, openModalMsj])
 
-    const {
-        data: dataParentesco,
-        loading: loadingParentesco,
-    } = useListaParentescoQuery()
+    const { data: dataParentesco, loading: loadingParentesco } =
+        useListaParentescoQuery()
 
     const [mutate] = isNil(integrante)
         ? usePostIntegranteMutation()
@@ -281,39 +258,43 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                     setLoadingMutate(true)
                     const { data: dataMutate } = isNotNilOrEmpty(integrante)
                         ? await mutate({
-                            variables: {
-                                id: integrante?.id,
-                                idGrupoFamiliar,
-                                nombre,
-                                apellido,
-                                telefono,
-                                id_parentesco,
-                                fecha_nacimiento,
-                                id_tipo_doc_identidad,
-                                num_doc_identidad,
-                                representante,
-                                genero,
-                                email,
-                            },
-                        })
+                              variables: {
+                                  id: integrante?.id,
+                                  idGrupoFamiliar,
+                                  nombre: String(nombre).toUpperCase(),
+                                  apellido: String(apellido).toUpperCase(),
+                                  telefono,
+                                  id_parentesco,
+                                  fecha_nacimiento: moment(
+                                      fecha_nacimiento,
+                                      'YYYY-MM-DD'
+                                  ),
+                                  id_tipo_doc_identidad,
+                                  num_doc_identidad,
+                                  representante,
+                                  genero,
+                                  email,
+                              },
+                          })
                         : await mutate({
-                            variables: {
-                                idGrupoFamiliar,
-                                nombre,
-                                apellido,
-                                telefono,
-                                id_parentesco,
-                                fecha_nacimiento,
-                                id_tipo_doc_identidad,
-                                num_doc_identidad,
-                                representante,
-                                genero,
-                                email,
-                            },
-                        })
-                    if (
-                        isNotNilOrEmpty(dataMutate)
-                    ) {
+                              variables: {
+                                  idGrupoFamiliar,
+                                  nombre: String(nombre).toUpperCase(),
+                                  apellido: String(apellido).toUpperCase(),
+                                  telefono,
+                                  id_parentesco,
+                                  fecha_nacimiento: moment(
+                                      fecha_nacimiento,
+                                      'YYYY-MM-DD'
+                                  ),
+                                  id_tipo_doc_identidad,
+                                  num_doc_identidad,
+                                  representante,
+                                  genero,
+                                  email,
+                              },
+                          })
+                    if (isNotNilOrEmpty(dataMutate)) {
                         const { code, message } = isNotNilOrEmpty(
                             dataMutate.PostIntegrante
                         )
@@ -329,8 +310,8 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                                 setBoolPut(true)
                                 return
                             }
-                            await refetch();
-                            resetForm();
+                            await refetch()
+                            resetForm()
                         }
 
                         //  console.log('Messaget: ', message)
@@ -341,7 +322,6 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                         setTitleModalMsj('Usuario no autorizado')
                         setErrorModal(true)
                         setOpenModalMsj(true)
-
                     }
                 }
             } catch (err: any) {
@@ -358,6 +338,30 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [integrante]
     )
+
+    const init = useMemo(() => {
+        return isNotNilOrEmpty(integrante)
+            ? {
+                  idGrupoFamiliar: integrante?.grupoFamiliar.id,
+                  id_tipo_doc_identidad: integrante?.tipoIdentificacion.id,
+                  num_doc_identidad: integrante?.num_doc_identidad,
+                  nombre: integrante?.nombre,
+                  apellido: integrante?.apellido,
+                  telefono: integrante?.telefono,
+                  email: integrante?.email,
+                  genero: integrante?.genero,
+                  representante: integrante?.representante,
+                  id_parentesco: integrante?.parentesco.id,
+                  // piso_ocupa: integrante?.piso_ocupa,
+                  // status: integrante?.status,
+                  fecha_nacimiento: isNotNilOrEmpty(
+                      integrante?.fecha_nacimiento
+                  )
+                      ? parseStringDate(integrante?.fecha_nacimiento!)
+                      : new Date(),
+              }
+            : initialValues
+    }, [integrante])
 
     const {
         errors,
@@ -381,7 +385,9 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                 <ModalAuth
                     openModal={openModalMsj}
                     // setOpenModal={setOpenModalMsj}
-                    onClose={() => { closeModalAuth() }}
+                    onClose={() => {
+                        closeModalAuth()
+                    }}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
@@ -485,13 +491,6 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                                     )
                                 }
                             )}
-                        {/* {tipoDocumentosIdentidad.map((tipo) => {
-              return (
-                <MenuItem key={"integrante-" + tipo} value={tipo}>
-                  {tipo}
-                </MenuItem>
-              );
-            })} */}
                     </FormControlHeader>
 
                     <TextField
@@ -520,6 +519,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                         id="nombre"
                         name="nombre"
                         label="Nombres del Integrante"
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.nombre}
@@ -542,6 +542,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                             touched.apellido ? errors.apellido : undefined
                         }
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
 
@@ -565,16 +566,31 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                         labetTitulo="Genero"
                         value={values.genero}
                     >
-                        <MenuItem key="ListGeneroMasculino" value={'masculino'}>
-                            {' '}
+                        <MenuItem
+                            style={{
+                                textTransform: 'uppercase',
+                            }}
+                            key="ListGeneroMasculino"
+                            value={'masculino'}
+                        >
                             Masculino
                         </MenuItem>
-                        <MenuItem key="ListGeneroFemenino" value={'femenino'}>
-                            {' '}
-                            Femenino{' '}
+                        <MenuItem
+                            style={{
+                                textTransform: 'uppercase',
+                            }}
+                            key="ListGeneroFemenino"
+                            value={'femenino'}
+                        >
+                            Femenino
                         </MenuItem>
-                        <MenuItem key="ListGeneroOtro" value={'otro'}>
-                            {' '}
+                        <MenuItem
+                            style={{
+                                textTransform: 'uppercase',
+                            }}
+                            key="ListGeneroOtro"
+                            value={'otro'}
+                        >
                             Otro
                         </MenuItem>
                     </FormControlHeader>
@@ -595,6 +611,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                             touched.telefono ? errors.telefono : undefined
                         }
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                     <TextField
                         className={classes.textbox}
@@ -625,8 +642,6 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                             control={
                                 <Checkbox
                                     defaultChecked={init.representante === 'A'}
-                                    // value={values.representante === "A" ? true : false}
-                                    // checked={values.representante === "A" ? true : false}
                                     onChange={(e) => {
                                         if (e.target.checked) {
                                             setFieldValue('representante', 'A')

@@ -97,7 +97,10 @@ const initialValues = Object.freeze({
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    calle: yup.string().required('Campo requerido'),
+    calle: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
 })
 
 interface IProps {
@@ -117,7 +120,6 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
     const { refetch } = useListaCallesQuery()
-
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
@@ -148,8 +150,8 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
     const init = useMemo(() => {
         return isNotNilOrEmpty(calleObj)
             ? {
-                calle: calleObj?.calle,
-            }
+                  calle: calleObj?.calle,
+              }
             : initialValues
     }, [calleObj])
 
@@ -160,30 +162,27 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(calleObj)
                         ? await mutate({
-                            variables: {
-                                calle,
-                            },
-                        })
+                              variables: {
+                                  calle: String(calle).toUpperCase(),
+                              },
+                          })
                         : await mutate({
-                            variables: {
-                                id,
-                                calle,
-                            },
-                        })
+                              variables: {
+                                  id,
+                                  calle: String(calle).toUpperCase(),
+                              },
+                          })
 
                     if (isNotNilOrEmpty(data)) {
                         const { code, message } = isNotNilOrEmpty(data.PutCalle)
                             ? data.PutCalle
                             : data.PostCalle
 
-
                         //   setTimeout(() => {
 
                         //   }, 2000);
 
-
                         // setMensajeModalMsj(dataMutate.message);
-
 
                         if (code === 200) {
                             setOpenModalMsj(false)
@@ -191,13 +190,12 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
                                 setBoolPut(true)
                                 return
                             }
-                            await refetch();
+                            await refetch()
                             resetForm()
                         } else {
                             setErrorModal(true)
                         }
                         setOpenModalMsj(true)
-
                     } else {
                         setLoadingMutate(false)
                         setOpenModalMsj(true)
@@ -274,6 +272,7 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
                         error={touched.calle && isNotNilOrEmpty(errors.calle)}
                         helperText={touched.calle ? errors.calle : undefined}
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
                 <div className={classes.contentButtons}>

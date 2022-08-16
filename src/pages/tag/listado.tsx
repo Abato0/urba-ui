@@ -88,8 +88,8 @@ const useStyles = makeStyles((theme) =>
         },
         formControl: {
             margin: theme.spacing(1),
-            width: "100%",
-            minWidth: theme.spacing(12)
+            width: '100%',
+            minWidth: theme.spacing(12),
             // textAlign: "center"
         },
         image: {
@@ -105,21 +105,19 @@ const useStyles = makeStyles((theme) =>
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-
-
         },
         contentForm: {
             marginTop: theme.spacing(3),
             display: 'flex',
-            flexDirection: "row",
+            flexDirection: 'row',
 
             width: '100%',
             height: '100%',
             paddingLeft: theme.spacing(4),
             paddingRight: theme.spacing(4),
 
-            alignItems: "center",
-            justifyContent: "space-around",
+            alignItems: 'center',
+            justifyContent: 'space-around',
             // padding: theme.spacing(3)
         },
 
@@ -167,16 +165,16 @@ const extractData = (
 ): ITagsVariablesNormalize[] => {
     return isNotNilOrEmpty(data)
         ? data.map(({ id, valorTag, vehiculo, fecha_pago, monto }) => {
-            return {
-                id,
-                idGrupoFamiliar: vehiculo.grupoFamiliar.id!,
-                nombre_familiar: vehiculo.grupoFamiliar.nombre_familiar,
-                placa: vehiculo.placa,
-                tipo_tag: valorTag.tipo_tag,
-                monto: monto,
-                fecha_pago: fecha_pago,
-            }
-        })
+              return {
+                  id,
+                  idGrupoFamiliar: vehiculo.grupoFamiliar.id!,
+                  nombre_familiar: vehiculo.grupoFamiliar.nombre_familiar,
+                  placa: vehiculo.placa,
+                  tipo_tag: valorTag.tipo_tag,
+                  monto: monto,
+                  fecha_pago: fecha_pago,
+              }
+          })
         : []
 }
 
@@ -334,7 +332,7 @@ const MantenimientoParentescoListado = () => {
                             //style={{ justifyContent: 'space-between' }}
                             className={classes.contentForm}
                         >
-                            <div style={{ display: "flex", width: "80%" }} >
+                            <div style={{ display: 'flex', width: '80%' }}>
                                 <FormControl
                                     variant="filled"
                                     className={classes.formControl}
@@ -352,7 +350,12 @@ const MantenimientoParentescoListado = () => {
                                             )
                                         }
                                     >
-                                        <MenuItem value={undefined}>
+                                        <MenuItem
+                                            style={{
+                                                textTransform: 'uppercase',
+                                            }}
+                                            value={undefined}
+                                        >
                                             {' '}
                                             - Todos -{' '}
                                         </MenuItem>
@@ -369,6 +372,10 @@ const MantenimientoParentescoListado = () => {
                                                                 'ListadoTagFilterGrupoFamiliar' +
                                                                 id
                                                             }
+                                                            style={{
+                                                                textTransform:
+                                                                    'uppercase',
+                                                            }}
                                                         >
                                                             {nombre_familiar}
                                                         </MenuItem>
@@ -396,7 +403,7 @@ const MantenimientoParentescoListado = () => {
                                     >
                                         <MenuItem value={undefined}>
                                             {' '}
-                                            - Todos -{' '}
+                                            - TODOS -{' '}
                                         </MenuItem>
 
                                         {!loadingValorTag &&
@@ -413,6 +420,10 @@ const MantenimientoParentescoListado = () => {
                                                                 'ListadoTagFilterTag' +
                                                                 id
                                                             }
+                                                            style={{
+                                                                textTransform:
+                                                                    'uppercase',
+                                                            }}
                                                         >
                                                             {tipo_tag}
                                                         </MenuItem>
@@ -440,11 +451,14 @@ const MantenimientoParentescoListado = () => {
                         <TextField
                             className={classes.textBox}
                             variant="outlined"
-                            placeholder="Search"
+                            placeholder="Buscar"
                             onChange={(e) => {
                                 setSearch(e.target.value)
                             }}
                             value={search}
+                            inputProps={{
+                                style: { textTransform: 'uppercase' },
+                            }}
                         />
                         <div>
                             <ExportTablePdf
@@ -467,7 +481,7 @@ const MantenimientoParentescoListado = () => {
                                         style={{
                                             color: colors.green[800],
                                         }}
-                                    // onClick={ExportExcel}
+                                        // onClick={ExportExcel}
                                     />
                                 </IconButton>
                             </Tooltip>

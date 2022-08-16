@@ -16,7 +16,7 @@ import {
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useFormik } from 'formik'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import * as yup from 'yup'
 import ModalAuth from '../core/input/dialog/modal-dialog'
 import FormControlHeader from '../core/input/form-control-select'
@@ -44,7 +44,7 @@ import {
 import { es } from 'date-fns/locale'
 import { LoadingButton } from '@mui/lab'
 import { Send as SendIcon } from 'mdi-material-ui'
-import { rows } from '../core/input/data';
+import { rows } from '../core/input/data'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) =>
             marginBottom: theme.spacing(10),
             marginLeft: theme.spacing(2),
             marginRight: theme.spacing(2),
-            padding: theme.spacing(2),
+            padding: theme.spacing(5),
             borderRadius: '10px',
             textAlign: 'center',
             backgroundColor: 'white',
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) =>
             flexDirection: 'row',
             width: '100%',
             justifyContent: 'space-evenly',
-            color: colors.grey[600],
+            color: colors.grey[900],
             marginBottom: theme.spacing(2),
         },
         formControl: {
@@ -256,9 +256,12 @@ const validationSchema = yup.object().shape({
     //     if (!value.length) return true; // attachment is optional
     //     return value[0].size <= 2000000;
     //   }),
-    implementacion: yup.number().nullable(),
+    implementacion: yup
+        .number()
+        .min(0, 'No se acetan valores negativos')
+        .nullable(),
     // tag: yup.number().nullable(),
-    otro: yup.number().nullable(),
+    otro: yup.number().min(0, 'No se acetan valores negativos').nullable(),
 })
 
 interface IPagoMes {
@@ -311,7 +314,6 @@ export const PagoFormMulti = () => {
     const [checkMantenimiento, setCheckMantenimiento] = useState<boolean>(false)
     const [checkTag, setCheckTag] = useState<boolean>(false)
     const [checkOtros, setChecOtros] = useState<boolean>(false)
-
 
     const [idVehiculoSeleccionado, setIdVehiculoSeleccionado] =
         React.useState<number>()
@@ -386,8 +388,8 @@ export const PagoFormMulti = () => {
         return !isNil(dataListadoVehiculo) &&
             !isNil(dataListadoVehiculo.ListaVehiculoFilter)
             ? dataListadoVehiculo.ListaVehiculoFilter.find(
-                (vehiculo) => vehiculo.id === id
-            )
+                  (vehiculo) => vehiculo.id === id
+              )
             : null
     }
 
@@ -486,6 +488,13 @@ export const PagoFormMulti = () => {
         }) => {
             try {
                 console.log('dataFecha: ', fecha_recibo)
+
+                if (isNil(file)) {
+                    setErrorModal(true)
+                    setOpenModalMsj(true)
+                    setTitleModalMsj('Imagen de recibo requerido')
+                    return
+                }
                 if (
                     isNotNilOrEmpty(idGrupoFamiliar) &&
                     isNotNilOrEmpty(fecha_recibo)
@@ -501,11 +510,11 @@ export const PagoFormMulti = () => {
                         mantenimiento: pagoMantenimiento,
                         otros:
                             isNotNilOrEmpty(descripcion) &&
-                                isNotNilOrEmpty(otro)
+                            isNotNilOrEmpty(otro)
                                 ? {
-                                    descripcion: descripcion,
-                                    monto: otro,
-                                }
+                                      descripcion: descripcion,
+                                      monto: otro,
+                                  }
                                 : undefined,
                         tag: [...pagoTag],
                     }
@@ -533,7 +542,8 @@ export const PagoFormMulti = () => {
                 console.log('error : ', error)
                 setTitleModalMsj('Pago Fallido')
                 setMensajeModalMsj(
-                    'Pago no se ha realizado el pago: ' + (error as Error).message
+                    'Pago no se ha realizado el pago: ' +
+                        (error as Error).message
                 )
                 setOpenModalMsj(true)
                 setErrorModal(true)
@@ -559,9 +569,6 @@ export const PagoFormMulti = () => {
         validationSchema,
     })
 
-
-
-
     const {
         data: dataListadoVehiculo,
         loading: loadingListadoVehiculo,
@@ -571,13 +578,17 @@ export const PagoFormMulti = () => {
     })
 
     const sumaPagoTag = useCallback(() => {
-        let res = 0
+        // let res = 0
         if (isNotNilOrEmpty(gridPropsValorTag)) {
-            gridPropsValorTag.forEach(({ valorTag }) => {
-                res = res + valorTag.monto
-            })
+            return gridPropsValorTag.reduce((call, { valorTag }) => {
+                return valorTag.monto + call
+            }, 0)
+
+            // gridPropsValorTag.forEach(({ valorTag }) => {
+            //     res = res + valorTag.monto
+            // })
         }
-        return res
+        return 0
     }, [gridPropsValorTag])
 
     const sumaPagoMantenimiento = useCallback(() => {
@@ -590,17 +601,19 @@ export const PagoFormMulti = () => {
         return res
     }, [pagoMantenimiento])
 
-    const sumaTotal = useCallback(() => {
-        const implementacion = values.implementacion ?? 0
-        const otro = values.otro ?? 0
+    const sumaTotal = useMemo(() => {
+        const implementacion = values.implementacion || 0
+        const otro = values.otro || 0
 
-        return sumaPagoTag() + sumaPagoMantenimiento() + implementacion + otro
-    }, [sumaPagoMantenimiento, sumaPagoTag, values.implementacion, values.otro])
+        const pagoTag = sumaPagoTag() || 0
+        const pagoMantenimieno = sumaPagoMantenimiento() || 0
 
+        return pagoTag + pagoMantenimieno + implementacion + otro
+    }, [values, gridPropsValorTag, pagoMantenimiento])
 
     useEffect(() => {
         if (!checkImplementacion) {
-            setFieldValue("implementacion", undefined)
+            setFieldValue('implementacion', undefined)
         }
     }, [checkImplementacion])
 
@@ -610,7 +623,6 @@ export const PagoFormMulti = () => {
             setMesMantenimiento(undefined)
             setAnioMantenimiento(undefined)
         }
-
     }, [checkMantenimiento])
     return (
         <Box className={classes.root}>
@@ -734,7 +746,14 @@ export const PagoFormMulti = () => {
                                                     key={'grupoFamliar-' + id}
                                                     value={id}
                                                 >
-                                                    {nombre_familiar}
+                                                    <Typography
+                                                        style={{
+                                                            textTransform:
+                                                                'uppercase',
+                                                        }}
+                                                    >
+                                                        {nombre_familiar}
+                                                    </Typography>
                                                 </MenuItem>
                                             )
                                         }
@@ -756,13 +775,19 @@ export const PagoFormMulti = () => {
                                         ? errors.cod_recibo
                                         : undefined
                                 }
-                            //   multiline={true}
+                                inputProps={{
+                                    style: { textTransform: 'uppercase' },
+                                }}
+                                //   multiline={true}
                             />
                             <MuiPickersUtilsProvider
                                 locale={es}
                                 utils={DateFnsUtils}
                             >
                                 <KeyboardDatePicker
+                                    style={{
+                                        marginTop: '1%',
+                                    }}
                                     id={'fecha_recibo'}
                                     label={'Fecha del recibo'}
                                     value={values.fecha_recibo}
@@ -781,17 +806,21 @@ export const PagoFormMulti = () => {
                                             ? errors.fecha_recibo
                                             : undefined
                                     }
+                                    disableFuture={true}
                                 />
                             </MuiPickersUtilsProvider>
                         </div>
-                        <div style={{
-
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center"
-                        }}>
-
-                            <Paper {...getRootProps()} className={classes.dropzone}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Paper
+                                {...getRootProps()}
+                                className={classes.dropzone}
+                            >
                                 <input {...getInputProps()} />
                                 <ImageIcon fontSize="large" />
                                 <Typography variant="overline">
@@ -838,6 +867,7 @@ export const PagoFormMulti = () => {
                                                 : undefined
                                         }
                                         type={'number'}
+                                        inputProps={{ inputProps: { min: 0 } }}
                                     />
                                 </div>
                             </div>
@@ -856,8 +886,18 @@ export const PagoFormMulti = () => {
                                         className={classes.containerLabelTotal}
                                     >
                                         <Typography variant="overline">
-                                            Subtotal por Mantenimiento USD$
-                                            {sumaPagoMantenimiento().toFixed(2)}
+                                            Subtotal por Mantenimiento USD
+                                            <span
+                                                style={{
+                                                    fontWeight: 'bold',
+                                                    marginLeft: 8,
+                                                }}
+                                            >
+                                                $
+                                                {sumaPagoMantenimiento().toFixed(
+                                                    2
+                                                )}
+                                            </span>
                                         </Typography>
                                     </div>
                                 </div>
@@ -874,7 +914,8 @@ export const PagoFormMulti = () => {
                                         style={{
                                             display: 'flex',
                                             flexDirection: 'column',
-                                            width: "70%"
+                                            width: '70%',
+                                            marginRight: '4%',
                                         }}
                                     >
                                         <SelectMeses
@@ -888,6 +929,7 @@ export const PagoFormMulti = () => {
                                             value={mesMantenimiento}
                                             label={'Mes'}
                                             id={'mes_manteniento'}
+                                            style={{ width: '60%' }}
                                         />
 
                                         <SelectAnios
@@ -901,15 +943,18 @@ export const PagoFormMulti = () => {
                                             value={anioMantenimiento}
                                             label={'Año'}
                                             id={'anio_manteniento'}
+                                            style={{ width: '60%' }}
                                         />
                                     </div>
-                                    <div style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        // width: "20%"
-                                    }}>
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            // width: "20%"
+                                        }}
+                                    >
                                         <div className={classes.contianerFlex}>
                                             <TextField
                                                 className={classes.textBox}
@@ -936,7 +981,9 @@ export const PagoFormMulti = () => {
                                                     backgroundColor:
                                                         colors.deepPurple[400],
                                                 }}
-                                                onClick={agregarPagoMantenimiento}
+                                                onClick={
+                                                    agregarPagoMantenimiento
+                                                }
                                             >
                                                 <AddIcon
                                                     style={{ color: 'white' }}
@@ -944,7 +991,6 @@ export const PagoFormMulti = () => {
                                             </Fab>
                                         </div>
                                     </div>
-
                                 </div>
                                 <div>
                                     {isNotNilOrEmpty(pagoMantenimiento) && (
@@ -1013,7 +1059,8 @@ export const PagoFormMulti = () => {
                                                                                 // width: "100%",
                                                                                 // height:"100%"
                                                                                 // padding: 5,
-                                                                                overflow: "auto"
+                                                                                overflow:
+                                                                                    'auto',
                                                                             }}
                                                                         >
                                                                             <Typography
@@ -1045,12 +1092,11 @@ export const PagoFormMulti = () => {
                                                                                         monto
                                                                                     )
                                                                                 }
-                                                                            // onClick={agregarPagoMantenimiento}
+                                                                                // onClick={agregarPagoMantenimiento}
                                                                             >
                                                                                 <DeleteIcon />
                                                                             </Fab>
                                                                         </div>
-
                                                                     </div>
                                                                 </Paper>
                                                             </Grid>
@@ -1080,17 +1126,37 @@ export const PagoFormMulti = () => {
                                         className={classes.containerLabelTotal}
                                     >
                                         <Typography variant="overline">
-                                            Subtotal por Tags  USD${sumaPagoTag().toFixed(2)}
+                                            Subtotal por Tags USD
+                                            <span
+                                                style={{
+                                                    fontWeight: 'bold',
+                                                    marginLeft: 8,
+                                                }}
+                                            >
+                                                ${sumaPagoTag().toFixed(2)}
+                                            </span>
                                         </Typography>
                                     </div>
                                 </div>
 
-                                <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
-                                    <div style={{ display: "flex", flexDirection: "column", width: "75%" }}>
-
-
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        width: '100%',
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            width: '75%',
+                                        }}
+                                    >
                                         <SelectHeader
-                                            handleChange={(e: SelectChangeEvent) =>
+                                            handleChange={(
+                                                e: SelectChangeEvent
+                                            ) =>
                                                 setIdVehiculoSeleccionado(
                                                     Number(e.target.value)
                                                 )
@@ -1098,15 +1164,26 @@ export const PagoFormMulti = () => {
                                             value={idVehiculoSeleccionado}
                                             id={'vehiculosSelect'}
                                             label={'Vehiculos'}
+                                            style={{
+                                                width: '60%',
+                                            }}
                                         >
                                             {!loadingListadoVehiculo &&
-                                                !isNil(values.idGrupoFamiliar) &&
+                                                !isNil(
+                                                    values.idGrupoFamiliar
+                                                ) &&
                                                 !isNil(dataListadoVehiculo) &&
                                                 isNotNilOrEmpty(
                                                     dataListadoVehiculo.ListaVehiculoFilter
                                                 ) &&
                                                 dataListadoVehiculo.ListaVehiculoFilter.map(
-                                                    ({ id, placa, marca, modelo, color }) => {
+                                                    ({
+                                                        id,
+                                                        placa,
+                                                        marca,
+                                                        modelo,
+                                                        color,
+                                                    }) => {
                                                         return (
                                                             <MenuItem
                                                                 value={id}
@@ -1114,9 +1191,16 @@ export const PagoFormMulti = () => {
                                                                     'listadoVehiculoFormPago' +
                                                                     id
                                                                 }
-                                                                style={{ textTransform: "uppercase" }}
                                                             >
-                                                                {`${placa} ${marca.marca} ${modelo.modelo} ${color.color}`}
+                                                                <Typography
+                                                                    variant="inherit"
+                                                                    style={{
+                                                                        textTransform:
+                                                                            'uppercase',
+                                                                    }}
+                                                                >
+                                                                    {`${placa} ${marca.marca} ${modelo.modelo} ${color.color}`}
+                                                                </Typography>
                                                             </MenuItem>
                                                         )
                                                     }
@@ -1124,7 +1208,12 @@ export const PagoFormMulti = () => {
                                         </SelectHeader>
 
                                         <SelectHeader
-                                            handleChange={(e: SelectChangeEvent) =>
+                                            style={{
+                                                width: '60%',
+                                            }}
+                                            handleChange={(
+                                                e: SelectChangeEvent
+                                            ) =>
                                                 setIdValorTag(
                                                     Number(e.target.value)
                                                 )
@@ -1139,7 +1228,11 @@ export const PagoFormMulti = () => {
                                                     dataValorTag.ListaValorTag
                                                 ) &&
                                                 dataValorTag.ListaValorTag.map(
-                                                    ({ id, tipo_tag, valor }) => {
+                                                    ({
+                                                        id,
+                                                        tipo_tag,
+                                                        valor,
+                                                    }) => {
                                                         return (
                                                             <MenuItem
                                                                 value={id}
@@ -1147,15 +1240,31 @@ export const PagoFormMulti = () => {
                                                                     'ListadoTag' +
                                                                     id
                                                                 }
-                                                            >{`${tipo_tag} - $${valor}`}</MenuItem>
+                                                            >
+                                                                <Typography
+                                                                    variant="inherit"
+                                                                    style={{
+                                                                        textTransform:
+                                                                            'uppercase',
+                                                                    }}
+                                                                >
+                                                                    {`${tipo_tag} - $${valor}`}
+                                                                </Typography>
+                                                            </MenuItem>
                                                         )
                                                     }
                                                 )}
                                         </SelectHeader>
                                     </div>
-                                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width: "25%" }}>
-
-
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            width: '25%',
+                                        }}
+                                    >
                                         <Fab
                                             size="small"
                                             aria-label="add"
@@ -1168,7 +1277,9 @@ export const PagoFormMulti = () => {
                                                 agregarPagoTag()
                                             }}
                                         >
-                                            <AddIcon style={{ color: 'white' }} />
+                                            <AddIcon
+                                                style={{ color: 'white' }}
+                                            />
                                         </Fab>
                                     </div>
                                 </div>
@@ -1238,7 +1349,8 @@ export const PagoFormMulti = () => {
                                                                                 // width: "100%",
                                                                                 // height:"100%"
                                                                                 padding: 5,
-                                                                                overflow: "auto"
+                                                                                overflow:
+                                                                                    'auto',
                                                                             }}
                                                                         >
                                                                             <Typography
@@ -1247,11 +1359,9 @@ export const PagoFormMulti = () => {
                                                                                 }
                                                                                 variant="overline"
                                                                             >{`Vehiculo: ${vehiculo.placa}  \n Tag: ${valorTag.tipo_valor}`}</Typography>
-
                                                                         </div>
 
                                                                         <div>
-
                                                                             <Fab
                                                                                 size="small"
                                                                                 color="primary"
@@ -1265,7 +1375,7 @@ export const PagoFormMulti = () => {
                                                                                         vehiculo.id
                                                                                     )
                                                                                 }
-                                                                            // onClick={agregarPagoMantenimiento}
+                                                                                // onClick={agregarPagoMantenimiento}
                                                                             >
                                                                                 <DeleteIcon />
                                                                             </Fab>
@@ -1292,10 +1402,13 @@ export const PagoFormMulti = () => {
                                 >
                                     Otro
                                 </Typography>
-                                <div className={classes.contentCardTipoPago} style={{}}>
-                                    <div style={{ width: "80%" }}>
+                                <div
+                                    className={classes.contentCardTipoPago}
+                                    style={{}}
+                                >
+                                    <div style={{ width: '80%' }}>
                                         <TextField
-                                            style={{ width: "90%" }}
+                                            style={{ width: '90%' }}
                                             id="descripcion"
                                             name="descripcion"
                                             label="Descripcion (Opcional)"
@@ -1305,7 +1418,9 @@ export const PagoFormMulti = () => {
                                             value={values.descripcion}
                                             error={
                                                 touched.descripcion &&
-                                                isNotNilOrEmpty(errors.descripcion)
+                                                isNotNilOrEmpty(
+                                                    errors.descripcion
+                                                )
                                             }
                                             helperText={
                                                 touched.descripcion
@@ -1317,9 +1432,7 @@ export const PagoFormMulti = () => {
                                             multiline={true}
                                         />
                                     </div>
-                                    <div style={{ marginTop: "3%" }}>
-
-
+                                    <div style={{ marginTop: '3%' }}>
                                         <TextField
                                             id="otro"
                                             name="otro"
@@ -1345,12 +1458,23 @@ export const PagoFormMulti = () => {
                         </Fade>
                         <div className={classes.contentButtons}>
                             <div
-                                style={{ margin: "0px 20px" }}
+                                style={{ margin: '0px 20px' }}
                                 className={classes.totalContainer}
                             >
                                 <div className={classes.containerLabelTotal}>
                                     <Typography variant="overline">
-                                        Total del Aporte USD${sumaTotal().toFixed(2)}
+                                        <> Total del Aporte USD</>
+                                        <span
+                                            style={{
+                                                marginLeft: 8,
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            $
+                                            {sumaTotal
+                                                ? sumaTotal.toFixed(2)
+                                                : (0).toFixed(2)}
+                                        </span>
                                     </Typography>
                                 </div>
                             </div>

@@ -10,7 +10,6 @@ import {
     Table,
     TableContainer,
     TextField,
-    Tooltip,
 } from '@material-ui/core'
 import React, { useCallback, useEffect } from 'react'
 import { useRouter } from 'next/router'
@@ -125,17 +124,17 @@ const useStyles = makeStyles((theme) =>
 const extractData = (data: IListarFilter): IVehiculoVariableNormalize[] => {
     return isNotNilOrEmpty(data)
         ? data.ListaVehiculoFilter.map(
-            ({ grupoFamiliar, color, marca, modelo, ...props }) => {
-                return {
-                    nombre_familiar: grupoFamiliar.nombre_familiar,
-                    marca: marca.marca,
-                    color: color.color,
-                    modelo: modelo.modelo,
-                    // status: status.statusVehiculo,
-                    ...props,
-                }
-            }
-        )
+              ({ grupoFamiliar, color, marca, modelo, ...props }) => {
+                  return {
+                      nombre_familiar: grupoFamiliar.nombre_familiar,
+                      marca: marca.marca,
+                      color: color.color,
+                      modelo: modelo.modelo,
+                      // status: status.statusVehiculo,
+                      ...props,
+                  }
+              }
+          )
         : []
 }
 
@@ -229,14 +228,17 @@ const ListadoVehiculo = () => {
         }
     }, [loading, data])
 
-    const onEdit = useCallback(({ id }: any) => {
-        if (!isNil(id)) {
-            router.push(
-                { pathname: '/vehiculo/ingresar/[id]' },
-                `/vehiculo/ingresar/${encodeURIComponent(id)}`
-            )
-        }
-    }, [router])
+    const onEdit = useCallback(
+        ({ id }: any) => {
+            if (!isNil(id)) {
+                router.push(
+                    { pathname: '/vehiculo/ingresar/[id]' },
+                    `/vehiculo/ingresar/${encodeURIComponent(id)}`
+                )
+            }
+        },
+        [router]
+    )
 
     const onDelete = () => {
         console.log('dasd')
@@ -322,7 +324,8 @@ const ListadoVehiculo = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value), [setPageSize]
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
+        [setPageSize]
     )
 
     return (
@@ -333,7 +336,9 @@ const ListadoVehiculo = () => {
                         <ModalAuth
                             openModal={openModalMsj}
                             // setOpenModal={setOpenModalMsj}
-                            onClose={() => { setOpenModalMsj(false) }}
+                            onClose={() => {
+                                setOpenModalMsj(false)
+                            }}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
                         />
@@ -550,17 +555,20 @@ const ListadoVehiculo = () => {
                             <TextField
                                 className={classes.textBox}
                                 variant="outlined"
-                                placeholder="Search"
+                                placeholder="Buscar"
                                 onChange={(e) => {
                                     setSearch(e.target.value)
                                 }}
                                 value={search}
+                                inputProps={{
+                                    style: { textTransform: 'uppercase' },
+                                }}
                             />
                             <ActionsButtonsExcelPdf
                                 ExportExcel={ExportExcel}
                                 columnsPdf={columnsPdf}
                                 idTable={idTable}
-                                orientacion={"landscape"}
+                                orientacion={'landscape'}
                                 titlePdf={titlePdf}
                             />
                         </div>

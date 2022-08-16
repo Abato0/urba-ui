@@ -93,7 +93,10 @@ const initialValues = Object.freeze({
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    modelo: yup.string().required('Campo requerido'),
+    modelo: yup
+        .string()
+        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
 })
 
 interface IProps {
@@ -113,7 +116,6 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
     const { refetch } = useListaModeloQuery()
-
 
     const onCloseModalAuht = () => {
         if (openModalMsj && boolPut) {
@@ -138,15 +140,15 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
 
     const [mutate] = isNil(modeloObj)
         ? // eslint-disable-next-line react-hooks/rules-of-hooks
-        usePostModeloMutation()
+          usePostModeloMutation()
         : // eslint-disable-next-line react-hooks/rules-of-hooks
-        usePutModeloMutation()
+          usePutModeloMutation()
 
     const init = useMemo(() => {
         return isNotNilOrEmpty(modeloObj)
             ? {
-                modelo: modeloObj?.modelo,
-            }
+                  modelo: modeloObj?.modelo,
+              }
             : initialValues
     }, [modeloObj])
 
@@ -157,19 +159,21 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
                     setLoadingMutate(true)
                     const { data } = isNil(modeloObj)
                         ? await mutate({
-                            variables: {
-                                modelo,
-                            },
-                        })
+                              variables: {
+                                  modelo: String(modelo).toUpperCase(),
+                              },
+                          })
                         : await mutate({
-                            variables: {
-                                id,
-                                modelo,
-                            },
-                        })
+                              variables: {
+                                  id,
+                                  modelo: String(modelo).toUpperCase(),
+                              },
+                          })
 
                     if (isNotNilOrEmpty(data)) {
-                        const { code, message } = isNotNilOrEmpty(data.PutModelo)
+                        const { code, message } = isNotNilOrEmpty(
+                            data.PutModelo
+                        )
                             ? data.PutModelo
                             : data.PostModelo
                         setLoadingMutate(false)
@@ -179,9 +183,7 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
 
                         //   }, 2000);
 
-
                         // setMensajeModalMsj(dataMutate.message);
-
 
                         if (code === 200) {
                             setErrorModal(false)
@@ -197,7 +199,6 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
                         }
 
                         setOpenModalMsj(true)
-
                     } else {
                         setLoadingMutate(false)
                         setOpenModalMsj(true)
@@ -275,6 +276,7 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
                         error={touched.modelo && isNotNilOrEmpty(errors.modelo)}
                         helperText={touched.modelo ? errors.modelo : undefined}
                         required
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                 </div>
                 <div className={classes.contentButtons}>

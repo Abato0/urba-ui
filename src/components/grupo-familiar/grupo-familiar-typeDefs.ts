@@ -8,6 +8,7 @@ export const saveGrupoFamiliar = gql`
         $id_manzana: Int
         $nombre_familiar: String
         $villa: Int
+        $extension: String
     ) {
         PostGrupoFamiliar(
             input: {
@@ -18,6 +19,7 @@ export const saveGrupoFamiliar = gql`
                 nombre_familiar: $nombre_familiar
                 # id_tipo_edificacion: $id_tipo_edificacion
                 villa: $villa
+                extension: $extension
                 # id_usuario: $id_usuario
             }
         ) {
@@ -38,6 +40,7 @@ export const updateGrupoFamiliarMutation = gql`
         $nombre_familiar: String
         # $id_tipo_edificacion: Int
         $villa: Int
+        $extension: String
     ) {
         UpdateGrupoFamiliar(
             id: $id
@@ -49,6 +52,7 @@ export const updateGrupoFamiliarMutation = gql`
                 nombre_familiar: $nombre_familiar
                 # id_tipo_edificacion: $id_tipo_edificacion
                 villa: $villa
+                extension: $extension
                 # id_usuario: $id_usuario
             }
         ) {
@@ -82,6 +86,7 @@ export const listadoGrupoFamiliarSinUsuario = gql`
                 calle
             }
             calle_interseccion
+            extension
         }
     }
 `
@@ -96,6 +101,7 @@ export const listadoGrupoFamiliar = gql`
                 manzana
             }
             villa
+            extension
             calle_principal {
                 id
                 calle
@@ -126,6 +132,7 @@ export const GetGrupoFamiliar = gql`
                 manzana
             }
             villa
+            extension
             calle_principal {
                 id
                 calle
@@ -168,6 +175,7 @@ export const listarGruposFamiliaresFilter = gql`
                 manzana
             }
             villa
+            extension
             calle_principal {
                 id
                 calle

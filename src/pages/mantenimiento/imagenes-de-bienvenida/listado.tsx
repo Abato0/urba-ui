@@ -1,7 +1,7 @@
-import { TipoUsuario } from "../../../components/core/input/dateSelect"
-import { IngresarImagenBienvenida } from "../../../components/imagenes-de-bienvenida/imagen-bienvenida-form"
-import PermisoLayout from "../../../components/layout/auth-layout/permiso-layout"
-import LayoutTituloPagina from "../../../components/layout/tituloPagina-layout"
+import { TipoUsuario } from '../../../components/core/input/dateSelect'
+import { IngresarImagenBienvenida } from '../../../components/imagenes-de-bienvenida/imagen-bienvenida-form'
+import PermisoLayout from '../../../components/layout/auth-layout/permiso-layout'
+import LayoutTituloPagina from '../../../components/layout/tituloPagina-layout'
 import {
     Box,
     colors,
@@ -15,30 +15,30 @@ import {
     Table,
     TableContainer,
     TextField,
-    Tooltip,
 } from '@material-ui/core'
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { IResultQueryImagenesSitio, useListadoImagenesBienvenidaQuery, useDeleteImagenBienvenidaMutation } from '../../../components/imagenes-de-bienvenida/use-imagenes-bienvenida';
-import { prop } from "ramda"
-import { usePagination, useTable } from "react-table"
-import { headImagen } from "../../../components/imagenes-de-bienvenida/imagen-bienvenida-dataTable"
-import TablePaginations from "../../../components/table/table-paginations"
-import CardTableBody from "../../../components/table/table-body"
-import TableHeader from "../../../components/table/table-header"
-import { data } from '../../../components/core/dashboard/dashboardPrueba';
-import ModalAuth from "../../../components/core/input/dialog/modal-dialog"
-import ModalImagen from "../../../components/core/input/dialog/modal-ver-imagen"
-import FormControlHeader from "../../../components/core/input/form-control-select"
-import { Listado_lugares_image } from "../../../utils/keys"
-import { ActionsButtonsFilterReset } from "../../../components/core/actions/actionsButtonsFilterReset"
-
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+    IResultQueryImagenesSitio,
+    useListadoImagenesBienvenidaQuery,
+    useDeleteImagenBienvenidaMutation,
+} from '../../../components/imagenes-de-bienvenida/use-imagenes-bienvenida'
+import { prop } from 'ramda'
+import { usePagination, useTable } from 'react-table'
+import { headImagen } from '../../../components/imagenes-de-bienvenida/imagen-bienvenida-dataTable'
+import TablePaginations from '../../../components/table/table-paginations'
+import CardTableBody from '../../../components/table/table-body'
+import TableHeader from '../../../components/table/table-header'
+import ModalAuth from '../../../components/core/input/dialog/modal-dialog'
+import ModalImagen from '../../../components/core/input/dialog/modal-ver-imagen'
+import { Listado_lugares_image } from '../../../utils/keys'
+import { ActionsButtonsFilterReset } from '../../../components/core/actions/actionsButtonsFilterReset'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
             borderRadius: '12px',
             // margin: '30px',
-            maxWidth: "800px",
+            maxWidth: '800px',
             width: '85%',
         },
         contentButtons: {
@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) =>
         formControl: {
             // margin: theme.spacing(1),
             minWidth: 220,
-            marginTop: theme.spacing(2)
+            marginTop: theme.spacing(2),
             // textAlign: "center"
         },
         labelButton: {
@@ -127,10 +127,6 @@ const useStyles = makeStyles((theme) =>
     })
 )
 
-
-
-
-
 const idTable = 'idListadoImagenesTable'
 const titlePdf = 'Listado de Vehiculos por Familia'
 const columnsPdf = [
@@ -145,30 +141,28 @@ const columnsPdf = [
 const getRowId: any = prop('id')
 
 const ListadoImagenes = () => {
-
-    const classes = useStyles();
+    const classes = useStyles()
     const [search, setSearch] = useState<string>('')
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
     const [titleModalMsj, setTitleModalMsj] = useState<string>('')
-    const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('');
-    const [errorModal, setErrorModal] = useState<boolean>(false);
+    const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
+    const [errorModal, setErrorModal] = useState<boolean>(false)
 
-    const [imagenesFilter, setImagenesFilter] = useState<IResultQueryImagenesSitio[]>([])
-    const { data, loading, refetch } = useListadoImagenesBienvenidaQuery();
+    const [imagenesFilter, setImagenesFilter] = useState<
+        IResultQueryImagenesSitio[]
+    >([])
+    const { data, loading, refetch } = useListadoImagenesBienvenidaQuery()
 
-    const [mutate] = useDeleteImagenBienvenidaMutation();
+    const [mutate] = useDeleteImagenBienvenidaMutation()
 
-
-    const [imagenSeleccionada, setImagenSeleccionada] = useState("")
+    const [imagenSeleccionada, setImagenSeleccionada] = useState('')
     const [openModalImagen, setOpenModalImagen] = useState(false)
 
     const [lugarSeleccionado, setLugarSeleccionado] = useState<string>()
 
-
-
     const onSee = ({ id, urlImagen }: IResultQueryImagenesSitio) => {
         if (id) {
-            console.log('image', urlImagen);
+            console.log('image', urlImagen)
             setImagenSeleccionada(urlImagen)
             // setBase64(null);
             // setIdPago(id)
@@ -176,20 +170,19 @@ const ListadoImagenes = () => {
         }
     }
 
-
     const onDelete = async ({ id }: IResultQueryImagenesSitio) => {
         try {
             const { data } = await mutate({
                 variables: {
-                    id
-                }
+                    id,
+                },
             })
             if (data) {
-                const { code, message } = data.DeleteImagenSitio;
+                const { code, message } = data.DeleteImagenSitio
 
-                setTitleModalMsj(message);
+                setTitleModalMsj(message)
                 if (code === 200) {
-                    await refetch();
+                    await refetch()
                     setErrorModal(false)
                 } else {
                     setErrorModal(true)
@@ -210,7 +203,6 @@ const ListadoImagenes = () => {
             // )
             setOpenModalMsj(true)
         }
-
     }
     const dataImagenes = useMemo(() => {
         if (!loading && data) {
@@ -222,11 +214,7 @@ const ListadoImagenes = () => {
         if (dataImagenes) {
             setImagenesFilter(dataImagenes)
         }
-
     }, [dataImagenes])
-
-
-
 
     const {
         getTableProps,
@@ -247,7 +235,7 @@ const ListadoImagenes = () => {
             data: imagenesFilter,
             getRowId,
             onDelete,
-            onSee
+            onSee,
             // onEdit,
             // onDescargar,
         },
@@ -260,122 +248,140 @@ const ListadoImagenes = () => {
     )
 
     const onChangeRowsPerPage = useCallback(
-        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value), [setPageSize]
+        (event, rowsPerPage) => setPageSize(rowsPerPage.props.value),
+        [setPageSize]
     )
 
-
     const filtrar = () => {
-
         if (lugarSeleccionado && dataImagenes) {
-            const result = dataImagenes.filter(({ lugar }) => lugar === lugarSeleccionado);
+            const result = dataImagenes.filter(
+                ({ lugar }) => lugar === lugarSeleccionado
+            )
             setImagenesFilter(result)
         }
     }
 
     const reset = () => {
         if (dataImagenes) {
-            setLugarSeleccionado(undefined);
+            setLugarSeleccionado(undefined)
             setImagenesFilter(dataImagenes)
         }
     }
 
+    return (
+        <LayoutTituloPagina titulo="Parametrizacion - Imagenes de Bienvenida">
+            <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+                {openModalMsj && (
+                    <ModalAuth
+                        openModal={openModalMsj}
+                        onClose={() => {
+                            setImagenSeleccionada(''), setOpenModalMsj(false)
+                        }}
+                        // setOpenModal={setOpenModalMsj}
+                        title={titleModalMsj}
+                        message={mensajeModalMsj}
+                        error={errorModal}
+                    />
+                )}
 
-
-    return (<LayoutTituloPagina titulo="Parametrizacion - Imagenes de Bienvenida">
-        <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
-            {openModalMsj && (
-                <ModalAuth
-                    openModal={openModalMsj}
-                    onClose={() => { setImagenSeleccionada(""), setOpenModalMsj(false) }}
-                    // setOpenModal={setOpenModalMsj}
-                    title={titleModalMsj}
-                    message={mensajeModalMsj}
-                    error={errorModal}
+                <ModalImagen
+                    open={openModalImagen}
+                    handleClose={() => setOpenModalImagen(false)}
+                    base64={imagenSeleccionada}
+                    classes={classes}
                 />
-            )}
-
-            <ModalImagen
-                open={openModalImagen}
-                handleClose={() => setOpenModalImagen(false)}
-                base64={imagenSeleccionada}
-                classes={classes}
-            />
-            <Box>
-                <IngresarImagenBienvenida />
-            </Box>
-            <Box className={classes.root}>
-                <Paper style={{ borderRadius: '12px' }}>
-                    <div className={classes.contentButtons}>
-                        <TextField
-                            className={classes.textBox}
-                            variant="outlined"
-                            placeholder="Search"
-                            onChange={(e) => {
-                                setSearch(e.target.value)
-                            }}
-                            value={search}
-                        />
-                        <FormControl variant="filled" className={classes.formControl}>
-                            <InputLabel id={"lugar_seleccionado_label"} style={{ fontSize: '12px' }}>
-                                Lugar
-                            </InputLabel>
-                            <Select
-                                labelId={'lugar_seleccionado_label'}
-                                value={lugarSeleccionado}
-                                onChange={(e) => setLugarSeleccionado(e.target.value as string)}
-
+                <Box>
+                    <IngresarImagenBienvenida />
+                </Box>
+                <Box className={classes.root}>
+                    <Paper style={{ borderRadius: '12px' }}>
+                        <div className={classes.contentButtons}>
+                            <TextField
+                                className={classes.textBox}
+                                variant="outlined"
+                                placeholder="Buscar"
+                                onChange={(e) => {
+                                    setSearch(e.target.value)
+                                }}
+                                value={search}
+                                inputProps={{
+                                    style: { textTransform: 'uppercase' },
+                                }}
+                            />
+                            <FormControl
+                                variant="filled"
+                                className={classes.formControl}
                             >
-                                {
-                                    Listado_lugares_image.map(({ label, value }) => {
-                                        return (
-                                            <MenuItem key={value} value={value}>
-                                                {label}
-                                            </MenuItem>)
-                                    })
-                                }
-                            </Select>
-                        </FormControl>
+                                <InputLabel
+                                    id={'lugar_seleccionado_label'}
+                                    style={{ fontSize: '12px' }}
+                                >
+                                    Lugar
+                                </InputLabel>
+                                <Select
+                                    labelId={'lugar_seleccionado_label'}
+                                    value={lugarSeleccionado}
+                                    onChange={(e) =>
+                                        setLugarSeleccionado(
+                                            e.target.value as string
+                                        )
+                                    }
+                                >
+                                    {Listado_lugares_image.map(
+                                        ({ label, value }) => {
+                                            return (
+                                                <MenuItem
+                                                    key={value}
+                                                    value={value}
+                                                >
+                                                    {label}
+                                                </MenuItem>
+                                            )
+                                        }
+                                    )}
+                                </Select>
+                            </FormControl>
 
-                        <ActionsButtonsFilterReset
-                            filtrar={filtrar}
-                            reset={reset}
-                        />
-                        {/* <ActionsButtonsExcelPdf
+                            <ActionsButtonsFilterReset
+                                filtrar={filtrar}
+                                reset={reset}
+                            />
+                            {/* <ActionsButtonsExcelPdf
                             ExportExcel={ExportExcel}
                             columnsPdf={columnsPdf}
                             idTable={idTable}
                             orientacion={"landscape"}
                             titlePdf={titlePdf}
                         /> */}
-                    </div>
-                    <TableContainer>
-                        <Table
-                            // className={classes.table}
-                            stickyHeader
-                            aria-label="sticky table"
-                            {...getTableProps()}
-                            id={idTable}
-                        >
-                            <TableHeader headerGroups={headerGroups} />
-                            <CardTableBody
-                                getTableBodyProps={getTableBodyProps}
-                                page={page}
-                                prepareRow={prepareRow}
-                            />
-                        </Table>
-                    </TableContainer>
-                    <TablePaginations
-                        lengthData={imagenesFilter.length}
-                        onChangePage={onChangePage}
-                        onChangeRowsPerPage={onChangeRowsPerPage}
-                        pageIndex={pageIndex}
-                        pageSize={pageSize}
-                    />
-                </Paper>
-            </Box>
-        </PermisoLayout>
-
-    </LayoutTituloPagina>)
+                        </div>
+                        <TableContainer>
+                            <Table
+                                // className={classes.table}
+                                stickyHeader
+                                aria-label="sticky table"
+                                {...getTableProps()}
+                                id={idTable}
+                            >
+                                <TableHeader headerGroups={headerGroups} />
+                                <CardTableBody
+                                    getTableBodyProps={getTableBodyProps}
+                                    page={page}
+                                    prepareRow={prepareRow}
+                                />
+                            </Table>
+                        </TableContainer>
+                        <TablePaginations
+                            lengthData={imagenesFilter.length}
+                            onChangePage={onChangePage}
+                            onChangeRowsPerPage={onChangeRowsPerPage}
+                            pageIndex={pageIndex}
+                            pageSize={pageSize}
+                        />
+                    </Paper>
+                </Box>
+            </PermisoLayout>
+        </LayoutTituloPagina>
+    )
 }
 
 export default ListadoImagenes

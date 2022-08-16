@@ -57,36 +57,37 @@ interface IGrupoFamiliarNormalize {
 const extractData = (data: IGrupoFamiliar[]): IGrupoFamiliarNormalize[] => {
     return !isNil(data)
         ? data.map(
-            ({
-                calle_interseccion,
-                calle_principal,
-                // color_fachada,
-                manzana,
-                // tipo_edificacion,
-                nombre_familiar,
-                villa,
-                id,
-            }) => {
-                return {
-                    id,
-                    calle_interseccion: isNil(calle_interseccion)
-                        ? ''
-                        : calle_interseccion,
-                    calle_principal: isNil(calle_principal)
-                        ? ''
-                        : calle_principal.calle,
-                    // color_fachada: isNil(color_fachada) ? "" : color_fachada.color,
-                    manzana: isNil(manzana) ? '' : manzana.manzana,
-                    // tipo_edificacion: isNil(tipo_edificacion)
-                    //   ? ""
-                    //   : tipo_edificacion.tipo_edificacion ?? "",
-                    villa: isNil(villa) ? '' : villa,
-                    nombre_familiar: isNil(nombre_familiar)
-                        ? ''
-                        : nombre_familiar,
-                }
-            }
-        )
+              ({
+                  calle_interseccion,
+                  calle_principal,
+                  // color_fachada,
+                  manzana,
+                  // tipo_edificacion,
+                  nombre_familiar,
+                  villa,
+                  extension,
+                  id,
+              }) => {
+                  return {
+                      id,
+                      calle_interseccion: isNil(calle_interseccion)
+                          ? ''
+                          : calle_interseccion,
+                      calle_principal: isNil(calle_principal)
+                          ? ''
+                          : calle_principal.calle,
+                      // color_fachada: isNil(color_fachada) ? "" : color_fachada.color,
+                      manzana: isNil(manzana) ? '' : manzana.manzana,
+                      // tipo_edificacion: isNil(tipo_edificacion)
+                      //   ? ""
+                      //   : tipo_edificacion.tipo_edificacion ?? "",
+                      villa: isNil(villa) ? '' : villa + extension,
+                      nombre_familiar: isNil(nombre_familiar)
+                          ? ''
+                          : nombre_familiar,
+                  }
+              }
+          )
         : []
 }
 
@@ -181,6 +182,7 @@ const ListadoGrupoFamiliar = () => {
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
     const [titleModalMsj, setTitleModalMsj] = useState<string>('')
     const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
+    const [errorModal, setErrorModal] = useState<boolean>(false)
     const router = useRouter()
     const debounceSearch = useDebounce(search, 300)
     const [mutate] = useDeleteGrupoFamiliarMutatio(0)
@@ -259,18 +261,38 @@ const ListadoGrupoFamiliar = () => {
 
     const onDelete = async ({ id }: any) => {
         try {
-            await mutate({ variables: { id: Number(id) } })
-            setTitleModalMsj('Grupo Familiar Eliminado')
-            setMensajeModalMsj(
-                'El Grupo Familiar seleccionado se ha eliminado correctamente'
-            )
-            setOpenModalMsj(true)
+            // await mutate({ variables: { id: Number(id) } })
+            // setTitleModalMsj('Grupo Familiar Eliminado')
+            // setMensajeModalMsj(
+            //     'El Grupo Familiar seleccionado se ha eliminado correctamente'
+            // )
+            // setOpenModalMsj(true)
             // setDataTable(extractData(data?.ListaGruposFamiliaresFilter!));
+            const { data } = await mutate({
+                variables: {
+                    id,
+                },
+            })
+            if (data) {
+                const { code, message } = data.DeleteGrupoFamiliar
+                setTitleModalMsj(message)
+
+                if (code === 200) {
+                    setErrorModal(false)
+                } else {
+                    setErrorModal(true)
+                }
+                // await refetch()
+                setOpenModalMsj(true)
+            } else {
+                setTitleModalMsj('Usuario no autorizado')
+                setErrorModal(true)
+                setOpenModalMsj(true)
+            }
         } catch (error) {
-            setTitleModalMsj('Grupo Familiar no Eliminado')
-            setMensajeModalMsj(
-                'Ha ocurrido un error. El Grupo Familiar seleccionado no se ha eliminado'
-            )
+            setTitleModalMsj('Envio Fallido')
+            setErrorModal(true)
+            setMensajeModalMsj('' + (error as Error).message)
             setOpenModalMsj(true)
         }
 
@@ -288,11 +310,12 @@ const ListadoGrupoFamiliar = () => {
                     villa,
                 }) => {
                     return {
-                        GrupoFamiliar: nombre_familiar,
-                        CallePrincipal: calle_principal,
-                        CalleInterseccion: calle_interseccion,
-                        Manzana: manzana,
-                        Villa: villa,
+                        GrupoFamiliar: String(nombre_familiar).toUpperCase(),
+                        CallePrincipal: String(calle_principal).toUpperCase(),
+                        CalleInterseccion:
+                            String(calle_interseccion).toUpperCase(),
+                        Manzana: String(manzana).toUpperCase(),
+                        Villa: String(villa).toUpperCase(),
                     }
                 }
             )
@@ -339,11 +362,12 @@ const ListadoGrupoFamiliar = () => {
                             onClose={() => setOpenModalMsj(false)}
                             title={titleModalMsj}
                             message={mensajeModalMsj}
+                            error={errorModal}
                         />
                     )}
                     <Paper className={classes.paperFilter}>
                         <div className={classes.contenFilter}>
-                            <div className={classes.contentButtons} >
+                            <div className={classes.contentButtons}>
                                 <div className={classes.contentForm}>
                                     <FormControl
                                         variant="filled"
@@ -362,7 +386,12 @@ const ListadoGrupoFamiliar = () => {
                                                 )
                                             }
                                         >
-                                            <MenuItem value={''}>
+                                            <MenuItem
+                                                style={{
+                                                    textTransform: 'uppercase',
+                                                }}
+                                                value={''}
+                                            >
                                                 {' '}
                                                 - Todos -{' '}
                                             </MenuItem>
@@ -376,6 +405,10 @@ const ListadoGrupoFamiliar = () => {
                                                                     'integranteListado' +
                                                                     calle
                                                                 }
+                                                                style={{
+                                                                    textTransform:
+                                                                        'uppercase',
+                                                                }}
                                                                 value={calle}
                                                             >
                                                                 {calle}
@@ -403,7 +436,12 @@ const ListadoGrupoFamiliar = () => {
                                                 )
                                             }
                                         >
-                                            <MenuItem value={''}>
+                                            <MenuItem
+                                                style={{
+                                                    textTransform: 'uppercase',
+                                                }}
+                                                value={''}
+                                            >
                                                 {' '}
                                                 - Todos -{' '}
                                             </MenuItem>
@@ -418,6 +456,10 @@ const ListadoGrupoFamiliar = () => {
                                                                     manzana
                                                                 }
                                                                 value={manzana}
+                                                                style={{
+                                                                    textTransform:
+                                                                        'uppercase',
+                                                                }}
                                                             >
                                                                 {manzana}
                                                             </MenuItem>
@@ -459,7 +501,7 @@ const ListadoGrupoFamiliar = () => {
                         lengthData={
                             !isNil(data)
                                 ? extractData(data.ListaGruposFamiliaresFilter)
-                                    .length
+                                      .length
                                 : 0
                         }
                     ></CardTable>

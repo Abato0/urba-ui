@@ -236,11 +236,12 @@ const ListadoInactivos = () => {
                     <TextField
                         className={classes.textBox}
                         variant="outlined"
-                        placeholder="Search"
+                        placeholder="Buscar"
                         onChange={(e) => {
                             setSearch(e.target.value)
                         }}
                         value={search}
+                        inputProps={{ style: { textTransform: 'uppercase' } }}
                     />
                     <div>
                         <ExportTablePdf
