@@ -46,11 +46,7 @@ import { useListaTipoIdentificacionQuery } from '../mantenimento/tipo-identifica
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
 import moment from 'moment'
-import {
-    KeyboardDatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers'
-import DateFnsUtils from '@date-io/date-fns'
+import { lightFormat } from 'date-fns'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -265,10 +261,10 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                                   apellido: String(apellido).toUpperCase(),
                                   telefono,
                                   id_parentesco,
-                                  fecha_nacimiento:
-                                      moment(fecha_nacimiento).format(
-                                          'YYYY-MM-DD'
-                                      ),
+                                  fecha_nacimiento: lightFormat(
+                                      new Date(fecha_nacimiento),
+                                      'yyyy-MM-dd'
+                                  ),
                                   id_tipo_doc_identidad,
                                   num_doc_identidad,
                                   representante,

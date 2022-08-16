@@ -39,6 +39,7 @@ import {
 
 import esLocale from 'date-fns/locale/es'
 import moment from 'moment'
+import { lightFormat } from 'date-fns'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -316,10 +317,10 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                                   idGrupoFamiliar: idGrupoFamiliarSeleccionado,
                                   idParentesco: idParentescoSeleccionado,
                                   genero: generoSeleccionado,
-                                  fecha_nacimiento:
-                                      moment(fechaDeNaciemiento).format(
-                                          'YYYY-MM-DD'
-                                      ),
+                                  fecha_nacimiento: lightFormat(
+                                      new Date(fechaDeNaciemiento!),
+                                      'yyyy-MM-dd'
+                                  ),
                               }
                             : {
                                   tipo_usuario: tipo_usuario,
