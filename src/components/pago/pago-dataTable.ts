@@ -33,7 +33,7 @@ export const headPagoTable = Object.freeze([
     },
 
     {
-        Header: 'Fecha del Regitro del Pago',
+        Header: 'Fecha del Registro del Pago',
         accessor: 'fecha_subida',
     },
 

@@ -48,6 +48,7 @@ import { ActionsButtonsFilterReset } from '../../components/core/actions/actions
 import { ActionsButtonsExcelPdf } from '../../components/core/actions/actionsButtonsExcelPdf'
 import ModalAuth from '../../components/core/input/dialog/modal-dialog'
 import { ModalConfirmacion } from '../../components/core/modal/modalConfirmacion'
+import { ArrTipoPago, ETipoPago } from '../../components/core/input/dateSelect'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -173,6 +174,7 @@ const extractData = (data: IDataListaPagoFilter[]) => {
             ...pago,
             id,
             nombre_familiar: grupoFamiliar.nombre_familiar,
+            fecha_pago: pago.tipo_pago === ETipoPago.tag ? '' : pago.fecha_pago,
 
             // nombre_aporte: aporte.nombre_aporte,
             // tipo_aporte: aporte.tipo_aporte,

@@ -4,8 +4,8 @@ import { IResultQueryImagenesSitio } from '../components/imagenes-de-bienvenida/
 import { IOutput } from '../components/mantenimento/calle/use-calle'
 import { IUserInfo } from '../utils/states'
 // import { URL_BASE_API } from '../utils/keys'
-const URL_BASE_API = 'https://urbaapi.nodedatatest.com'
-//const URL_BASE_API = 'http://localhost:8888'
+//const URL_BASE_API = 'https://urbaapi.nodedatatest.com'
+const URL_BASE_API = 'http://localhost:8888'
 
 export const userRepresentante = async (
     idUser: number
