@@ -5,10 +5,14 @@ import {
     FileEdit as FileEditIcon,
     TrashCan as TrashCanIcon,
     AlarmLight as AlarmLightIcon,
-    AlarmLightOff as AlarmLigthOffIcon
+    AlarmLightOff as AlarmLigthOffIcon,
 } from 'mdi-material-ui'
 import { IResultQueryStatusTag } from './use-status-tag'
-import { ID_STATUS_TAG_DISPONIBLE, ID_STATUS_TAG_INACTIVO, ID_STATUS_TAG_OCUPADO } from '../../../utils/keys'
+import {
+    ID_STATUS_TAG_DISPONIBLE,
+    ID_STATUS_TAG_INACTIVO,
+    ID_STATUS_TAG_OCUPADO,
+} from '../../../utils/keys'
 
 interface IProps {
     className?: string
@@ -17,7 +21,11 @@ interface IProps {
     row: Row<IResultQueryStatusTag>
 }
 
-const ids = [ID_STATUS_TAG_DISPONIBLE, ID_STATUS_TAG_INACTIVO, ID_STATUS_TAG_OCUPADO]
+const ids = [
+    ID_STATUS_TAG_DISPONIBLE,
+    ID_STATUS_TAG_INACTIVO,
+    ID_STATUS_TAG_OCUPADO,
+]
 
 const ActionsCellEditDelete: React.FC<IProps> = ({
     onEdit,
@@ -25,10 +33,9 @@ const ActionsCellEditDelete: React.FC<IProps> = ({
     row,
     className,
 }) => {
-
     const visible = useMemo(() => {
         return ids.some((id) => row.original.id === id)
-    }, [row, ids])
+    }, [row])
 
     return (
         <>
@@ -47,7 +54,6 @@ const ActionsCellEditDelete: React.FC<IProps> = ({
                     // variant="text"
                     color="secondary"
                     disabled={visible}
-
                     onClick={() => onDelete(row.original)}
                 >
                     <TrashCanIcon color="primary" />

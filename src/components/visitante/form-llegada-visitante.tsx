@@ -118,7 +118,7 @@ const validationSchema = yup.object().shape({
         ),
 })
 
-interface IVisitaneMoradorLlegadaVariables {
+export interface IVisitaneMoradorLlegadaVariables {
     identificacion_visitante: string
     placa: string
 }

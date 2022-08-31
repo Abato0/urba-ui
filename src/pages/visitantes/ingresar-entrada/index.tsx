@@ -1,18 +1,10 @@
 import { useRouter } from 'next/router'
 import React, { useMemo } from 'react'
 import LayoutTituloPagina from '../../../components/layout/tituloPagina-layout'
-import {
-    FormIngresarMorador,
-    VisitanteMoradorVariables,
-} from '../../../components/visitante/form-ingresar-morador'
-import FormLlegadaVisitante, {
-    IVisitaneMoradorLlegadaVariables,
-} from '../../../components/visitante/form-llegada-visitante'
+import { VisitanteMoradorVariables } from '../../../components/visitante/form-ingresar-morador'
+import FormLlegadaVisitante from '../../../components/visitante/form-llegada-visitante'
 import { isNotNilOrEmpty } from '../../../utils/is-nil-empty'
-import {
-    useGetVisitanteMoradorQuery,
-    useGetVisitanteQuery,
-} from '../../../components/visitante/use-visitante'
+import { useGetVisitanteMoradorQuery } from '../../../components/visitante/use-visitante'
 import { Box, Typography } from '@material-ui/core'
 
 const IngresarLlegadaVisitante = () => {
