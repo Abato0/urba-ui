@@ -169,7 +169,7 @@ export interface IDataTablePagoListado {
 
 const extractData = (data: IDataListaPagoFilter[]) => {
     console.log('data de la funcion extracData: ', data)
-    return data.map(({ id, pago, grupoFamiliar }, index) => {
+    return data.map(({ id, pago, grupoFamiliar }) => {
         return {
             ...pago,
             id,

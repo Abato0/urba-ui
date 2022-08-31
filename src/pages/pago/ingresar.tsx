@@ -4,7 +4,7 @@ import AppLayout from '../../components/layout/app-layout'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
 import { PagoFormMulti } from '../../components/pago/pago.form-multi'
 
-export const IngresarPago = () => {
+const IngresarPago = () => {
     return (
         <LayoutTituloPagina titulo="Aportación - REGISTRO">
             <PagoFormMulti />

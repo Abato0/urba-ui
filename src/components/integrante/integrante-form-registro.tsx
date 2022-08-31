@@ -141,8 +141,14 @@ const validationSchema = yup.object().shape({
         .min(10, 'La cantidad de digitos debe ser mayor o igual 10 ')
         .max(15, 'La cantidad de digitos debe ser menor o igual 15 ')
         .required('Campo requerido'),
-    nombre: yup.string().required('Campo requerido'),
-    apellido: yup.string().required('Campo requerido'),
+    nombre: yup
+        .string()
+        .matches(/^[aA-zZ\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
+    apellido: yup
+        .string()
+        .matches(/^[aA-zZ\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo requerido'),
     telefono: yup
         .string()
         .matches(/^[0][0-9]+$/, 'Solo numeros y debe empezar con 09')

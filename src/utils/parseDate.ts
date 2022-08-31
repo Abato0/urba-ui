@@ -2,6 +2,7 @@ import { eachMonthOfInterval, lightFormat } from 'date-fns'
 import { head, isEmpty, join, last, split, tail } from 'ramda'
 import { IAporteVariables } from '../components/aporte/use-aporte'
 import { arrMeses } from '../components/core/input/dateSelect'
+import { IGrupoFamiliar } from '../interface/grupo-familiar.interface'
 
 export const parseStringDate = (date: string) => {
     if (!isEmpty(date)) {
@@ -12,6 +13,10 @@ export const parseStringDate = (date: string) => {
             Number(arrString[2])
         )
     }
+}
+
+export const direccionGrupoFamiliar = (grupoFamiliar: IGrupoFamiliar) => {
+    return `${grupoFamiliar.calle_principal.calle} y ${grupoFamiliar.calle_interseccion} MZ ${grupoFamiliar.manzana.manzana} LT ${grupoFamiliar.villa} ${grupoFamiliar.extension}`
 }
 
 export const rangoFechaAportePagoService = (aporte: IAporteVariables) => {
