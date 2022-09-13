@@ -1,5 +1,5 @@
 import { Button, Tooltip } from '@material-ui/core'
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Row } from 'react-table'
 import { useRecoilValue } from 'recoil'
 import { userInfo } from '../../utils/states'
@@ -19,6 +19,8 @@ const ActionsCellVehiculo: React.FC<IProps> = ({
     className,
 }) => {
     const usuarioState = useRecoilValue(userInfo)
+    const [openModalConfirmacion, setOpenModalConfirmacion] = useState(false)
+
     const moradorFlag = useMemo(() => {
         if (usuarioState) {
             return usuarioState.tipo_usuario === TipoUsuario.MORADOR
@@ -33,33 +35,44 @@ const ActionsCellVehiculo: React.FC<IProps> = ({
     //     return false
     // }, [usuarioState])
     return (
-        <Tooltip className={className} title={'Editar'}>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+        <>
+            {/* <ModalConfirmacion
+                openModal={openModalConfirmacion}
+                onConfirm={() => {
+                    setOpenModalConfirmacion(false)
+                    onDelete(row.original)
                 }}
-            >
-                {!moradorFlag && (
+                mensaje="¿Está seguro de eliminar el registro seleccionado?"
+                onCancel={() => setOpenModalConfirmacion(false)}
+            /> */}
+            <Tooltip className={className} title={'Editar'}>
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    {!moradorFlag && (
+                        <Button
+                            variant="text"
+                            color="secondary"
+                            onClick={() => onEdit(row.original)}
+                        >
+                            Editar
+                        </Button>
+                    )}
                     <Button
                         variant="text"
                         color="secondary"
-                        onClick={() => onEdit(row.original)}
+                        onClick={() => onDescargar(row.original)}
                     >
-                        Editar
+                        {/* Descargar */}
+                        Visualizar
                     </Button>
-                )}
-                <Button
-                    variant="text"
-                    color="secondary"
-                    onClick={() => onDescargar(row.original)}
-                >
-                    {/* Descargar */}
-                    Visualizar
-                </Button>
-            </div>
-        </Tooltip>
+                </div>
+            </Tooltip>
+        </>
     )
 }
 

@@ -6,8 +6,6 @@ import {
     Typography,
     MenuItem,
     TextField,
-    Button,
-    Paper,
 } from '@material-ui/core'
 import { useState, useCallback, useEffect, FC, useMemo } from 'react'
 import ModalAuth from '../core/input/dialog/modal-dialog'
@@ -15,7 +13,7 @@ import * as yup from 'yup'
 import { useFormik } from 'formik'
 import FormControlHeader from '../core/input/form-control-select'
 import { TipoUsuario, tipoUsuarios } from '../core/input/dateSelect'
-import { isNilOrEmpty, isNotNilOrEmpty } from '../../utils/is-nil-empty'
+import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import {
     usePostUsuarioMutation,
     useListadoUsuario,
@@ -26,8 +24,7 @@ import {
 import { useListaTipoIdentificacionQuery } from '../mantenimento/tipo-identificacion/use-tipo-identificacion'
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
-import { equals, isNil } from 'ramda'
-import { useUpdateIntegranteMutation } from '../integrante/use-intergrante'
+import { isEmpty, isNil } from 'ramda'
 import { useRouter } from 'next/router'
 import { useListarGrupoFamiliar } from '../grupo-familiar/use-grupo-familia'
 import { useListaParentescoQuery } from '../mantenimento/parentesco/use-parentesco'
@@ -36,9 +33,7 @@ import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
 } from '@material-ui/pickers'
-
 import esLocale from 'date-fns/locale/es'
-import moment from 'moment'
 import { lightFormat } from 'date-fns'
 
 const useStyles = makeStyles((theme) =>
@@ -117,7 +112,10 @@ const useStyles = makeStyles((theme) =>
 )
 
 const validationSchema = yup.object().shape({
-    tipo_usuario: yup.string().required('Campo requerido'),
+    tipo_usuario: yup
+        .string()
+        .required('Campo requerido')
+        .min(2, 'Campo requerido'),
     num_identificacion: yup
         .string()
         .matches(/^[0-9]+$/, 'Solo números')
@@ -138,17 +136,20 @@ const validationSchema = yup.object().shape({
         .string()
         .matches(/^[0-9]+$/, 'Solo números')
         .required('Campo requerido'),
-    idTipoIdentificacion: yup.number().required('Campo requerido'),
+    idTipoIdentificacion: yup
+        .number()
+        .required('Campo requerido')
+        .min(1, 'Campo requerido'),
 })
 
 const initialValues = Object.freeze({
-    tipo_usuario: '',
+    tipo_usuario: '0',
     num_identificacion: '',
     nombres: '',
     apellidos: '',
     email: '',
     telefono: '',
-    idTipoIdentificacion: undefined,
+    idTipoIdentificacion: 0,
 })
 
 interface IProps {
@@ -182,7 +183,9 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
     const [idGrupoFamiliarSeleccionado, setIdGrupoFamiliarSeleccionado] =
         useState<number>()
 
-    const [fechaDeNaciemiento, setFechaDeNaciemiento] = useState<Date>()
+    const [fechaDeNaciemiento, setFechaDeNaciemiento] = useState<Date>(
+        new Date()
+    )
 
     const [idParentescoSeleccionado, setIdParentescoSeleccionado] =
         useState<number>()
@@ -285,11 +288,23 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                 if (
                     tipo_usuario === TipoUsuario.MORADOR &&
                     (!idGrupoFamiliarSeleccionado ||
+                        idGrupoFamiliarSeleccionado === 0 ||
                         !fechaDeNaciemiento ||
                         !idParentescoSeleccionado ||
-                        !generoSeleccionado)
+                        idParentescoSeleccionado === 0 ||
+                        !generoSeleccionado ||
+                        generoSeleccionado === '0')
                 ) {
-                    console.log('No entre')
+                    console.log(
+                        'No idGrupoFamiliarSeleccionado: ',
+                        idGrupoFamiliarSeleccionado,
+                        'idParentescoSeleccionado:',
+                        idParentescoSeleccionado,
+                        ' generoSeleccionado:',
+                        generoSeleccionado,
+                        ' fechaDeNaciemiento:',
+                        fechaDeNaciemiento
+                    )
                     return
                 }
 
@@ -331,6 +346,8 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                                   telefono: telefono,
                                   idTipoIdentificacion: idTipoIdentificacion,
                               }
+
+                    console.log('tipo_usuario: ', tipo_usuario, variablesPost)
                     setLoadingMutate(true)
                     const { data } = isNil(dataUsuario)
                         ? await mutatePostUsuario({
@@ -378,7 +395,7 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                             setErrorModal(false)
 
                             setIdGrupoFamiliarSeleccionado(undefined)
-                            setFechaDeNaciemiento(undefined)
+                            setFechaDeNaciemiento(new Date())
                             setIdParentescoSeleccionado(undefined)
                             setGeneroSeleccionado(undefined)
                             resetForm()
@@ -436,10 +453,10 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
 
     useEffect(() => {
         if (values.tipo_usuario !== TipoUsuario.MORADOR) {
-            setIdGrupoFamiliarSeleccionado(undefined)
-            setIdParentescoSeleccionado(undefined)
-            setFechaDeNaciemiento(undefined)
-            setGeneroSeleccionado(undefined)
+            setIdGrupoFamiliarSeleccionado(0)
+            setIdParentescoSeleccionado(0)
+            setFechaDeNaciemiento(new Date())
+            setGeneroSeleccionado('0')
         }
     }, [values.tipo_usuario])
 
@@ -479,7 +496,9 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                         handleChange={handleChange}
                         labetTitulo=" Tipo de documento de identidad"
                         value={values.idTipoIdentificacion}
+                        error={errors.idTipoIdentificacion}
                     >
+                        <MenuItem value={0}> SELECCIONAR</MenuItem>
                         {!loadingTipoID &&
                             dataTipoID &&
                             isNotNilOrEmpty(
@@ -588,11 +607,11 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                 </div>
 
                 <div>
-                    {idGrupoFamiliarSeleccionado && !verifGrupoFamiliar && (
+                    {idGrupoFamiliarSeleccionado && !verifGrupoFamiliar ? (
                         <Typography variant="overline" color="error">
-                            Este grupo Familiar ya tiene asignado un Usuario
+                            Este Grupo Familiar ya tiene un representante
                         </Typography>
-                    )}
+                    ) : null}
                 </div>
                 <div>
                     <FormControlHeader
@@ -602,7 +621,9 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                         handleChange={handleChange}
                         labetTitulo="Tipo de Usuario"
                         value={values.tipo_usuario}
+                        error={errors.tipo_usuario}
                     >
+                        <MenuItem value={'0'}> SELECCIONAR</MenuItem>
                         {tipoUsuarios.map(({ label, value }) => {
                             return (
                                 <MenuItem
@@ -629,9 +650,22 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                                     handleBlur={() => console.log('')}
                                     labetTitulo="Grupo Familiar"
                                     value={idGrupoFamiliarSeleccionado}
+                                    error={
+                                        !idGrupoFamiliarSeleccionado ||
+                                        idGrupoFamiliarSeleccionado === 0
+                                            ? 'Campo requerido'
+                                            : undefined
+                                    }
                                 >
+                                    <MenuItem value={0}>SELECCIONAR</MenuItem>
                                     {gruposFamiliares.map(
-                                        ({ id, nombre_familiar }) => {
+                                        ({
+                                            id,
+                                            nombre_familiar,
+                                            extension,
+                                            manzana,
+                                            villa,
+                                        }) => {
                                             return (
                                                 <MenuItem
                                                     key={id}
@@ -643,6 +677,9 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                                                                 ? colors
                                                                       .green[100]
                                                                 : 'white',
+
+                                                        textTransform:
+                                                            'uppercase',
                                                     }}
                                                     value={id}
                                                     selected={
@@ -650,7 +687,14 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                                                         id
                                                     }
                                                 >
-                                                    {nombre_familiar}
+                                                    {`${nombre_familiar}-${
+                                                        manzana.manzana
+                                                    } ${
+                                                        extension &&
+                                                        !isEmpty(extension)
+                                                            ? `-${villa}-${extension}`
+                                                            : `-${villa}`
+                                                    } `}
                                                 </MenuItem>
                                             )
                                         }
@@ -675,7 +719,14 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                                     handleBlur={() => console.log('')}
                                     labetTitulo="Parentesco"
                                     value={idParentescoSeleccionado}
+                                    error={
+                                        !idParentescoSeleccionado ||
+                                        idParentescoSeleccionado === 0
+                                            ? 'Campo requerido'
+                                            : undefined
+                                    }
                                 >
+                                    <MenuItem value={0}>SELECCIONAR</MenuItem>
                                     {listadoParentesco.map(
                                         ({ id, parentesco }) => {
                                             return (
@@ -686,6 +737,10 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                                                     }
                                                     key={id}
                                                     value={id}
+                                                    style={{
+                                                        textTransform:
+                                                            'uppercase',
+                                                    }}
                                                 >
                                                     {parentesco}
                                                 </MenuItem>
@@ -703,29 +758,39 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                                     }
                                     labetTitulo="Genero"
                                     value={generoSeleccionado}
+                                    error={
+                                        !generoSeleccionado ||
+                                        generoSeleccionado === '0'
+                                            ? 'Campo requerido'
+                                            : undefined
+                                    }
                                 >
+                                    <MenuItem value={'0'}>SELECCIONAR</MenuItem>
                                     <MenuItem
                                         key="ListGeneroMasculino"
-                                        value={'masculino'}
+                                        value={'MASCULINO'}
                                         selected={
-                                            generoSeleccionado === 'masculino'
+                                            generoSeleccionado === 'MASCULINO'
                                         }
+                                        style={{ textTransform: 'uppercase' }}
                                     >
                                         Masculino
                                     </MenuItem>
                                     <MenuItem
                                         key="ListGeneroFemenino"
-                                        value={'femenino'}
+                                        value={'FEMENINO'}
                                         selected={
-                                            generoSeleccionado === 'femenino'
+                                            generoSeleccionado === 'FEMENINO'
                                         }
+                                        style={{ textTransform: 'uppercase' }}
                                     >
                                         Femenino
                                     </MenuItem>
                                     <MenuItem
                                         key="ListGeneroOtro"
-                                        value={'otro'}
-                                        selected={generoSeleccionado === 'otro'}
+                                        value={'OTRO'}
+                                        selected={generoSeleccionado === 'OTRO'}
+                                        style={{ textTransform: 'uppercase' }}
                                     >
                                         Otro
                                     </MenuItem>

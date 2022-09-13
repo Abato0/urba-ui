@@ -15,15 +15,12 @@ import {
 } from '@material-ui/core'
 import {
     MuiPickersUtilsProvider,
-    KeyboardTimePicker,
     KeyboardDatePicker,
 } from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
-import ModalAuth from '../core/input/dialog/modal-dialog'
-import { equals } from 'ramda'
 import { ETipoAporte } from '../core/input/dateSelect'
 import { lightFormat } from 'date-fns'
 
@@ -292,12 +289,13 @@ export const AporteFormIngresar: FC = () => {
                         onBlur={handleBlur}
                         type={'number'}
                         value={
-                            equals(
-                                values.tipo_aporte,
-                                ETipoAporte.mantenimiento
-                            )
-                                ? values.cuotas
-                                : 1
+                            // equals(
+                            //     values.tipo_aporte,
+                            //     ETipoAporte.mantenimiento
+                            // )
+                            //     ? values.cuotas
+                            // : 1
+                            1
                         }
                         error={touched.cuotas && isNotNilOrEmpty(errors.cuotas)}
                         helperText={touched.cuotas ? errors.cuotas : undefined}

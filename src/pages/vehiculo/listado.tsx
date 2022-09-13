@@ -126,7 +126,7 @@ const extractData = (data: IListarFilter): IVehiculoVariableNormalize[] => {
         ? data.ListaVehiculoFilter.map(
               ({ grupoFamiliar, color, marca, modelo, ...props }) => {
                   return {
-                      nombre_familiar: grupoFamiliar.nombre_familiar,
+                      nombre_familiar: `${grupoFamiliar.nombre_familiar} - ${grupoFamiliar.manzana.manzana} - ${grupoFamiliar.villa}`,
                       marca: marca.marca,
                       color: color.color,
                       modelo: modelo.modelo,
@@ -164,11 +164,12 @@ const ListadoVehiculo = () => {
     const [idGrupoFamiliar, setIdGrupoFamiliar] = useState<number | undefined>(
         0
     )
-    const [marca, setMarca] = useState<string>('')
-    const [modelo, setModelo] = useState<string>('')
+    const [marca, setMarca] = useState<number | undefined>(0)
+    const [modelo, setModelo] = useState<number | undefined>(0)
     // const [status, setStatus] = useState<string>('')
-    const [idVehiculoSeleccionado, setIdVehiculoSeleccionado] =
-        useState<number>()
+    const [idVehiculoSeleccionado, setIdVehiculoSeleccionado] = useState<
+        number | undefined
+    >(0)
 
     const [inputFilter, setInputFilter] = useState<IListarFilterVehiculoInput>(
         {}
@@ -206,19 +207,19 @@ const ListadoVehiculo = () => {
                 equals(idGrupoFamiliar, 0) || isNil(idGrupoFamiliar)
                     ? undefined
                     : idGrupoFamiliar,
-            marca: isEmpty(marca) ? undefined : marca,
-            modelo: isEmpty(modelo) ? undefined : modelo,
+            marca: isEmpty(marca) || equals(marca, 0) ? undefined : marca,
+            modelo: isEmpty(modelo) || equals(modelo, 0) ? undefined : modelo,
             // status: isEmpty(status) ? undefined : status,
         })
     }, [idGrupoFamiliar, marca, modelo])
 
     const reset = useCallback(() => {
         // setIdGrupoFamiliarFilter(undefined);
-        setMarca('')
+        setMarca(0)
         // setClleInterseccionFilter("");
-        setModelo('')
+        setModelo(0)
         // setStatus('')
-        setIdGrupoFamiliar(undefined)
+        setIdGrupoFamiliar(0)
         setInputFilter({})
     }, [])
 
@@ -247,8 +248,9 @@ const ListadoVehiculo = () => {
     const ExportExcel = useCallback(() => {
         if (isNotNilOrEmpty(allVehiculo)) {
             const newCampos = allVehiculo.map(
-                ({ color, marca, modelo, nombre_familiar, placa }) => {
+                ({ color, marca, modelo, nombre_familiar, placa, id }) => {
                     return {
+                        ID: id,
                         GrupoFamiliar: nombre_familiar,
                         Marca: marca,
                         Modelo: modelo,
@@ -259,7 +261,7 @@ const ListadoVehiculo = () => {
                 }
             )
             const workSheet = XLSX.utils.json_to_sheet(newCampos)
-            workSheet.A1.v = 'Grupo Familiar'
+            workSheet.B1.v = 'Grupo Familiar'
             const workBook = XLSX.utils.book_new()
             XLSX.utils.book_append_sheet(workBook, workSheet, 'Vehiculos')
             XLSX.write(workBook, { bookType: 'xlsx', type: 'binary' })
@@ -370,9 +372,8 @@ const ListadoVehiculo = () => {
                                                     )
                                                 }
                                             >
-                                                <MenuItem value={undefined}>
-                                                    {' '}
-                                                    - Todos -{' '}
+                                                <MenuItem value={0}>
+                                                    TODOS
                                                 </MenuItem>
                                                 {!loadingListadoGrupoFamiliar &&
                                                     isNotNilOrEmpty(
@@ -383,6 +384,9 @@ const ListadoVehiculo = () => {
                                                             {
                                                                 id,
                                                                 nombre_familiar,
+                                                                manzana,
+                                                                extension,
+                                                                villa,
                                                             },
                                                             index
                                                         ) => {
@@ -390,10 +394,21 @@ const ListadoVehiculo = () => {
                                                                 <MenuItem
                                                                     value={id}
                                                                     key={index}
+                                                                    style={{
+                                                                        textTransform:
+                                                                            'uppercase',
+                                                                    }}
                                                                 >
-                                                                    {
-                                                                        nombre_familiar
-                                                                    }
+                                                                    {`${nombre_familiar}-${
+                                                                        manzana.manzana
+                                                                    }${
+                                                                        extension &&
+                                                                        !isEmpty(
+                                                                            extension
+                                                                        )
+                                                                            ? `-${villa}-${extension}`
+                                                                            : `-${villa}`
+                                                                    } `}
                                                                 </MenuItem>
                                                             )
                                                         }
@@ -414,13 +429,12 @@ const ListadoVehiculo = () => {
                                                 value={marca}
                                                 onChange={(e) =>
                                                     setMarca(
-                                                        e.target.value as string
+                                                        Number(e.target.value)
                                                     )
                                                 }
                                             >
-                                                <MenuItem value={undefined}>
-                                                    {' '}
-                                                    - Todos -{' '}
+                                                <MenuItem value={'0'}>
+                                                    TODOS
                                                 </MenuItem>
                                                 {!loadingMarca &&
                                                     isNotNilOrEmpty(
@@ -434,9 +448,11 @@ const ListadoVehiculo = () => {
                                                                         'listado-filter-marca-' +
                                                                         id
                                                                     }
-                                                                    value={
-                                                                        marca
-                                                                    }
+                                                                    value={id}
+                                                                    style={{
+                                                                        textTransform:
+                                                                            'uppercase',
+                                                                    }}
                                                                 >
                                                                     {marca}
                                                                 </MenuItem>
@@ -459,13 +475,12 @@ const ListadoVehiculo = () => {
                                                 value={modelo}
                                                 onChange={(e) =>
                                                     setModelo(
-                                                        e.target.value as string
+                                                        Number(e.target.value)
                                                     )
                                                 }
                                             >
-                                                <MenuItem value={undefined}>
-                                                    {' '}
-                                                    - Todos -{' '}
+                                                <MenuItem value={'0'}>
+                                                    TODOS
                                                 </MenuItem>
                                                 {!loadingModelo &&
                                                     isNotNilOrEmpty(
@@ -479,9 +494,11 @@ const ListadoVehiculo = () => {
                                                                         'listado-filter-modelo-' +
                                                                         id
                                                                     }
-                                                                    value={
-                                                                        modelo
-                                                                    }
+                                                                    value={id}
+                                                                    style={{
+                                                                        textTransform:
+                                                                            'uppercase',
+                                                                    }}
                                                                 >
                                                                     {modelo}
                                                                 </MenuItem>

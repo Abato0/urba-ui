@@ -1,7 +1,6 @@
 import { Column } from 'react-table'
-import VisualizarActionsCell from '../table/ver-imagen-cell'
 import ActionsCellVehiculo from './actions-cell-vehiculo'
-import { IListadoVehiculo, IVehiculoVariableNormalize } from './use-vehiculo'
+import { IVehiculoVariableNormalize } from './use-vehiculo'
 
 export interface AllPagoTable {
     id: number
@@ -19,6 +18,10 @@ export const headVehiculoTable = Object.freeze([
     //   Header: "Tipo Vehiculo",
     //   accessor: "tipo_vehiculo",
     // },
+    {
+        Header: 'ID',
+        accessor: 'id',
+    },
     {
         Header: 'Grupo Familiar',
         accessor: 'nombre_familiar',

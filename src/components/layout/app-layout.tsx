@@ -29,11 +29,13 @@ import {
 } from '../../utils/keys'
 import { isNotEmpty } from '../../utils/is-nil-empty'
 import {
+    newItemsRegistroSeguridad,
+    newItemsListadoSeguridad,
+} from '../../utils/keys'
+import {
     ItemsOperacionesAdmin,
     ItemOperacionesOperador,
     ItemsOperacionesMorador,
-    ItemsListadoOperador,
-    ItemsRegistrosOperador,
 } from '../../utils/keys'
 
 const useStyles = makeStyles((theme) =>
@@ -185,7 +187,9 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
                 ? newItemsListadoAdmin
                 : equals(tipoUsuario, TipoUsuario.OPERATIVO)
                 ? newItemsListadoOperador
-                : newItemsListadoMorador
+                : equals(tipoUsuario, TipoUsuario.MORADOR)
+                ? newItemsListadoMorador
+                : newItemsListadoSeguridad
         }
         return []
     }, [loading, authFlag, tipoUsuario])
@@ -196,12 +200,12 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
                 ? newItemsRegistrosADMIN
                 : equals(tipoUsuario, TipoUsuario.OPERATIVO)
                 ? newItemsRegistrosOperador
-                : equals(tipoUsuario, TipoUsuario.MORADOR) && flagMorador
+                : equals(tipoUsuario, TipoUsuario.MORADOR)
                 ? newItemsRegistrosMorador
-                : []
+                : newItemsRegistroSeguridad
         }
         return []
-    }, [loading, authFlag, tipoUsuario, flagMorador])
+    }, [loading, authFlag, tipoUsuario])
 
     const itemUsuarioFilter = useMemo(() => {
         if (!loading && authFlag && isNotEmpty(tipoUsuario)) {

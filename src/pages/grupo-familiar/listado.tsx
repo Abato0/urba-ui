@@ -12,7 +12,6 @@ import {
 import { head } from '../../components/grupo-familiar/grupo-familiar-dataTable'
 // import { Fade, LinearProgress, Tooltip } from '@material-ui/core';
 import { isNil, isEmpty, prop, pluck, omit, map, equals } from 'ramda'
-
 import { IGrupoFamiliar } from '../../interface/grupo-familiar.interface'
 import Fuse from 'fuse.js'
 import { useRouter } from 'next/router'
@@ -43,7 +42,7 @@ const optionsFuse: Fuse.IFuseOptions<IGrupoFamiliarNormalize> = {
     keys: ['nombre_familiar', 'calle_principal', 'calle_interseccion'],
 }
 
-interface IGrupoFamiliarNormalize {
+export interface IGrupoFamiliarNormalize {
     id?: number
     nombre_familiar: string
     // tipo_edificacion: string;
@@ -81,7 +80,12 @@ const extractData = (data: IGrupoFamiliar[]): IGrupoFamiliarNormalize[] => {
                       // tipo_edificacion: isNil(tipo_edificacion)
                       //   ? ""
                       //   : tipo_edificacion.tipo_edificacion ?? "",
-                      villa: isNil(villa) ? '' : villa + extension,
+                      villa:
+                          isNil(villa) && isEmpty(extension)
+                              ? ''
+                              : extension && !isEmpty(extension)
+                              ? `${villa}-${extension}`
+                              : `${villa}`,
                       nombre_familiar: isNil(nombre_familiar)
                           ? ''
                           : nombre_familiar,
@@ -303,6 +307,7 @@ const ListadoGrupoFamiliar = () => {
         if (isNotNilOrEmpty(dataTable)) {
             const newCampos = dataTable.map(
                 ({
+                    id,
                     nombre_familiar,
                     calle_interseccion,
                     calle_principal,
@@ -310,6 +315,7 @@ const ListadoGrupoFamiliar = () => {
                     villa,
                 }) => {
                     return {
+                        id,
                         GrupoFamiliar: String(nombre_familiar).toUpperCase(),
                         CallePrincipal: String(calle_principal).toUpperCase(),
                         CalleInterseccion:
@@ -321,9 +327,10 @@ const ListadoGrupoFamiliar = () => {
             )
 
             const workSheet = XLSX.utils.json_to_sheet(newCampos)
-            workSheet.A1.v = 'Grupo Familiar'
-            workSheet.B1.v = 'Calle Principal'
-            workSheet.C1.v = 'Calle Intersección'
+            workSheet.A1.v = 'ID'
+            workSheet.B1.v = 'Grupo Familiar'
+            workSheet.C1.v = 'Calle Principal'
+            workSheet.D1.v = 'Calle Intersección'
 
             const workBook = XLSX.utils.book_new()
 
@@ -365,6 +372,7 @@ const ListadoGrupoFamiliar = () => {
                             error={errorModal}
                         />
                     )}
+                    {}
                     <Paper className={classes.paperFilter}>
                         <div className={classes.contenFilter}>
                             <div className={classes.contentButtons}>

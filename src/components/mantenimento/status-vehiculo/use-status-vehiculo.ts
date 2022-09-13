@@ -6,7 +6,19 @@ import {
     getStatusVehiculo,
     updateStatusVehiculo,
     deleteStatusVehiculo,
+    migracionStatusVehiculo,
 } from './status-vehiculo-typedef'
+
+export const useMigracionStatusVehiculoMutation = () => {
+    const [mutate, { data, loading, error }] = useMutation(
+        migracionStatusVehiculo,
+        {
+            refetchQueries: [{ query: listadoStatusVehiculo }],
+            notifyOnNetworkStatusChange: true,
+        }
+    )
+    return [mutate, data, loading, error]
+}
 
 export const usePostStatusVehiculoMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(postStatusVehiculo, {

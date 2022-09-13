@@ -1,5 +1,14 @@
 import { gql } from '@apollo/client'
 
+export const migracionVehiculo = gql`
+    mutation ($file: Upload) {
+        MigracionExcelVehiculo(excel: $file) {
+            code
+            message
+        }
+    }
+`
+
 export const saveVehiculo = gql`
     mutation (
         $idGrupoFamiliar: Int!
@@ -40,8 +49,8 @@ export const saveVehiculo = gql`
 export const listadoVehiculoFilter = gql`
     query VehiculosFilter(
         $idGrupoFamiliar: Int
-        $marca: String
-        $modelo: String # $status: String
+        $marca: Int
+        $modelo: Int # $status: String
     ) {
         ListaVehiculoFilter(
             input: {
@@ -55,6 +64,17 @@ export const listadoVehiculoFilter = gql`
             grupoFamiliar {
                 id
                 nombre_familiar
+                manzana {
+                    id
+                    manzana
+                }
+                villa
+                calle_principal {
+                    id
+                    calle
+                }
+                calle_interseccion
+                extension
             }
             modelo {
                 modelo

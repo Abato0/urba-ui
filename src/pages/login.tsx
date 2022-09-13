@@ -1,14 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
+import React, { useCallback, useEffect, useState } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
 import Head from 'next/head'
 import {
     Box,
     Button,
-    Card,
-    CardMedia,
     Container,
     colors,
-    Grid,
     Hidden,
     TextField,
     Typography,
@@ -26,8 +23,6 @@ import { MeetingRoom as MettingRoomIcon } from '@material-ui/icons'
 import { CarruselImagenesLogin } from '../components/login/carruselImagenesLogin'
 import { EnlacesSidebar } from '../utils/routes'
 import Cookies from 'js-cookie'
-import { useListadoImagenesBienvenidaQuery } from '../components/imagenes-de-bienvenida/use-imagenes-bienvenida'
-import { LUGAR_IMAGEN } from '../utils/keys'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -173,8 +168,8 @@ const useStyles = makeStyles((theme) => ({
 const initialValues = Object.freeze({ usuario: '', password: '' })
 
 const validationSchema = yup.object().shape({
-    usuario: yup.string().required('Required'),
-    password: yup.string().min(5, 'Too short').required('Required'),
+    usuario: yup.string().required('Campo requerido'),
+    password: yup.string().required('Campo requerido'),
 })
 
 const LoginScreen = () => {
@@ -230,7 +225,7 @@ const LoginScreen = () => {
             } catch (err) {
                 setLoading(false)
                 setOpenErrorLogin(true)
-                setMessageError('Usuario / Contraseña incorrecta')
+                setMessageError((err as Error).message)
                 // console.log("eerr: ",err.message)
                 //   const failedLoginError = isBadRequestError(err)
                 //     ? 'Missing username or password'
@@ -344,6 +339,11 @@ const LoginScreen = () => {
                                                 ? errors.usuario
                                                 : undefined
                                         }
+                                        inputProps={{
+                                            style: {
+                                                backgroundColor: '#F9F9F9',
+                                            },
+                                        }}
                                         required
 
                                         // fullWidth
@@ -369,6 +369,11 @@ const LoginScreen = () => {
                                                 ? errors.password
                                                 : undefined
                                         }
+                                        inputProps={{
+                                            style: {
+                                                backgroundColor: '#F9F9F9',
+                                            },
+                                        }}
                                         required
                                         // fullWidth
                                     />

@@ -6,6 +6,10 @@ import {
     getPagoFamiliarFilter,
     listadoPago,
     matrizOperaciones,
+    migracionPagoImplementacion,
+    migracionPagoMantenimiento,
+    migracionPagoOtros,
+    migracionPagoTag,
     pagosDashboard,
     savePago,
     subirFoto,
@@ -159,7 +163,63 @@ export const useCarteraVencida = (fecha: string) => {
 export const useDeletePagoMutation = () => {
     const [mutate] = useMutation(deletePago, {
         refetchQueries: [
-            { query: pagosDashboard },
+            // { query: pagosDashboard },
+            { query: listadoPago },
+            { query: getPagoFamiliarFilter },
+            { query: carteraVencida },
+            { query: matrizOperaciones },
+        ],
+        awaitRefetchQueries: true,
+    })
+    return [mutate]
+}
+
+export const useMigracionPagoMantenimientoMutation = () => {
+    const [mutate] = useMutation(migracionPagoMantenimiento, {
+        refetchQueries: [
+            // { query: pagosDashboard },
+            { query: listadoPago },
+            { query: getPagoFamiliarFilter },
+            { query: carteraVencida },
+            { query: matrizOperaciones },
+        ],
+        awaitRefetchQueries: true,
+    })
+    return [mutate]
+}
+
+export const useMigracionPagoTagMutation = () => {
+    const [mutate] = useMutation(migracionPagoTag, {
+        refetchQueries: [
+            // { query: pagosDashboard },
+            { query: listadoPago },
+            { query: getPagoFamiliarFilter },
+            { query: carteraVencida },
+            { query: matrizOperaciones },
+        ],
+        awaitRefetchQueries: true,
+    })
+    return [mutate]
+}
+
+export const useMigracionPagoOtrosMutation = () => {
+    const [mutate] = useMutation(migracionPagoOtros, {
+        refetchQueries: [
+            // { query: pagosDashboard },
+            { query: listadoPago },
+            { query: getPagoFamiliarFilter },
+            { query: carteraVencida },
+            { query: matrizOperaciones },
+        ],
+        awaitRefetchQueries: true,
+    })
+    return [mutate]
+}
+
+export const useMigracionPagoImplementacionMutation = () => {
+    const [mutate] = useMutation(migracionPagoImplementacion, {
+        refetchQueries: [
+            // { query: pagosDashboard },
             { query: listadoPago },
             { query: getPagoFamiliarFilter },
             { query: carteraVencida },

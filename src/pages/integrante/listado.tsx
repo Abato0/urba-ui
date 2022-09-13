@@ -117,7 +117,14 @@ const VariablesNormalizeIntegrantes = (data: IIntegranteVariables[]) => {
               ({ grupoFamiliar, parentesco, tipoIdentificacion, ...input }) => {
                   return omit(['__typename'], {
                       ...input,
-                      nombre_familiar: grupoFamiliar.nombre_familiar,
+                      nombre_familiar: `${grupoFamiliar.nombre_familiar}-${
+                          grupoFamiliar.manzana.manzana
+                      }${
+                          grupoFamiliar.extension &&
+                          !isEmpty(grupoFamiliar.extension)
+                              ? `-${grupoFamiliar.villa}-${grupoFamiliar.extension}`
+                              : `-${grupoFamiliar.villa}`
+                      } `,
                       parentesco: parentesco.parentesco,
                       tipo_doc_identidad:
                           tipoIdentificacion.tipo_identificacion ?? '',
@@ -264,6 +271,7 @@ const ListadoIntegrante = () => {
         if (isNotNilOrEmpty(dataTable)) {
             const newCampos = dataTable.map(
                 ({
+                    id,
                     apellido,
                     email,
                     fecha_nacimiento,
@@ -277,6 +285,7 @@ const ListadoIntegrante = () => {
                     tipo_doc_identidad,
                 }) => {
                     return {
+                        id,
                         GrupoFamiliar: nombre_familiar,
                         Nombre: nombre,
                         Apellido: apellido,
@@ -293,7 +302,8 @@ const ListadoIntegrante = () => {
             )
 
             const workSheet = XLSX.utils.json_to_sheet(newCampos)
-            workSheet.A1.v = 'Grupo Familiar'
+            workSheet.A1.v = 'ID'
+            workSheet.B1.v = 'Grupo Familiar'
             workSheet.D1.v = 'Tipo de documento de identidad'
             workSheet.E1.v = 'Numero de identificación'
             workSheet.F1.v = 'Fecha de nacimiento'
@@ -382,7 +392,13 @@ const ListadoIntegrante = () => {
                                                 ) &&
                                                 dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
                                                     (
-                                                        { id, nombre_familiar },
+                                                        {
+                                                            id,
+                                                            nombre_familiar,
+                                                            manzana,
+                                                            extension,
+                                                            villa,
+                                                        },
                                                         index
                                                     ) => {
                                                         return (
@@ -394,9 +410,16 @@ const ListadoIntegrante = () => {
                                                                         'uppercase',
                                                                 }}
                                                             >
-                                                                {
-                                                                    nombre_familiar
-                                                                }
+                                                                {`${nombre_familiar}-${
+                                                                    manzana.manzana
+                                                                }${
+                                                                    extension &&
+                                                                    !isEmpty(
+                                                                        extension
+                                                                    )
+                                                                        ? `-${villa}-${extension}`
+                                                                        : `-${villa}`
+                                                                } `}
                                                             </MenuItem>
                                                         )
                                                     }

@@ -1,5 +1,14 @@
 import { gql } from '@apollo/client'
 
+export const migracionVisitante = gql`
+    mutation ($file: Upload) {
+        MigracionExcelVisitante(excel: $file) {
+            code
+            message
+        }
+    }
+`
+
 export const saveVisitanteMorador = gql`
     mutation (
         $idGrupoFamiliar: Int
@@ -155,6 +164,7 @@ export const listadoVisitante = gql`
             descripcion
             fecha_visita
             fecha_llegada
+            fecha_salida
             grupoFamiliar {
                 id
                 nombre_familiar

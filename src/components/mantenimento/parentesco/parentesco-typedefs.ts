@@ -1,5 +1,14 @@
 import { gql } from '@apollo/client'
 
+export const migracionParentesco = gql`
+    mutation ($file: Upload) {
+        MigracionExcelParentesco(excel: $file) {
+            code
+            message
+        }
+    }
+`
+
 export const listadoParentesco = gql`
     query {
         ListaParentesco {

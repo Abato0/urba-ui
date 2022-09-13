@@ -8,7 +8,14 @@ import {
     Table,
 } from '@material-ui/core'
 import { FC, useCallback } from 'react'
-import { Column, Row, usePagination, useRowSelect, useTable } from 'react-table'
+import {
+    Column,
+    Row,
+    usePagination,
+    useRowSelect,
+    useSortBy,
+    useTable,
+} from 'react-table'
 import TableHeader from './table-header'
 import CardTableBody from './table-body'
 import TablePaginations from './table-paginations'
@@ -133,6 +140,8 @@ const CardTable: FC<IProps> = ({
             onEdit,
             onDelete,
         },
+
+        // useSortBy,
         usePagination
     )
 

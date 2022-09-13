@@ -9,6 +9,42 @@ export const subirFoto = gql`
     }
 `
 
+export const migracionPagoTag = gql`
+    mutation ($file: Upload) {
+        MigracionExcelPagosTag(excel: $file) {
+            code
+            message
+        }
+    }
+`
+
+export const migracionPagoImplementacion = gql`
+    mutation ($file: Upload) {
+        MigracionExcelPagosImplementacion(excel: $file) {
+            code
+            message
+        }
+    }
+`
+
+export const migracionPagoOtros = gql`
+    mutation ($file: Upload) {
+        MigracionExcelOtros(excel: $file) {
+            code
+            message
+        }
+    }
+`
+
+export const migracionPagoMantenimiento = gql`
+    mutation ($file: Upload) {
+        MigracionExcelPagosMantenimiento(excel: $file) {
+            code
+            message
+        }
+    }
+`
+
 export const pagosDashboard = gql`
     query PagosDashboard($fechaDesde: String, $fechaHasta: String) {
         ListadoPagosDashboard(

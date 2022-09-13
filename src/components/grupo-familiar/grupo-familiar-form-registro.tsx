@@ -8,39 +8,26 @@ import {
     TextField,
     MenuItem,
     Typography,
-    Grid,
 } from '@material-ui/core'
 import { useFormik } from 'formik'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
-import { saveGrupoFamiliar } from '../../components/grupo-familiar/grupo-familiar-typeDefs'
 import {
     useGrupoFamiliarMutation,
     useListarGrupoFamiliarFilterQuery,
     useUpdateFamiliarMutation,
 } from '../../components/grupo-familiar/use-grupo-familia'
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { DocumentNode } from '@apollo/client'
-import { equals, isEmpty, isNil, omit } from 'ramda'
-import {
-    IGrupoFamiliar,
-    IGrupoFamiliarInput,
-} from '../../interface/grupo-familiar.interface'
+import { equals, isNil } from 'ramda'
+import { IGrupoFamiliarInput } from '../../interface/grupo-familiar.interface'
 import ModalAuth from '../core/input/dialog/modal-dialog'
 
 import FormControlHeader from '../core/input/form-control-select'
-import {
-    useListaCallesQuery,
-    usePostCalleMutation,
-} from '../mantenimento/calle/use-calle'
+import { useListaCallesQuery } from '../mantenimento/calle/use-calle'
 import { useListaManzanaQuery } from '../mantenimento/manzana/use-manzana'
 import { useRouter } from 'next/router'
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
-import {
-    useListadoUsuario,
-    useListadoUsuarioSinFamilares,
-} from '../usuarios/use-usuario'
-import { GetGrupoFamiliar } from './grupo-familiar-typeDefs'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -142,18 +129,26 @@ const initialValues = Object.freeze({
 const validationSchema = yup.object().shape({
     nombre_familiar: yup
         .string()
-        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
-        .required('Requerido'),
-    id_manzana: yup.number().required('Requerido'),
+        .matches(/^[aA-zZ\s]+([0-9]{1})?$/, 'No colocar caracteres especiales')
+        .required('Campor requerido'),
+    id_manzana: yup
+        .number()
+        .required('Campo requerido')
+        .min(1, 'Campo requerido'),
     villa: yup
         .number()
         .min(1, 'No se acepta 0 o numeros negativos')
-        .required('Requerido'),
-    id_calle_principal: yup.number().required('Requerido'),
+        .required('Campo requerido'),
+    id_calle_principal: yup
+        .number()
+        .required('Campo requerido')
+        .min(1, 'Campo requerido'),
     calle_interseccion: yup
         .string()
-        .matches(/^[aA-zZ\s]+$/, 'No colocar caracteres especiales')
-        .required('Requerido'),
+
+        //  .matches(/^[aA-zZ\s]+$/, 'No colocar caracteres especiales')
+        .required('Campo Requerido')
+        .min(2, 'Campo requerido'),
     extension: yup.string(),
     // .matches(/^[aA-zZ\s]+$/, 'No colocar caracteres especiales')
     // .max(4, 'Excede la cantidad de caracteres permitidos'),
@@ -260,8 +255,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                     const { data: dataMutate } = isNil(grupoFam)
                         ? await mutate({
                               variables: {
-                                  nombre_familiar:
-                                      String(nombre_familiar).toUpperCase(),
+                                  nombre_familiar: String(nombre_familiar)
+                                      .toUpperCase()
+                                      .trim(),
                                   id_calle_principal,
                                   calle_interseccion:
                                       String(calle_interseccion).toUpperCase(),
@@ -269,7 +265,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                                   // id_usuario,
                                   villa,
                                   extension: extension
-                                      ? String(extension).toUpperCase()
+                                      ? String(extension).toUpperCase().trim()
                                       : '',
                                   // id_tipo_edificacion,
                                   // id_color_fachada,
@@ -278,8 +274,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                         : await mutate({
                               variables: {
                                   id: idGrupoFamiliar,
-                                  nombre_familiar:
-                                      String(nombre_familiar).toUpperCase(),
+                                  nombre_familiar: String(nombre_familiar)
+                                      .toUpperCase()
+                                      .trim(),
                                   id_calle_principal,
                                   calle_interseccion:
                                       String(calle_interseccion).toUpperCase(),
@@ -287,7 +284,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                                   // id_usuario,
                                   villa,
                                   extension: extension
-                                      ? String(extension).toUpperCase()
+                                      ? String(extension).toUpperCase().trim()
                                       : '',
                                   // id_tipo_edificacion,
                                   // id_color_fachada,
@@ -355,12 +352,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
         handleChange,
         handleReset,
         handleSubmit,
-        isSubmitting,
         touched,
         values,
         resetForm,
-        setFieldValue,
-        setValues,
     } = useFormik({
         initialValues: init,
         onSubmit,
@@ -383,9 +377,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
     //     }
     // }, [loadingListadoCalles, dataListadoCalles, values])
 
-    useEffect(() => {
-        console.log('Values: ', values)
-    }, [values])
+    // useEffect(() => {
+    //     console.log('Values: ', values)
+    // }, [values])
 
     const classes = useStyles()
     return (
@@ -482,7 +476,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                         handleChange={handleChange}
                         labetTitulo="Calle Principal"
                         value={values.id_calle_principal}
+                        error={errors.id_calle_principal}
                     >
+                        <MenuItem value={0}> SELECCIONAR</MenuItem>
                         {!loadingListadoCalles &&
                             !isNil(dataListadoCalles) &&
                             dataListadoCalles.ListaCalle.map(
@@ -493,6 +489,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                                                 'ingresoGrupoFamiliar-calle-principal' +
                                                 id
                                             }
+                                            style={{
+                                                textTransform: 'uppercase',
+                                            }}
                                             value={id}
                                         >
                                             {calle}
@@ -509,7 +508,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                         handleChange={handleChange}
                         labetTitulo="Calle Intersección"
                         value={values.calle_interseccion}
+                        error={errors.calle_interseccion}
                     >
+                        <MenuItem value={'0'}>SELECCIONAR</MenuItem>
                         {!loadingListadoCalles &&
                             !isNil(dataListadoCalles) &&
                             dataListadoCalles.ListaCalle.map(
@@ -520,6 +521,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                                                 'ingresoGrupoFamiliar-calle-interseccion' +
                                                 id
                                             }
+                                            style={{
+                                                textTransform: 'uppercase',
+                                            }}
                                             value={calle}
                                         >
                                             {calle}
@@ -539,7 +543,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                             handleChange={handleChange}
                             labetTitulo="Manzana"
                             value={values.id_manzana}
+                            error={errors.id_manzana}
                         >
+                            <MenuItem value={0}> SELECCIONAR</MenuItem>
                             {!loadingListadoManzana &&
                                 !isNil(dataListadoManzana) &&
                                 dataListadoManzana.ListaManzana.map(
@@ -551,6 +557,9 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                                                     id
                                                 }
                                                 value={id}
+                                                style={{
+                                                    textTransform: 'uppercase',
+                                                }}
                                             >
                                                 {manzana}
                                             </MenuItem>
@@ -623,6 +632,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
 
                 <div className={classes.contentButtons}>
                     <div></div>
+
                     <LoadingButton
                         loading={loadingMutate}
                         loadingPosition="start"

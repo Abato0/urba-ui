@@ -1,5 +1,14 @@
 import { gql } from '@apollo/client'
 
+export const migracionIntegrante = gql`
+    mutation ($file: Upload) {
+        MigracionExcelIntegrante(excel: $file) {
+            code
+            message
+        }
+    }
+`
+
 export const saveIntegrante = gql`
     mutation (
         $idGrupoFamiliar: Int!
@@ -201,6 +210,18 @@ export const listaIntergranteFilter = gql`
             grupoFamiliar {
                 id
                 nombre_familiar
+                nombre_familiar
+                manzana {
+                    id
+                    manzana
+                }
+                villa
+                calle_principal {
+                    id
+                    calle
+                }
+                calle_interseccion
+                extension
             }
         }
     }

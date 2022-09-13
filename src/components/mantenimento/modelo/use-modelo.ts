@@ -6,10 +6,19 @@ import {
     getModelo,
     updateModelo,
     deleteModelo,
+    migracionModelo,
 } from './modelo-typedef'
 
 export const usePostModeloMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(postModelo, {
+        refetchQueries: [{ query: listadoModelo }],
+        notifyOnNetworkStatusChange: true,
+    })
+    return [mutate, data, loading, error]
+}
+
+export const useMigracionModeloMutation = () => {
+    const [mutate, { data, loading, error }] = useMutation(migracionModelo, {
         refetchQueries: [{ query: listadoModelo }],
         notifyOnNetworkStatusChange: true,
     })

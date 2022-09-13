@@ -174,6 +174,7 @@ export enum TipoUsuario {
     CONTABILIDAD = 'contabilidad',
     MORADOR = 'morador',
     OPERATIVO = 'operativo',
+    SEGURIDAD = 'seguridad',
 }
 
 export enum TipoTag {
@@ -204,6 +205,10 @@ export const tipoUsuarios: ITipoEdificacion[] = [
     {
         label: 'OPERATIVO',
         value: TipoUsuario.OPERATIVO,
+    },
+    {
+        label: 'SEGURIDAD',
+        value: TipoUsuario.SEGURIDAD,
     },
 ]
 

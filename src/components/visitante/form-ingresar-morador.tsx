@@ -8,7 +8,7 @@ import {
     TextField,
 } from '@material-ui/core'
 import { useRouter } from 'next/router'
-import { values, isNil } from 'ramda'
+import { values, isNil, isEmpty } from 'ramda'
 import React, { useCallback, useMemo, useState } from 'react'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import FormControlHeader from '../core/input/form-control-select'
@@ -104,14 +104,17 @@ const useStyles = makeStyles((theme) =>
 )
 
 const initialValues = Object.freeze({
-    idGrupoFamiliar: undefined,
+    idGrupoFamiliar: 0,
     nombre_visitante: '',
     descripcion: '',
     fecha_visita: new Date(),
 })
 
 const validationSchema = yup.object().shape({
-    idGrupoFamiliar: yup.number().required('Campo requerido'),
+    idGrupoFamiliar: yup
+        .number()
+        .required('Campo requerido')
+        .min(1, 'Campo requerido'),
     nombre_visitante: yup
         .string()
         .matches(/^[aA-zZ\s]+$/, 'No colocar caracteres especiales')
@@ -295,14 +298,22 @@ export const FormIngresarMorador: FC<IProps> = ({ morador, id }) => {
                             handleChange={handleChange}
                             labetTitulo=" Grupo Familiar"
                             value={values.idGrupoFamiliar}
+                            error={errors.idGrupoFamiliar}
                         >
+                            <MenuItem value={0}>Seleccionar</MenuItem>
                             {!loadingListaGrupoFamiliar &&
                                 !isNil(dataListaGrupoFamiliar) &&
                                 isNotNilOrEmpty(
                                     dataListaGrupoFamiliar.ListaGruposFamiliares
                                 ) &&
                                 dataListaGrupoFamiliar.ListaGruposFamiliares.map(
-                                    ({ id, nombre_familiar }) => {
+                                    ({
+                                        id,
+                                        nombre_familiar,
+                                        manzana,
+                                        extension,
+                                        villa,
+                                    }) => {
                                         return (
                                             <MenuItem
                                                 value={id}
@@ -310,8 +321,18 @@ export const FormIngresarMorador: FC<IProps> = ({ morador, id }) => {
                                                     'ListGrupoFamiliarFormIntegrante-' +
                                                     id
                                                 }
+                                                style={{
+                                                    textTransform: 'uppercase',
+                                                }}
                                             >
-                                                {nombre_familiar}
+                                                {`${nombre_familiar}-${
+                                                    manzana.manzana
+                                                }${
+                                                    extension &&
+                                                    !isEmpty(extension)
+                                                        ? `-${villa}-${extension}`
+                                                        : `-${villa}`
+                                                } `}
                                             </MenuItem>
                                         )
                                     }

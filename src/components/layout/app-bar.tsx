@@ -16,24 +16,22 @@ import AccountCircle from '@material-ui/icons/AccountCircle'
 import MailIcon from '@material-ui/icons/Mail'
 import NotificationsIcon from '@material-ui/icons/Notifications'
 //import MoreIcon from '@material-ui/icons/MoreVert'
-import { colors, Paper, Popover, Typography } from '@material-ui/core'
-import { showSidebar, userInfo } from '../../utils/states';
+import { colors, Popover, Typography } from '@material-ui/core'
+import { showSidebar, userInfo } from '../../utils/states'
 import {
     usePopupState,
     bindTrigger,
     bindPopover,
 } from 'material-ui-popup-state/hooks'
 import Notificaciones from '../core/notificacion/notificaciones'
-import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { useRouter } from 'next/router'
 import Cookies from 'js-cookie'
 import { authMe } from '../../auth/auth-service'
 // import Logo  from "../../icons/logo-28.svg"
-import Image from 'next/image'
 import { COLOR_PRIMARIO, COLOR_SECUDARIO } from '../../utils/keys'
 import { EnlacesSidebar } from './sidebar/app-sidebar-morador'
-import { useCallback, useEffect, useState } from 'react'
-import { IResultUsuarioQuery, useListadoUsuario } from '../usuarios/use-usuario'
+import { useCallback, useState } from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -102,10 +100,8 @@ const useStyles = makeStyles((theme: Theme) =>
             [theme.breakpoints.up('md')]: {
                 display: 'flex',
             },
-
         },
         sectionMobile: {
-
             [theme.breakpoints.up('md')]: {
                 display: 'none',
             },
@@ -114,7 +110,7 @@ const useStyles = makeStyles((theme: Theme) =>
             // backgroundColor: colors.green[700],
             // background: "linear-gradient(to right, #4e54c8, #8f94fb)",
             backgroundColor: COLOR_PRIMARIO,
-            width: "100%"
+            width: '100%',
             // minWidth: theme.spacing(126),
         },
 
@@ -137,7 +133,6 @@ const NavBar: React.FC = ({ children }) => {
     const [openSidebar, setOpenSidebar] = useRecoilState(showSidebar)
     const userInformacion = useRecoilValue(userInfo)
 
-
     // const { data, loading } = useListadoUsuario()
 
     const popupState = usePopupState({
@@ -145,9 +140,7 @@ const NavBar: React.FC = ({ children }) => {
         popupId: 'demoMenu',
     })
 
-
     // const [usuarioEncontrado, setUsuarioEncontrado] = useState<IResultUsuarioQuery>();
-
 
     // useEffect(() => {
 
@@ -213,7 +206,7 @@ const NavBar: React.FC = ({ children }) => {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={autho}>Perfil</MenuItem>
+            {/* <MenuItem onClick={autho}>Perfil</MenuItem> */}
             <MenuItem
                 onClick={() =>
                     router.push(EnlacesSidebar.usuario.cambioContrasena.route)
@@ -268,7 +261,6 @@ const NavBar: React.FC = ({ children }) => {
             </MenuItem>
         </Menu>
     )
-
 
     return (
         <>
@@ -329,27 +321,42 @@ const NavBar: React.FC = ({ children }) => {
                                 <div className={classes.grow} />
 
                                 <div className={classes.sectionDesktop}>
-                                    {userInformacion &&
-                                        <div style={{
-                                            justifyItems: "center",
-                                            alignItems: "center",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            paddingTop: "2%"
-                                        }}>
+                                    {userInformacion && (
+                                        <div
+                                            style={{
+                                                justifyItems: 'center',
+                                                alignItems: 'center',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                paddingTop: '2%',
+                                            }}
+                                        >
                                             <div>
-                                                <Typography style={{ textTransform: "uppercase" }} align='center' variant='body2'  >
+                                                <Typography
+                                                    style={{
+                                                        textTransform:
+                                                            'uppercase',
+                                                    }}
+                                                    align="center"
+                                                    variant="body2"
+                                                >
                                                     {`${userInformacion.nombres} ${userInformacion.apellidos} - ${userInformacion.num_identificacion}`}
                                                 </Typography>
                                             </div>
                                             <div>
-                                                <Typography style={{ textTransform: "uppercase" }} align='center' variant='body2'  >
+                                                <Typography
+                                                    style={{
+                                                        textTransform:
+                                                            'uppercase',
+                                                    }}
+                                                    align="center"
+                                                    variant="body2"
+                                                >
                                                     {`${userInformacion.tipo_usuario}`}
                                                 </Typography>
                                             </div>
-
-
-                                        </div>}
+                                        </div>
+                                    )}
                                     <IconButton
                                         edge="end"
                                         aria-label="account of current user"
@@ -357,7 +364,7 @@ const NavBar: React.FC = ({ children }) => {
                                         aria-haspopup="true"
                                         onClick={handleProfileMenuOpen}
                                         className={classes.menuButton}
-                                    // color="black"
+                                        // color="black"
                                     >
                                         <AccountCircle />
                                     </IconButton>
@@ -373,17 +380,26 @@ const NavBar: React.FC = ({ children }) => {
                                     >
                                         <MoreIcon />
                                     </IconButton> */}
-                                    {userInformacion &&
-                                        <div style={{
-                                            justifyItems: "center",
-                                            alignItems: "center",
-                                            display: "flex",
-                                            padding: "8%"
-                                        }}>
-                                            <Typography style={{ textTransform: "uppercase" }} align='center' variant='body2'  >
+                                    {userInformacion && (
+                                        <div
+                                            style={{
+                                                justifyItems: 'center',
+                                                alignItems: 'center',
+                                                display: 'flex',
+                                                padding: '8%',
+                                            }}
+                                        >
+                                            <Typography
+                                                style={{
+                                                    textTransform: 'uppercase',
+                                                }}
+                                                align="center"
+                                                variant="body2"
+                                            >
                                                 {`${userInformacion.nombres} ${userInformacion.apellidos} - ${userInformacion.num_identificacion}`}
                                             </Typography>
-                                        </div>}
+                                        </div>
+                                    )}
                                 </div>
                             </Toolbar>
                         </AppBar>
@@ -397,8 +413,8 @@ const NavBar: React.FC = ({ children }) => {
                                 vertical: 'top',
                                 horizontal: 'center',
                             }}
-                        // style={{ maxHeight: 0, overflow: "auto" }}
-                        // onScroll={}
+                            // style={{ maxHeight: 0, overflow: "auto" }}
+                            // onScroll={}
                         >
                             <Notificaciones />
                         </Popover>
@@ -409,7 +425,6 @@ const NavBar: React.FC = ({ children }) => {
                 </>
             ) : null}
             {children}
-
         </>
     )
 }

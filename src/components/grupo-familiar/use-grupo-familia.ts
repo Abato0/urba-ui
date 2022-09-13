@@ -6,9 +6,9 @@ import {
     listadoGrupoFamiliar,
     listadoGrupoFamiliarSinUsuario,
     listarGruposFamiliaresFilter,
-    updateGrupoFamiliarMutation,
+    migracionGrupoFamiliar,
 } from './grupo-familiar-typeDefs'
-import { equals, isEmpty } from 'ramda'
+import { isEmpty } from 'ramda'
 import { IGrupoFamiliar } from '../../interface/grupo-familiar.interface'
 import { isNilOrEmpty } from '../../utils/is-nil-empty'
 import {
@@ -71,6 +71,20 @@ export const useDeleteGrupoFamiliarMutatio = (id: number) => {
     )
 
     return [mutate, data, loading, error]
+}
+
+export const useMigracionGrupoFamilarMutation = () => {
+    const [mutate] = useMutation(migracionGrupoFamiliar, {
+        refetchQueries: [
+            { query: listarGruposFamiliaresFilter },
+            { query: listadoVehiculoFilter },
+            { query: listadoVehiculo },
+            { query: listadoIntegrante },
+            { query: listaIntergranteFilter },
+        ],
+        awaitRefetchQueries: true,
+    })
+    return [mutate]
 }
 
 export interface IListadoGrupoFamiliarVariables {

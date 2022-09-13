@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from '@apollo/client'
-import { isNilOrEmpty } from '../../../utils/is-nil-empty'
 import { isNil } from 'ramda'
 import {
     postTipoIdentificacion,
@@ -7,13 +6,25 @@ import {
     getTipoIdentificacion,
     updateTipoIdentificacion,
     deleteTipoIdentificacion,
+    migracionipoIdentificacion,
 } from './tipo-identificacion-typedef'
+
+export const useMigracionTipoIdentificacionMutation = () => {
+    const [mutate, { data, loading, error }] = useMutation(
+        migracionipoIdentificacion,
+        {
+            refetchQueries: [{ query: listadoTipoIdentificacion }],
+            notifyOnNetworkStatusChange: true,
+        }
+    )
+    return [mutate, data, loading, error]
+}
 
 export const usePostTipoIdentificacionMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(
         postTipoIdentificacion,
         {
-            // refetchQueries: [{ query: listadoParentesco }],
+            refetchQueries: [{ query: listadoTipoIdentificacion }],
             notifyOnNetworkStatusChange: true,
         }
     )
@@ -31,8 +42,8 @@ export interface IListadoTipoIdentificacion {
 
 export const useListaTipoIdentificacionQuery = () => {
     return useQuery<IListadoTipoIdentificacion>(listadoTipoIdentificacion, {
-        // notifyOnNetworkStatusChange: true,
-        // fetchPolicy: "cache-and-network",
+        notifyOnNetworkStatusChange: true,
+        fetchPolicy: 'cache-and-network',
     })
 }
 
@@ -53,7 +64,7 @@ export const usePutTipoIdentificacionMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(
         updateTipoIdentificacion,
         {
-            // refetchQueries: [{ query: listadoParentesco }],
+            refetchQueries: [{ query: listadoTipoIdentificacion }],
             notifyOnNetworkStatusChange: true,
         }
     )
@@ -64,7 +75,7 @@ export const useDeleteTipoIdentificacionMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(
         deleteTipoIdentificacion,
         {
-            // refetchQueries: [{ query: listadoParentesco }],
+            refetchQueries: [{ query: listadoTipoIdentificacion }],
             notifyOnNetworkStatusChange: true,
         }
     )

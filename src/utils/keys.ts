@@ -25,6 +25,83 @@ export const URL_BASE_API = (): string => {
     return process.env.NEXT_PUBLIC_BASE_API_UR ?? ''
 }
 
+export const moduloMigracionGeneral = [
+    {
+        label: 'Grupo Familiar',
+        value: 1,
+    },
+    {
+        label: 'Integrante de Grupo Familiar',
+        value: 2,
+    },
+    {
+        label: 'Vehiculo',
+        value: 3,
+    },
+    {
+        label: 'Usuario Operativo',
+        value: 4,
+    },
+    {
+        label: 'Usuario Morador',
+        value: 5,
+    },
+]
+
+export const moduloMigracionPagos = [
+    {
+        label: 'Implementación',
+        value: 1,
+    },
+    {
+        label: 'Mantenimiento',
+        value: 2,
+    },
+    {
+        label: 'TAG',
+        value: 3,
+    },
+    {
+        label: 'Otros',
+        value: 4,
+    },
+]
+
+export const moduloMigracionParametrizacion = [
+    {
+        label: 'Colores',
+        value: 1,
+    },
+    {
+        label: 'Calles y Peatonales',
+        value: 2,
+    },
+    {
+        label: 'Manzanas',
+        value: 3,
+    },
+    {
+        label: 'Marcas',
+        value: 4,
+    },
+    {
+        label: 'Modelos',
+        value: 5,
+    },
+    {
+        label: 'Valores de Tag',
+        value: 6,
+    },
+    {
+        label: 'Parentesco',
+        value: 7,
+    },
+    {
+        label: 'Tipo de Identificación',
+        value: 8,
+    },
+]
+
 export const publicPages = ['/login', 'recordar-contrasena']
 export const ID_STATUS_TAG_DISPONIBLE = 1
 export const ID_STATUS_TAG_INACTIVO = 2
@@ -359,6 +436,17 @@ export const newItemsRegistrosADMIN: IItemsSidebar[] = [
         label: 'Registro de Usuario',
         ruta: '/usuario/ingresar',
     },
+    {
+        icon: faListAlt,
+        label: 'Registrar de Visitantes',
+        ruta: String(EnlacesSidebar.visitante.ingresarMorador.route),
+    },
+
+    {
+        icon: faListAlt,
+        label: 'Registrar Entrada de Visitantes ',
+        ruta: String(EnlacesSidebar.visitante.listadoVisitante.route),
+    },
 ]
 
 export const newItemsRegistrosMorador: IItemsSidebar[] = [
@@ -376,6 +464,28 @@ export const newItemsRegistrosMorador: IItemsSidebar[] = [
         icon: faDonate,
         label: 'Registrar Aportación',
         ruta: String(EnlacesSidebar.pago.registrar.route),
+    },
+
+    {
+        icon: faListAlt,
+        label: 'Registrar de Visitantes',
+        ruta: String(EnlacesSidebar.visitante.ingresarMorador.route),
+    },
+]
+
+export const newItemsListadoSeguridad = [
+    // {
+    //     icon: faListAlt,
+    //     label: 'Listado de Visitantes',
+    //     ruta: String(EnlacesSidebar.visitante.listadoVisitante.route),
+    // },
+]
+
+export const newItemsRegistroSeguridad = [
+    {
+        icon: faListAlt,
+        label: 'Registro de Salida de Visitantes',
+        ruta: String(EnlacesSidebar.visitante.listadoVisitante.route),
     },
 ]
 
@@ -453,6 +563,11 @@ export const newItemsListadoAdmin: IItemsSidebar[] = [
         label: 'Listado de asignación de Tag',
         ruta: String(EnlacesSidebar.tag.asignacionTag.listado.route),
     },
+    {
+        icon: faListAlt,
+        label: 'Listado de Visitantes',
+        ruta: String(EnlacesSidebar.visitante.listadoVisitante.route),
+    },
 ]
 
 export const newItemsListadoMorador: IItemsSidebar[] = [
@@ -478,14 +593,14 @@ export const newItemsListadoMorador: IItemsSidebar[] = [
     // },
     {
         icon: faListAlt,
-        label: 'Matriz de Aporteciones',
+        label: 'Matriz de Aportaciones',
         ruta: String(EnlacesSidebar.pago.matrizOperaciones.route),
     },
-    {
-        icon: faListAlt,
-        label: 'Listado de Pago por Tag',
-        ruta: String(EnlacesSidebar.tag.listado.route),
-    },
+    // {
+    //     icon: faListAlt,
+    //     label: 'Listado de Pago por Tag',
+    //     ruta: String(EnlacesSidebar.tag.listado.route),
+    // },
     {
         icon: faListAlt,
         label: 'Listado de Vehiculos',
@@ -665,6 +780,11 @@ export const newItemsMantenimientoAdmin: IItemsSidebar[] = [
     },
     {
         icon: faListAlt,
+        label: 'Listado de visitante',
+        ruta: String(EnlacesSidebar.visitante.listadoVisitante.route),
+    },
+    {
+        icon: faListAlt,
         label: 'Listado de manzanas',
         ruta: String(EnlacesSidebar.mantenimiento.manzana.listado.route),
     },
@@ -709,6 +829,11 @@ export const newItemsMantenimientoAdmin: IItemsSidebar[] = [
         icon: faListAlt,
         label: 'Listado de modelos de correos',
         ruta: String(EnlacesSidebar.mantenimiento.modeloMail.listado.route),
+    },
+    {
+        icon: faListAlt,
+        label: 'Migración',
+        ruta: String(EnlacesSidebar.mantenimiento.migracion.ingresar.route),
     },
 ]
 

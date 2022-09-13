@@ -1,9 +1,12 @@
 import { Column } from 'react-table'
-import { Data } from '../core/input/data'
 import ActionsCell from '../table/actions-cell'
 import RepresentanteCells from './representanteCell'
 
 export const headIntegranteTable = Object.freeze([
+    {
+        Header: 'ID',
+        accessor: 'id',
+    },
     {
         Header: 'Grupo Familiar',
         accessor: 'nombre_familiar',

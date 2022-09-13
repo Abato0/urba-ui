@@ -1,6 +1,5 @@
 import XLSX from 'xlsx'
 import {
-    Button,
     colors,
     createStyles,
     IconButton,
@@ -18,7 +17,6 @@ import {
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
 import { drop, isEmpty, isNil, zipObj } from 'ramda'
 import React, { useEffect, useState } from 'react'
-
 import {
     IArrKeyData,
     useMatrizOperaciones,
@@ -29,6 +27,7 @@ import { FileExcelBox as FileExcelBoxIcon, TableSearch } from 'mdi-material-ui'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
 import { DateDesdeHasta } from '../../components/core/input/dateDesdeHasta'
+import { COLOR_PRIMARIO } from '../../utils/keys'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -131,13 +130,15 @@ const useStyles = makeStyles((theme) =>
                 background: colors.deepPurple[100],
                 color: 'white',
             },
+            textTransform: 'uppercase',
         },
         tableHead: {
-            background: colors.deepPurple[400],
+            background: COLOR_PRIMARIO,
             color: 'white',
             fontSize: 14,
             fontWeight: 'unset',
             fontFamily: 'Roboto',
+            textTransform: 'uppercase',
         },
     })
 )
@@ -258,8 +259,9 @@ export const ListadoMatrizOperaciones = () => {
                         </div>
                     </div>
                 </div>
-                <TableContainer style={{ maxHeight: 800, width: '100%' }}>
+                <TableContainer style={{ maxHeight: 500, width: '100%' }}>
                     <Table
+                        // style={{ overflow: 'auto', }}
                         style={{ overflow: 'auto' }}
                         stickyHeader
                         aria-label="sticky table"
@@ -294,6 +296,13 @@ export const ListadoMatrizOperaciones = () => {
                                         <TableRow
                                             className={classes.tableBody}
                                             key={index}
+                                            style={{
+                                                backgroundColor:
+                                                    index ===
+                                                    dataColumnsV2.length - 1
+                                                        ? colors.purple[100]
+                                                        : 'white',
+                                            }}
                                         >
                                             {rowData.map(
                                                 (columnData, index) => {
@@ -302,14 +311,33 @@ export const ListadoMatrizOperaciones = () => {
                                                             align="center"
                                                             key={index}
                                                         >
-                                                            {columnData}
+                                                            {/* {columnData} */}
+                                                            {index === 0
+                                                                ? columnData
+                                                                : `$${Number(
+                                                                      columnData
+                                                                  ).toFixed(
+                                                                      2
+                                                                  )}`}
                                                         </TableCell>
                                                     )
                                                 }
                                             )}
                                             {rowData.length > 0 && (
-                                                <TableCell>
-                                                    {totalFila(rowData)}
+                                                <TableCell
+                                                    align="center"
+                                                    style={{
+                                                        backgroundColor:
+                                                            colors.purple[100],
+                                                        position:
+                                                            index === 0
+                                                                ? 'sticky'
+                                                                : 'static',
+                                                    }}
+                                                >
+                                                    {` $${totalFila(
+                                                        rowData
+                                                    ).toFixed(2)}`}
                                                 </TableCell>
                                             )}
                                         </TableRow>

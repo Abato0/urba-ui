@@ -7,14 +7,13 @@ import {
     listadoVehiculo,
     listadoVehiculoFilter,
     listadoVehiculoInactivos,
+    migracionVehiculo,
     saveVehiculo,
     updateVehiculo,
 } from './vehiculo-typeDef'
 import { isNilOrEmpty } from '../../utils/is-nil-empty'
 import { IResultQueryMarca } from '../mantenimento/marca/use-marca'
 import { IResultQueryColor } from '../mantenimento/color/use-color'
-import { IResultQueryStatusVehiculo } from '../mantenimento/status-vehiculo/use-status-vehiculo'
-import { equals } from 'ramda'
 import { IResultQueryModelo } from '../mantenimento/modelo/use-modelo'
 
 export interface IVehiculoVariable {
@@ -36,6 +35,7 @@ export interface IVehiculoVariable {
 }
 
 export interface IVehiculoVariableNormalize {
+    id?: number
     nombre_familiar: string
     // tipo_vehiculo: string;
     placa: string
@@ -56,6 +56,18 @@ export const useSaveVehiculoMutation = () => {
     })
 
     return [mutate, data, loading, error]
+}
+
+export const useMigracionVehiculoMutation = () => {
+    const [mutate, { data, loading, error }] = useMutation(migracionVehiculo, {
+        refetchQueries: [
+            { query: listadoVehiculo },
+            { query: listadoVehiculoFilter },
+        ],
+        awaitRefetchQueries: true,
+    })
+
+    return [mutate]
 }
 
 export const useUpdateVehiculoMutation = () => {
@@ -95,8 +107,8 @@ export const useListadoVehiculosQuery = () => {
 
 export interface IListarFilterVehiculoInput {
     idGrupoFamiliar?: number
-    marca?: string
-    modelo?: string
+    marca?: number
+    modelo?: number
     // status?: string
 }
 
@@ -112,12 +124,12 @@ export const useListadoVehiculoFilterQuery = (
         variables: {
             ...input,
         },
-        skip: equals(input, {
-            idGrupoFamiliar: 0,
-            marca: '',
-            modelo: '',
-            // status: '',
-        }),
+        // skip: equals(input, {
+        //     idGrupoFamiliar: 0,
+        //     marca: undefined,
+        //     modelo: undefined,
+        //     // status: '',
+        // }),
     })
 }
 

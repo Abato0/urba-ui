@@ -7,6 +7,8 @@ import {
 } from '../../../components/visitante/form-ingresar-morador'
 import { isNotNilOrEmpty } from '../../../utils/is-nil-empty'
 import { useGetVisitanteMoradorQuery } from '../../../components/visitante/use-visitante'
+import { TipoUsuario } from '../../../components/core/input/dateSelect'
+import PermisoLayout from '../../../components/layout/auth-layout/permiso-layout'
 
 const UpdateVisitanteMorador = () => {
     const router = useRouter()
@@ -31,10 +33,19 @@ const UpdateVisitanteMorador = () => {
         return null
     }, [data, loading])
 
-    console.log('ID: ', id, 'result: ', result)
     return (
         <LayoutTituloPagina titulo="Visitante - Actualizar">
-            {result && id && <FormIngresarMorador id={id} morador={result} />}
+            <PermisoLayout
+                tipoUsuarioRecibido={[
+                    TipoUsuario.ADMIN,
+                    TipoUsuario.OPERATIVO,
+                    TipoUsuario.MORADOR,
+                ]}
+            >
+                {result && id && (
+                    <FormIngresarMorador id={id} morador={result} />
+                )}
+            </PermisoLayout>
         </LayoutTituloPagina>
     )
 }

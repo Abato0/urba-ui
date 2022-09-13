@@ -7,6 +7,7 @@ import {
     getManzana,
     updateManzana,
     deleteManzana,
+    migracionManzanas,
 } from './manzana-typeDef'
 
 export interface IOutput {
@@ -20,6 +21,17 @@ export interface IPostManzana {
 
 export interface IPostManzanaVariables {
     manzana: string
+}
+
+export const useMigracionManzanaMutation = () => {
+    //   const [mutate, { data, loading, error }] =
+
+    //   return [mutate, data, loading, error];
+    const [mutate, { data, loading, error }] = useMutation(migracionManzanas, {
+        refetchQueries: [{ query: listadoMazanas }],
+        awaitRefetchQueries: true,
+    })
+    return [mutate, data, loading, error]
 }
 
 export const usePostManzanaMutation = () => {

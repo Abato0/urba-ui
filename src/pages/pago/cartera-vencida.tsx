@@ -122,13 +122,16 @@ const useStyles = makeStyles((theme) =>
                 background: colors.deepPurple[100],
                 color: 'white',
             },
+            textTransform: 'uppercase',
         },
         tableHead: {
+            // background: COLOR_PRIMARIO,
             background: COLOR_PRIMARIO,
             color: 'white',
             fontSize: 14,
             fontWeight: 'unset',
             fontFamily: 'Roboto',
+            textTransform: 'uppercase',
         },
         // table: {
         //   backgroundColor: colors.grey[700],
@@ -256,7 +259,7 @@ export const ListadoCarteraVencida = () => {
                         </div>
                     </div>
                 </div>
-                <TableContainer style={{ maxHeight: 200 }}>
+                <TableContainer>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>
@@ -288,7 +291,14 @@ export const ListadoCarteraVencida = () => {
                                                             align="center"
                                                             key={index}
                                                         >
-                                                            {columnData}
+                                                            {/* {columnData} */}
+                                                            {index === 0
+                                                                ? columnData
+                                                                : `$${Number(
+                                                                      columnData
+                                                                  ).toFixed(
+                                                                      2
+                                                                  )}`}
                                                         </TableCell>
                                                     )
                                                 }

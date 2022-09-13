@@ -6,7 +6,16 @@ import {
     getStatusTag,
     putStatusTag,
     deleteStatusTag,
+    migracionStatusTag,
 } from './status-tag-typedef'
+
+export const useMigracionStatusTagMutation = () => {
+    const [mutate] = useMutation(migracionStatusTag, {
+        refetchQueries: [{ query: listadoStatusTag }],
+        awaitRefetchQueries: true,
+    })
+    return [mutate]
+}
 
 export const usePostStatusTagMutation = () => {
     const [mutate] = useMutation(postStatusTag, {

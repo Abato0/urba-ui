@@ -1,4 +1,13 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+
+export const migracionGrupoFamiliar = gql`
+    mutation ($file: Upload) {
+        MigracionExcelGrupoFamiliar(excel: $file) {
+            code
+            message
+        }
+    }
+`
 
 export const saveGrupoFamiliar = gql`
     mutation (

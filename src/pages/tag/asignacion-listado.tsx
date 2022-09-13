@@ -11,7 +11,7 @@ import {
     TableContainer,
     TextField,
 } from '@material-ui/core'
-import { isNil, pluck, prop } from 'ramda'
+import { isEmpty, isNil, pluck, prop } from 'ramda'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { usePagination, useTable } from 'react-table'
 import {
@@ -168,7 +168,7 @@ const extractData = (
               return {
                   id,
                   idGrupoFamiliar: vehiculo.grupoFamiliar.id!,
-                  nombre_familiar: vehiculo.grupoFamiliar.nombre_familiar,
+                  nombre_familiar: `${vehiculo.grupoFamiliar.nombre_familiar} - ${vehiculo.grupoFamiliar.manzana.manzana} - ${vehiculo.grupoFamiliar.villa}`,
                   placa: vehiculo.placa,
                   code: tag.code,
                   color: vehiculo.color.color ?? '',
@@ -388,7 +388,13 @@ const MantenimientoParentescoListado = () => {
                                                 dataListadoGrupoFamiliar
                                             ) &&
                                             dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
-                                                ({ id, nombre_familiar }) => {
+                                                ({
+                                                    id,
+                                                    nombre_familiar,
+                                                    extension,
+                                                    manzana,
+                                                    villa,
+                                                }) => {
                                                     return (
                                                         <MenuItem
                                                             value={id}
@@ -396,8 +402,21 @@ const MantenimientoParentescoListado = () => {
                                                                 'ListadoTagFilterGrupoFamiliar' +
                                                                 id
                                                             }
+                                                            style={{
+                                                                textTransform:
+                                                                    'uppercase',
+                                                            }}
                                                         >
-                                                            {nombre_familiar}
+                                                            {`${nombre_familiar}-${
+                                                                manzana.manzana
+                                                            }${
+                                                                extension &&
+                                                                !isEmpty(
+                                                                    extension
+                                                                )
+                                                                    ? `-${villa}-${extension}`
+                                                                    : `-${villa}`
+                                                            } `}
                                                         </MenuItem>
                                                     )
                                                 }

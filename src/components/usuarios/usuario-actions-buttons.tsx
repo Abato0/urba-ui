@@ -1,16 +1,15 @@
-import React, { useMemo } from 'react'
-import { Button, Tooltip } from '@material-ui/core'
+import React, { useMemo, useState } from 'react'
+import { Tooltip } from '@material-ui/core'
 import { Row } from 'react-table'
 import IconButton from '@material-ui/core/IconButton'
 import {
     FileEdit as FileEditIcon,
     TrashCan as TrashCanIcon,
-    AccountSettings as AccountSettingsIcon,
-    KeyOutline as KeyOutlineIcon,
 } from 'mdi-material-ui'
 import { IUsuarioNormalize } from '../../pages/usuario/ingresar'
 import { equals } from 'ramda'
 import { TipoUsuario } from '../core/input/dateSelect'
+import { ModalConfirmacion } from '../core/modal/modalConfirmacion'
 
 interface IProps {
     className?: string
@@ -42,6 +41,8 @@ const ActionsUsuarioCellEditDelete: React.FC<IProps> = ({
         return true
     }, [row.original])
 
+    const [openModalConfirmacion, setOpenModalConfirmacion] = useState(false)
+
     // console.log("***row:", row.original)
     return (
         // <Tooltip className={className} title={"Editar"}>
@@ -51,6 +52,15 @@ const ActionsUsuarioCellEditDelete: React.FC<IProps> = ({
                 flexDirection: 'row',
             }}
         >
+            <ModalConfirmacion
+                openModal={openModalConfirmacion}
+                onConfirm={() => {
+                    setOpenModalConfirmacion(false)
+                    onDelete(row.original)
+                }}
+                mensaje="¿Está seguro de eliminar el registro seleccionado?"
+                onCancel={() => setOpenModalConfirmacion(false)}
+            />
             {/* <Tooltip title="Vincular" placement="top">
                 <IconButton
                     // variant="text"
@@ -83,7 +93,8 @@ const ActionsUsuarioCellEditDelete: React.FC<IProps> = ({
                 <IconButton
                     // variant="text"
                     color="primary"
-                    onClick={() => onDelete(row.original)}
+                    onClick={() => setOpenModalConfirmacion(true)}
+                    //   onClick={() => onDelete(row.original)}
                 >
                     <TrashCanIcon />
                 </IconButton>

@@ -1,6 +1,14 @@
-import { FormControl, InputLabel, Select } from '@material-ui/core'
+import {
+    FormControl,
+    FormHelperText,
+    InputLabel,
+    Select,
+} from '@material-ui/core'
 import { ClassNameMap } from '@material-ui/styles'
+import { colors } from '@mui/material'
+import { isEmpty } from 'ramda'
 import React, { ChangeEvent } from 'react'
+import { isNotNilOrEmpty } from '../../../utils/is-nil-empty'
 
 interface IProps {
     value: any
@@ -10,6 +18,8 @@ interface IProps {
     labetTitulo: string
     id: string
     disabled?: boolean
+    error?: string
+    touched?: boolean
 }
 
 const FormControlHeader: React.FC<IProps> = ({
@@ -21,6 +31,8 @@ const FormControlHeader: React.FC<IProps> = ({
     id,
     labetTitulo,
     disabled = false,
+    error,
+    touched,
 }) => {
     return (
         <FormControl variant="filled" className={classes.formControl}>
@@ -36,14 +48,20 @@ const FormControlHeader: React.FC<IProps> = ({
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className={classes.textbox}
-                required
+                //required
                 disabled={disabled}
                 style={{
                     textTransform: 'uppercase',
                 }}
+                error={error && !isEmpty(error) ? true : false}
             >
                 {children}
             </Select>
+            {error && (
+                <FormHelperText style={{ color: '#d91073' }} variant="filled">
+                    {error}
+                </FormHelperText>
+            )}
         </FormControl>
     )
 }

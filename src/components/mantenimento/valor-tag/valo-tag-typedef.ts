@@ -1,4 +1,13 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+
+export const migracionValorTag = gql`
+    mutation ($file: Upload) {
+        MigracionExcelValorTag(excel: $file) {
+            code
+            message
+        }
+    }
+`
 
 export const saveValorTagMutation = gql`
     mutation ($valor: Int, $tipo_tag: String) {

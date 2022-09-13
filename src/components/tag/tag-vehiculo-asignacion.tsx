@@ -4,16 +4,12 @@ import {
     colors,
     Box,
     MenuItem,
-    FormControl,
-    InputLabel,
-    Select,
     Grid,
     Typography,
 } from '@material-ui/core'
 import { useFormik } from 'formik'
 import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import * as yup from 'yup'
-
 import { useRouter } from 'next/router'
 import {
     useListaTag,
@@ -29,10 +25,8 @@ import FormControlHeader from '../core/input/form-control-select'
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
 import { useListaStatusTagQuery } from '../mantenimento/status-tag/use-status-tag'
-import {
-    ID_STATUS_TAG_OCUPADO,
-    ID_STATUS_TAG_DISPONIBLE,
-} from '../../utils/keys'
+import { ID_STATUS_TAG_DISPONIBLE } from '../../utils/keys'
+import { isEmpty } from 'ramda'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -102,15 +96,18 @@ const useStyles = makeStyles((theme) =>
 )
 
 const initialValues = Object.freeze({
-    idVehiculo: undefined,
-    idTag: undefined,
+    idVehiculo: 0,
+    idTag: 0,
 })
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
     // code: yup.string().required("Campo requerido"),
-    idVehiculo: yup.number().required(),
-    idTag: yup.number().required(),
+    idVehiculo: yup
+        .number()
+        .required('Campo requerido')
+        .min(1, 'Campo requerido'),
+    idTag: yup.number().required('Campo requerido').min(1, 'Campo requerido'),
 })
 
 export const IngresarTagVehiculoForm: FC = () => {
@@ -161,7 +158,6 @@ export const IngresarTagVehiculoForm: FC = () => {
     const {
         data: dataListadoGrupoFamiliar,
         loading: loadingListadoGrupoFamiliar,
-        error: errorGrupoFamiliar,
     } = useListarGrupoFamiliar()
 
     const Disponible = useMemo(() => {
@@ -306,7 +302,13 @@ export const IngresarTagVehiculoForm: FC = () => {
                             {!loadingListadoGrupoFamiliar &&
                                 isNotNilOrEmpty(dataListadoGrupoFamiliar) &&
                                 dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
-                                    ({ id, nombre_familiar }) => {
+                                    ({
+                                        id,
+                                        nombre_familiar,
+                                        manzana,
+                                        extension,
+                                        villa,
+                                    }) => {
                                         return (
                                             <MenuItem
                                                 value={id}
@@ -321,7 +323,14 @@ export const IngresarTagVehiculoForm: FC = () => {
                                                             'uppercase',
                                                     }}
                                                 >
-                                                    {nombre_familiar}
+                                                    {`${nombre_familiar}-${
+                                                        manzana.manzana
+                                                    }${
+                                                        extension &&
+                                                        !isEmpty(extension)
+                                                            ? `-${villa}-${extension}`
+                                                            : `-${villa}`
+                                                    } `}
                                                 </Typography>
                                             </MenuItem>
                                         )
@@ -337,7 +346,9 @@ export const IngresarTagVehiculoForm: FC = () => {
                             handleChange={handleChange}
                             labetTitulo="Vehiculo"
                             value={values.idVehiculo}
+                            error={errors.idVehiculo}
                         >
+                            <MenuItem value={0}> SELECCIONAR</MenuItem>
                             {vehiculosVisibles &&
                                 vehiculosVisibles.map(({ id, placa }) => {
                                     return (
@@ -365,7 +376,9 @@ export const IngresarTagVehiculoForm: FC = () => {
                             handleChange={handleChange}
                             labetTitulo="Tag"
                             value={values.idTag}
+                            error={errors.idTag}
                         >
+                            <MenuItem value={0}> SELECCIONAR</MenuItem>
                             {listadoTagsVisibles.map(({ code, id }) => {
                                 return (
                                     <MenuItem

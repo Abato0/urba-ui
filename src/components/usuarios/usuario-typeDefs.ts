@@ -1,5 +1,23 @@
 import { gql } from '@apollo/client'
 
+export const migracionUsuarioOperativos = gql`
+    mutation ($file: Upload) {
+        MigracionExcelUsuarioOperativos(excel: $file) {
+            code
+            message
+        }
+    }
+`
+
+export const migracionUsuarioMorador = gql`
+    mutation ($file: Upload) {
+        MigracionExcelUsuarioMorador(excel: $file) {
+            code
+            message
+        }
+    }
+`
+
 export const envioCorreos = gql`
     mutation (
         $emails: [String]

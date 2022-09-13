@@ -1,11 +1,16 @@
 import { Column } from 'react-table'
-import { Data } from '../core/input/data'
 import ActionsCell from '../table/actions-cell'
+import NombreGrupoFamiliarCell from './grupo-familiar-nombre-cell'
 
 export const head = Object.freeze([
     {
+        Header: 'ID',
+        accessor: 'id',
+    },
+    {
         Header: 'Grupo Familiar',
-        accessor: 'nombre_familiar',
+        Cell: NombreGrupoFamiliarCell,
+        // accessor: 'nombre_familiar',
     },
     {
         Header: 'Calle Principal',

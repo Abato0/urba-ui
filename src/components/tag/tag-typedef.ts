@@ -38,6 +38,16 @@ export const listaTagVehiculo = gql`
                 grupoFamiliar {
                     id
                     nombre_familiar
+                    manzana {
+                        id
+                        manzana
+                    }
+                    villa
+                    calle_principal {
+                        id
+                        calle
+                    }
+                    calle_interseccion
                 }
                 modelo {
                     modelo

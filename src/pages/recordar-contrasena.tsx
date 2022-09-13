@@ -11,18 +11,17 @@ import {
 } from '@material-ui/core'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
-import { isNotNilOrEmpty, isNilOrEmpty } from '../utils/is-nil-empty'
+import { isNotNilOrEmpty } from '../utils/is-nil-empty'
 import { useRouter } from 'next/router'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
-import { recordarContrasena, imagenesRecordarContrasena } from '../auth/auth-service';
-import { useSetRecoilState } from 'recoil'
-import { userInfo } from '../utils/states'
+import {
+    recordarContrasena,
+    imagenesRecordarContrasena,
+} from '../auth/auth-service'
 import ModalAuth from '../components/core/input/dialog/modal-dialog'
-
 import { LoadingButton } from '@mui/lab'
-import SaveIcon from '@material-ui/icons/Save'
-import EmailIcon from '@material-ui/icons/Email';
 import { CarruselImagenesLogin } from '../components/login/carruselImagenesLogin'
+import { Save } from '@material-ui/icons'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -177,8 +176,7 @@ const validationSchema = yup.object().shape({
 
 const RecordarPasswordScreen = () => {
     const router = useRouter()
-    const [openErrorLogin, setOpenErrorLogin] = useState<boolean>(false)
-    const [messageError, setMessageError] = useState<string>('')
+
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
     const [titleModalMsj, setTitleModalMsj] = useState<string>('')
     const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
@@ -190,17 +188,16 @@ const RecordarPasswordScreen = () => {
     useEffect(() => {
         const getImagen = async () => {
             try {
-                const result = await imagenesRecordarContrasena();
-                const r = result.map(({ urlImagen }) => urlImagen);
+                const result = await imagenesRecordarContrasena()
+                const r = result.map(({ urlImagen }) => urlImagen)
                 setImagenes(r)
             } catch (error) {
-                console.log("Error: ", (error as Error).message);
+                console.log('Error: ', (error as Error).message)
                 setImagenes([])
             }
         }
         getImagen()
     }, [])
-
 
     const [loading, setLoading] = useState<boolean>(false)
 
@@ -335,8 +332,13 @@ const RecordarPasswordScreen = () => {
                                                 ? errors.num_identificacion
                                                 : undefined
                                         }
+                                        inputProps={{
+                                            style: {
+                                                backgroundColor: '#F9F9F9',
+                                            },
+                                        }}
                                         required
-                                    // fullWidth
+                                        // fullWidth
                                     />
                                 </div>
 
@@ -348,9 +350,9 @@ const RecordarPasswordScreen = () => {
                                         loadingPosition="start"
                                         type="submit"
                                         variant="text"
-                                        startIcon={<EmailIcon />}
+                                        startIcon={<Save />}
                                     >
-                                        Enviar
+                                        Guardar
                                     </LoadingButton>
                                 </div>
                             </form>

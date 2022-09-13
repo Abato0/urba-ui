@@ -3,6 +3,7 @@ import {
     deleteCalle,
     getCalle,
     listadoCalles,
+    migracionCalle,
     postCalle,
     updateCalle,
 } from './calle-typeDefs'
@@ -26,6 +27,14 @@ export const usePostCalleMutation = () => {
 
     //   return [mutate, data, loading, error];
     const [mutate, { data, loading, error }] = useMutation(postCalle, {
+        refetchQueries: [{ query: listadoCalles }],
+        awaitRefetchQueries: true,
+    })
+    return [mutate, data, loading, error]
+}
+
+export const useMigracionCalleMutation = () => {
+    const [mutate, { data, loading, error }] = useMutation(migracionCalle, {
         refetchQueries: [{ query: listadoCalles }],
         awaitRefetchQueries: true,
     })

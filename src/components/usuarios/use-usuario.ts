@@ -9,11 +9,14 @@ import {
     getUsuarioTokenQuery,
     listadoUsuarios,
     listadoUsuariosSinGrupoFamiliar,
+    migracionUsuarioMorador,
+    migracionUsuarioOperativos,
     saveUsuario,
     updateUsuario,
 } from './usuario-typeDefs'
 import { IResultQueryTipoIdentificacion } from '../mantenimento/tipo-identificacion/use-tipo-identificacion'
 import { isNil } from 'ramda'
+import { listadoIntegrante } from '../integrante/integrante-typedefs'
 
 export interface IResultUsuarioQuery {
     id: number
@@ -66,36 +69,115 @@ export const useGetUsuarioToken = () => {
 }
 
 export const usePostUsuarioMutation = () => {
-    const [mutate, { data, loading, error }] = useMutation(saveUsuario)
+    const [mutate, { data, loading, error }] = useMutation(saveUsuario, {
+        refetchQueries: [
+            listadoUsuarios,
+            listadoUsuariosSinGrupoFamiliar,
+            listadoIntegrante,
+        ],
+        awaitRefetchQueries: true,
+    })
+    return [mutate, data, loading, error]
+}
+
+export const useMigracionUsuarioOperativosMutation = () => {
+    const [mutate, { data, loading, error }] = useMutation(
+        migracionUsuarioOperativos,
+        {
+            refetchQueries: [
+                listadoUsuarios,
+                listadoUsuariosSinGrupoFamiliar,
+                listadoIntegrante,
+            ],
+            awaitRefetchQueries: true,
+        }
+    )
+    return [mutate, data, loading, error]
+}
+
+export const useMigracionUsuarioMoradorMutation = () => {
+    const [mutate, { data, loading, error }] = useMutation(
+        migracionUsuarioMorador,
+        {
+            refetchQueries: [
+                listadoUsuarios,
+                listadoUsuariosSinGrupoFamiliar,
+                listadoIntegrante,
+            ],
+            awaitRefetchQueries: true,
+        }
+    )
     return [mutate, data, loading, error]
 }
 
 export const useDeleteUsuarioMutation = () => {
-    const [mutate, { data, loading, error }] = useMutation(deleteUsuario)
+    const [mutate, { data, loading, error }] = useMutation(deleteUsuario, {
+        refetchQueries: [
+            listadoUsuarios,
+            listadoUsuariosSinGrupoFamiliar,
+            listadoIntegrante,
+        ],
+        awaitRefetchQueries: true,
+    })
     return [mutate, data, loading, error]
 }
 
 export const useCambioContrasenaUsuarioMutation = () => {
-    const [mutate, { data, loading, error }] = useMutation(cambioContrasena)
+    const [mutate, { data, loading, error }] = useMutation(cambioContrasena, {
+        refetchQueries: [
+            listadoUsuarios,
+            listadoUsuariosSinGrupoFamiliar,
+            listadoIntegrante,
+        ],
+        awaitRefetchQueries: true,
+    })
     return [mutate, data, loading, error]
 }
 
 export const useContrasenaOlvidadaMutation = () => {
-    const [mutate, { data, loading, error }] = useMutation(contrasenaOlvidada)
+    const [mutate, { data, loading, error }] = useMutation(contrasenaOlvidada, {
+        refetchQueries: [
+            listadoUsuarios,
+            listadoUsuariosSinGrupoFamiliar,
+            listadoIntegrante,
+        ],
+        awaitRefetchQueries: true,
+    })
     return [mutate, data, loading, error]
 }
 
 export const useUpdateUsuarioMutation = () => {
-    const [mutate, { data, loading, error }] = useMutation(updateUsuario)
+    const [mutate, { data, loading, error }] = useMutation(updateUsuario, {
+        refetchQueries: [
+            listadoUsuarios,
+            listadoUsuariosSinGrupoFamiliar,
+            listadoIntegrante,
+        ],
+        awaitRefetchQueries: true,
+    })
     return [mutate, data, loading, error]
 }
 
 export const useEnvioCorreoMutation = () => {
-    const [mutate, { data, loading, error }] = useMutation(envioCorreos)
+    const [mutate, { data, loading, error }] = useMutation(envioCorreos, {
+        refetchQueries: [
+            listadoUsuarios,
+            listadoUsuariosSinGrupoFamiliar,
+            listadoIntegrante,
+        ],
+        awaitRefetchQueries: true,
+    })
     return [mutate, data, loading, error]
 }
 
 export const useAsignacionUsuarioMutate = () => {
-    const [mutate, { data, loading, error }] = useMutation(asignacionUsuario)
+    const [mutate, { data, loading, error }] = useMutation(asignacionUsuario, {
+        refetchQueries: [
+            listadoUsuarios,
+            listadoUsuariosSinGrupoFamiliar,
+            listadoIntegrante,
+        ],
+        awaitRefetchQueries: true,
+    })
     return [mutate, data, loading, error]
 }

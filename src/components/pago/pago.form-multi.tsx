@@ -29,7 +29,7 @@ import AddIcon from '@material-ui/icons/Add'
 import { useDropzone } from 'react-dropzone'
 import { isNilOrEmpty, isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import ImageIcon from '@material-ui/icons/Image'
-import { equals, filter, isNil, props } from 'ramda'
+import { equals, isEmpty, isNil } from 'ramda'
 import { usePostPago } from './use-pago'
 import { useListarGrupoFamiliar } from '../grupo-familiar/use-grupo-familia'
 import { useListadoVehiculoFilterQuery } from '../vehiculo/use-vehiculo'
@@ -43,8 +43,7 @@ import {
 } from '@material-ui/pickers'
 import { es } from 'date-fns/locale'
 import { LoadingButton } from '@mui/lab'
-import { Send as SendIcon } from 'mdi-material-ui'
-import { rows } from '../core/input/data'
+import { Save } from '@material-ui/icons'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -146,6 +145,7 @@ const useStyles = makeStyles((theme) =>
             backgroundColor: grey[700],
             color: 'white',
             maxWidth: 700,
+            flexDirection: 'column',
         },
         paperListPago: {
             backgroundColor: grey[700],
@@ -232,7 +232,7 @@ const useStyles = makeStyles((theme) =>
 )
 
 const initialValues = Object.freeze({
-    idGrupoFamiliar: undefined,
+    idGrupoFamiliar: 0,
     descripcion: '',
     //   id_aporte: undefined,
     cod_recibo: '',
@@ -245,7 +245,10 @@ const initialValues = Object.freeze({
 
 const validationSchema = yup.object().shape({
     //   id_aporte: yup.number().required(),
-    idGrupoFamiliar: yup.number().required(),
+    idGrupoFamiliar: yup
+        .number()
+        .required('Campo Requerido')
+        .min(1, 'Campo requerido'),
     descripcion: yup.string(),
     cod_recibo: yup.string().nullable(),
     fecha_recibo: yup.date().required(),
@@ -334,17 +337,11 @@ export const PagoFormMulti = () => {
         setFile(file)
     }, [])
 
-    const {
-        data: dataValorTag,
-        loading: loadingValorTag,
-        error: errorValorTag,
-    } = useListadoValorTag()
+    const { data: dataValorTag, loading: loadingValorTag } =
+        useListadoValorTag()
 
-    const {
-        data: dataGrupoFamiliar,
-        loading: loadingGrupoFamiliar,
-        error: errorGrupoFamiliar,
-    } = useListarGrupoFamiliar()
+    const { data: dataGrupoFamiliar, loading: loadingGrupoFamiliar } =
+        useListarGrupoFamiliar()
 
     const [mutate] = usePostPago()
 
@@ -487,18 +484,30 @@ export const PagoFormMulti = () => {
             otro,
         }) => {
             try {
-                console.log('dataFecha: ', fecha_recibo)
-
                 if (isNil(file)) {
                     setErrorModal(true)
                     setOpenModalMsj(true)
                     setTitleModalMsj('Imagen de recibo requerido')
                     return
                 }
+
+                if (
+                    !implementacion &&
+                    !otro &&
+                    (!pagoMantenimiento || pagoMantenimiento.length === 0) &&
+                    (!pagoTag || pagoTag.length === 0)
+                ) {
+                    setErrorModal(true)
+                    setOpenModalMsj(true)
+                    setTitleModalMsj('Detalle del pago requerido')
+                    return
+                }
+
                 if (
                     isNotNilOrEmpty(idGrupoFamiliar) &&
                     isNotNilOrEmpty(fecha_recibo)
                 ) {
+                    setLoadingMutate(true)
                     const pago = {
                         idGrupoFamiliar: idGrupoFamiliar,
                         cod_recibo: cod_recibo,
@@ -518,7 +527,7 @@ export const PagoFormMulti = () => {
                                 : undefined,
                         tag: [...pagoTag],
                     }
-                    const { data, error } = await mutate({
+                    const { data } = await mutate({
                         variables: { ...pago },
                     })
                     if (
@@ -526,16 +535,25 @@ export const PagoFormMulti = () => {
                         isNotNilOrEmpty(data.PostPago)
                     ) {
                         const { code, message } = data.PostPago
-                        code !== 200
-                            ? setErrorModal(true)
-                            : setErrorModal(false)
+
+                        if (equals(code, 200)) {
+                            setErrorModal(false)
+                            resetFormularioPago()
+                        } else {
+                            setErrorModal(true)
+                        }
+                        // code !== 200
+                        //     ? setErrorModal(true)
+                        //     : setErrorModal(false)
                         setErrorModal(false)
                         setOpenModalMsj(true)
                         setTitleModalMsj(message)
+                        setLoadingMutate(false)
                     } else if (data === null) {
                         setOpenModalMsj(true)
                         setTitleModalMsj('Usuario no autorizado')
                         setErrorModal(true)
+                        setLoadingMutate(false)
                     }
                 }
             } catch (error) {
@@ -547,6 +565,7 @@ export const PagoFormMulti = () => {
                 )
                 setOpenModalMsj(true)
                 setErrorModal(true)
+                setLoadingMutate(true)
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -560,7 +579,7 @@ export const PagoFormMulti = () => {
         handleReset,
         handleSubmit,
         setFieldValue,
-
+        resetForm,
         touched,
         values,
     } = useFormik({
@@ -568,6 +587,16 @@ export const PagoFormMulti = () => {
         onSubmit,
         validationSchema,
     })
+
+    const resetFormularioPago = () => {
+        resetForm()
+        setChecOtros(false)
+        setCheckImplementacion(false)
+        setCheckMantenimiento(false)
+        setCheckTag(false)
+        setFile(undefined)
+        setPagoTag([])
+    }
 
     const {
         data: dataListadoVehiculo,
@@ -664,6 +693,8 @@ export const PagoFormMulti = () => {
                                                 e.target.checked
                                             )
                                         }
+                                        value={checkImplementacion}
+                                        checked={checkImplementacion}
                                     />
                                 }
                                 label={
@@ -683,6 +714,8 @@ export const PagoFormMulti = () => {
                                                 e.target.checked
                                             )
                                         }
+                                        value={checkMantenimiento}
+                                        checked={checkMantenimiento}
                                     />
                                 }
                                 label={
@@ -700,6 +733,8 @@ export const PagoFormMulti = () => {
                                         onChange={(e) =>
                                             setCheckTag(e.target.checked)
                                         }
+                                        value={checkTag}
+                                        checked={checkTag}
                                     />
                                 }
                                 label={
@@ -717,6 +752,8 @@ export const PagoFormMulti = () => {
                                         onChange={(e) =>
                                             setChecOtros(e.target.checked)
                                         }
+                                        value={checkOtros}
+                                        checked={checkOtros}
                                     />
                                 }
                                 label={
@@ -727,7 +764,7 @@ export const PagoFormMulti = () => {
                             />
                         </FormGroup>
 
-                        <div>
+                        <Box mb={3}>
                             <FormControlHeader
                                 classes={classes}
                                 handleBlur={handleBlur}
@@ -735,14 +772,22 @@ export const PagoFormMulti = () => {
                                 handleChange={handleChange}
                                 labetTitulo=" Grupo Familiar"
                                 value={values.idGrupoFamiliar}
+                                error={errors.idGrupoFamiliar}
                             >
+                                <MenuItem value={0}> SELECCIONAR</MenuItem>
                                 {!loadingGrupoFamiliar &&
                                     !isNil(dataGrupoFamiliar) &&
                                     !isNil(
                                         dataGrupoFamiliar.ListaGruposFamiliares
                                     ) &&
                                     dataGrupoFamiliar.ListaGruposFamiliares.map(
-                                        ({ id, nombre_familiar }) => {
+                                        ({
+                                            id,
+                                            nombre_familiar,
+                                            extension,
+                                            manzana,
+                                            villa,
+                                        }) => {
                                             return (
                                                 <MenuItem
                                                     key={'grupoFamliar-' + id}
@@ -754,7 +799,14 @@ export const PagoFormMulti = () => {
                                                                 'uppercase',
                                                         }}
                                                     >
-                                                        {nombre_familiar}
+                                                        {`${nombre_familiar}-${
+                                                            manzana.manzana
+                                                        }${
+                                                            extension &&
+                                                            !isEmpty(extension)
+                                                                ? `-${villa}-${extension}`
+                                                                : ''
+                                                        } `}
                                                     </Typography>
                                                 </MenuItem>
                                             )
@@ -766,7 +818,7 @@ export const PagoFormMulti = () => {
                                 name="cod_recibo"
                                 onChange={handleChange}
                                 className={classes.textBox}
-                                placeholder="Codigo del Recibo"
+                                placeholder="Código del Recibo"
                                 value={values.cod_recibo}
                                 error={
                                     touched.cod_recibo &&
@@ -777,9 +829,9 @@ export const PagoFormMulti = () => {
                                         ? errors.cod_recibo
                                         : undefined
                                 }
-                                inputProps={{
-                                    style: { textTransform: 'uppercase' },
-                                }}
+                                // inputProps={{
+                                //     style: { textTransform: 'uppercase' },
+                                // }}
                                 //   multiline={true}
                             />
                             <MuiPickersUtilsProvider
@@ -811,7 +863,7 @@ export const PagoFormMulti = () => {
                                     disableFuture={true}
                                 />
                             </MuiPickersUtilsProvider>
-                        </div>
+                        </Box>
                         <div
                             style={{
                                 display: 'flex',
@@ -823,19 +875,46 @@ export const PagoFormMulti = () => {
                                 {...getRootProps()}
                                 className={classes.dropzone}
                             >
-                                <input {...getInputProps()} />
-                                <ImageIcon fontSize="large" />
-                                <Typography variant="overline">
-                                    {
-                                        'Haga click en este Cuadro para subir su imagen del recibo'
-                                    }
-                                </Typography>
-                                {!isNilOrEmpty(file) && (
-                                    <Typography variant="body2">
-                                        {' '}
-                                        {' *' + String(file?.path)}
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        width: '100%',
+                                    }}
+                                >
+                                    <input {...getInputProps()} />
+                                    <ImageIcon
+                                        style={{ marginRight: '1%' }}
+                                        fontSize="large"
+                                    />
+                                    <Typography variant="overline">
+                                        {
+                                            'Haga click en este Cuadro para subir su imagen del recibo'
+                                        }
                                     </Typography>
-                                )}
+                                    {/* {!isNilOrEmpty(file) && (
+                                        <Typography variant="body2">
+                                            {' '}
+                                            {' *' + String(file?.path)}
+                                        </Typography>
+                                    )} */}
+                                </div>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        width: '100%',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    {!isNilOrEmpty(file) && (
+                                        <Typography variant="body2">
+                                            {' * IMAGEN SUBIDA: ' +
+                                                String(file?.path)}
+                                        </Typography>
+                                    )}
+                                </div>
                             </Paper>
                         </div>
 
@@ -1486,9 +1565,9 @@ export const PagoFormMulti = () => {
                                 loadingPosition="start"
                                 type="submit"
                                 variant="text"
-                                endIcon={<SendIcon />}
+                                endIcon={<Save />}
                             >
-                                Enviar
+                                Guardar
                             </LoadingButton>
                         </div>
                     </div>

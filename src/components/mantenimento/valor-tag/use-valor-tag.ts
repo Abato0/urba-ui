@@ -4,39 +4,48 @@ import {
     deleteValorTagMutation,
     getValorTagQuery,
     listadoValorTagQuery,
+    migracionValorTag,
     saveValorTagMutation,
     updateValorTagMutation,
 } from './valo-tag-typedef'
 
+export const useMigracionValorTag = () => {
+    const [mutate, { data, loading, error }] = useMutation(migracionValorTag, {
+        refetchQueries: [{ query: listadoValorTagQuery }],
+        awaitRefetchQueries: true,
+    })
+    return [mutate, data, loading, error]
+}
+
 export const usePostValorTag = () => {
     const [mutate, { data, loading, error }] = useMutation(
-        saveValorTagMutation
-        //     {
-        //     refetchQueries: [{ query: listadoMazanas }],
-        //     awaitRefetchQueries: true,
-        //   }
+        saveValorTagMutation,
+        {
+            refetchQueries: [{ query: listadoValorTagQuery }],
+            awaitRefetchQueries: true,
+        }
     )
     return [mutate, data, loading, error]
 }
 
 export const usePutValorTag = () => {
     const [mutate, { data, loading, error }] = useMutation(
-        updateValorTagMutation
-        //     {
-        //     refetchQueries: [{ query: listadoMazanas }],
-        //     awaitRefetchQueries: true,
-        //   }
+        updateValorTagMutation,
+        {
+            refetchQueries: [{ query: listadoValorTagQuery }],
+            awaitRefetchQueries: true,
+        }
     )
     return [mutate, data, loading, error]
 }
 
 export const useDeleteValorTag = () => {
     const [mutate, { data, loading, error }] = useMutation(
-        deleteValorTagMutation
-        //     {
-        //     refetchQueries: [{ query: listadoMazanas }],
-        //     awaitRefetchQueries: true,
-        //   }
+        deleteValorTagMutation,
+        {
+            refetchQueries: [{ query: listadoValorTagQuery }],
+            awaitRefetchQueries: true,
+        }
     )
     return [mutate, data, loading, error]
 }

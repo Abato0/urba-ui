@@ -6,7 +6,6 @@ import {
     Box,
     MenuItem,
     TextField,
-    Button,
 } from '@material-ui/core'
 import React, { useEffect, useMemo, useState } from 'react'
 import ModalAuth from '../core/input/dialog/modal-dialog'
@@ -23,8 +22,7 @@ import {
 import { useRouter } from 'next/router'
 import { useListaModeloQuery } from '../mantenimento/modelo/use-modelo'
 import { useListaMarcaQuery } from '../mantenimento/marca/use-marca'
-import { useListaStatusVehiculoQuery } from '../mantenimento/status-vehiculo/use-status-vehiculo'
-import { equals, isNil } from 'ramda'
+import { isEmpty, isNil } from 'ramda'
 import { useListaColorQuery } from '../mantenimento/color/use-color'
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
@@ -32,7 +30,6 @@ import { ButtonCargarImagen } from './buttonCargarImagen'
 import ModalImagenFile from '../core/input/dialog/modal-ver-imagen-file'
 import { COLOR_PRIMARIO } from '../../utils/keys'
 import { ButtonVerImage } from './buttonVerImagen'
-import { listadoVehiculo } from './vehiculo-typeDef'
 import { useListadoVehiculosQuery } from './use-vehiculo'
 
 const useStyles = makeStyles((theme) =>
@@ -158,12 +155,12 @@ const useStyles = makeStyles((theme) =>
 )
 
 const initialValues = Object.freeze({
-    idGrupoFamiliar: undefined,
+    idGrupoFamiliar: 0,
     // tipo_vehiculo: "",
     placa: '',
-    id_marca: undefined,
-    id_color: undefined,
-    id_modelo: undefined,
+    id_marca: 0,
+    id_color: 0,
+    id_modelo: 0,
     // id_status: 0,
     matriculaFrontal: null,
     matriculaReverso: null,
@@ -185,7 +182,11 @@ const anioActual = () => {
 }
 
 const validationSchema = yup.object().shape({
-    idGrupoFamiliar: yup.number().required('Campo Requerido'),
+    idGrupoFamiliar: yup
+        .number()
+        .required('Campo Requerido')
+        .min(1, 'Campo requerido'),
+
     // tipo_vehiculo: yup.string().required("Campo Requerido"),
     placa: yup
         .string()
@@ -193,9 +194,18 @@ const validationSchema = yup.object().shape({
             /[aA-zZ]{2,3}[0-9]{3,4}/g,
             'Formato Invalido, sin guión (-). Ej: ABC1234'
         ),
-    id_marca: yup.number().required('Campo Requerido'),
-    id_color: yup.number().required('Campo Requerido'),
-    id_modelo: yup.number().required('Campo Requerido'),
+    id_marca: yup
+        .number()
+        .required('Campo Requerido')
+        .min(1, 'Campo requerido'),
+    id_color: yup
+        .number()
+        .required('Campo Requerido')
+        .min(1, 'Campo requerido'),
+    id_modelo: yup
+        .number()
+        .required('Campo Requerido')
+        .min(1, 'Campo requerido'),
     // id_status: yup.number().required('Campo Requerido'),
     matriculaFrontal: yup.mixed().nullable(),
     // .required("A file is required")
@@ -535,6 +545,10 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
         validationSchema,
     })
 
+    useEffect(() => {
+        console.log('Values: ', values)
+    }, [values])
+
     const [openModalImagen, setOpenModalImage] = useState(false)
     const [fileSeleccionado, setFileSeleccionado] = useState<
         File | null | undefined
@@ -580,11 +594,19 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                         labetTitulo="Grupo Familiar"
                         value={values.idGrupoFamiliar}
                         disabled={isNotNilOrEmpty(vehiculo)}
+                        error={errors.idGrupoFamiliar}
                     >
+                        <MenuItem value={0}> SELECCIONAR</MenuItem>
                         {!loadingGrupoFamiliar &&
                             isNotNilOrEmpty(dataGrupoFamiliar) &&
                             dataGrupoFamiliar?.ListaGruposFamiliares.map(
-                                ({ id, nombre_familiar }) => {
+                                ({
+                                    id,
+                                    nombre_familiar,
+                                    extension,
+                                    manzana,
+                                    villa,
+                                }) => {
                                     return (
                                         <MenuItem
                                             key={
@@ -592,8 +614,17 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                                                 id
                                             }
                                             value={id}
+                                            style={{
+                                                textTransform: 'uppercase',
+                                            }}
                                         >
-                                            {nombre_familiar}
+                                            {`${nombre_familiar}-${
+                                                manzana.manzana
+                                            } ${
+                                                extension && !isEmpty(extension)
+                                                    ? `-${villa}-${extension}`
+                                                    : `-${villa}`
+                                            } `}
                                         </MenuItem>
                                     )
                                 }
@@ -606,7 +637,9 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                         handleChange={handleChange}
                         labetTitulo="Marca"
                         value={values.id_marca}
+                        error={errors.id_marca}
                     >
+                        <MenuItem value={0}>SELECCIONAR</MenuItem>
                         {!loadingMarca &&
                             !isNil(dataMarca) &&
                             dataMarca.ListaMarca.map(({ id, marca }) => {
@@ -614,6 +647,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                                     <MenuItem
                                         key={'ingreso-vehiculo-marca-' + id}
                                         value={id}
+                                        style={{ textTransform: 'uppercase' }}
                                     >
                                         {marca}
                                     </MenuItem>
@@ -630,7 +664,9 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                         handleChange={handleChange}
                         labetTitulo="Modelo"
                         value={values.id_modelo}
+                        error={errors.id_modelo}
                     >
+                        <MenuItem value={0}> SELECCIONAR</MenuItem>
                         {!loadingModelo &&
                             !isNil(dataModelo) &&
                             dataModelo.ListaModelo.map(({ id, modelo }) => {
@@ -651,7 +687,9 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                         handleChange={handleChange}
                         labetTitulo="Color"
                         value={values.id_color}
+                        error={errors.id_color}
                     >
+                        <MenuItem value={0}> SELECCIONAR</MenuItem>
                         {!loadingListadoColor &&
                             !isNil(dataListadoColor) &&
                             dataListadoColor.ListaColor.map(({ id, color }) => {
@@ -659,6 +697,9 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                                     <MenuItem
                                         key={'ingreso-vehiculo-color-' + id}
                                         value={id}
+                                        style={{
+                                            textTransform: 'uppercase',
+                                        }}
                                     >
                                         {color}
                                     </MenuItem>
@@ -668,34 +709,6 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                 </div>
 
                 <div>
-                    {/* 
-                    <FormControlHeader
-                        classes={classes}
-                        handleBlur={handleBlur}
-                        id="id_status"
-                        handleChange={handleChange}
-                        labetTitulo="Status"
-                        value={values.id_status}
-                    >
-                        {!loadingStatus &&
-                            !isNil(dataStatus) &&
-                            dataStatus.ListaStatusVehiculo.map(
-                                ({ id, statusVehiculo }) => {
-                                    return (
-                                        <MenuItem
-                                            key={
-                                                'ingreso-vehiculo-statusVehiculo-' +
-                                                id
-                                            }
-                                            value={id}
-                                        >
-                                            {statusVehiculo}
-                                        </MenuItem>
-                                    )
-                                }
-                            )}
-                    </FormControlHeader> */}
-
                     <TextField
                         className={classes.textbox}
                         id="placa"
@@ -729,7 +742,15 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                         required
                     />
                 </div>
-                <div>
+
+                <div
+                    style={{
+                        width: '95%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
                     <TextField
                         className={classes.textbox}
                         id="num_doc_identidad"
@@ -747,6 +768,9 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                                 ? errors.num_doc_identidad
                                 : undefined
                         }
+                        style={{
+                            width: '100%',
+                        }}
                         required
                     />
                 </div>
@@ -871,6 +895,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
 
                 <div className={classes.contentButtons}>
                     <div></div>
+
                     <LoadingButton
                         loading={loadingMutate}
                         loadingPosition="start"

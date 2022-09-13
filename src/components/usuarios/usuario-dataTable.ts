@@ -3,6 +3,10 @@ import ActionsUsuarioCellEditDelete from './usuario-actions-buttons'
 
 export const columnsUsuario = Object.freeze([
     {
+        Header: 'ID',
+        accessor: 'id',
+    },
+    {
         Header: 'Nombre',
         accessor: 'nombre_completo',
     },

@@ -7,11 +7,20 @@ import {
     getColor,
     updateColor,
     deleteColor,
+    migracionColor,
 } from './color-typedef'
+
+export const useMigracionColorMutation = () => {
+    const [mutate, { data, loading, error }] = useMutation(migracionColor, {
+        refetchQueries: [{ query: listadoColor }],
+        awaitRefetchQueries: true,
+    })
+    return [mutate, data, loading, error]
+}
 
 export const usePostColorMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(postColor, {
-        // refetchQueries: [{ query: listadoColor }],
+        refetchQueries: [{ query: listadoColor }],
         awaitRefetchQueries: true,
     })
     return [mutate, data, loading, error]
@@ -43,7 +52,7 @@ export const useGetColorQuery = (id?: number) => {
 
 export const usePutColorMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(updateColor, {
-        // refetchQueries: [{ query: listadoColor }],
+        refetchQueries: [{ query: listadoColor }],
         awaitRefetchQueries: true,
     })
     return [mutate, data, loading, error]
@@ -51,7 +60,7 @@ export const usePutColorMutation = () => {
 
 export const useDeleteColorMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(deleteColor, {
-        // refetchQueries: [{ query: listadoColor }],
+        refetchQueries: [{ query: listadoColor }],
         awaitRefetchQueries: true,
     })
     return [mutate, data, loading, error]

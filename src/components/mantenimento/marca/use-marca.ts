@@ -5,9 +5,18 @@ import {
     deleteMarca,
     getMarca,
     listadoMarca,
+    migracionMarcas,
     postMarca,
     updateMarca,
 } from './marca-typedef'
+
+export const useMigracionMarcaMutation = () => {
+    const [mutate, { data, loading, error }] = useMutation(migracionMarcas, {
+        refetchQueries: [{ query: listadoMarca }],
+        awaitRefetchQueries: true,
+    })
+    return [mutate, data, loading, error]
+}
 
 export const usePostMarcaMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(postMarca, {

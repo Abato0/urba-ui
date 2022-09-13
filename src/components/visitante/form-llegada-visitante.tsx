@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import { values, isNil } from 'ramda'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import FormControlHeader from '../core/input/form-control-select'
 import { useListarGrupoFamiliar } from '../grupo-familiar/use-grupo-familia'
@@ -27,6 +27,7 @@ import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
 import ModalAuth from '../core/input/dialog/modal-dialog'
 import { FC } from 'react'
+import { usePostLLegadaVisitanteMutation } from './use-visitante'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -106,11 +107,11 @@ const initialValues = Object.freeze({
 const validationSchema = yup.object().shape({
     identificacion_visitante: yup
         .string()
-        .matches(/^[aA-zZ0-9\s]+$/, 'No colocar caracteres especiales')
+        .matches(/^[0-9\s]+$/, 'Solo números')
         .min(10, 'La cantidad de digitos debe ser mayor o igual 10 ')
         .max(15, 'La cantidad de digitos debe ser menor o igual 15 ')
         .required('Campo requerido'),
-    placa: yup
+    placa_vehiculo: yup
         .string()
         .matches(
             /[aA-zZ]{2,3}[0-9]{3,4}/g,
@@ -120,12 +121,12 @@ const validationSchema = yup.object().shape({
 
 export interface IVisitaneMoradorLlegadaVariables {
     identificacion_visitante: string
-    placa: string
+    placa_vehiculo: string
 }
 
 interface IProps {
     moradorLlegada?: IVisitaneMoradorLlegadaVariables
-    id?: number
+    id: number
 }
 
 const FormLlegadaVisitante: FC<IProps> = ({ id, moradorLlegada, children }) => {
@@ -139,24 +140,82 @@ const FormLlegadaVisitante: FC<IProps> = ({ id, moradorLlegada, children }) => {
     const [boolPut, setBoolPut] = useState<boolean>(false)
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
-    const onSubmit = useCallback(({ identificacion_visitante, placa }) => {
-        try {
-            console.log(
-                'Identificacion: ',
-                identificacion_visitante,
-                'placa:',
-                placa
-            )
-        } catch (error: any) {
-            setLoadingMutate(false)
-            console.log('error : ', error)
-            setTitleModalMsj('Envio Fallido')
-            setErrorModal(true)
-            setMensajeModalMsj(error.message)
-            setOpenModalMsj(true)
-        }
-    }, [])
+    const [mutate] = usePostLLegadaVisitanteMutation()
 
+    const closeModalAuth = () => {
+        if (openModalMsj) {
+            // refetch().then(() => {
+            router.push({ pathname: '/visitantes/listado-visitante' })
+            // })
+            // console.log("1")
+        } else {
+            setOpenModalMsj(false)
+            //console.log("2", " * ", openModalMsj && boolPut)
+        }
+    }
+    const onSubmit = useCallback(
+        async ({ identificacion_visitante, placa_vehiculo }) => {
+            try {
+                // console.log(
+                //     'Identificacion: ',
+                //     identificacion_visitante,
+                //     'placa:',
+                //     placa
+                // )
+
+                const { data } = await mutate({
+                    variables: {
+                        id,
+                        identificacion_visitante,
+                        placa_vehiculo: placa_vehiculo
+                            ? String(placa_vehiculo).toUpperCase()
+                            : '',
+                    },
+                })
+
+                if (isNotNilOrEmpty(data)) {
+                    const { code, message } = data.LLegadaVisitante
+
+                    setTitleModalMsj(message)
+                    setLoadingMutate(false)
+                    // setOpenModalMsj(true)
+                    setErrorModal(code === 200 ? false : true)
+                    if (code === 200) {
+                        // if (isNotNilOrEmpty(data.PutVisitanteMorador)) {
+                        //     setBoolPut(true)
+                        //     setOpenModalMsj(true)
+                        //     return
+                        // }
+                        // await refetch()
+                        resetForm()
+                    } else {
+                        setErrorModal(true)
+                    }
+                    setOpenModalMsj(true)
+                }
+            } catch (error: any) {
+                setLoadingMutate(false)
+                console.log('error : ', error)
+                setTitleModalMsj('Envio Fallido')
+                setErrorModal(true)
+                setMensajeModalMsj(error.message)
+                setOpenModalMsj(true)
+            }
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [id]
+    )
+
+    const init = useMemo(() => {
+        if (isNotNilOrEmpty(moradorLlegada)) {
+            return {
+                identificacion_visitante:
+                    moradorLlegada?.identificacion_visitante,
+                placa_vehiculo: moradorLlegada?.placa_vehiculo,
+            }
+        }
+        return initialValues
+    }, [moradorLlegada])
     const {
         errors,
         handleBlur,
@@ -169,7 +228,7 @@ const FormLlegadaVisitante: FC<IProps> = ({ id, moradorLlegada, children }) => {
         resetForm,
         values,
     } = useFormik({
-        initialValues: initialValues,
+        initialValues: init,
         onSubmit,
         validationSchema,
     })
@@ -179,18 +238,19 @@ const FormLlegadaVisitante: FC<IProps> = ({ id, moradorLlegada, children }) => {
             {openModalMsj && (
                 <ModalAuth
                     openModal={openModalMsj}
-                    onClose={() => setOpenModalMsj(false)}
+                    onClose={() => closeModalAuth()}
                     //  setOpenModal={setOpenModalMsj}
                     title={titleModalMsj}
                     message={mensajeModalMsj}
                     error={errorModal}
                 />
             )}
+
             {children}
             <form
                 action="#"
                 onSubmit={handleSubmit}
-                // onReset={handleReset}
+                onReset={handleReset}
                 className={classes.form}
             >
                 <div>
@@ -215,7 +275,7 @@ const FormLlegadaVisitante: FC<IProps> = ({ id, moradorLlegada, children }) => {
                                     ? errors.identificacion_visitante
                                     : undefined
                             }
-                            required
+                            // required
                         />
 
                         <TextField

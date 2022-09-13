@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from '@apollo/client'
-import { isNilOrEmpty } from '../../../utils/is-nil-empty'
 import { isNil } from 'ramda'
 import {
     postParentesco,
@@ -7,7 +6,19 @@ import {
     getParentesco,
     updateParentesco,
     deleteParentesco,
+    migracionParentesco,
 } from './parentesco-typedefs'
+
+export const useMigracionParentescoMutation = () => {
+    const [mutate, { data, loading, error }] = useMutation(
+        migracionParentesco,
+        {
+            refetchQueries: [{ query: listadoParentesco }],
+            notifyOnNetworkStatusChange: true,
+        }
+    )
+    return [mutate, data, loading, error]
+}
 
 export const usePostParentescoMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(postParentesco, {

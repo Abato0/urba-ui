@@ -186,5 +186,25 @@ export const EnlacesSidebar = {
                 route: '/mantenimiento/imagenes-de-bienvenida/listado',
             },
         },
+
+        migracion: {
+            ingresar: {
+                route: '/mantenimiento/migracion',
+            },
+        },
+    },
+    visitante: {
+        listadoMorador: {
+            route: '/visitantes/listado-morador',
+        },
+        listadoVisitante: {
+            route: '/visitantes/listado-visitante',
+        },
+        ingresarEntrada: {
+            route: '/visitantes/ingresar-entrada',
+        },
+        ingresarMorador: {
+            route: '/visitantes/ingresar-morador',
+        },
     },
 }

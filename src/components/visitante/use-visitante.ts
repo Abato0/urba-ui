@@ -8,6 +8,7 @@ import {
     getVisitanteMorador,
     listadoVisitante,
     listadoVisitanteMorador,
+    migracionVisitante,
     postLlegadaVisitante,
     putLlegadoVisiante,
     salidaVisitante,
@@ -32,6 +33,7 @@ export interface IVisitanteVariables {
     descripcion: string
     fecha_visita: string
     fecha_llegada: string
+    fecha_salida: string
 }
 
 export interface IListadoVisitanteMoradorQuery {
@@ -47,7 +49,18 @@ export interface IListadoVisitanteQuery {
 }
 
 export interface IGetVisitanteQuery {
-    GetVisitante: IVisitanteMoradorVariables
+    GetVisitante: IVisitanteVariables
+}
+
+export const useMigracionVisitanteMoradorMutation = () => {
+    const [mutate] = useMutation(migracionVisitante, {
+        refetchQueries: [
+            { query: listadoVisitanteMorador },
+            { query: listadoVisitante },
+        ],
+        awaitRefetchQueries: true,
+    })
+    return [mutate]
 }
 
 export const useSaveVisitanteMoradorMutation = () => {

@@ -1,5 +1,14 @@
 import { gql } from '@apollo/client'
 
+export const migracionStatusTag = gql`
+    mutation ($file: Upload) {
+        MigracionExcelStatusTag(excel: $file) {
+            code
+            message
+        }
+    }
+`
+
 export const listadoStatusTag = gql`
     query {
         ListaStatusTag {

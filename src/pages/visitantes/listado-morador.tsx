@@ -9,7 +9,6 @@ import {
     TextField,
 } from '@material-ui/core'
 import { lightFormat } from 'date-fns'
-import moment from 'moment'
 import { isNil, pluck, prop } from 'ramda'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { usePagination, useTable } from 'react-table'
@@ -27,10 +26,11 @@ import { columnsVisitanteMorador } from '../../components/visitante/visitante-da
 import { direccionGrupoFamiliar } from '../../utils/parseDate'
 import Fuse from 'fuse.js'
 import useDebounce from '../../utils/useDebounce'
-import fuse from 'fuse.js'
 import { isNotNil, isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import { useRouter } from 'next/router'
 import ModalAuth from '../../components/core/input/dialog/modal-dialog'
+import PermisoLayout from '../../components/layout/auth-layout/permiso-layout'
+import { TipoUsuario } from '../../components/core/input/dateSelect'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -145,6 +145,7 @@ const extractData = (
         }
     })
 }
+
 const ListadoVisitanteMorador = () => {
     const classes = useStyles()
     const router = useRouter()
@@ -162,11 +163,11 @@ const ListadoVisitanteMorador = () => {
     const { data, loading } = useListadoVisitateMoradorQuery()
 
     const idTable = useMemo(() => {
-        return 'listadoPagoTable'
+        return 'listadoMoradorVisianteTable'
     }, [])
 
     const titlePdf = useMemo(() => {
-        return 'Listado Pago'
+        return 'Listado Visitantes'
     }, [])
 
     const onEdit = useCallback(({ id }: IVisianteMoradorNormalize) => {
@@ -323,19 +324,26 @@ const ListadoVisitanteMorador = () => {
 
     return (
         <LayoutTituloPagina titulo="Visitante - Listado">
-            <Paper className={classes.root}>
-                {openModalMsj && (
-                    <ModalAuth
-                        openModal={openModalMsj}
-                        onClose={() => setOpenModalMsj(false)}
-                        //  setOpenModal={setOpenModalMsj}
-                        title={titleModalMsj}
-                        message={mensajeModalMsj}
-                        error={errorModal}
-                    />
-                )}
-                <div className={classes.contentButtons}>
-                    {/* <TextField
+            <PermisoLayout
+                tipoUsuarioRecibido={[
+                    TipoUsuario.ADMIN,
+                    TipoUsuario.OPERATIVO,
+                    TipoUsuario.MORADOR,
+                ]}
+            >
+                <Paper className={classes.root}>
+                    {openModalMsj && (
+                        <ModalAuth
+                            openModal={openModalMsj}
+                            onClose={() => setOpenModalMsj(false)}
+                            //  setOpenModal={setOpenModalMsj}
+                            title={titleModalMsj}
+                            message={mensajeModalMsj}
+                            error={errorModal}
+                        />
+                    )}
+                    <div className={classes.contentButtons}>
+                        {/* <TextField
                                 className={classes.textBox}
                                 variant="outlined"
                                 placeholder="Buscar"
@@ -355,51 +363,52 @@ const ListadoVisitanteMorador = () => {
                                 titlePdf={titlePdf}
                             /> */}
 
-                    <TextField
-                        className={classes.textBox}
-                        variant="outlined"
-                        placeholder="Buscar"
-                        onChange={(e) => {
-                            setSearch(e.target.value)
-                        }}
-                        value={search}
-                        inputProps={{
-                            style: { textTransform: 'uppercase' },
-                        }}
-                    />
-                    <ActionsButtonsExcelPdf
-                        ExportExcel={ExportExcel}
-                        columnsPdf={columnsPdf}
-                        idTable={idTable}
-                        orientacion={'landscape'}
-                        titlePdf={titlePdf}
-                    />
-                </div>
-
-                <TableContainer>
-                    <Table
-                        // className={classes.table}
-                        stickyHeader
-                        aria-label="sticky table"
-                        {...getTableProps()}
-                        id={'idTable'}
-                    >
-                        <TableHeader headerGroups={headerGroups} />
-                        <CardTableBody
-                            getTableBodyProps={getTableBodyProps}
-                            page={page}
-                            prepareRow={prepareRow}
+                        <TextField
+                            className={classes.textBox}
+                            variant="outlined"
+                            placeholder="Buscar"
+                            onChange={(e) => {
+                                setSearch(e.target.value)
+                            }}
+                            value={search}
+                            inputProps={{
+                                style: { textTransform: 'uppercase' },
+                            }}
                         />
-                    </Table>
-                </TableContainer>
-                <TablePaginations
-                    lengthData={dataVisitante.length}
-                    onChangePage={onChangePage}
-                    onChangeRowsPerPage={onChangeRowsPerPage}
-                    pageIndex={pageIndex}
-                    pageSize={pageSize}
-                />
-            </Paper>
+                        <ActionsButtonsExcelPdf
+                            ExportExcel={ExportExcel}
+                            columnsPdf={columnsPdf}
+                            idTable={idTable}
+                            orientacion={'landscape'}
+                            titlePdf={titlePdf}
+                        />
+                    </div>
+
+                    <TableContainer>
+                        <Table
+                            // className={classes.table}
+                            stickyHeader
+                            aria-label="sticky table"
+                            {...getTableProps()}
+                            id={'idTable'}
+                        >
+                            <TableHeader headerGroups={headerGroups} />
+                            <CardTableBody
+                                getTableBodyProps={getTableBodyProps}
+                                page={page}
+                                prepareRow={prepareRow}
+                            />
+                        </Table>
+                    </TableContainer>
+                    <TablePaginations
+                        lengthData={dataVisitante.length}
+                        onChangePage={onChangePage}
+                        onChangeRowsPerPage={onChangeRowsPerPage}
+                        pageIndex={pageIndex}
+                        pageSize={pageSize}
+                    />
+                </Paper>
+            </PermisoLayout>
         </LayoutTituloPagina>
     )
 }

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
     Button,
     createStyles,
@@ -14,6 +14,7 @@ import { EyeCircle, TrashCan } from 'mdi-material-ui'
 import { TipoUsuario } from '../core/input/dateSelect'
 import { useRecoilValue } from 'recoil'
 import { userInfo } from '../../utils/states'
+import { ModalConfirmacion } from '../core/modal/modalConfirmacion'
 
 interface IProps {
     className?: string
@@ -42,6 +43,7 @@ const VisualizarActionsCell: React.FC<IProps> = ({
 }) => {
     const classes = useStyles()
     const usuarioState = useRecoilValue(userInfo)
+    const [openModalConfirmacion, setOpenModalConfirmacion] = useState(false)
 
     const administradorFlag = useMemo(() => {
         if (usuarioState) {
@@ -49,6 +51,7 @@ const VisualizarActionsCell: React.FC<IProps> = ({
         }
         return false
     }, [usuarioState])
+
     return (
         <div
             style={{
@@ -57,6 +60,15 @@ const VisualizarActionsCell: React.FC<IProps> = ({
                 justifyContent: 'space-evenly',
             }}
         >
+            <ModalConfirmacion
+                openModal={openModalConfirmacion}
+                onConfirm={() => {
+                    setOpenModalConfirmacion(false)
+                    onDelete(row.original)
+                }}
+                mensaje="¿Está seguro de eliminar el registro seleccionado?"
+                onCancel={() => setOpenModalConfirmacion(false)}
+            />
             <Tooltip className={className} placement="top" title="Visualizar">
                 <IconButton
                     color="secondary"
@@ -70,7 +82,8 @@ const VisualizarActionsCell: React.FC<IProps> = ({
                 <Tooltip className={className} placement="top" title="Eliminar">
                     <IconButton
                         color="secondary"
-                        onClick={() => onDelete(row.original)}
+                        onClick={() => setOpenModalConfirmacion(true)}
+                        //   onClick={() => onDelete(row.original)}
                         className={classes.fab}
                     >
                         <TrashCan />

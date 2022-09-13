@@ -14,7 +14,7 @@ import {
     TextField,
     Tooltip,
 } from '@material-ui/core'
-import { isNil, pluck, prop } from 'ramda'
+import { isEmpty, isNil, pluck, prop } from 'ramda'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { usePagination, useTable } from 'react-table'
 import {
@@ -364,7 +364,13 @@ const MantenimientoParentescoListado = () => {
                                                 dataListadoGrupoFamiliar
                                             ) &&
                                             dataListadoGrupoFamiliar?.ListaGruposFamiliares.map(
-                                                ({ id, nombre_familiar }) => {
+                                                ({
+                                                    id,
+                                                    nombre_familiar,
+                                                    manzana,
+                                                    extension,
+                                                    villa,
+                                                }) => {
                                                     return (
                                                         <MenuItem
                                                             value={id}
@@ -377,7 +383,16 @@ const MantenimientoParentescoListado = () => {
                                                                     'uppercase',
                                                             }}
                                                         >
-                                                            {nombre_familiar}
+                                                            {`${nombre_familiar}-${
+                                                                manzana.manzana
+                                                            }${
+                                                                extension &&
+                                                                !isEmpty(
+                                                                    extension
+                                                                )
+                                                                    ? `-${villa}-${extension}`
+                                                                    : `-${villa}`
+                                                            } `}
                                                         </MenuItem>
                                                     )
                                                 }
