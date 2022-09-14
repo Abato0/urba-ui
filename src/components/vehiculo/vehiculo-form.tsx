@@ -515,7 +515,9 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
             } catch (error: any) {
                 setLoadingMutate(false)
                 console.log('error : ', error)
-                setTitleModalMsj('Registro Fallido')
+                setTitleModalMsj(
+                    'Registro Fallido: ' + (error as Error).message
+                )
                 setMensajeModalMsj(
                     'El registro del vehiculo no se ha realizado: ' +
                         error.message

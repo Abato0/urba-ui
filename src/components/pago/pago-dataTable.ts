@@ -28,7 +28,7 @@ export const headPagoTable = Object.freeze([
     },
 
     {
-        Header: 'Cuota / Mes',
+        Header: 'Referencia',
         accessor: 'fecha_pago',
     },
 

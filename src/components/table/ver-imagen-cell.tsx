@@ -25,7 +25,7 @@ interface IProps {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         fab: {
-            margin: theme.spacing(2),
+            // margin: theme.spacing(2),
         },
         absolute: {
             position: 'absolute',
@@ -57,7 +57,7 @@ const VisualizarActionsCell: React.FC<IProps> = ({
             style={{
                 display: 'flex',
                 flex: 'row',
-                justifyContent: 'space-evenly',
+                // justifyContent: 'space-evenly',
             }}
         >
             <ModalConfirmacion

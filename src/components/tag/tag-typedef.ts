@@ -18,6 +18,16 @@ export const listadoTagPagos = gql`
                 grupoFamiliar {
                     id
                     nombre_familiar
+                    manzana {
+                        id
+                        manzana
+                    }
+                    villa
+                    calle_principal {
+                        id
+                        calle
+                    }
+                    calle_interseccion
                 }
             }
         }
@@ -59,6 +69,7 @@ export const listaTagVehiculo = gql`
                     color
                 }
             }
+            ultimoPago
         }
     }
 `

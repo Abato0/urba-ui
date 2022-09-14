@@ -37,6 +37,8 @@ import PermisoLayout from '../../components/layout/auth-layout/permiso-layout'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
 import { ActionsButtonsFilterReset } from '../../components/core/actions/actionsButtonsFilterReset'
 import { ActionsButtonsExcelPdf } from '../../components/core/actions/actionsButtonsExcelPdf'
+import XLSX from 'xlsx'
+import { getFormatoGrupoFamiliar } from '../../utils/keys'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -155,6 +157,7 @@ interface ITagsVariablesNormalize {
     color: string
     placa: string
     code: string
+    ultimoPago: string
     // tipo_tag: string;
     // monto: number;
     // fecha_pago: string;
@@ -164,16 +167,20 @@ const extractData = (
     data: IResultQueryTagVehiculo[]
 ): ITagsVariablesNormalize[] => {
     return isNotNilOrEmpty(data)
-        ? data.map(({ id, vehiculo, tag }) => {
+        ? data.map(({ id, vehiculo, tag, ultimoPago }) => {
               return {
                   id,
                   idGrupoFamiliar: vehiculo.grupoFamiliar.id!,
-                  nombre_familiar: `${vehiculo.grupoFamiliar.nombre_familiar} - ${vehiculo.grupoFamiliar.manzana.manzana} - ${vehiculo.grupoFamiliar.villa}`,
+                  //  nombre_familiar: `${vehiculo.grupoFamiliar.nombre_familiar} - ${vehiculo.grupoFamiliar.manzana.manzana} - ${vehiculo.grupoFamiliar.villa}`,
+                  nombre_familiar: getFormatoGrupoFamiliar(
+                      vehiculo.grupoFamiliar
+                  ),
                   placa: vehiculo.placa,
                   code: tag.code,
                   color: vehiculo.color.color ?? '',
                   marca: vehiculo.marca.marca ?? '',
                   modelo: vehiculo.modelo.modelo ?? '',
+                  ultimoPago: ultimoPago || '',
               }
           })
         : []
@@ -339,6 +346,44 @@ const MantenimientoParentescoListado = () => {
         }
     }, [loading, data])
 
+    const ExportExcel = () => {
+        if (isNotNilOrEmpty(dataTag)) {
+            const newCampos = dataTag.map(
+                ({
+                    nombre_familiar,
+                    code,
+                    color,
+                    marca,
+                    modelo,
+                    placa,
+                    ultimoPago,
+                }) => {
+                    return {
+                        GrupoFamiliar: nombre_familiar,
+                        TAG: code,
+                        Placa: placa,
+                        Marca: marca,
+                        Modelo: modelo,
+                        Color: color,
+                        UltimoPago: ultimoPago,
+                    }
+                }
+            )
+            const workSheet = XLSX.utils.json_to_sheet(newCampos)
+
+            // workSheet.A1.v = 'Grupo familiar'
+            // workSheet.B1.v = 'Tipo de pago'
+            // workSheet.C1.v = 'Referencia'
+            // workSheet.D1.v = 'FECHA DEL REGISTRO DEL PAGO'
+            // workSheet.E1.v = 'FECHA DEL PAGO REALIZADO'
+
+            const workBook = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(workBook, workSheet, 'Aportaciones')
+            XLSX.write(workBook, { bookType: 'xlsx', type: 'binary' })
+            XLSX.writeFile(workBook, 'Listado de Asignación de Tags.xlsx')
+        }
+    }
+
     return (
         <LayoutTituloPagina titulo="Tags - Listado de Asignación de TAGs">
             <PermisoLayout
@@ -448,7 +493,7 @@ const MantenimientoParentescoListado = () => {
                         />
 
                         <ActionsButtonsExcelPdf
-                            ExportExcel={() => console.log()}
+                            ExportExcel={ExportExcel}
                             columnsPdf={[
                                 'Grupo Familiar',
                                 'Tag',

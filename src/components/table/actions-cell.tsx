@@ -53,7 +53,12 @@ const ActionsCell: React.FC<IProps> = ({
                 onCancel={() => setOpenModalConfirmacion(false)}
             />
             {!moradorFlag && (
-                <>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                    }}
+                >
                     <Tooltip
                         className={className}
                         placement="right"
@@ -78,7 +83,7 @@ const ActionsCell: React.FC<IProps> = ({
                             </IconButton>
                         </Tooltip>
                     )}
-                </>
+                </div>
             )}
         </>
     )

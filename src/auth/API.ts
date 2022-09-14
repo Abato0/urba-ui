@@ -1,8 +1,8 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-//const URL_BASE_API = 'http://localhost:8888'
-const URL_BASE_API = 'https://urbaapi.nodedatatest.com'
+const URL_BASE_API = 'http://localhost:8888'
+// const URL_BASE_API = 'https://urbaapi.nodedatatest.com'
 const API = axios.create({
     baseURL: URL_BASE_API,
     withCredentials: false,
@@ -27,7 +27,7 @@ API.interceptors.response.use(
             )
         }
         if (error.response.status === 403 || error.response.status === 401) {
-            console.log('se expoiró el token')
+            console.log('se exp**iró el token')
             Cookies.remove('token')
             throw new Error(`Usuario incorrecto: ${error.response.data.msg}`)
         }

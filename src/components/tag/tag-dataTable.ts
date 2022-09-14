@@ -1,5 +1,5 @@
 import { Column } from 'react-table'
-import ActionsCellDelete from '../core/actions/actionsButtoonOnDelete'
+import ActionsCellDesvincular from '../core/actions/actionsButtoonOnDesvincular'
 import ActionsCellEditDelete from '../table/actions-delete-edit'
 
 export const columnsTags = Object.freeze([
@@ -52,18 +52,23 @@ export const columnsTagVehiculo = Object.freeze([
         Header: 'Color',
         accessor: 'color',
     },
+
+    {
+        Header: 'Ultima afiliación registrada',
+        accessor: 'ultimoPago',
+    },
     {
         id: 'actions',
-        Cell: ActionsCellDelete,
+        Cell: ActionsCellDesvincular,
         padding: 'none',
     },
 ] as Column<any>[])
 
 export const columnsListadoTags = Object.freeze([
-    // {
-    //   Header: "ID",
-    //   accessor: "id",
-    // },
+    {
+        Header: 'ID',
+        accessor: 'id',
+    },
     {
         Header: ' Codigo',
         accessor: 'code',

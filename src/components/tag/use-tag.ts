@@ -44,6 +44,7 @@ export interface IResultQueryTagVehiculo {
     id: number
     tag: IResultQueryTag
     vehiculo: IVehiculoVariable
+    ultimoPago: string
 }
 
 export interface IListaTagVehiculo {

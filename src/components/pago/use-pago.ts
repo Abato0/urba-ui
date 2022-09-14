@@ -16,6 +16,8 @@ import {
 } from './pago-typedefs'
 import { isNil, isEmpty, equals } from 'ramda'
 import { AllPago } from '../../interface/pago.interface'
+import { listaTagVehiculo } from '../tag/tag-typedef'
+import { IGrupoFamiliar } from '../../interface/grupo-familiar.interface'
 
 export interface TipoPagoDashboard {
     monto: number
@@ -53,6 +55,9 @@ export const usePostPago = () => {
         refetchQueries: [
             { query: listadoPago },
             { query: getPagoFamiliarFilter },
+            { query: carteraVencida },
+            { query: matrizOperaciones },
+            { query: listaTagVehiculo },
         ],
         awaitRefetchQueries: true,
     })
@@ -100,9 +105,7 @@ interface IPagoGrupoFamiliarFiltersFunc {
 
 export interface IDataListaPagoFilter {
     id: number
-    grupoFamiliar: {
-        nombre_familiar: string
-    }
+    grupoFamiliar: IGrupoFamiliar
     pago: {
         tipo_pago: string
         fecha_pago: string
@@ -112,6 +115,7 @@ export interface IDataListaPagoFilter {
         fecha_recibo: string
         cod_recibo?: string
     }
+    referencia?: string
     // aporte: {
     //   nombre_aporte: string;
     //   tipo_aporte: string;
@@ -196,6 +200,7 @@ export const useMigracionPagoTagMutation = () => {
             { query: getPagoFamiliarFilter },
             { query: carteraVencida },
             { query: matrizOperaciones },
+            { query: listaTagVehiculo },
         ],
         awaitRefetchQueries: true,
     })

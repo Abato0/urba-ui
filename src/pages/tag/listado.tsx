@@ -37,6 +37,7 @@ import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
 import { ActionsButtonsFilterReset } from '../../components/core/actions/actionsButtonsFilterReset'
 import CardTableBody from '../../components/table/table-body'
 import TableHeader from '../../components/table/table-header'
+import { getFormatoGrupoFamiliar } from '../../utils/keys'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -168,7 +169,9 @@ const extractData = (
               return {
                   id,
                   idGrupoFamiliar: vehiculo.grupoFamiliar.id!,
-                  nombre_familiar: vehiculo.grupoFamiliar.nombre_familiar,
+                  nombre_familiar: getFormatoGrupoFamiliar(
+                      vehiculo.grupoFamiliar
+                  ),
                   placa: vehiculo.placa,
                   tipo_tag: valorTag.tipo_tag,
                   monto: monto,

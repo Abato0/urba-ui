@@ -20,6 +20,21 @@ import {
 import { IHeaderSidebar, IItemsSidebar } from '../components/layout/app-sidebar'
 import { EnlacesSidebar } from './routes'
 import { EstadoTagRow } from '../components/tag/use-tag'
+import { IGrupoFamiliar } from '../interface/grupo-familiar.interface'
+import { isEmpty } from 'ramda'
+
+export const getFormatoGrupoFamiliar = (grupoFamiliar: IGrupoFamiliar) => {
+    if (grupoFamiliar) {
+        return `${grupoFamiliar.nombre_familiar}-${
+            grupoFamiliar.manzana.manzana
+        }${
+            grupoFamiliar.extension && !isEmpty(grupoFamiliar.extension)
+                ? `-${grupoFamiliar.villa}-${grupoFamiliar.extension}`
+                : `-${grupoFamiliar.villa}`
+        } `
+    }
+    return ''
+}
 
 export const URL_BASE_API = (): string => {
     return process.env.NEXT_PUBLIC_BASE_API_UR ?? ''

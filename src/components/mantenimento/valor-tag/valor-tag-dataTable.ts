@@ -3,10 +3,10 @@ import ActionsCell from '../../table/actions-cell'
 import ActionsCellEditDelete from '../../table/actions-delete-edit'
 
 export const columnsValorTag = Object.freeze([
-    // {
-    //   Header: "ID",
-    //   accessor: "id",
-    // },
+    {
+        Header: 'ID',
+        accessor: 'id',
+    },
     {
         Header: 'Tipo de Tag',
         accessor: 'tipo_tag',

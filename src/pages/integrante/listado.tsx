@@ -29,6 +29,7 @@ import { useRouter } from 'next/router'
 import { Paper } from '@material-ui/core'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
 import { ActionsButtonsFilterReset } from '../../components/core/actions/actionsButtonsFilterReset'
+import { getFormatoGrupoFamiliar } from '../../utils/keys'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -117,14 +118,7 @@ const VariablesNormalizeIntegrantes = (data: IIntegranteVariables[]) => {
               ({ grupoFamiliar, parentesco, tipoIdentificacion, ...input }) => {
                   return omit(['__typename'], {
                       ...input,
-                      nombre_familiar: `${grupoFamiliar.nombre_familiar}-${
-                          grupoFamiliar.manzana.manzana
-                      }${
-                          grupoFamiliar.extension &&
-                          !isEmpty(grupoFamiliar.extension)
-                              ? `-${grupoFamiliar.villa}-${grupoFamiliar.extension}`
-                              : `-${grupoFamiliar.villa}`
-                      } `,
+                      nombre_familiar: getFormatoGrupoFamiliar(grupoFamiliar),
                       parentesco: parentesco.parentesco,
                       tipo_doc_identidad:
                           tipoIdentificacion.tipo_identificacion ?? '',

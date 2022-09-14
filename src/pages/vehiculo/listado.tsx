@@ -37,6 +37,7 @@ import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
 import { ActionsButtonsFilterReset } from '../../components/core/actions/actionsButtonsFilterReset'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import { ActionsButtonsExcelPdf } from '../../components/core/actions/actionsButtonsExcelPdf'
+import { getFormatoGrupoFamiliar } from '../../utils/keys'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -126,7 +127,8 @@ const extractData = (data: IListarFilter): IVehiculoVariableNormalize[] => {
         ? data.ListaVehiculoFilter.map(
               ({ grupoFamiliar, color, marca, modelo, ...props }) => {
                   return {
-                      nombre_familiar: `${grupoFamiliar.nombre_familiar} - ${grupoFamiliar.manzana.manzana} - ${grupoFamiliar.villa}`,
+                      //  nombre_familiar: `${grupoFamiliar.nombre_familiar} - ${grupoFamiliar.manzana.manzana} - ${grupoFamiliar.villa}`,
+                      nombre_familiar: getFormatoGrupoFamiliar(grupoFamiliar),
                       marca: marca.marca,
                       color: color.color,
                       modelo: modelo.modelo,

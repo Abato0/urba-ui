@@ -133,6 +133,16 @@ export const getPagoFamiliarFilter = gql`
             id
             grupoFamiliar {
                 nombre_familiar
+                manzana {
+                    id
+                    manzana
+                }
+                villa
+                calle_principal {
+                    id
+                    calle
+                }
+                calle_interseccion
             }
             pago {
                 fecha_pago
@@ -144,6 +154,7 @@ export const getPagoFamiliarFilter = gql`
                 cod_recibo
                 # status
             }
+            referencia
             # aporte {
             #   nombre_aporte
             #   tipo_aporte

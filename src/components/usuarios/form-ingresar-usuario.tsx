@@ -606,13 +606,13 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                     />
                 </div>
 
-                <div>
+                {/* <div>
                     {idGrupoFamiliarSeleccionado && !verifGrupoFamiliar ? (
                         <Typography variant="overline" color="error">
                             Este Grupo Familiar ya tiene un representante
                         </Typography>
                     ) : null}
-                </div>
+                </div> */}
                 <div>
                     <FormControlHeader
                         classes={classes}
@@ -670,13 +670,13 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                                                 <MenuItem
                                                     key={id}
                                                     style={{
-                                                        backgroundColor:
-                                                            gruposFamiliaresSinUsuarios.includes(
-                                                                id!
-                                                            )
-                                                                ? colors
-                                                                      .green[100]
-                                                                : 'white',
+                                                        // backgroundColor:
+                                                        //     gruposFamiliaresSinUsuarios.includes(
+                                                        //         id!
+                                                        //     )
+                                                        //         ? colors
+                                                        //               .green[100]
+                                                        //         : 'white',
 
                                                         textTransform:
                                                             'uppercase',

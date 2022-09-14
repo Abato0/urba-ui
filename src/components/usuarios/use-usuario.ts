@@ -71,9 +71,9 @@ export const useGetUsuarioToken = () => {
 export const usePostUsuarioMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(saveUsuario, {
         refetchQueries: [
-            listadoUsuarios,
-            listadoUsuariosSinGrupoFamiliar,
-            listadoIntegrante,
+            { query: listadoUsuarios },
+            { query: listadoUsuariosSinGrupoFamiliar },
+            { query: listadoIntegrante },
         ],
         awaitRefetchQueries: true,
     })
@@ -85,9 +85,9 @@ export const useMigracionUsuarioOperativosMutation = () => {
         migracionUsuarioOperativos,
         {
             refetchQueries: [
-                listadoUsuarios,
-                listadoUsuariosSinGrupoFamiliar,
-                listadoIntegrante,
+                { query: listadoUsuarios },
+                { query: listadoUsuariosSinGrupoFamiliar },
+                { query: listadoIntegrante },
             ],
             awaitRefetchQueries: true,
         }
@@ -100,9 +100,9 @@ export const useMigracionUsuarioMoradorMutation = () => {
         migracionUsuarioMorador,
         {
             refetchQueries: [
-                listadoUsuarios,
-                listadoUsuariosSinGrupoFamiliar,
-                listadoIntegrante,
+                { query: listadoUsuarios },
+                { query: listadoUsuariosSinGrupoFamiliar },
+                { query: listadoIntegrante },
             ],
             awaitRefetchQueries: true,
         }
@@ -113,9 +113,9 @@ export const useMigracionUsuarioMoradorMutation = () => {
 export const useDeleteUsuarioMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(deleteUsuario, {
         refetchQueries: [
-            listadoUsuarios,
-            listadoUsuariosSinGrupoFamiliar,
-            listadoIntegrante,
+            { query: listadoUsuarios },
+            { query: listadoUsuariosSinGrupoFamiliar },
+            { query: listadoIntegrante },
         ],
         awaitRefetchQueries: true,
     })
@@ -125,9 +125,9 @@ export const useDeleteUsuarioMutation = () => {
 export const useCambioContrasenaUsuarioMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(cambioContrasena, {
         refetchQueries: [
-            listadoUsuarios,
-            listadoUsuariosSinGrupoFamiliar,
-            listadoIntegrante,
+            { query: listadoUsuarios },
+            { query: listadoUsuariosSinGrupoFamiliar },
+            { query: listadoIntegrante },
         ],
         awaitRefetchQueries: true,
     })
@@ -137,9 +137,9 @@ export const useCambioContrasenaUsuarioMutation = () => {
 export const useContrasenaOlvidadaMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(contrasenaOlvidada, {
         refetchQueries: [
-            listadoUsuarios,
-            listadoUsuariosSinGrupoFamiliar,
-            listadoIntegrante,
+            { query: listadoUsuarios },
+            { query: listadoUsuariosSinGrupoFamiliar },
+            { query: listadoIntegrante },
         ],
         awaitRefetchQueries: true,
     })
@@ -149,9 +149,9 @@ export const useContrasenaOlvidadaMutation = () => {
 export const useUpdateUsuarioMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(updateUsuario, {
         refetchQueries: [
-            listadoUsuarios,
-            listadoUsuariosSinGrupoFamiliar,
-            listadoIntegrante,
+            { query: listadoUsuarios },
+            { query: listadoUsuariosSinGrupoFamiliar },
+            { query: listadoIntegrante },
         ],
         awaitRefetchQueries: true,
     })
@@ -161,9 +161,9 @@ export const useUpdateUsuarioMutation = () => {
 export const useEnvioCorreoMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(envioCorreos, {
         refetchQueries: [
-            listadoUsuarios,
-            listadoUsuariosSinGrupoFamiliar,
-            listadoIntegrante,
+            { query: listadoUsuarios },
+            { query: listadoUsuariosSinGrupoFamiliar },
+            { query: listadoIntegrante },
         ],
         awaitRefetchQueries: true,
     })
@@ -173,9 +173,9 @@ export const useEnvioCorreoMutation = () => {
 export const useAsignacionUsuarioMutate = () => {
     const [mutate, { data, loading, error }] = useMutation(asignacionUsuario, {
         refetchQueries: [
-            listadoUsuarios,
-            listadoUsuariosSinGrupoFamiliar,
-            listadoIntegrante,
+            { query: listadoUsuarios },
+            { query: listadoUsuariosSinGrupoFamiliar },
+            { query: listadoIntegrante },
         ],
         awaitRefetchQueries: true,
     })

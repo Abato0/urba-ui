@@ -527,6 +527,8 @@ export const PagoFormMulti = () => {
                                 : undefined,
                         tag: [...pagoTag],
                     }
+
+                    console.log('PagoTag: ', JSON.stringify(pagoTag))
                     const { data } = await mutate({
                         variables: { ...pago },
                     })
@@ -589,13 +591,14 @@ export const PagoFormMulti = () => {
     })
 
     const resetFormularioPago = () => {
-        resetForm()
         setChecOtros(false)
         setCheckImplementacion(false)
         setCheckMantenimiento(false)
         setCheckTag(false)
         setFile(undefined)
         setPagoTag([])
+        setGridValorTag([])
+        resetForm()
     }
 
     const {

@@ -48,6 +48,7 @@ import { ActionsButtonsExcelPdf } from '../../components/core/actions/actionsBut
 import ModalAuth from '../../components/core/input/dialog/modal-dialog'
 import { ModalConfirmacion } from '../../components/core/modal/modalConfirmacion'
 import { ETipoPago } from '../../components/core/input/dateSelect'
+import { getFormatoGrupoFamiliar } from '../../utils/keys'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -168,14 +169,14 @@ export interface IDataTablePagoListado {
 
 const extractData = (data: IDataListaPagoFilter[]) => {
     console.log('data de la funcion extracData: ', data)
-    return data.map(({ id, pago, grupoFamiliar }) => {
+    return data.map(({ id, pago, grupoFamiliar, referencia }) => {
         return {
             ...pago,
             id,
-            nombre_familiar: grupoFamiliar.nombre_familiar,
+            nombre_familiar: getFormatoGrupoFamiliar(grupoFamiliar),
             fecha_pago:
                 pago.tipo_pago && pago.tipo_pago === ETipoPago.tag
-                    ? ''
+                    ? referencia || ''
                     : pago.fecha_pago,
 
             // nombre_aporte: aporte.nombre_aporte,
@@ -441,6 +442,7 @@ const ListadoPago = () => {
                     monto,
                     nombre_familiar,
                     tipo_pago,
+                    cod_recibo,
                 }) => {
                     return {
                         GrupoFamiliar: nombre_familiar,
@@ -448,6 +450,7 @@ const ListadoPago = () => {
                         FechaPago: fecha_pago,
                         FechaRecibo: fecha_recibo,
                         FechaSubida: fecha_subida,
+                        Codigo: cod_recibo || '',
                         Descripcion: descripcion,
                         Monto: monto,
                     }
@@ -457,9 +460,9 @@ const ListadoPago = () => {
 
             workSheet.A1.v = 'Grupo familiar'
             workSheet.B1.v = 'Tipo de pago'
-            workSheet.C1.v = 'Fecha del pago'
-            workSheet.D1.v = 'Fecha del recibo del pago'
-            workSheet.E1.v = 'Fecha de subida del pago'
+            workSheet.C1.v = 'Referencia'
+            workSheet.D1.v = 'FECHA DEL REGISTRO DEL PAGO'
+            workSheet.E1.v = 'FECHA DEL PAGO REALIZADO'
 
             const workBook = XLSX.utils.book_new()
             XLSX.utils.book_append_sheet(workBook, workSheet, 'Aportaciones')
@@ -652,7 +655,8 @@ const ListadoPago = () => {
                         aria-label="sticky table"
                         {...getTableProps()}
                         id={idTable}
-
+                        // className={classes.table}
+                        padding="normal"
                         // className={classes.table}
                     >
                         <TableHeader headerGroups={headerGroups} />
