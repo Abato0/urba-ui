@@ -19,3 +19,8 @@ export const showSidebar = atom<boolean>({
     key: 'ShowSidebar',
     default: true,
 })
+
+export const tituloPantallaState = atom<string>({
+    key: 'TituloPantallaState',
+    default: '',
+})

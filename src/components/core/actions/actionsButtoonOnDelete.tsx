@@ -41,9 +41,9 @@ const ActionsCellDelete: React.FC<IProps> = ({ onDelete, row, className }) => {
                     title={'Eliminar'}
                 >
                     <IconButton
-                        // variant="text"
+                       
                         color="secondary"
-                        //onClick={() => onDelete(row.original)}
+                       
                         onClick={() => setOpenModalConfirmacion(true)}
                     >
                         <TrashCanIcon color="primary" />

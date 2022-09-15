@@ -17,6 +17,7 @@ import {
     IListarFilter,
     IListarFilterVehiculoInput,
     IVehiculoVariableNormalize,
+    useDeleteVehiculoMutation,
     useListadoVehiculoFilterQuery,
 } from '../../components/vehiculo/use-vehiculo'
 import { useState } from 'react'
@@ -162,7 +163,7 @@ const ListadoVehiculo = () => {
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
     const [titleModalMsj, setTitleModalMsj] = useState<string>('')
     const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
-
+    const [errorModal, setErrorModal] = useState<boolean>(false)
     const [idGrupoFamiliar, setIdGrupoFamiliar] = useState<number | undefined>(
         0
     )
@@ -176,6 +177,8 @@ const ListadoVehiculo = () => {
     const [inputFilter, setInputFilter] = useState<IListarFilterVehiculoInput>(
         {}
     )
+
+    const [mutateEliminar] = useDeleteVehiculoMutation()
 
     const { data, loading, error } = useListadoVehiculoFilterQuery(inputFilter)
 
@@ -243,10 +246,6 @@ const ListadoVehiculo = () => {
         [router]
     )
 
-    const onDelete = () => {
-        console.log('dasd')
-    }
-
     const ExportExcel = useCallback(() => {
         if (isNotNilOrEmpty(allVehiculo)) {
             const newCampos = allVehiculo.map(
@@ -277,6 +276,35 @@ const ListadoVehiculo = () => {
     const [openModal, setOpenModal] = React.useState(false)
     // const handleOpen = () => setOpen(!open);
     const handleClose = () => setOpenModal(!openModal)
+
+    const onDelete = async ({ id }: any) => {
+        try {
+            const { data } = await mutateEliminar({
+                variables: {
+                    id,
+                },
+            })
+            if (data) {
+                const { code, message } = data.DeleteVehiculo
+                setTitleModalMsj(message)
+                if (code === 200) {
+                    setErrorModal(false)
+                } else {
+                    setErrorModal(true)
+                }
+                setOpenModalMsj(true)
+            } else {
+                setTitleModalMsj('Usuario no autorizado')
+                setErrorModal(true)
+                setOpenModalMsj(true)
+            }
+        } catch (error) {
+            setTitleModalMsj('Envio Fallido')
+            setErrorModal(true)
+            setMensajeModalMsj('' + (error as Error).message)
+            setOpenModalMsj(true)
+        }
+    }
 
     const onDescargar = useCallback(({ id }: any) => {
         if (!isNil(id)) {
@@ -318,6 +346,7 @@ const ListadoVehiculo = () => {
             getRowId,
             onEdit,
             onDescargar,
+            onDelete,
         },
         usePagination
     )
@@ -344,6 +373,7 @@ const ListadoVehiculo = () => {
                                 setOpenModalMsj(false)
                             }}
                             title={titleModalMsj}
+                            error={errorModal}
                             message={mensajeModalMsj}
                         />
                     )}

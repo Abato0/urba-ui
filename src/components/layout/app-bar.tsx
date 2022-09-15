@@ -17,7 +17,7 @@ import MailIcon from '@material-ui/icons/Mail'
 import NotificationsIcon from '@material-ui/icons/Notifications'
 //import MoreIcon from '@material-ui/icons/MoreVert'
 import { colors, Popover, Typography } from '@material-ui/core'
-import { showSidebar, userInfo } from '../../utils/states'
+import { showSidebar, userInfo, tituloPantallaState } from '../../utils/states'
 import {
     usePopupState,
     bindTrigger,
@@ -131,6 +131,8 @@ const NavBar: React.FC = ({ children }) => {
     const router = useRouter()
     const classes = useStyles()
     const [openSidebar, setOpenSidebar] = useRecoilState(showSidebar)
+
+    const tituloPantalla = useRecoilValue(tituloPantallaState)
     const userInformacion = useRecoilValue(userInfo)
 
     // const { data, loading } = useListadoUsuario()
@@ -318,7 +320,19 @@ const NavBar: React.FC = ({ children }) => {
             Material-UI
           </Typography> */}
 
-                                <div className={classes.grow} />
+                                {/* <div className={classes.grow} /> */}
+
+                                <div className={classes.grow}>
+                                    <Typography
+                                        style={{
+                                            textTransform: 'uppercase',
+                                        }}
+                                        align="center"
+                                        variant="body2"
+                                    >
+                                        {tituloPantalla}
+                                    </Typography>
+                                </div>
 
                                 <div className={classes.sectionDesktop}>
                                     {userInformacion && (

@@ -9,6 +9,15 @@ export const migracionVehiculo = gql`
     }
 `
 
+export const eliminarVehiculo = gql`
+    mutation ($id: Int!) {
+        DeleteVehiculo(id: $id) {
+            code
+            message
+        }
+    }
+`
+
 export const saveVehiculo = gql`
     mutation (
         $idGrupoFamiliar: Int!

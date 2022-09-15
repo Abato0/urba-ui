@@ -6,7 +6,9 @@ import {
     Box,
 } from '@material-ui/core'
 
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
+import { useSetRecoilState } from 'recoil'
+import { tituloPantallaState } from '../../utils/states'
 import AppLayout from './app-layout'
 
 const useStyles = makeStyles((theme) =>
@@ -68,6 +70,14 @@ const useStyles = makeStyles((theme) =>
 
 const LayoutTituloPagina: FC<{ titulo?: string }> = ({ titulo, children }) => {
     const classes = useStyles()
+    const setTituloPantalla = useSetRecoilState(tituloPantallaState)
+
+    useEffect(() => {
+        if (titulo) {
+            setTituloPantalla(titulo)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [titulo])
     return (
         <AppLayout>
             <Box className={classes.componentRoot}>

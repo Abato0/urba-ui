@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { IGrupoFamiliar } from '../../interface/grupo-familiar.interface'
 import {
     activarVehiculos,
+    eliminarVehiculo,
     getVehiculo,
     inactivarVehiculos,
     listadoVehiculo,
@@ -76,6 +77,17 @@ export const useUpdateVehiculoMutation = () => {
         awaitRefetchQueries: true,
     })
 
+    return [mutate, data, loading, error]
+}
+
+export const useDeleteVehiculoMutation = () => {
+    const [mutate, { data, loading, error }] = useMutation(eliminarVehiculo, {
+        refetchQueries: [
+            { query: listadoVehiculo },
+            { query: listadoVehiculoFilter },
+        ],
+        awaitRefetchQueries: true,
+    })
     return [mutate, data, loading, error]
 }
 

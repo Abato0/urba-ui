@@ -1,20 +1,27 @@
-import { Button, Tooltip } from '@material-ui/core'
+import { Button, IconButton, Tooltip } from '@material-ui/core'
 import React, { useMemo, useState } from 'react'
 import { Row } from 'react-table'
 import { useRecoilValue } from 'recoil'
 import { userInfo } from '../../utils/states'
 import { TipoUsuario } from '../core/input/dateSelect'
-
+import {
+    FileEdit as FileEditIcon,
+    TrashCan as TrashIcon,
+    EyeCircle,
+} from 'mdi-material-ui'
+import { ModalConfirmacion } from '../core/modal/modalConfirmacion'
 interface IProps {
     className?: string
     onEdit: any
     onDescargar: any
+    onDelete: any
     row: Row
 }
 
 const ActionsCellVehiculo: React.FC<IProps> = ({
     onEdit,
     onDescargar,
+    onDelete,
     row,
     className,
 }) => {
@@ -36,7 +43,7 @@ const ActionsCellVehiculo: React.FC<IProps> = ({
     // }, [usuarioState])
     return (
         <>
-            {/* <ModalConfirmacion
+            <ModalConfirmacion
                 openModal={openModalConfirmacion}
                 onConfirm={() => {
                     setOpenModalConfirmacion(false)
@@ -44,8 +51,8 @@ const ActionsCellVehiculo: React.FC<IProps> = ({
                 }}
                 mensaje="¿Está seguro de eliminar el registro seleccionado?"
                 onCancel={() => setOpenModalConfirmacion(false)}
-            /> */}
-            <Tooltip className={className} title={'Editar'}>
+            />
+            <>
                 <div
                     style={{
                         display: 'flex',
@@ -54,24 +61,45 @@ const ActionsCellVehiculo: React.FC<IProps> = ({
                     }}
                 >
                     {!moradorFlag && (
-                        <Button
-                            variant="text"
-                            color="secondary"
-                            onClick={() => onEdit(row.original)}
-                        >
-                            Editar
-                        </Button>
+                        <Tooltip className={className} title={'Editar'}>
+                            <IconButton
+                                // variant="text"
+                                // color="secondary"
+                                onClick={() => onEdit(row.original)}
+                            >
+                                <FileEditIcon color="primary" />
+                            </IconButton>
+                        </Tooltip>
                     )}
-                    <Button
+
+                    <Tooltip className={className} title={'Visualizar'}>
+                        <IconButton
+                            // variant="text"
+                            // color="secondary"
+                            onClick={() => onDescargar(row.original)}
+                        >
+                            <EyeCircle color="primary" />
+                        </IconButton>
+                    </Tooltip>
+
+                    <Tooltip className={className} title={'Eliminar'}>
+                        <IconButton
+                            // variant="text"
+                            // color="secondary"
+                            onClick={() => setOpenModalConfirmacion(true)}
+                        >
+                            <TrashIcon color="primary" />
+                        </IconButton>
+                    </Tooltip>
+                    {/* <Button
                         variant="text"
                         color="secondary"
                         onClick={() => onDescargar(row.original)}
                     >
-                        {/* Descargar */}
                         Visualizar
-                    </Button>
+                    </Button> */}
                 </div>
-            </Tooltip>
+            </>
         </>
     )
 }
