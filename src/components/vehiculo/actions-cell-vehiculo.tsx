@@ -35,12 +35,12 @@ const ActionsCellVehiculo: React.FC<IProps> = ({
         return false
     }, [usuarioState])
 
-    // const administradorFlag = useMemo(() => {
-    //     if (usuarioState) {
-    //         return usuarioState.tipo_usuario === TipoUsuario.ADMIN
-    //     }
-    //     return false
-    // }, [usuarioState])
+    const administradorFlag = useMemo(() => {
+        if (usuarioState) {
+            return usuarioState.tipo_usuario === TipoUsuario.ADMIN
+        }
+        return false
+    }, [usuarioState])
     return (
         <>
             <ModalConfirmacion
@@ -82,15 +82,17 @@ const ActionsCellVehiculo: React.FC<IProps> = ({
                         </IconButton>
                     </Tooltip>
 
-                    <Tooltip className={className} title={'Eliminar'}>
-                        <IconButton
-                            // variant="text"
-                            // color="secondary"
-                            onClick={() => setOpenModalConfirmacion(true)}
-                        >
-                            <TrashIcon color="primary" />
-                        </IconButton>
-                    </Tooltip>
+                    {administradorFlag && (
+                        <Tooltip className={className} title={'Eliminar'}>
+                            <IconButton
+                                // variant="text"
+                                // color="secondary"
+                                onClick={() => setOpenModalConfirmacion(true)}
+                            >
+                                <TrashIcon color="primary" />
+                            </IconButton>
+                        </Tooltip>
+                    )}
                     {/* <Button
                         variant="text"
                         color="secondary"
