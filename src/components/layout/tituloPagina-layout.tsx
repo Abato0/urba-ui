@@ -75,6 +75,8 @@ const LayoutTituloPagina: FC<{ titulo?: string }> = ({ titulo, children }) => {
     useEffect(() => {
         if (titulo) {
             setTituloPantalla(titulo)
+        } else {
+            setTituloPantalla('')
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [titulo])
