@@ -33,6 +33,7 @@ export interface IVehiculoVariable {
     cedulaReverso: string
     num_doc_identidad: string
     ano: number
+    estadoAsingnacionTag?: string
 }
 
 export interface IVehiculoVariableNormalize {

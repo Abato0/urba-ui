@@ -547,7 +547,7 @@ export const PagoFormMulti = () => {
                         // code !== 200
                         //     ? setErrorModal(true)
                         //     : setErrorModal(false)
-                        setErrorModal(false)
+
                         setOpenModalMsj(true)
                         setTitleModalMsj(message)
                         setLoadingMutate(false)
@@ -560,14 +560,14 @@ export const PagoFormMulti = () => {
                 }
             } catch (error) {
                 console.log('error : ', error)
-                setTitleModalMsj('Pago Fallido')
+                setTitleModalMsj('Pago Fallido: ' + (error as Error).message)
                 setMensajeModalMsj(
                     'Pago no se ha realizado el pago: ' +
                         (error as Error).message
                 )
                 setOpenModalMsj(true)
                 setErrorModal(true)
-                setLoadingMutate(true)
+                setLoadingMutate(false)
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -15,6 +15,7 @@ import {
     putTag,
 } from './tag-typedef'
 import { isNil } from 'ramda'
+import { listadoVehiculoFilter } from '../vehiculo/vehiculo-typeDef'
 
 export enum EstadoTag {
     DISPONIBLE = 'D',
@@ -104,6 +105,7 @@ export const usePostTagVehiculoMutation = () => {
             { query: listadoAllTags },
             { query: listadoTagPagos },
             { query: listadoTags },
+            { query: listadoVehiculoFilter },
         ],
         awaitRefetchQueries: true,
     })
@@ -117,6 +119,7 @@ export const useDeleteTagVehiculoMutation = () => {
             { query: listadoAllTags },
             { query: listadoTagPagos },
             { query: listadoTags },
+            { query: listadoVehiculoFilter },
         ],
         awaitRefetchQueries: true,
     })
@@ -135,6 +138,7 @@ export const useDeleteTagMutation = () => {
             { query: listadoAllTags },
             { query: listadoTagPagos },
             { query: listadoTags },
+            { query: listadoVehiculoFilter },
         ],
         awaitRefetchQueries: true,
     })

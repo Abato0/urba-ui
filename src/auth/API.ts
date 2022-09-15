@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-// const URL_BASE_API = 'http://localhost:8888'
+//const URL_BASE_API = 'http://localhost:8888'
 const URL_BASE_API = 'https://urbaapi.nodedatatest.com'
 const API = axios.create({
     baseURL: URL_BASE_API,

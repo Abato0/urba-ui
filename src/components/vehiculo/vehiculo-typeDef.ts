@@ -100,6 +100,7 @@ export const listadoVehiculoFilter = gql`
             placa
             num_doc_identidad
             ano
+            estadoAsingnacionTag
             # matriculaPdf
         }
     }
@@ -128,6 +129,7 @@ export const listadoVehiculo = gql`
             placa
             num_doc_identidad
             ano
+            estadoAsingnacionTag
             # matriculaPdf
         }
     }

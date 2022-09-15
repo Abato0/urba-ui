@@ -36,6 +36,13 @@ export const getFormatoGrupoFamiliar = (grupoFamiliar: IGrupoFamiliar) => {
     return ''
 }
 
+export enum EEstadosTagVehiculo {
+    ASIGNADO = 'ASIGNADO',
+    LIBRE = 'LIBRE',
+    REPOSICION = 'REPOSICION',
+    PRIMERA_VEZ = 'PRIMERA_VEZ',
+}
+
 export const URL_BASE_API = (): string => {
     return process.env.NEXT_PUBLIC_BASE_API_UR ?? ''
 }

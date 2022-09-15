@@ -19,14 +19,17 @@ import {
 } from './use-tag'
 import { isNotNilOrEmpty } from '../../utils/is-nil-empty'
 import ModalAuth from '../core/input/dialog/modal-dialog'
-import { IVehiculoVariable } from '../vehiculo/use-vehiculo'
+import {
+    IVehiculoVariable,
+    useListadoVehiculoFilterQuery,
+} from '../vehiculo/use-vehiculo'
 import { useListarGrupoFamiliar } from '../grupo-familiar/use-grupo-familia'
 import FormControlHeader from '../core/input/form-control-select'
 import { LoadingButton } from '@mui/lab'
 import SaveIcon from '@material-ui/icons/Save'
 import { useListaStatusTagQuery } from '../mantenimento/status-tag/use-status-tag'
-import { ID_STATUS_TAG_DISPONIBLE } from '../../utils/keys'
-import { isEmpty } from 'ramda'
+import { EEstadosTagVehiculo, ID_STATUS_TAG_DISPONIBLE } from '../../utils/keys'
+import { isEmpty, equals } from 'ramda'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -137,21 +140,34 @@ export const IngresarTagVehiculoForm: FC = () => {
     const [idGrupoFamiliarFilter, setIdGrupoFamiliarFilter] = useState<
         number | undefined
     >()
+
+    const {
+        data: dataListadoVehiculo,
+        loading: loadingListadoVehiculo,
+        error: errorListadoVehicullo,
+    } = useListadoVehiculoFilterQuery({
+        idGrupoFamiliar: idGrupoFamiliarFilter,
+    })
+
     const [vehiculo, setVehiculo] = useState<IVehiculoVariable[]>([])
 
     const vehiculosVisibles = useMemo(() => {
         if (
-            !loadingListadoTagVehiculo &&
-            dataListadoTagVehiculo &&
-            dataListadoTagVehiculo.ListaTagVehiculo
+            !loadingListadoVehiculo &&
+            dataListadoVehiculo &&
+            dataListadoVehiculo.ListaVehiculoFilter
         ) {
-            const idsVehiculos = dataListadoTagVehiculo.ListaTagVehiculo.map(
-                ({ vehiculo }) => vehiculo.id!
+            return dataListadoVehiculo.ListaVehiculoFilter.filter(
+                ({ estadoAsingnacionTag }) =>
+                    equals(
+                        estadoAsingnacionTag,
+                        EEstadosTagVehiculo.PRIMERA_VEZ
+                    ) ||
+                    equals(estadoAsingnacionTag, EEstadosTagVehiculo.REPOSICION)
             )
-            return vehiculo.filter(({ id }) => id && !idsVehiculos.includes(id))
         }
-        return vehiculo
-    }, [dataListadoTagVehiculo, loadingListadoTagVehiculo, vehiculo])
+        return []
+    }, [dataListadoVehiculo, loadingListadoVehiculo])
 
     const { data: dataListadoStatus, loading: loadingListadoStatus } =
         useListaStatusTagQuery()
@@ -184,16 +200,16 @@ export const IngresarTagVehiculoForm: FC = () => {
         return []
     }, [loadingTag, dataTag, Disponible])
 
-    useEffect(() => {
-        if (!loading && data && data.ListaTagPago && idGrupoFamiliarFilter) {
-            const result = data.ListaTagPago.filter(
-                ({ vehiculo }) =>
-                    vehiculo.grupoFamiliar.id === idGrupoFamiliarFilter
-            )
-            const vehiculosResult = result.map(({ vehiculo }) => vehiculo)
-            setVehiculo(vehiculosResult)
-        }
-    }, [data, loading, error, idGrupoFamiliarFilter])
+    // useEffect(() => {
+    //     if (!loading && data && data.ListaTagPago && idGrupoFamiliarFilter) {
+    //         const result = data.ListaTagPago.filter(
+    //             ({ vehiculo }) =>
+    //                 vehiculo.grupoFamiliar.id === idGrupoFamiliarFilter
+    //         )
+    //         const vehiculosResult = result.map(({ vehiculo }) => vehiculo)
+    //         setVehiculo(vehiculosResult)
+    //     }
+    // }, [data, loading, error, idGrupoFamiliarFilter])
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [mutate] = usePostTagVehiculoMutation()
