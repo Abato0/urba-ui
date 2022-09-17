@@ -315,7 +315,7 @@ const ListadoMoradorVisiante = () => {
     }
 
     return (
-        <LayoutTituloPagina titulo="Listado - Visitante">
+        <LayoutTituloPagina titulo="Registro de Visitantes">
             <PermisoLayout
                 tipoUsuarioRecibido={[TipoUsuario.ADMIN, TipoUsuario.SEGURIDAD]}
             >

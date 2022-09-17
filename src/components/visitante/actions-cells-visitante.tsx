@@ -4,6 +4,7 @@ import { Row } from 'react-table'
 import {
     FileEdit as FileEditIcon,
     TrashCan as TrashIcon,
+    CardAccountDetails as CardAccountDetailsIcon,
 } from 'mdi-material-ui'
 import { useRecoilValue } from 'recoil'
 import { userInfo } from '../../utils/states'
@@ -77,48 +78,61 @@ const ActionsCellVisitante: React.FC<IProps> = ({
                 mensaje="¿Está seguro de eliminar el registro seleccionado?"
                 onCancel={() => setOpenModalConfirmacion(false)}
             />
-            {!moradorFlag && (
-                <>
-                    {!editarVisitante && (
-                        <Tooltip
-                            className={className}
-                            placement="right"
-                            title={'Editar'}
-                        >
-                            <IconButton onClick={() => onEdit(row.original)}>
-                                <FileEditIcon color="primary" />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-
-                    {llegadaVisitante && (
-                        <Tooltip
-                            className={className}
-                            placement="right"
-                            title={'Salida Visitante'}
-                        >
-                            <IconButton onClick={() => onSalida(row.original)}>
-                                <HumanGreeting color="primary" />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-
-                    {administradorFlag && (
-                        <Tooltip
-                            className={className}
-                            placement="right"
-                            title={'Eliminar'}
-                        >
-                            <IconButton
-                                onClick={() => setOpenModalConfirmacion(true)}
-                                // onClick={() => onDelete(row.original)}
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                }}
+            >
+                {!moradorFlag && (
+                    <>
+                        {!editarVisitante && (
+                            <Tooltip
+                                className={className}
+                                placement="right"
+                                title={'Ingreso'}
                             >
-                                <TrashIcon color="primary" />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-                </>
-            )}
+                                <IconButton
+                                    onClick={() => onEdit(row.original)}
+                                >
+                                    <CardAccountDetailsIcon color="primary" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+
+                        {llegadaVisitante && (
+                            <Tooltip
+                                className={className}
+                                placement="right"
+                                title={'Salida Visitante'}
+                            >
+                                <IconButton
+                                    onClick={() => onSalida(row.original)}
+                                >
+                                    <HumanGreeting color="primary" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+
+                        {administradorFlag && (
+                            <Tooltip
+                                className={className}
+                                placement="right"
+                                title={'Eliminar'}
+                            >
+                                <IconButton
+                                    onClick={() =>
+                                        setOpenModalConfirmacion(true)
+                                    }
+                                    // onClick={() => onDelete(row.original)}
+                                >
+                                    <TrashIcon color="primary" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                    </>
+                )}
+            </div>
         </>
     )
 }

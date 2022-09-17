@@ -46,8 +46,10 @@ const useStyles = makeStyles((theme) =>
             // minWidth: 1000,
             // minHeight: '100vh',
             // width: "100%",
-            //backgroundColor: "red"
+            // backgroundColor: 'red',
+            minWidth: theme.spacing(50),
             marginTop: theme.spacing(10),
+            marginBottom: theme.spacing(3),
         },
         componentRoot: {
             display: 'flex',
@@ -240,33 +242,33 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
 
     return (
         <>
+            <SideBar
+                ItemsOperaciones={itemsOperacionesFilter}
+                ItemsListado={itemListadoFilter}
+                ItemsMantenimiento={itemManteniementoFilter}
+                ItemsRegistros={itemRegistroFilter}
+                ItemsUsuario={itemUsuarioFilter}
+            />
             {!loading && authFlag ? (
-                <Container>
+                <>
                     <NavBar />
-                    <div className={classes.root}>
-                        <div
+                    <Container>
+                        <div className={classes.root}>
+                            {/* <div
                             style={{
-                                display: 'flex',
-                                width: '100%',
-                                height: '100%',
-                                flexDirection: 'row',
+                                backgroundColor: 'red',
                             }}
-                        >
+                        > */}
                             {/* <div style={{ display: "flex", width: "20%", flexDirection: "column" }}> */}
-                            <SideBar
-                                ItemsOperaciones={itemsOperacionesFilter}
-                                ItemsListado={itemListadoFilter}
-                                ItemsMantenimiento={itemManteniementoFilter}
-                                ItemsRegistros={itemRegistroFilter}
-                                ItemsUsuario={itemUsuarioFilter}
-                            />
+
                             {/* </div> */}
                             {/* <div style={{ display: "flex", width: "80%", flexDirection: "column" }}> */}
                             {children}
                             {/* </div> */}
+                            {/* </div> */}
                         </div>
-                    </div>
-                </Container>
+                    </Container>
+                </>
             ) : loading || authFlag === undefined ? (
                 <>
                     <LinearProgress />

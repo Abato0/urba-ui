@@ -43,7 +43,9 @@ const useStyles = makeStyles((theme) =>
             flexDirection: 'row',
             justifyContent: 'space-between',
             width: '100%',
-            padding: theme.spacing(2),
+            paddingTop: theme.spacing(1),
+            paddingBottom: theme.spacing(1),
+            //  padding: theme.spacing(2),
             // marginTop: theme.spacing(1),
         },
         button: {
@@ -90,9 +92,9 @@ const useStyles = makeStyles((theme) =>
             // backgroundColor: colors.grey[50],
             // marginBottom: theme.spacing(5),
             // marginTop: theme.spacing(2),
-            // display: "flex",
-            // alignItems: "center",
-            // justifyContent: "center",
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
         },
         contentForm: {
             marginTop: theme.spacing(3),

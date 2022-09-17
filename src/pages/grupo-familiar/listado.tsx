@@ -35,8 +35,9 @@ import { useListaCallesQuery } from '../../components/mantenimento/calle/use-cal
 import { useListaManzanaQuery } from '../../components/mantenimento/manzana/use-manzana'
 import LayoutTituloPagina from '../../components/layout/tituloPagina-layout'
 import { ActionsButtonsFilterReset } from '../../components/core/actions/actionsButtonsFilterReset'
+import { getFormatoGrupoFamiliar } from '../../utils/keys'
 
-const getRowId: any = prop('nombre_familiar')
+const getRowId: any = prop('id')
 
 const optionsFuse: Fuse.IFuseOptions<IGrupoFamiliarNormalize> = {
     keys: ['nombre_familiar', 'calle_principal', 'calle_interseccion'],
@@ -66,6 +67,7 @@ const extractData = (data: IGrupoFamiliar[]): IGrupoFamiliarNormalize[] => {
                   villa,
                   extension,
                   id,
+                  usuario,
               }) => {
                   return {
                       id,
@@ -86,9 +88,16 @@ const extractData = (data: IGrupoFamiliar[]): IGrupoFamiliarNormalize[] => {
                               : extension && !isEmpty(extension)
                               ? `${villa}-${extension}`
                               : `${villa}`,
-                      nombre_familiar: isNil(nombre_familiar)
-                          ? ''
-                          : nombre_familiar,
+                      nombre_familiar: getFormatoGrupoFamiliar({
+                          calle_interseccion,
+                          calle_principal,
+                          extension,
+                          manzana,
+                          nombre_familiar,
+                          villa,
+                          usuario,
+                          id,
+                      }),
                   }
               }
           )
@@ -106,11 +115,11 @@ const useStyles = makeStyles((theme) =>
         contentButtons: {
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-around',
+            justifyContent: 'space-between',
             // alignContent: "center",
             alignItems: 'center',
             width: '100%',
-            padding: theme.spacing(2),
+            // padding: theme.spacing(2),
             marginTop: theme.spacing(2),
         },
         button: {
@@ -158,6 +167,7 @@ const useStyles = makeStyles((theme) =>
             // backgroundColor: colors.grey[50],
             marginBottom: theme.spacing(2),
             marginTop: theme.spacing(2),
+
             // display: "flex",
             // alignItems: "center",
             // justifyContent: "center",
@@ -213,7 +223,7 @@ const ListadoGrupoFamiliar = () => {
     } = useListaCallesQuery()
 
     const fuse = React.useMemo(() => {
-        if (!isEmpty(data) && !isNil(data)) {
+        if (!loading && !isEmpty(data) && !isNil(data)) {
             const myIndex = Fuse.createIndex(
                 optionsFuse.keys!,
                 extractData(data.ListaGruposFamiliaresFilter)
@@ -224,7 +234,7 @@ const ListadoGrupoFamiliar = () => {
                 myIndex
             )
         }
-    }, [data])
+    }, [data, loading])
 
     React.useEffect(() => {
         if (
@@ -236,21 +246,21 @@ const ListadoGrupoFamiliar = () => {
             // console.log("result:", fuse.search(String(debounceSearch)));
             setDataTable(result)
         } else {
-            if (!isNil(data)) {
+            if (!loading && !isNil(data)) {
                 setDataTable(extractData(data.ListaGruposFamiliaresFilter))
             } else {
                 setDataTable([])
             }
         }
-    }, [data, debounceSearch, fuse])
+    }, [data, debounceSearch, fuse, loading])
 
     React.useEffect(() => {
-        if (!loading && !isNil(data) && isNil(error)) {
+        if (!loading && !isNil(data)) {
             setDataTable(extractData(data.ListaGruposFamiliaresFilter))
             // console.log("extractData: ", extractData(data!));
             // console.log("datas: ", data);
         }
-    }, [loading, data, error])
+    }, [loading, data])
 
     const onEdit = ({ id }: any) => {
         console.log('id:', id)

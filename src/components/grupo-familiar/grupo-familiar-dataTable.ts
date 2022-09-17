@@ -9,8 +9,8 @@ export const head = Object.freeze([
     },
     {
         Header: 'Grupo Familiar',
-        Cell: NombreGrupoFamiliarCell,
-        // accessor: 'nombre_familiar',
+        // Cell: NombreGrupoFamiliarCell,
+        accessor: 'nombre_familiar',
     },
     {
         Header: 'Calle Principal',

@@ -800,11 +800,11 @@ export const newItemsMantenimientoAdmin: IItemsSidebar[] = [
         label: 'Listado de calles y peatonales',
         ruta: String(EnlacesSidebar.mantenimiento.calle.listado.route),
     },
-    {
-        icon: faListAlt,
-        label: 'Listado de visitante',
-        ruta: String(EnlacesSidebar.visitante.listadoVisitante.route),
-    },
+    // {
+    //     icon: faListAlt,
+    //     label: 'Listado de visitante',
+    //     ruta: String(EnlacesSidebar.visitante.listadoVisitante.route),
+    // },
     {
         icon: faListAlt,
         label: 'Listado de manzanas',

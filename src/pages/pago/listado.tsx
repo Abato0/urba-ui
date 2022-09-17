@@ -106,7 +106,8 @@ const useStyles = makeStyles((theme) =>
         },
         formControl: {
             margin: theme.spacing(1),
-            minWidth: 220,
+            width: '100%',
+            // minWidth: 220,
             // textAlign: "center"
         },
         image: {
@@ -473,46 +474,44 @@ const ListadoPago = () => {
 
     return (
         <LayoutTituloPagina titulo="Aportaciones - Listado">
+            {openModalMsj && (
+                <ModalAuth
+                    openModal={openModalMsj}
+                    onClose={() => setOpenModalMsj(false)}
+                    title={titleModalMsj}
+                    message={mensajeModalMsj}
+                    error={errorModal}
+                />
+            )}
+            {modalConfirmar && (
+                <ModalConfirmacion
+                    openModal={modalConfirmar}
+                    onCancel={() => {
+                        setModalConfirmar(false)
+                        setPagoSeleccionado(undefined)
+                    }}
+                    onConfirm={async () => {
+                        if (idPagoSeleccionado) {
+                            await onDeletePago({
+                                id: idPagoSeleccionado,
+                            })
+                        }
+                    }}
+                    mensaje={'¿Está seguro de eliminar el pago?'}
+                />
+            )}
             <Paper className={classes.paperFilter}>
                 <div className={classes.contenFilter}>
                     <div className={classes.contentButtons}>
-                        <div>
-                            {openModalMsj && (
-                                <ModalAuth
-                                    openModal={openModalMsj}
-                                    onClose={() => setOpenModalMsj(false)}
-                                    title={titleModalMsj}
-                                    message={mensajeModalMsj}
-                                    error={errorModal}
-                                />
-                            )}
-                            {modalConfirmar && (
-                                <ModalConfirmacion
-                                    openModal={modalConfirmar}
-                                    onCancel={() => {
-                                        setModalConfirmar(false)
-                                        setPagoSeleccionado(undefined)
-                                    }}
-                                    onConfirm={async () => {
-                                        if (idPagoSeleccionado) {
-                                            await onDeletePago({
-                                                id: idPagoSeleccionado,
-                                            })
-                                        }
-                                    }}
-                                    mensaje={
-                                        '¿Está seguro de eliminar el pago?'
-                                    }
-                                />
-                            )}
-                            <Grid container spacing={4}>
-                                <Grid item sm={6}>
+                        <div style={{ display: 'flex', width: '85%' }}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={6} md={4}>
                                     <FormControl
                                         variant="filled"
                                         className={classes.formControl}
-                                        style={{
-                                            width: '100%',
-                                        }}
+                                        // style={{
+                                        //     width: '100%',
+                                        // }}
                                     >
                                         <InputLabel id="idGrupoFamiliar_label">
                                             Grupo Familiar
@@ -581,7 +580,7 @@ const ListadoPago = () => {
                                         </Select>
                                     </FormControl>
                                 </Grid>
-                                <Grid item sm={6}>
+                                <Grid item xs={12} sm={6} md={4}>
                                     <SelectMeses
                                         handleChange={(e: SelectChangeEvent) =>
                                             setmesPagoFilterFilter(
@@ -593,7 +592,7 @@ const ListadoPago = () => {
                                         id={'mes_manteniento'}
                                     />
                                 </Grid>
-                                <Grid item sm={6}>
+                                <Grid item xs={12} sm={6} md={4}>
                                     <SelectAnios
                                         handleChange={(e: SelectChangeEvent) =>
                                             setAnioPagoFilter(
@@ -605,7 +604,7 @@ const ListadoPago = () => {
                                         id={'anio_manteniento'}
                                     />
                                 </Grid>
-                                <Grid item sm={6}>
+                                <Grid item xs={12} sm={6} md={4}>
                                     <SelectTipoPago
                                         handleChange={(e: SelectChangeEvent) =>
                                             setTipoPagoFilter(
@@ -619,7 +618,13 @@ const ListadoPago = () => {
                                 </Grid>
                             </Grid>
                         </div>
-                        <div style={{ marginLeft: '4%' }}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                width: '15%',
+                                justifyContent: 'flex-end',
+                            }}
+                        >
                             <ActionsButtonsFilterReset
                                 filtrar={filtrar}
                                 reset={cancelFiltrar}

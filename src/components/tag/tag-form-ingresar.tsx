@@ -101,7 +101,7 @@ const useStyles = makeStyles((theme) =>
 
 const initialValues = Object.freeze({
     code: '',
-    idStatus: undefined,
+    idStatus: ID_STATUS_TAG_DISPONIBLE,
 })
 
 const validationSchema = yup.object().shape({
@@ -193,7 +193,7 @@ export const IngresarTagForm: FC<IProps> = ({ tag, idStatus }) => {
                                 setBoolPut(true)
                                 return
                             }
-                            await refetch()
+                            // await refetch()
                             resetForm()
                         }
                     } else {
@@ -235,13 +235,13 @@ export const IngresarTagForm: FC<IProps> = ({ tag, idStatus }) => {
         validationSchema,
     })
 
-    useEffect(() => {
-        if (!tag) {
-            // setLoadingMutate(true)
-            setFieldValue('idStatus', ID_STATUS_TAG_DISPONIBLE)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tag])
+    // useEffect(() => {
+    //     if (!tag) {
+    //         // setLoadingMutate(true)
+    //         setFieldValue('idStatus', ID_STATUS_TAG_DISPONIBLE)
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [tag])
 
     return (
         <Box className={classes.root}>

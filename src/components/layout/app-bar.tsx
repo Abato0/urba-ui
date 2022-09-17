@@ -311,16 +311,10 @@ const NavBar: React.FC = ({ children }) => {
                                         src="/logo-28.svg"
                                         alt="logo"
                                         height={50}
-                                        width={210}
+                                        width={110}
                                         className={classes.imageLogo}
                                     />
                                 </IconButton>
-
-                                {/* <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
-          </Typography> */}
-
-                                {/* <div className={classes.grow} /> */}
 
                                 <div className={classes.grow}>
                                     <Typography
