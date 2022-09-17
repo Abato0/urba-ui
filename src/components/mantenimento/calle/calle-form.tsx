@@ -119,13 +119,13 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
 
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
-    const { refetch } = useListaCallesQuery()
+    // const { refetch } = useListaCallesQuery()
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/mantenimiento/calle/listado' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/mantenimiento/calle/listado' })
+            // })
 
             // console.log("1")
         } else {
@@ -190,7 +190,7 @@ export const IngresarCalleForm: FC<IProps> = ({ calleObj, id }) => {
                                 setBoolPut(true)
                                 return
                             }
-                            await refetch()
+                            // await refetch()
                             resetForm()
                         } else {
                             setErrorModal(true)

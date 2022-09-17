@@ -301,7 +301,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
     //     return date.getFullYear()
     // }, [])
 
-    const { refetch } = useListadoVehiculosQuery()
+    // const { refetch } = useListadoVehiculosQuery()
     const {
         data: dataModelo,
         loading: loadingModelo,
@@ -376,9 +376,9 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
 
     const onCloseAuth = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/vehiculo/listado' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/vehiculo/listado' })
+            // })
         } else {
             setOpenModalMsj(false)
         }
@@ -498,7 +498,7 @@ const FormIngresarVehiculos: React.FC<IProps> = ({ vehiculo }) => {
                             }
                             resetForm()
                             // setFieldValue("idGrupoFamiliar", undefined)
-                            await refetch()
+                            // await refetch()
                             setErrorModal(false)
                         } else {
                             setErrorModal(true)

@@ -184,8 +184,7 @@ const ListadoIntegrante = () => {
         error: errorListadoGrupoFamiliar,
     } = useListarGrupoFamiliar()
 
-    const { data, loading, error, refetch } =
-        useListaIntergranteFilterQuery(inputFilter)
+    const { data, loading, error } = useListaIntergranteFilterQuery(inputFilter)
 
     const [idGrupoFamiliarFilter, setIdGrupoFamiliarFilter] = useState<
         number | undefined
@@ -248,7 +247,7 @@ const ListadoIntegrante = () => {
                 } else {
                     setErrorModal(true)
                 }
-                await refetch()
+                // await refetch()
                 setOpenModalMsj(true)
             } else {
                 setTitleModalMsj('Usuario no autorizado')

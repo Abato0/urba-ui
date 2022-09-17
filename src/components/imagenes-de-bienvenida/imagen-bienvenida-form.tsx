@@ -125,7 +125,7 @@ export const IngresarImagenBienvenida = () => {
     const [openModalImagen, setOpenModalImage] = useState(false)
 
     const [mutate] = usePostImagenBienvenidaMutation()
-    const { refetch } = useListadoImagenesBienvenidaQuery()
+    // const { refetch } = useListadoImagenesBienvenidaQuery()
     const onSubmit = useCallback(async ({ nombre, lugar, imagen }) => {
         try {
             if (
@@ -148,7 +148,7 @@ export const IngresarImagenBienvenida = () => {
                     setTitleModalMsj(message)
                     if (code === 200) {
                         resetForm()
-                        await refetch()
+                        // await refetch()
                         setErrorModal(false)
                     } else {
                         setErrorModal(true)

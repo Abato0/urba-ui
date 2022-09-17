@@ -149,13 +149,13 @@ export const IngresarModeloMailForm: FC<IProps> = ({ modeloObj, id }) => {
 
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
-    const { refetch } = useListaModeloMailQuery()
+    // const { refetch } = useListaModeloMailQuery()
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/mantenimiento/modelo-mail/listado' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/mantenimiento/modelo-mail/listado' })
+            // })
         } else {
             setOpenModalMsj(false)
         }

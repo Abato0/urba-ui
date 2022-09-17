@@ -124,13 +124,13 @@ export const IngresarTagVehiculoForm: FC = () => {
 
     // const [boolPut, setBoolPut] = useState<boolean>(false);
 
-    const { data, loading, error, refetch } = useListaTagPagos()
+    // const { data, loading, error, refetch } = useListaTagPagos()
 
-    const {
-        data: dataListadoTagVehiculo,
-        loading: loadingListadoTagVehiculo,
-        refetch: refetchListadoTagVehiculo,
-    } = useListaTagVehiculo()
+    // const {
+    //     data: dataListadoTagVehiculo,
+    //     loading: loadingListadoTagVehiculo,
+    //     refetch: refetchListadoTagVehiculo,
+    // } = useListaTagVehiculo()
     const {
         data: dataTag,
         loading: loadingTag,
@@ -149,7 +149,7 @@ export const IngresarTagVehiculoForm: FC = () => {
         idGrupoFamiliar: idGrupoFamiliarFilter,
     })
 
-    const [vehiculo, setVehiculo] = useState<IVehiculoVariable[]>([])
+    // const [vehiculo, setVehiculo] = useState<IVehiculoVariable[]>([])
 
     const vehiculosVisibles = useMemo(() => {
         if (
@@ -234,7 +234,7 @@ export const IngresarTagVehiculoForm: FC = () => {
                         // }
                         if (code === 200) {
                             setErrorModal(false)
-                            await refetch()
+                            // await refetch()
                             resetForm()
                         } else {
                             setErrorModal(false)

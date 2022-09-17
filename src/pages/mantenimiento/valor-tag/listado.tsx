@@ -93,7 +93,6 @@ const MantenimientoParentescoListado = () => {
                 setTitleModalMsj(message)
                 setErrorModal(false)
                 setOpenModalMsj(true)
-                if (code === 200) refetch()
             } else {
                 setTitleModalMsj('Usuario no autorizado')
                 setErrorModal(true)

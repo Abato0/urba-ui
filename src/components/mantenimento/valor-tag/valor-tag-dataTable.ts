@@ -1,6 +1,5 @@
 import { Column } from 'react-table'
-import ActionsCell from '../../table/actions-cell'
-import ActionsCellEditDelete from '../../table/actions-delete-edit'
+import ActionsCellEditDeleteValoresTag from './actions-cells-valor-tag'
 
 export const columnsValorTag = Object.freeze([
     {
@@ -18,7 +17,7 @@ export const columnsValorTag = Object.freeze([
 
     {
         id: 'actions',
-        Cell: ActionsCellEditDelete,
+        Cell: ActionsCellEditDeleteValoresTag,
         padding: 'none',
     },
 ] as Column<any>[])

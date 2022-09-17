@@ -112,14 +112,14 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
     const [loading, setLoading] = useState<boolean>(false)
     const [tipoUsuario, setTipoUsuario] = useState('')
 
-    const [idUsuario, setIdUsuario] = useState<number>()
-    const [flagMorador, seFlagMorador] = useState(false)
+    // const [idUsuario, setIdUsuario] = useState<number>()
+    // const [flagMorador, seFlagMorador] = useState(false)
 
     const setUsuarioState = useSetRecoilState(userInfo)
 
-    const paht = useMemo(() => {
-        return publicPages.includes(router.pathname)
-    }, [router.pathname])
+    // const paht = useMemo(() => {
+    //     return publicPages.includes(router.pathname)
+    // }, [router.pathname])
 
     const autho = async () => {
         try {
@@ -127,11 +127,11 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
             if (token) {
                 setLoading(true)
                 const result = await authMe(token)
-                console.log('tipoUsuario', result)
+                //  console.log('tipoUsuario', result)
                 if (result && result.code === 200) {
                     setAuthFlag(true)
                     setTipoUsuario(result.data.tipo)
-                    setIdUsuario(result.data.id)
+                    //   setIdUsuario(result.data.id)
                     setUsuarioState({
                         tipo_usuario: result.data.tipo,
                         user: result.data.usuario,
@@ -163,25 +163,25 @@ const AppLayout: FC<IProps> = ({ children, className, titulo }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const authMorador = async () => {
-        try {
-            if (idUsuario) {
-                const result = await userRepresentante(idUsuario)
-                console.log('Result: ', result)
-                seFlagMorador(result.ok)
-            }
-        } catch (error) {
-            console.log('Error: ', (error as Error).message)
-            seFlagMorador(false)
-        }
-    }
+    // const authMorador = async () => {
+    //     try {
+    //         if (idUsuario) {
+    //             const result = await userRepresentante(idUsuario)
+    //             console.log('Result: ', result)
+    //             // seFlagMorador(result.ok)
+    //         }
+    //     } catch (error) {
+    //         console.log('Error: ', (error as Error).message)
+    //         //   seFlagMorador(false)
+    //     }
+    // }
 
-    useEffect(() => {
-        if (tipoUsuario === TipoUsuario.MORADOR && idUsuario) {
-            authMorador()
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [idUsuario, tipoUsuario])
+    // useEffect(() => {
+    //     if (tipoUsuario === TipoUsuario.MORADOR && idUsuario) {
+    //         authMorador()
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [idUsuario, tipoUsuario])
 
     const itemListadoFilter = useMemo(() => {
         if (!loading && authFlag && isNotEmpty(tipoUsuario)) {

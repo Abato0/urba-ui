@@ -112,7 +112,7 @@ export const IngresarStatusTagForm: FC<IProps> = ({ statusObj }) => {
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
-    const { refetch } = useListaStatusTagQuery()
+    // const { refetch } = useListaStatusTagQuery()
 
     const [mutatePost] = usePostStatusTagMutation()
     const [mutatePut] = usePutStatusTagMutation()
@@ -127,9 +127,9 @@ export const IngresarStatusTagForm: FC<IProps> = ({ statusObj }) => {
 
     const closeModalAuth = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/mantenimiento/status-tag/listado' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/mantenimiento/status-tag/listado' })
+            // })
 
             // console.log("1")
         } else {
@@ -179,7 +179,7 @@ export const IngresarStatusTagForm: FC<IProps> = ({ statusObj }) => {
                                 setOpenModalMsj(true)
                                 return
                             }
-                            await refetch()
+                            // await refetch()
                             resetForm()
                         } else {
                             setErrorModal(true)

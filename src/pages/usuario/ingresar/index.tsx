@@ -273,7 +273,7 @@ const IngresarUsuario = () => {
                 setErrorModal(true)
                 if (code === 200) {
                     setErrorModal(false)
-                    await refetch()
+                    // await refetch()
                 }
                 setOpenModalMsj(true)
             } else {
@@ -283,7 +283,7 @@ const IngresarUsuario = () => {
             }
         } catch (error: any) {
             console.log('error:', error)
-            setTitleModalMsj('Envio Fallido')
+            setTitleModalMsj('Envio Fallido: ' + (error as Error).message)
             setErrorModal(true)
             setMensajeModalMsj('' + error.message)
             setOpenModalMsj(true)

@@ -119,13 +119,13 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
 
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
-    const { refetch } = useListaMarcaQuery()
+    // const { refetch } = useListaMarcaQuery()
 
     const onCloseAuthModal = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/mantenimiento/marca/listado' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/mantenimiento/marca/listado' })
+            // })
         } else {
             setOpenModalMsj(false)
         }
@@ -184,7 +184,7 @@ export const IngresarMarcaForm: FC<IProps> = ({ marcaObj, id }) => {
                                 setBoolPut(true)
                                 return
                             }
-                            await refetch()
+                            // await refetch()
                             resetForm()
                         } else {
                             setErrorModal(true)

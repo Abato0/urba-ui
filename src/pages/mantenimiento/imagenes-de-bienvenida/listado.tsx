@@ -182,7 +182,7 @@ const ListadoImagenes = () => {
 
                 setTitleModalMsj(message)
                 if (code === 200) {
-                    await refetch()
+                    // await refetch()
                     setErrorModal(false)
                 } else {
                     setErrorModal(true)

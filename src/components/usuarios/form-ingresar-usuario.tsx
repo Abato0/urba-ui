@@ -195,11 +195,11 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
     const [mutatePostUsuario] = usePostUsuarioMutation()
 
     const [mutateUpdateUsuario] = useUpdateUsuarioMutation()
-    const { refetch } = useListadoUsuario()
+    // const { refetch } = useListadoUsuario()
     const {
         data: dataGruposFamiliaresSinUsuarios,
         loading: loadingGruposFamilairesSinUsuarios,
-        refetch: refecthListadoUsuarioSinFamiliares,
+        // refetch: refecthListadoUsuarioSinFamiliares,
     } = useListadoUsuarioSinFamilares()
 
     const { data: dataParentesco, loading: loadingParentesco } =
@@ -256,9 +256,9 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/usuario/ingresar' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/usuario/ingresar' })
+            // })
         } else {
             setOpenModalMsj(false)
         }
@@ -383,7 +383,7 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
 
                         setTitleModalMsj(message)
                         if (code === 200) {
-                            await refecthListadoUsuarioSinFamiliares()
+                            // await refecthListadoUsuarioSinFamiliares()
                             if (isNotNilOrEmpty(data.UpdateUsuario)) {
                                 setLoadingMutate(false)
                                 setBoolPut(true)
@@ -391,7 +391,7 @@ export const FormIngresarUsuario: FC<IProps> = ({ dataUsuario, id }) => {
                                 return
                             }
 
-                            await refetch()
+                            // await refetch()
                             setErrorModal(false)
 
                             setIdGrupoFamiliarSeleccionado(undefined)

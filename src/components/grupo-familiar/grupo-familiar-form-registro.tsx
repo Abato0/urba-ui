@@ -180,16 +180,16 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
 
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
-    const { refetch } = useListarGrupoFamiliarFilterQuery({})
+    // const { refetch } = useListarGrupoFamiliarFilterQuery({})
     const [mutate] = isNil(grupoFam)
         ? useGrupoFamiliarMutation(mutation)
         : useUpdateFamiliarMutation(mutation)
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/grupo-familiar/listado' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/grupo-familiar/listado' })
+            // })
 
             // console.log("1")
         } else {
@@ -314,7 +314,7 @@ const GrupoFamiliarFormRegistro: FC<IProps> = ({
                                 setBoolPut(true)
                                 return
                             }
-                            await refetch()
+                            // await refetch()
                             resetForm()
                         }
 

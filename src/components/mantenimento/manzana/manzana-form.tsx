@@ -120,13 +120,13 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
     const [boolPut, setBoolPut] = useState<boolean>(false)
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
-    const { refetch } = useListaManzanaQuery()
+    // const { refetch } = useListaManzanaQuery()
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/mantenimiento/manzana/listado' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/mantenimiento/manzana/listado' })
+            // })
         } else {
             setOpenModalMsj(false)
         }
@@ -185,7 +185,7 @@ export const IngresarManzanaForm: FC<IProps> = ({ manzanaObj, id }) => {
                                 setBoolPut(true)
                                 return
                             }
-                            await refetch()
+                            // await refetch()
                             resetForm()
                         } else {
                             setErrorModal(true)

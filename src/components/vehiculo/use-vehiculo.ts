@@ -50,10 +50,7 @@ export interface IVehiculoVariableNormalize {
 
 export const useSaveVehiculoMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(saveVehiculo, {
-        refetchQueries: [
-            { query: listadoVehiculo },
-            { query: listadoVehiculoFilter },
-        ],
+        refetchQueries: [{ query: listadoVehiculoFilter }],
         awaitRefetchQueries: true,
     })
 
@@ -62,10 +59,7 @@ export const useSaveVehiculoMutation = () => {
 
 export const useMigracionVehiculoMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(migracionVehiculo, {
-        refetchQueries: [
-            { query: listadoVehiculo },
-            { query: listadoVehiculoFilter },
-        ],
+        refetchQueries: [{ query: listadoVehiculoFilter }],
         awaitRefetchQueries: true,
     })
 
@@ -74,7 +68,7 @@ export const useMigracionVehiculoMutation = () => {
 
 export const useUpdateVehiculoMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(updateVehiculo, {
-        refetchQueries: [{ query: listadoVehiculo }],
+        refetchQueries: [{ query: listadoVehiculoFilter }],
         awaitRefetchQueries: true,
     })
 
@@ -83,10 +77,7 @@ export const useUpdateVehiculoMutation = () => {
 
 export const useDeleteVehiculoMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(eliminarVehiculo, {
-        refetchQueries: [
-            { query: listadoVehiculo },
-            { query: listadoVehiculoFilter },
-        ],
+        refetchQueries: [{ query: listadoVehiculoFilter }],
         awaitRefetchQueries: true,
     })
     return [mutate, data, loading, error]

@@ -125,9 +125,15 @@ export const moduloMigracionParametrizacion = [
 ]
 
 export const publicPages = ['/login', 'recordar-contrasena']
+
 export const ID_STATUS_TAG_DISPONIBLE = 1
 export const ID_STATUS_TAG_INACTIVO = 2
 export const ID_STATUS_TAG_OCUPADO = 3
+export const ID_STATUS_TAG_ANULADO = 6
+
+export const ID_VALOR_TAG_PRIMERA_VEZ = 1
+export const ID_VALOR_TAG_RENOVACION = 2
+export const ID_VALOR_REPOSICION = 3
 
 export const COLOR_PRIMARIO = '#4e54c8'
 export const COLOR_SECUDARIO = '#646cfd'

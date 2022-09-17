@@ -195,7 +195,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
     const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
     const [errorModal, setErrorModal] = useState<boolean>(false)
     const [boolPut, setBoolPut] = useState<boolean>(false)
-    const { refetch } = useListaIntergranteFilterQuery({})
+    // const { refetch } = useListaIntergranteFilterQuery({})
 
     const { data, loading } = useListadoIntegranteQuery()
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
@@ -321,7 +321,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                             setBoolPut(true)
                             return
                         }
-                        await refetch()
+                        // await refetch()
                         resetForm()
                     }
 
@@ -347,9 +347,9 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
 
     const closeModalAuth = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/integrante/listado' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/integrante/listado' })
+            // })
         } else {
             setOpenModalMsj(false)
         }
@@ -470,7 +470,7 @@ const IntegranteFormIngresar: FC<IProps> = ({ integrante }) => {
                                 setBoolPut(true)
                                 return
                             }
-                            await refetch()
+                            // await refetch()
                             resetForm()
                             // resetForm({
                             //     values: {

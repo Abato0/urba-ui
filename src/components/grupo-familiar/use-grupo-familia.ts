@@ -108,18 +108,18 @@ interface IListadoGrupoFamiliarSinUsuario {
 
 export const useListarGrupoFamiliar = () => {
     return useQuery<IListadoGrupoFamiliar>(listadoGrupoFamiliar, {
-        notifyOnNetworkStatusChange: true,
-        fetchPolicy: 'cache-and-network',
+        // notifyOnNetworkStatusChange: true,
+        // fetchPolicy: 'cache-and-network',
     })
 }
 
 export const useListarGrupoFamiliarSinUsuarios = () => {
     return useQuery<IListadoGrupoFamiliarSinUsuario>(
-        listadoGrupoFamiliarSinUsuario,
-        {
-            notifyOnNetworkStatusChange: true,
-            fetchPolicy: 'cache-and-network',
-        }
+        listadoGrupoFamiliarSinUsuario
+        // {
+        //     notifyOnNetworkStatusChange: true,
+        //     fetchPolicy: 'cache-and-network',
+        // }
     )
 }
 
@@ -131,8 +131,8 @@ export const useGetGrupoFamiliar = (id?: string) => {
     return useQuery<IGetGrupoFamiliar>(GetGrupoFamiliar, {
         variables: { id: Number(id) },
         skip: isNilOrEmpty(id),
-        notifyOnNetworkStatusChange: true,
-        fetchPolicy: 'cache-and-network',
+        // notifyOnNetworkStatusChange: true,
+        // fetchPolicy: 'cache-and-network',
     })
 }
 

@@ -194,9 +194,9 @@ const MantenimientoParentescoListado = () => {
     const [dataTag, setDataTag] = useState<ITagsVariablesNormalize[]>([])
     const [search, setSearch] = useState<string>('')
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
-    const [titleModalMsj, setTitleModalMsj] = useState<string>('')
-    const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
-    const [errorModal, setErrorModal] = useState<boolean>(false)
+    // const [titleModalMsj, setTitleModalMsj] = useState<string>('')
+    // const [mensajeModalMsj, setMensajeModalMsj] = useState<string>('')
+    // const [errorModal, setErrorModal] = useState<boolean>(false)
 
     const debounceSearch = useDebounce(search, 300)
     const [idGrupoFamiliarFilter, setIdGrupoFamiliarFilter] = useState<
@@ -317,7 +317,7 @@ const MantenimientoParentescoListado = () => {
                 tipoUsuarioRecibido={[TipoUsuario.ADMIN, TipoUsuario.OPERATIVO]}
             >
                 <>
-                    {openModalMsj && (
+                    {/* {openModalMsj && (
                         <ModalAuth
                             openModal={openModalMsj}
                             // setOpenModal={setOpenModalMsj}
@@ -326,7 +326,7 @@ const MantenimientoParentescoListado = () => {
                             message={mensajeModalMsj}
                             error={errorModal}
                         />
-                    )}
+                    )} */}
                 </>
 
                 <Paper className={classes.paperFilter}>

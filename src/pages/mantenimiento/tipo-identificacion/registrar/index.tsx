@@ -182,7 +182,7 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                         // }
                         if (code === 200) {
                             setErrorModal(false)
-                            await refetch()
+                            // await refetch()
                         }
                     } else {
                         setLoadingMutate(false)
@@ -203,7 +203,7 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                 setLoadingMutate(false)
             }
         },
-        [mutate, refetch]
+        [mutate]
     )
 
     const onEdit = useCallback(
@@ -236,7 +236,7 @@ const MantenimientoTipoIdentificacionIngresar = () => {
                     setTitleModalMsj(message)
                     if (code === 200) {
                         setErrorModal(false)
-                        await refetch()
+                        // await refetch()
                         resetForm()
                     }
                     //   setErrorModal(false);

@@ -195,7 +195,7 @@ const getRowId: any = prop('id')
 const MantenimientoParentescoListado = () => {
     const classes = useStyles()
     //   const router = useRouter();
-    const { data, loading, error, refetch } = useListaTagVehiculo()
+    const { data, loading, error } = useListaTagVehiculo()
     const [dataTag, setDataTag] = useState<ITagsVariablesNormalize[]>([])
     const [search, setSearch] = useState<string>('')
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
@@ -218,7 +218,7 @@ const MantenimientoParentescoListado = () => {
 
     const onCloseModal = async () => {
         if (openModalMsj && boolPut) {
-            await refetch()
+            // await refetch()
             setOpenModalMsj(false)
             // console.log("1")
         } else {

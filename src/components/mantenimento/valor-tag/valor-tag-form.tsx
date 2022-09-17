@@ -137,7 +137,7 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
     const [boolPut, setBoolPut] = useState<boolean>(false)
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
-    const { refetch } = useListadoValorTag()
+    // const { refetch } = useListadoValorTag()
 
     const init = useMemo(() => {
         return isNotNilOrEmpty(valorTagObj)
@@ -150,9 +150,9 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/mantenimiento/valor-tag/listado' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/mantenimiento/valor-tag/listado' })
+            // })
         } else {
             setOpenModalMsj(false)
         }
@@ -210,7 +210,7 @@ export const IngresarValorTagForm: FC<IProps> = ({ id, valorTagObj }) => {
                                 setBoolPut(true)
                                 return
                             }
-                            await refetch()
+                            // await refetch()
                             resetForm()
                         }
                         setOpenModalMsj(true)

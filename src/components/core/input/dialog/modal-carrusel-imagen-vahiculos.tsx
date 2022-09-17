@@ -56,7 +56,7 @@ export const CarruselVehiculoImagenModal: FC<IProps> = ({
 }) => {
     const classes = useStyles()
 
-    const { data, loading, error } = useGetVehiculoQuery(id)
+    const { data, loading } = useGetVehiculoQuery(id)
     // useEffect(() => {
     //   if (!loading && !isNilOrEmpty(data)) {
     //     console.log("data: ", data);

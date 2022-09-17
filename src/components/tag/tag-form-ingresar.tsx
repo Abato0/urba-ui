@@ -136,9 +136,9 @@ export const IngresarTagForm: FC<IProps> = ({ tag, idStatus }) => {
 
     const closeModalAuth = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/tag/listado-tags' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/tag/listado-tags' })
+            // })
 
             // console.log("1")
         } else {

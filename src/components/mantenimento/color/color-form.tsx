@@ -120,13 +120,13 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
     const [boolPutColor, setBoolPutColor] = useState<boolean>(false)
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
-    const { refetch } = useListaColorQuery()
+    // const { refetch } = useListaColorQuery()
 
     const closeModalAuth = () => {
         if (openModalMsj && boolPutColor) {
-            refetch().then(() => {
-                router.push({ pathname: '/mantenimiento/color/listado' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/mantenimiento/color/listado' })
+            // })
 
             // console.log("1")
         } else {
@@ -197,7 +197,7 @@ export const IngresarColorForm: FC<IProps> = ({ colorObj, id }) => {
                                 setOpenModalMsj(true)
                                 return
                             }
-                            await refetch()
+                            // await refetch()
                             resetForm()
                         } else {
                             setErrorModal(true)

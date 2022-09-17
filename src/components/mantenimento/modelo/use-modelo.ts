@@ -12,7 +12,7 @@ import {
 export const usePostModeloMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(postModelo, {
         refetchQueries: [{ query: listadoModelo }],
-        notifyOnNetworkStatusChange: true,
+        // notifyOnNetworkStatusChange: true,
     })
     return [mutate, data, loading, error]
 }
@@ -20,7 +20,7 @@ export const usePostModeloMutation = () => {
 export const useMigracionModeloMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(migracionModelo, {
         refetchQueries: [{ query: listadoModelo }],
-        notifyOnNetworkStatusChange: true,
+        // notifyOnNetworkStatusChange: true,
     })
     return [mutate, data, loading, error]
 }
@@ -36,8 +36,8 @@ export interface IListadoModelo {
 
 export const useListaModeloQuery = () => {
     return useQuery<IListadoModelo>(listadoModelo, {
-        notifyOnNetworkStatusChange: true,
-        fetchPolicy: 'cache-and-network',
+        // notifyOnNetworkStatusChange: true,
+        // fetchPolicy: 'cache-and-network',
     })
 }
 
@@ -49,15 +49,15 @@ export const useGetModeloQuery = (id?: number) => {
     return useQuery<IGetModelo>(getModelo, {
         variables: { id },
         skip: isNilOrEmpty(id),
-        notifyOnNetworkStatusChange: true,
-        fetchPolicy: 'cache-and-network',
+        // notifyOnNetworkStatusChange: true,
+        // fetchPolicy: 'cache-and-network',
     })
 }
 
 export const usePutModeloMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(updateModelo, {
         refetchQueries: [{ query: listadoModelo }],
-        notifyOnNetworkStatusChange: true,
+        // notifyOnNetworkStatusChange: true,
     })
     return [mutate, data, loading, error]
 }
@@ -65,7 +65,7 @@ export const usePutModeloMutation = () => {
 export const useDeleteModeloMutation = () => {
     const [mutate, { data, loading, error }] = useMutation(deleteModelo, {
         refetchQueries: [{ query: listadoModelo }],
-        notifyOnNetworkStatusChange: true,
+        // notifyOnNetworkStatusChange: true,
     })
     return [mutate, data, loading, error]
 }

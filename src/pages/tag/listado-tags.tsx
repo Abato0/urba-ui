@@ -155,7 +155,7 @@ const MantenimientoColorListado = () => {
     const { data: dataStatusTag, loading: loadingStatusTag } =
         useListaStatusTagQuery()
 
-    const { refetch: refetchAsigancion } = useListaTagVehiculo()
+    // const { refetch: refetchAsigancion } = useListaTagVehiculo()
     const [dataTag, setColorTag] = useState<ITagNormalize[]>([])
     const [search, setSearch] = useState<string>('')
     const [openModalMsj, setOpenModalMsj] = useState<boolean>(false)
@@ -206,8 +206,8 @@ const MantenimientoColorListado = () => {
                     const { code, message } = data.DeleteTag
                     if (code === 200) {
                         setErrorModal(false)
-                        await refetch()
-                        await refetchAsigancion()
+                        // await refetch()
+                        // await refetchAsigancion()
                     } else {
                         setErrorModal(true)
                     }
@@ -244,7 +244,7 @@ const MantenimientoColorListado = () => {
                     setTitleModalMsj(message)
                     if (code === 200) {
                         setErrorModal(false)
-                        await refetch()
+                        // await refetch()
                     } else {
                         setErrorModal(true)
                     }
@@ -277,7 +277,7 @@ const MantenimientoColorListado = () => {
                     setTitleModalMsj(message)
                     if (code === 200) {
                         setErrorModal(false)
-                        await refetch()
+                        // await refetch()
                     } else {
                         setErrorModal(true)
                     }

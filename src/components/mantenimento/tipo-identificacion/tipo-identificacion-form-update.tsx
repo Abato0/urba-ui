@@ -132,7 +132,7 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
     const [dataTipoIdentificacion, setDataTipoIdentificacion] =
         useState<IResultQueryTipoIdentificacion>()
-    const { refetch } = useListaTipoIdentificacionQuery()
+    // const { refetch } = useListaTipoIdentificacionQuery()
     const [mutate] = usePutTipoIdentificacionMutation()
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
@@ -140,11 +140,11 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({
-                    pathname: '/mantenimiento/tipo-identificacion/registrar',
-                })
+            // refetch().then(() => {
+            router.push({
+                pathname: '/mantenimiento/tipo-identificacion/registrar',
             })
+            // })
         } else {
             setOpenModalMsj(false)
         }
@@ -225,7 +225,7 @@ const TipoIdentificacionFormEditar: FC<IProps> = ({ tipoId }) => {
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [mutate, refetch]
+        [mutate]
     )
 
     const initialValues = useMemo(() => {

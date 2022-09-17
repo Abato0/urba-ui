@@ -115,13 +115,13 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
 
     const [boolPut, setBoolPut] = useState<boolean>(false)
 
-    const { refetch } = useListaModeloQuery()
+    // const { refetch } = useListaModeloQuery()
 
     const onCloseModalAuht = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/mantenimiento/marca/listado' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/mantenimiento/marca/listado' })
+            // })
         } else {
             setOpenModalMsj(false)
         }
@@ -192,7 +192,7 @@ export const IngresarModeloForm: FC<IProps> = ({ modeloObj, id }) => {
                                 return
                             }
 
-                            await refetch()
+                            // await refetch()
                             resetForm()
                         } else {
                             setErrorModal(true)

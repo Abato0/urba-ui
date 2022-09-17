@@ -377,11 +377,13 @@ const ListadoVehiculo = () => {
                             message={mensajeModalMsj}
                         />
                     )}
-                    <CarruselVehiculoImagenModal
-                        open={openModal}
-                        handleClose={handleClose}
-                        id={idVehiculoSeleccionado}
-                    />
+                    {idVehiculoSeleccionado && (
+                        <CarruselVehiculoImagenModal
+                            open={openModal}
+                            handleClose={handleClose}
+                            id={idVehiculoSeleccionado}
+                        />
+                    )}
                     <Paper className={classes.paperFilter}>
                         <div className={classes.contenFilter}>
                             <div className={classes.contentButtons}>

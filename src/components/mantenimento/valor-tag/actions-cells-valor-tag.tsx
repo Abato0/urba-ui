@@ -7,17 +7,21 @@ import {
     AlarmLight as AlarmLightIcon,
     AlarmLightOff as AlarmLigthOffIcon,
 } from 'mdi-material-ui'
-import { IResultQueryTag } from '../tag/use-tag'
-import { ModalConfirmacion } from '../core/modal/modalConfirmacion'
+import { ModalConfirmacion } from '../../core/modal/modalConfirmacion'
+import {
+    ID_VALOR_TAG_PRIMERA_VEZ,
+    ID_VALOR_TAG_RENOVACION,
+    ID_VALOR_REPOSICION,
+} from '../../../utils/keys'
 
 interface IProps {
     className?: string
     onEdit: any
     onDelete: any
-    row: Row<IResultQueryTag>
+    row: Row<any>
 }
 
-const ActionsCellEditDelete: React.FC<IProps> = ({
+const ActionsCellEditDeleteValoresTag: React.FC<IProps> = ({
     onEdit,
     onDelete,
     row,
@@ -25,6 +29,17 @@ const ActionsCellEditDelete: React.FC<IProps> = ({
 }) => {
     // console.log('row Tag: ', row.original)
 
+    const enableDelete = useMemo(() => {
+        if (
+            row.original.id &&
+            (row.original.id === ID_VALOR_TAG_PRIMERA_VEZ ||
+                row.original.id === ID_VALOR_TAG_RENOVACION ||
+                row.original.id === ID_VALOR_REPOSICION)
+        ) {
+            return false
+        }
+        return true
+    }, [row])
     const [openModalConfirmacion, setOpenModalConfirmacion] = useState(false)
     return (
         <>
@@ -48,18 +63,24 @@ const ActionsCellEditDelete: React.FC<IProps> = ({
                 </IconButton>
             </Tooltip>
 
-            <Tooltip placeholder="top" className={className} title={'Eliminar'}>
-                <IconButton
-                    // variant="text"
-                    color="secondary"
-                    // onClick={() => onDelete(row.original)}
-                    onClick={() => setOpenModalConfirmacion(true)}
+            {enableDelete && (
+                <Tooltip
+                    placeholder="top"
+                    className={className}
+                    title={'Eliminar'}
                 >
-                    <TrashCanIcon color="primary" />
-                </IconButton>
-            </Tooltip>
+                    <IconButton
+                        // variant="text"
+                        color="secondary"
+                        // onClick={() => onDelete(row.original)}
+                        onClick={() => setOpenModalConfirmacion(true)}
+                    >
+                        <TrashCanIcon color="primary" />
+                    </IconButton>
+                </Tooltip>
+            )}
         </>
     )
 }
 
-export default ActionsCellEditDelete
+export default ActionsCellEditDeleteValoresTag

@@ -119,13 +119,13 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
     const [boolPut, setBoolPut] = useState<boolean>(false)
     const [loadingMutate, setLoadingMutate] = useState<boolean>(false)
 
-    const { refetch } = useListaParentescoQuery()
+    // const { refetch } = useListaParentescoQuery()
 
     const onCloseModalAuth = () => {
         if (openModalMsj && boolPut) {
-            refetch().then(() => {
-                router.push({ pathname: '/mantenimiento/parentesco/listado' })
-            })
+            // refetch().then(() => {
+            router.push({ pathname: '/mantenimiento/parentesco/listado' })
+            // })
         } else {
             setOpenModalMsj(false)
         }
@@ -185,7 +185,7 @@ export const IngresarParentescoForm: FC<IProps> = ({ parentescoObj, id }) => {
                                 return
                             }
 
-                            await refetch()
+                            // await refetch()
                             resetForm()
                         } else {
                             setErrorModal(true)
