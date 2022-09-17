@@ -41,6 +41,13 @@ const ActionsCell: React.FC<IProps> = ({
         return false
     }, [usuarioState])
 
+    const seguridadFlag = useMemo(() => {
+        if (usuarioState) {
+            return usuarioState.tipo_usuario === TipoUsuario.SEGURIDAD
+        }
+        return false
+    }, [usuarioState])
+
     return (
         <>
             <ModalConfirmacion
@@ -52,38 +59,44 @@ const ActionsCell: React.FC<IProps> = ({
                 mensaje="¿Está seguro de eliminar el registro seleccionado?"
                 onCancel={() => setOpenModalConfirmacion(false)}
             />
-            {!moradorFlag && (
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                    }}
-                >
-                    <Tooltip
-                        className={className}
-                        placement="right"
-                        title={'Editar'}
+            {seguridadFlag ? (
+                <></>
+            ) : (
+                !moradorFlag && (
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                        }}
                     >
-                        <IconButton onClick={() => onEdit(row.original)}>
-                            <FileEditIcon color="primary" />
-                        </IconButton>
-                    </Tooltip>
-
-                    {administradorFlag && (
                         <Tooltip
                             className={className}
                             placement="right"
-                            title={'Eliminar'}
+                            title={'Editar'}
                         >
-                            <IconButton
-                                onClick={() => setOpenModalConfirmacion(true)}
-                                //onClick={() => onDelete(row.original)}
-                            >
-                                <TrashIcon color="primary" />
+                            <IconButton onClick={() => onEdit(row.original)}>
+                                <FileEditIcon color="primary" />
                             </IconButton>
                         </Tooltip>
-                    )}
-                </div>
+
+                        {administradorFlag && (
+                            <Tooltip
+                                className={className}
+                                placement="right"
+                                title={'Eliminar'}
+                            >
+                                <IconButton
+                                    onClick={() =>
+                                        setOpenModalConfirmacion(true)
+                                    }
+                                    //onClick={() => onDelete(row.original)}
+                                >
+                                    <TrashIcon color="primary" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                    </div>
+                )
             )}
         </>
     )

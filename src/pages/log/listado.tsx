@@ -263,7 +263,7 @@ const LogListado = () => {
     }
 
     return (
-        <LayoutTituloPagina titulo="Parametrización - Logs">
+        <LayoutTituloPagina titulo="Parametrización - Listado de Actividades">
             <Paper className={classes.paperFilter}>
                 <div className={classes.contenFilter}>
                     <div className={classes.contentButtons}>

@@ -502,11 +502,11 @@ export const newItemsRegistrosMorador: IItemsSidebar[] = [
 ]
 
 export const newItemsListadoSeguridad = [
-    // {
-    //     icon: faListAlt,
-    //     label: 'Listado de Visitantes',
-    //     ruta: String(EnlacesSidebar.visitante.listadoVisitante.route),
-    // },
+    {
+        icon: faListAlt,
+        label: 'Listado de Grupos Familiares',
+        ruta: String(EnlacesSidebar.grupoFamiliar.listado.route),
+    },
 ]
 
 export const newItemsRegistroSeguridad = [
@@ -594,7 +594,7 @@ export const newItemsListadoAdmin: IItemsSidebar[] = [
     {
         icon: faListAlt,
         label: 'Listado de Visitantes',
-        ruta: String(EnlacesSidebar.visitante.listadoVisitante.route),
+        ruta: String(EnlacesSidebar.visitante.listadoMorador.route),
     },
 ]
 
