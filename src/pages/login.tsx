@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: colors.blueGrey[100],
         //width: "100%",
         height: '100%',
+        minWidth: theme.spacing(50),
     },
     container: {
         display: 'flex',
@@ -151,6 +152,7 @@ const useStyles = makeStyles((theme) => ({
     },
     titulo: {
         fontWeight: 'bold',
+        fontSize: theme.typography.pxToRem(18),
         // fontFamily: theme.typography.fontFamily("")
         // fontWeight: String(theme.typography.fontWeightBold),
     },

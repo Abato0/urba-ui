@@ -28,11 +28,13 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyItems: 'center',
-        paddingLeft: theme.spacing(8),
-        paddingRight: theme.spacing(8),
+        // paddingLeft: theme.spacing(8),
+        // paddingRight: theme.spacing(8),
         minHeight: '100vh',
-        minWidth: '500px',
+        // minWidth: '500px',
         backgroundColor: colors.blueGrey[100],
+        minWidth: theme.spacing(50),
+        height: '100%',
     },
     container: {
         display: 'flex',
@@ -52,10 +54,11 @@ const useStyles = makeStyles((theme) => ({
     cardLoginColumn: {
         display: 'flex',
         flexDirection: 'column',
-        padding: '15px 0px',
-        margin: '40px 65px',
-        minWidth: '300px',
-        minHeight: '400px',
+        padding: theme.spacing(4),
+        // padding: '15px 0px',
+        // margin: '40px 65px',
+        // minWidth: '300px',
+        // minHeight: '400px',
     },
     cardLoginImg: {
         display: 'flex',
@@ -100,7 +103,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         display: 'flex',
         flexDirection: 'column',
-        minWidth: '300px',
+        // minWidth: '300px',
         justifyItems: 'center',
         justifyContent: 'center',
     },
@@ -145,6 +148,7 @@ const useStyles = makeStyles((theme) => ({
     },
     titulo: {
         fontWeight: 'bold',
+        fontSize: theme.typography.pxToRem(16),
         // fontFamily: theme.typography.fontFamily("")
         // fontWeight: String(theme.typography.fontWeightBold),
     },
@@ -300,7 +304,6 @@ const RecordarPasswordScreen = () => {
                                     variant="h5"
                                     className={classes.titulo}
                                 >
-                                    {' '}
                                     RECORDAR CONTRASEÑA
                                 </Typography>
                             </div>

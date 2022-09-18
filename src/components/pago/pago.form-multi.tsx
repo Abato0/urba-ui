@@ -511,9 +511,12 @@ export const PagoFormMulti = () => {
                     const pago = {
                         idGrupoFamiliar: idGrupoFamiliar,
                         cod_recibo: cod_recibo,
-                        // descripcion: descripcion,
+                        // descripcion: descripcion,'yyyy-MM-dd HH:mm'
                         fecha_recibo: lightFormat(fecha_recibo, 'yyyy-MM-dd'),
-                        fecha_subida: new Date(),
+                        fecha_subida: lightFormat(
+                            new Date(),
+                            'yyyy-MM-dd HH:mm:ss'
+                        ),
                         imagen_recibo: file!,
                         implementacion: implementacion,
                         mantenimiento: pagoMantenimiento,
