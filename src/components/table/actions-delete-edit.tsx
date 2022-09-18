@@ -39,8 +39,6 @@ const ActionsCellEditDelete: React.FC<IProps> = ({
             />
             <Tooltip placeholder="top" className={className} title={'Editar'}>
                 <IconButton
-                    // variant="text"
-
                     color="secondary"
                     onClick={() => onEdit(row.original)}
                 >

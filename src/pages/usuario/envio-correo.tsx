@@ -284,7 +284,9 @@ const EnvioCorreo = () => {
 
     return (
         <LayoutTituloPagina titulo="Envio de Correos">
-            <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+            <PermisoLayout
+                tipoUsuarioRecibido={[TipoUsuario.ADMIN, TipoUsuario.OPERATIVO]}
+            >
                 <Box className={classes.root}>
                     <>
                         {openModalMsj && (

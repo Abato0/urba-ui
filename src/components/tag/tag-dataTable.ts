@@ -1,6 +1,7 @@
 import { Column } from 'react-table'
 import ActionsCellDesvincular from '../core/actions/actionsButtoonOnDesvincular'
 import ActionsCellEditDelete from '../table/actions-delete-edit'
+import ActionsCellEditDeleteTag from './actions-cell-tag'
 
 export const columnsTags = Object.freeze([
     {
@@ -79,7 +80,7 @@ export const columnsListadoTags = Object.freeze([
     },
     {
         id: 'actions',
-        Cell: ActionsCellEditDelete,
+        Cell: ActionsCellEditDeleteTag,
         padding: 'none',
     },
 ] as Column<any>[])

@@ -535,6 +535,11 @@ export const newItemsListadoOperador: IItemsSidebar[] = [
     },
     {
         icon: faListAlt,
+        label: 'Listado de Tags',
+        ruta: String(EnlacesSidebar.tag.listadoTag.route),
+    },
+    {
+        icon: faListAlt,
         label: 'Listado de Pago por Tag',
         ruta: String(EnlacesSidebar.tag.listado.route),
     },

@@ -9,7 +9,9 @@ import { IngresarTagForm } from '../../../components/tag/tag-form-ingresar'
 const TagIngresar = () => {
     return (
         <LayoutTituloPagina titulo="Tags - Registro">
-            <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+            <PermisoLayout
+                tipoUsuarioRecibido={[TipoUsuario.ADMIN, TipoUsuario.OPERATIVO]}
+            >
                 <IngresarTagForm />
             </PermisoLayout>
         </LayoutTituloPagina>

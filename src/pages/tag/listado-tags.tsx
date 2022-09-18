@@ -371,7 +371,9 @@ const MantenimientoColorListado = () => {
 
     return (
         <LayoutTituloPagina titulo="Listado de Tags">
-            <PermisoLayout tipoUsuarioRecibido={[TipoUsuario.ADMIN]}>
+            <PermisoLayout
+                tipoUsuarioRecibido={[TipoUsuario.ADMIN, TipoUsuario.OPERATIVO]}
+            >
                 <>
                     {openModalMsj && (
                         <ModalAuth
