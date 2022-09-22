@@ -221,7 +221,7 @@ export const FormIngresarExcelGeneral = () => {
             } catch (err: any) {
                 setLoadingMutate(false)
                 console.log('error : ', err)
-                setTitleModalMsj('Envio Fallido')
+                setTitleModalMsj('Envio Fallido: ' + (err as Error).message)
                 setErrorModal(true)
                 setMensajeModalMsj(
                     'Integrante no ha sido guardado: ' + err.message

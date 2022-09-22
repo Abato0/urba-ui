@@ -15,7 +15,7 @@ import {
     Typography,
 } from '@material-ui/core'
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
-import { drop, isEmpty, isNil, zipObj } from 'ramda'
+import { drop, isEmpty, isNil, prop, zipObj } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import {
     IArrKeyData,
@@ -188,17 +188,22 @@ export const ListadoMatrizOperaciones = () => {
     const ExportExcel = () => {
         if (isNotNilOrEmpty(dataColumnsV2) && isNotNilOrEmpty(keysColumns)) {
             const newCampos = dataColumnsV2.map((item) => {
-                return zipObj(keysColumns, item)
+                const newItem = item.reduce((call, key, index) => {
+                    if (index === 0) {
+                        return [...call, key]
+                    }
+                    return [...call, Number(key)]
+                }, [] as any[])
+                return zipObj(keysColumns, newItem)
             })
 
             const workSheet = XLSX.utils.json_to_sheet(newCampos)
 
-            //console.log("dataColumns: ", dataColumnsV2, newCampos);
             const workBook = XLSX.utils.book_new()
             XLSX.utils.book_append_sheet(
                 workBook,
                 workSheet,
-                'Matriz de Operacione'
+                'Matriz de Operaciones'
             )
             XLSX.write(workBook, { bookType: 'xlsx', type: 'binary' })
             XLSX.writeFile(workBook, 'Matriz de Aportaciones.xlsx')

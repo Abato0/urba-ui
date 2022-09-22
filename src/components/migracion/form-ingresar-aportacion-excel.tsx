@@ -189,7 +189,7 @@ export const FormIngresarExcelAportacion = () => {
                             ? data.MigracionExcelPagosImplementacion
                             : isNotNilOrEmpty(data.MigracionExcelOtros)
                             ? data.MigracionExcelOtros
-                            : data.MigracionExcelUsuarioMorador
+                            : data.MigracionExcelPagosMantenimiento
 
                         setTitleModalMsj(message)
                         if (code === 200) {
@@ -209,7 +209,7 @@ export const FormIngresarExcelAportacion = () => {
             } catch (err: any) {
                 setLoadingMutate(false)
                 console.log('error : ', err)
-                setTitleModalMsj('Envio Fallido')
+                setTitleModalMsj('Envio Fallido: ' + (err as Error).message)
                 setErrorModal(true)
                 setMensajeModalMsj(
                     'Integrante no ha sido guardado: ' + err.message
