@@ -30,11 +30,25 @@ export const useListadoImagenesBienvenidaQuery = () => {
 }
 
 export const usePostImagenBienvenidaMutation = () => {
-    const [mutate] = useMutation(postImagenBienvenida)
+    const [mutate] = useMutation(postImagenBienvenida, {
+        refetchQueries: [
+            {
+                query: listadoImagenesBienvenida,
+            },
+        ],
+        awaitRefetchQueries: true,
+    })
     return [mutate]
 }
 
 export const useDeleteImagenBienvenidaMutation = () => {
-    const [mutate] = useMutation(deleteImageBienvenida)
+    const [mutate] = useMutation(deleteImageBienvenida, {
+        refetchQueries: [
+            {
+                query: listadoImagenesBienvenida,
+            },
+        ],
+        awaitRefetchQueries: true,
+    })
     return [mutate]
 }
